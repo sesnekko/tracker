@@ -242,6 +242,7 @@ body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
 <!-- CSV Import -->
 <div class="import-section">
   <label class="import-btn">CSV importieren<input type="file" accept=".csv" id="csvInput" style="display:none"></label>
+  <button class="import-btn" id="resetBtn" style="margin-left:8px;border-style:dashed;background:transparent;cursor:pointer">Daten zurücksetzen</button>
   <div class="csv-msg" id="csvMsg"></div>
 </div>
 
@@ -510,6 +511,13 @@ function handleCsvUpload(ev){
 }
 function showCsvMsg(m,t){const el=document.getElementById('csvMsg');el.textContent=m;el.style.display='block';el.style.color=t==='error'?'var(--red)':'var(--green)';setTimeout(()=>el.style.display='none',5000);}
 
+function resetApp(){
+  if(!confirm('Alle Daten (Vermögen, Theme-Einstellung) werden gelöscht. Fortfahren?'))return;
+  localStorage.clear();
+  location.reload();
+}
+
+
 /* ── Live Prices ── */
 function fetchWithTimeout(url,ms=4000){
   const ctrl=new AbortController();
@@ -713,6 +721,7 @@ function initApp(){
     /* Event Handlers */
     document.getElementById('themeToggle').addEventListener('click',toggleTheme);
     document.getElementById('csvInput').addEventListener('change',handleCsvUpload);
+    document.getElementById('resetBtn').addEventListener('click',resetApp);
     document.getElementById('assetsToggleBtn').addEventListener('click',toggleAssets);
     document.querySelector('.live-status').addEventListener('click',showLivePopup);
     document.getElementById('livePopupClose').addEventListener('click',closeLivePopup);
