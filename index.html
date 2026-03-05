@@ -1479,28 +1479,79 @@ function renderBudgetSankey(c){
   const orangeBar=!isDark?'rgba(140,100,50,0.35)':'rgba(200,170,100,0.3)';
   const barColor=!isDark?'rgba(90,85,75,0.25)':'rgba(232,228,222,0.25)';
 
+  // Einnahmen zusammenfassen
+  let gehaltLukas=0,gehaltMiri=0,sonstiges=0;
+  c.einItems.forEach(item=>{
+    const n=item.label.toLowerCase();
+    if(n.includes('lukas'))gehaltLukas+=item.val;
+    else if(n.includes('miri')||n.includes('miriam'))gehaltMiri+=item.val;
+    else sonstiges+=item.val;
+  });
+
   let html='<div class="sankey-section-label">Einnahmen</div>';
-  c.einItems.sort((a,b)=>b.val-a.val).forEach(item=>{
-    const pct=Math.max(2,Math.round(item.val/maxVal*100));
-    html+=`<div class="sankey-row"><span class="sankey-label">${item.label}</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${greenBar}"></div></div><span class="sankey-val">${fmt(item.val)}</span></div>`;
+  if(gehaltLukas>0){
+    const pct=Math.max(2,Math.round(gehaltLukas/maxVal*100));
+    html+=`<div class="sankey-row"><span class="sankey-label">Gehalt Lukas</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${greenBar}"></div></div><span class="sankey-val">${fmt(gehaltLukas)}</span></div>`;
+  }
+  if(gehaltMiri>0){
+    const pct=Math.max(2,Math.round(gehaltMiri/maxVal*100));
+    html+=`<div class="sankey-row"><span class="sankey-label">Gehalt Miriam</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${greenBar}"></div></div><span class="sankey-val">${fmt(gehaltMiri)}</span></div>`;
+  }
+  if(sonstiges>0){
+    const pct=Math.max(2,Math.round(sonstiges/maxVal*100));
+    html+=`<div class="sankey-row"><span class="sankey-label">Sonstiges</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${greenBar}"></div></div><span class="sankey-val">${fmt(sonstiges)}</span></div>`;
+  }
+
+  // Fixkosten zusammenfassen
+  let wohnen=0,versicherungen=0,fahrzeuge=0,abos=0;
+  c.fixItems.forEach(item=>{
+    const n=item.label.toLowerCase();
+    if(n.includes('tilgung')||n.includes('gas')||n.includes('strom')||n.includes('wasser')||n.includes('abfall')||n.includes('grundsteuer')||n.includes('heizung')||n.includes('gebäude')||n.includes('putzfrau')||n.includes('telefon')||n.includes('internet')||n.includes('gez'))wohnen+=item.val;
+    else if(n.includes('versicherung')||n.includes('haftpflicht')||n.includes('hausrat')||n.includes('berufsunfähigkeit')||n.includes('rechtschutz')||n.includes('adac'))versicherungen+=item.val;
+    else if(n.includes('911')||n.includes('c-klasse')||n.includes('tanken')||n.includes('steuer')||n.includes('services')||n.includes('wartung'))fahrzeuge+=item.val;
+    else abos+=item.val;
   });
 
   html+='<div class="sankey-divider"></div><div class="sankey-section-label">Fixkosten</div>';
-  c.fixItems.sort((a,b)=>b.val-a.val).forEach(item=>{
-    const pct=Math.max(2,Math.round(item.val/maxVal*100));
-    html+=`<div class="sankey-row"><span class="sankey-label">${item.label}</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${redBar}"></div></div><span class="sankey-val">${fmt(item.val)}</span></div>`;
+  if(wohnen>0){
+    const pct=Math.max(2,Math.round(wohnen/maxVal*100));
+    html+=`<div class="sankey-row"><span class="sankey-label">Wohnen & Nebenkosten</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${redBar}"></div></div><span class="sankey-val">${fmt(wohnen)}</span></div>`;
+  }
+  if(fahrzeuge>0){
+    const pct=Math.max(2,Math.round(fahrzeuge/maxVal*100));
+    html+=`<div class="sankey-row"><span class="sankey-label">Fahrzeuge</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${redBar}"></div></div><span class="sankey-val">${fmt(fahrzeuge)}</span></div>`;
+  }
+  if(versicherungen>0){
+    const pct=Math.max(2,Math.round(versicherungen/maxVal*100));
+    html+=`<div class="sankey-row"><span class="sankey-label">Versicherungen</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${redBar}"></div></div><span class="sankey-val">${fmt(versicherungen)}</span></div>`;
+  }
+  if(abos>0){
+    const pct=Math.max(2,Math.round(abos/maxVal*100));
+    html+=`<div class="sankey-row"><span class="sankey-label">Abos & Sonstiges</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${redBar}"></div></div><span class="sankey-val">${fmt(abos)}</span></div>`;
+  }
+
+  // Variable Ausgaben zusammenfassen
+  let lebenshaltung=0,sparen=0;
+  c.varItems.forEach(item=>{
+    const n=item.label.toLowerCase();
+    if(n.includes('etf')||n.includes('btc')||n.includes('sparplan')||n.includes('cash'))sparen+=item.val;
+    else lebenshaltung+=item.val;
   });
 
   html+='<div class="sankey-divider"></div><div class="sankey-section-label">Variable Ausgaben</div>';
-  c.varItems.sort((a,b)=>b.val-a.val).forEach(item=>{
-    const pct=Math.max(2,Math.round(item.val/maxVal*100));
-    html+=`<div class="sankey-row"><span class="sankey-label">${item.label}</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${orangeBar}"></div></div><span class="sankey-val">${fmt(item.val)}</span></div>`;
-  });
+  if(lebenshaltung>0){
+    const pct=Math.max(2,Math.round(lebenshaltung/maxVal*100));
+    html+=`<div class="sankey-row"><span class="sankey-label">Lebenshaltung</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${orangeBar}"></div></div><span class="sankey-val">${fmt(lebenshaltung)}</span></div>`;
+  }
+  if(sparen>0){
+    const pct=Math.max(2,Math.round(sparen/maxVal*100));
+    html+=`<div class="sankey-row"><span class="sankey-label">Sparpläne</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${orangeBar}"></div></div><span class="sankey-val">${fmt(sparen)}</span></div>`;
+  }
 
   if(c.netto>0){
     html+='<div class="sankey-divider"></div><div class="sankey-section-label">Überschuss</div>';
     const pct=Math.max(2,Math.round(c.netto/maxVal*100));
-    html+=`<div class="sankey-row"><span class="sankey-label">Frei</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${barColor}"></div></div><span class="sankey-val">${fmt(c.netto)}</span></div>`;
+    html+=`<div class="sankey-row"><span class="sankey-label">Frei verfügbar</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${barColor}"></div></div><span class="sankey-val">${fmt(c.netto)}</span></div>`;
   }
 
   wrap.innerHTML=html;
