@@ -276,6 +276,7 @@ const SUN='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><
 
 /* ── Helpers ── */
 function currentYM(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function nextYM(){const d=new Date();d.setMonth(d.getMonth()+1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
 function fmtMonth(ym){const[y,m]=ym.split('-');return MONTH_NAMES[+m-1]+' '+y;}
 function fmt(n){if(n==null||isNaN(n))return'—';return n.toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:0})+' €';}
 function fmtAxis(n){if(n==null||isNaN(n))return'';if(Math.abs(n)>=1e6)return(n/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})+'M';if(Math.abs(n)>=1e3)return(n/1e3).toLocaleString('de-DE',{maximumFractionDigits:0})+'k';return n.toLocaleString('de-DE',{minimumFractionDigits:0});}
@@ -284,7 +285,9 @@ function saveData(d){localStorage.setItem('finData',JSON.stringify(d));}
 
 function calc(e){
   const l=FIELDS_LIQUID.reduce((s,k)=>s+(+e[k]||0),0),i=FIELDS_ILLIQUID.reduce((s,k)=>s+(+e[k]||0),0),a=l+i,b=FIELDS_LIAB.reduce((s,k)=>s+(+e[k]||0),0);
-  return{liquid:l,illiquid:i,assets:a,liab:b,net:a-b};
+  const result={liquid:l,illiquid:i,assets:a,liab:b,net:a-b};
+  console.log('calc():',{liquid:l,illiquid:i,assets:a,liab:b,net:result.net,entry:e});
+  return result;
 }
 function calcNet(e){
   const liab_liquid=(+e.kredit1||0)+(+e.kredit2||0),liab_illiq=(+e.immkredit||0);
@@ -514,6 +517,7 @@ function handleCsvUpload(ev){
       en.sonstiges=details.sonstiges||0;en.immobilien=details.immobilien||0;
       en.kredit1=0;en.kredit2=0;en.immkredit=details['kredit-haus']||0;
       en._details=details;en._units=units;d[ym]=en;im++;
+      console.log(`Imported ${ym}:`,{cash:en.cash,etf:en.etf,bitcoin:en.bitcoin,edelmetalle:en.edelmetalle,immobilien:en.immobilien,immkredit:en.immkredit,units});
     }
     saveData(d);render();
     showCsvMsg(`✓ ${im} importiert${sk?', '+sk+' übersprungen':''}.`,'ok');
@@ -740,7 +744,7 @@ function initApp(){
     /* Month Picker */
     picker=buildPicker();
     const data=loadData(),sorted=Object.keys(data).sort();
-    selectedMonth=sorted.length?sorted[sorted.length-1]:currentYM();
+    selectedMonth=sorted.length?sorted[sorted.length-1]:nextYM();
     picker.setVal(selectedMonth);
 
     /* Event Handlers */
