@@ -887,10 +887,22 @@ function handleCsvUpload(ev){
           }
           const values=[];
           for(let m=3;m<15;m++){values.push(parseCsvNumber(c[m]||''));}
-          console.log(`Budget row: ${kategorie} | ${name} | Jan=${values[0]}`);
-          if(kategorie==='einkommen')budgetData.einkommen.push({name,values});
-          else if(kategorie==='fixe ausgaben')budgetData.fixe.push({name,values});
-          else if(kategorie==='variable ausgaben')budgetData.variable.push({name,values});
+          console.log(`Budget row: "${kategorie}" | ${name} | Jan=${values[0]}`);
+          if(kategorie==='einkommen'){
+            budgetData.einkommen.push({name,values});
+            console.log('  → Added to einkommen');
+          }
+          else if(kategorie==='fixe ausgaben'){
+            budgetData.fixe.push({name,values});
+            console.log('  → Added to fixe');
+          }
+          else if(kategorie==='variable ausgaben'){
+            budgetData.variable.push({name,values});
+            console.log('  → Added to variable');
+          }
+          else{
+            console.log(`  → SKIPPED! Unknown category: "${kategorie}"`);
+          }
           budgetImported++;
         }
         console.log('Budget data imported:',{
