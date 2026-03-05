@@ -114,10 +114,10 @@ body {
 .hero { text-align:center;padding:20px 0 4px; }
 .hero-label { font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;font-weight:500; }
 .hero-value {
-  font-size:52px;font-weight:300;color:var(--ink);letter-spacing:-0.02em;
-  line-height:1.15;font-variant-numeric:tabular-nums;min-height:62px;
+  font-size:62px;font-weight:300;color:var(--ink);letter-spacing:-0.02em;
+  line-height:1.15;font-variant-numeric:tabular-nums;min-height:72px;
 }
-.hero-value.kpi-has-eur::after { content:' €';font-size:22px;font-weight:300;color:var(--muted);letter-spacing:0; }
+.hero-value.kpi-has-eur::after { content:' €';font-size:26px;font-weight:300;color:var(--muted);letter-spacing:0; }
 .hero-delta { font-size:12px;font-weight:400;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums; }
 .hero-delta.up{color:var(--green)} .hero-delta.down{color:var(--red)}
 
@@ -129,7 +129,7 @@ body {
 .chart-label { font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:10px;text-align:center; }
 
 /* ── Range Buttons ── */
-.range-bar { display:flex;gap:6px;padding:10px 0 4px;flex-wrap:wrap;align-items:center; }
+.range-bar { display:flex;gap:6px;padding:10px 0 4px;flex-wrap:wrap;align-items:center;justify-content:space-between; }
 .range-btn {
   background:transparent;border:1px solid var(--border);color:var(--muted);
   font-family:'IBM Plex Sans',sans-serif;font-size:11px;letter-spacing:0.06em;
@@ -200,20 +200,21 @@ body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
   <div class="range-bar">
     <button class="range-btn" id="assetsToggleBtn" style="border-style:dashed">Assets</button>
     <div class="live-status"><span class="live-dot" id="liveDot"></span><span id="liveLabel">Live</span></div>
-    <div style="flex:1"></div>
-    <button class="range-btn" data-range="12">12M</button>
-    <button class="range-btn active" data-range="36">3J</button>
-    <button class="range-btn" data-range="60">5J</button>
-    <button class="range-btn" data-range="0">Alle</button>
+    <div style="display:flex;gap:6px">
+      <button class="range-btn" data-range="12">12M</button>
+      <button class="range-btn active" data-range="36">3J</button>
+      <button class="range-btn" data-range="60">5J</button>
+      <button class="range-btn" data-range="0">Alle</button>
+    </div>
   </div>
 </div>
 
-<div style="height:20px"></div>
+<div style="height:10px"></div>
 
-<!-- Chart: Vermögensstruktur Netto -->
+<!-- Chart: Vermögensstruktur -->
 <div class="chart-section">
-  <div class="chart-label">Vermögensstruktur (Netto)</div>
   <div class="chart-wrap pie"><canvas id="chartAssets"></canvas></div>
+  <div class="chart-label">Vermögensstruktur</div>
   <table class="legend-table" id="legendAssets"></table>
 </div>
 
@@ -267,7 +268,7 @@ const INPUT_FIELDS_ETF=['msci-acwi','dax-ucits','msci-acwi-papa','msci-acwi-pate
 const MONTH_NAMES=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 const LIVE_PRICE_TICKERS={'msci-acwi':'IUSQ.DE','dax-ucits':'CG1G.DE','msci-acwi-papa':'ACWI.PA','msci-acwi-patenkinder':'ACWI.PA','gold':'XAUEUR','silber':'XAGEUR'};
 
-let isDark=false, selectedMonth, charts={}, netRange=36, showAssets=false;
+let isDark=false, selectedMonth, charts={}, netRange=36, showAssets=true;
 const livePrices={}, netLineHidden={0:false,1:true,2:true};
 const MOON='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
 const SUN='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
@@ -294,7 +295,7 @@ function calcNet(e){
 }
 function getColors(){const d=isDark;return{cash:d?'#d8d0c0':'#605850',etf:d?'#c0b8a8':'#484038',bitcoin:d?'#d0c8b8':'#504840',aktien:d?'#b8b0a0':'#585048',edelmetalle:d?'#e0d8c8':'#706860',bav:d?'#a8a098':'#483f37',uhren:d?'#e8e0d0':'#787068',sonstiges:d?'#a09888':'#54493e',immobilien:d?'#989088':'#463b31'};}
 function cc(){return!isDark?{grid:'rgba(255,255,255,0.12)',tick:'#7a7568'}:{grid:'rgba(0,0,0,0.12)',tick:'#8a8578'};}
-function cd(){return{responsive:true,maintainAspectRatio:false,events:['touchstart','touchmove'],plugins:{legend:{display:false},datalabels:{display:false},tooltip:{enabled:true,titleFont:{family:'IBM Plex Sans'},bodyFont:{family:'IBM Plex Sans'},callbacks:{label:ctx=>' '+fmt(ctx.raw)}}},interaction:{mode:'nearest',intersect:false}};}
+function cd(){return{responsive:true,maintainAspectRatio:false,events:[],plugins:{legend:{display:false},datalabels:{display:false},tooltip:{enabled:false}},interaction:{mode:'nearest',intersect:false}};}
 
 /* ── Month Picker ── */
 let picker;
@@ -390,9 +391,9 @@ function renderNetChart(){
   const gA=ctx.createLinearGradient(0,0,0,200);gA.addColorStop(0,!isDark?'rgba(58,94,66,0.30)':'rgba(122,170,130,0.22)');gA.addColorStop(1,'rgba(0,0,0,0)');
   const gL=ctx.createLinearGradient(0,0,0,200);gL.addColorStop(0,!isDark?'rgba(110,59,48,0.30)':'rgba(192,112,88,0.22)');gL.addColorStop(1,'rgba(0,0,0,0)');
   /* Asset lines */
-  const alc=Object.values(getColors());
+  const grayColor=!isDark?'rgba(90,85,75,0.25)':'rgba(232,228,222,0.25)';
   const aaf=[...FIELDS_LIQUID,...FIELDS_ILLIQUID].filter(k=>k!=='porsche911'&&k!=='mercedes');
-  const ad=aaf.map((k,i)=>{const c=alc[i]||'rgba(120,120,120,0.4)';return{label:LABELS[k],data:ns.map(ym=>{let v=+data[ym][k]||0;if(k==='immobilien')v-=(+data[ym]['immkredit']||0);if(k==='sonstiges')v+=(+data[ym]['porsche911']||0)+(+data[ym]['mercedes']||0);return v;}),borderColor:c.replace(')',',0.12)').replace('rgb(','rgba('),backgroundColor:'transparent',borderWidth:0.6,pointRadius:0,pointHoverRadius:3,tension:0.35,fill:false,_isAsset:true,hidden:!showAssets};});
+  const ad=aaf.map((k,i)=>{return{label:LABELS[k],data:ns.map(ym=>{let v=+data[ym][k]||0;if(k==='immobilien')v-=(+data[ym]['immkredit']||0);if(k==='sonstiges')v+=(+data[ym]['porsche911']||0)+(+data[ym]['mercedes']||0);return v;}),borderColor:grayColor,backgroundColor:'transparent',borderWidth:0.8,pointRadius:0,pointHoverRadius:3,tension:0.35,fill:false,_isAsset:true,hidden:!showAssets};});
   charts['net']=new Chart(ctx,{type:'line',data:{labels:lb,datasets:[
     {label:'Nettovermögen',data:nv,borderColor:ink,backgroundColor:gN,borderWidth:1.5,pointRadius:ns.length>24?1:2,pointHoverRadius:4,pointBackgroundColor:ink,pointBorderColor:!isDark?'#1c1c1a':'#f2efe9',pointBorderWidth:1,tension:0.35,fill:true,hidden:netLineHidden[0]},
     {label:'Vermögen',data:av,borderColor:grn,backgroundColor:gA,borderWidth:1.2,pointRadius:ns.length>24?0:2,tension:0.35,fill:true,hidden:netLineHidden[1]},
