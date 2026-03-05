@@ -515,7 +515,11 @@ function handleCsvUpload(ev){
       en._details=details;en._units=units;d[ym]=en;im++;
       try{console.log(`Imported ${ym}:`,{cash:en.cash,etf:en.etf,bitcoin:en.bitcoin,edelmetalle:en.edelmetalle,immobilien:en.immobilien,immkredit:en.immkredit,units});}catch(e){}
     }
-    saveData(d);render();
+    saveData(d);
+    const sorted=Object.keys(d).sort();
+    selectedMonth=sorted.length?sorted[sorted.length-1]:nextYM();
+    picker.setVal(selectedMonth);
+    render();
     showCsvMsg(`✓ ${im} importiert${sk?', '+sk+' übersprungen':''}.`,'ok');
     ev.target.value='';
     }catch(err){console.error('CSV Import Error:',err);showCsvMsg('Fehler beim Import: '+err.message,'error');}
@@ -609,7 +613,7 @@ async function fetchETFPrice(id){
 
 function applyLivePrices(){
   const ym=selectedMonth;
-  if(!ym||ym!==currentYM()){console.log('Live prices: not current month');return;}
+  if(!ym||ym!==nextYM()){console.log('Live prices: not next month');return;}
   const d=loadData(),e=d[ym];if(!e){console.log('Live prices: no data for',ym);return;}
   if(!e._details)e._details={};
   const units=e._units||{};
