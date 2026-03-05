@@ -141,8 +141,10 @@ body {
 body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
 
 /* ── Legend Table ── */
-.legend-table { width:100%;border-collapse:collapse;margin-top:10px; }
+.legend-table { width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed; }
 .legend-table td { padding:5px 6px;font-size:13px;color:var(--text);vertical-align:middle; }
+.legend-table td:nth-child(odd) { width:40%; }
+.legend-table td:nth-child(even) { width:10%;text-align:right; }
 .legend-table .leg-dot { width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle; }
 .legend-table .leg-name { color:var(--muted); }
 .legend-table .leg-val { text-align:right;font-variant-numeric:tabular-nums;font-weight:400; }
@@ -596,22 +598,25 @@ async function fetchETFPrice(id){
 
 function applyLivePrices(){
   const ym=selectedMonth;
-  if(!ym||ym!==currentYM())return;
-  const d=loadData(),e=d[ym];if(!e)return;
+  if(!ym||ym!==currentYM()){console.log('Live prices: not current month');return;}
+  const d=loadData(),e=d[ym];if(!e){console.log('Live prices: no data for',ym);return;}
   if(!e._details)e._details={};
   const units=e._units||{};
+  if(!Object.keys(units).length){console.log('Live prices: no units in data');return;}
   let changed=false;
   UNIT_FIELDS.forEach(key=>{
     const price=livePrices[key],u=units[key]||0;
     if(!price||!u)return;
     const newEUR=Math.round(price*u);
+    console.log(`Applying ${key}: ${u} × ${price.toFixed(2)} = ${newEUR}€`);
     e._details[key]=newEUR;changed=true;
   });
-  if(!changed)return;
+  if(!changed){console.log('Live prices: no changes applied');return;}
   e.bitcoin=e._details.bitcoin||0;
   e.etf=INPUT_FIELDS_ETF.reduce((s,k)=>s+(e._details[k]||0),0);
   e.edelmetalle=(e._details.gold||0)+(e._details.silber||0);
   d[ym]=e;saveData(d);
+  console.log('✓ Live prices applied, rendering...');
   render();
 }
 
@@ -698,7 +703,9 @@ function toggleNetLine(i){
 function initApp(){
   try{
     /* Theme: follow system preference, allow manual override */
-    const stored=localStorage.getItem('darkMode');
+    let stored=localStorage.getItem('darkMode');
+    // Clean up old 'auto' value from previous version
+    if(stored&&stored!=='0'&&stored!=='1'){localStorage.removeItem('darkMode');stored=null;}
     if(stored==='1')isDark=true;
     else if(stored==='0')isDark=false;
     else isDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
