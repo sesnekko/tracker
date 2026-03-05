@@ -45,7 +45,7 @@ body.dark::after {
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body {
   background:var(--bg);color:var(--text);
-  font-family:'IBM Plex Sans',sans-serif;font-weight:400;font-size:15px;
+  font-family:'IBM Plex Sans',sans-serif;font-weight:400;font-size:12px;
   min-height:100vh;min-height:100dvh;line-height:1.6;
   -webkit-font-smoothing:antialiased;overflow-x:hidden;letter-spacing:0.01em;
   padding:0 20px;
@@ -68,19 +68,21 @@ body {
 }
 .icon-btn:active{border-color:var(--ink);color:var(--ink)}
 .icon-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.live-status { font-size:9px;color:var(--muted);display:flex;align-items:center;cursor:pointer; }
+.live-status { font-size:12px;color:var(--muted);display:flex;align-items:center;cursor:pointer; }
 .live-dot {
   width:6px;height:6px;border-radius:50%;background:var(--green);
+  display:inline-block;margin-right:4px;animation:pulse 2s ease-in-out infinite;
+}
 
 /* ── Live Info Popup ── */
 .live-popup {
   display:none;position:fixed !important;left:50% !important;top:50% !important;transform:translate(-50%,-50%) !important;
   background:var(--bg2);border:1px solid var(--border);border-radius:8px;
   padding:16px 20px;z-index:10000 !important;min-width:260px;max-width:320px;
-  font-size:13px;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.15);
+  font-size:12px;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.15);
 }
 .live-popup.show { display:block; }
-.live-popup-title { font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);font-weight:500;margin-bottom:10px; }
+.live-popup-title { font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);font-weight:500;margin-bottom:10px; }
 .live-popup-row { display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border); }
 .live-popup-row:last-child { border-bottom:none; }
 .live-popup-name { color:var(--muted); }
@@ -90,13 +92,11 @@ body {
 .live-popup-close { text-align:center;margin-top:12px; }
 .live-popup-close button {
   background:transparent;border:1px solid var(--border);color:var(--muted);
-  font-family:'IBM Plex Sans',sans-serif;font-size:10px;padding:5px 16px;
+  font-family:'IBM Plex Sans',sans-serif;font-size:12px;padding:5px 16px;
   border-radius:3px;cursor:pointer;
 }
 .live-overlay { display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.2); }
 .live-overlay.show { display:block; }
-  display:inline-block;margin-right:4px;animation:pulse 2s ease-in-out infinite;
-}
 @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
 
 /* ── Pull to Refresh ── */
@@ -118,7 +118,7 @@ body {
 .month-picker select {
   appearance:none;-webkit-appearance:none;
   background:transparent;border:1px solid var(--border);color:var(--muted);
-  font-family:'IBM Plex Sans',sans-serif;font-size:13px;
+  font-family:'IBM Plex Sans',sans-serif;font-size:12px;
   padding:5px 8px;border-radius:4px;cursor:pointer;
   transition:border-color .2s,color .2s;
 }
@@ -126,10 +126,10 @@ body {
 
 /* ── Hero KPI ── */
 .hero { text-align:center;padding:20px 0 4px; }
-.hero-label { font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;font-weight:500; }
+.hero-label { font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;font-weight:500; }
 .hero-value {
-  font-size:62px;font-weight:300;color:var(--ink);letter-spacing:-0.02em;
-  line-height:1.15;font-variant-numeric:tabular-nums;min-height:72px;
+  font-size:68px;font-weight:300;color:var(--ink);letter-spacing:-0.02em;
+  line-height:1.15;font-variant-numeric:tabular-nums;min-height:78px;
 }
 .hero-value.kpi-has-eur::after { content:' €';font-size:26px;font-weight:300;color:var(--muted);letter-spacing:0; }
 .hero-delta { font-size:12px;font-weight:400;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums; }
@@ -140,14 +140,14 @@ body {
 .chart-wrap { position:relative;height:200px; }
 .chart-wrap.pie { height:260px;display:flex;align-items:center;justify-content:center; }
 .chart-wrap.pie canvas { max-height:240px;max-width:240px; }
-.chart-label { font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:10px;text-align:center; }
+.chart-label { font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:10px;text-align:center; }
 
 /* ── Range Buttons ── */
 .range-bar { display:flex;gap:6px;padding:10px 0 4px 0;flex-wrap:wrap;align-items:center;justify-content:space-between; }
-#assetsToggleBtn { margin-left:10px; }
+#assetsToggleBtn { margin-left:30px; }
 .range-btn {
   background:transparent;border:1px solid var(--border);color:var(--muted);
-  font-family:'IBM Plex Sans',sans-serif;font-size:11px;letter-spacing:0.06em;
+  font-family:'IBM Plex Sans',sans-serif;font-size:12px;letter-spacing:0.06em;
   padding:4px 9px;border-radius:2px;cursor:pointer;
   transition:border-color .15s,color .15s,background .15s;
 }
@@ -157,7 +157,7 @@ body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
 
 /* ── Legend Table ── */
 .legend-table { width:100%;border-collapse:collapse;margin-top:10px; }
-.legend-table td { padding:6px 4px;font-size:13px;color:var(--text);vertical-align:middle; }
+.legend-table td { padding:6px 4px;font-size:12px;color:var(--text);vertical-align:middle; }
 .legend-table td:first-child { width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
 .legend-table td:last-child { width:40%;text-align:right;font-variant-numeric:tabular-nums; }
 .legend-table .leg-dot { width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle; }
@@ -167,33 +167,80 @@ body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
 /* ── KPI Grid ── */
 .kpi-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:20px 0; }
 .kpi-item {
-  padding:14px 16px;
   background:color-mix(in srgb,var(--bg2) 60%,transparent);
   border:1px solid color-mix(in srgb,var(--border) 40%,transparent);
   border-radius:6px;
   cursor:pointer;
-  transition:transform 0.1s ease,box-shadow 0.1s ease;
+  perspective:900px;
+  height:96px;
+  transition:box-shadow .4s,transform .35s cubic-bezier(.4,0,.2,1);
 }
-.kpi-item:active {
+.kpi-item:not(.flipped):active {
   transform:scale(0.98);
   box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
+.kpi-item.flipped {
+  transform:scale(1.12);
+  z-index:2;
+  box-shadow:0 18px 48px rgba(0,0,0,0.16);
+}
+.kpi-flip-inner {
+  position:relative;
+  height:100%;
+  transform-style:preserve-3d;
+  transition:transform .52s .08s cubic-bezier(.4,0,.2,1);
+}
+.kpi-item.flipped .kpi-flip-inner {
+  transform:rotateX(180deg);
+}
+.kpi-face-front, .kpi-face-back {
+  position:absolute;
+  inset:0;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  border-radius:5px;
+  padding:14px 16px;
+}
+.kpi-face-front {
+  background:transparent;
+}
+.kpi-face-back {
+  transform:rotateX(180deg);
+  background:var(--bg2);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:10px;
+}
+.kpi-back-label {
+  font-size:9px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-weight:500;
+}
+.kpi-back-text {
+  font-size:11px;
+  line-height:1.6;
+  color:var(--ink);
+  opacity:0.85;
+}
 .kpi-label { font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:4px; }
-.kpi-val { font-size:28px;font-weight:300;color:var(--ink);letter-spacing:-0.01em;font-variant-numeric:tabular-nums;line-height:1.2;min-height:34px; }
+.kpi-val { font-size:28px;font-weight:300;color:var(--ink);letter-spacing:-0.01em;font-variant-numeric:tabular-nums;line-height:1.2; }
 .kpi-val.kpi-has-eur::after { content:' €';font-size:16px;font-weight:300;color:var(--muted); }
-.kpi-delta { font-size:10px;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums; }
+.kpi-delta { font-size:10px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums; }
 .kpi-delta.up{color:var(--green)} .kpi-delta.down{color:var(--red)}
 .kpi-item.liab .kpi-val{color:var(--red)}
 
 /* ── CSV Import ── */
 .import-section { padding:20px 0 40px;text-align:center; }
 .import-btn {
-  display:inline-block;padding:10px 20px;font-size:13px;color:var(--muted);
+  display:inline-block;padding:10px 20px;font-size:12px;color:var(--muted);
   background:transparent;border:1px dashed var(--border);border-radius:4px;
   cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;
 }
 .import-btn:active{border-color:var(--ink);color:var(--ink)}
-.csv-msg { display:none;font-size:13px;margin-top:8px; }
+.csv-msg { display:none;font-size:12px;margin-top:8px; }
 
 /* ── Odometer ── */
 .kpi-slot { display:inline-block;overflow:hidden;vertical-align:bottom; }
@@ -240,31 +287,62 @@ body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
 <!-- Chart: Vermögensstruktur -->
 <div class="chart-section">
   <div class="chart-wrap pie"><canvas id="chartAssets"></canvas></div>
-  <div class="chart-label">Vermögensstruktur</div>
   <table class="legend-table" id="legendAssets"></table>
 </div>
 
 <!-- KPI Grid -->
 <div class="kpi-grid">
-  <div class="kpi-item">
-    <div class="kpi-label">Gesamtvermögen</div>
-    <div class="kpi-val" id="kpi-assets">—</div>
-    <div class="kpi-delta" id="kpi-assets-delta"></div>
+  <div class="kpi-item" data-kpi="assets">
+    <div class="kpi-flip-inner">
+      <div class="kpi-face-front">
+        <div class="kpi-label">Gesamtvermögen</div>
+        <div class="kpi-val" id="kpi-assets">—</div>
+        <div class="kpi-delta" id="kpi-assets-delta"></div>
+      </div>
+      <div class="kpi-face-back">
+        <div class="kpi-back-label">Gesamtvermögen</div>
+        <div class="kpi-back-text">Summe aller Assets (liquide + illiquide) abzüglich Verbindlichkeiten</div>
+      </div>
+    </div>
   </div>
-  <div class="kpi-item">
-    <div class="kpi-label">Liquide Assets</div>
-    <div class="kpi-val" id="kpi-liquid">—</div>
-    <div class="kpi-delta" id="kpi-liquid-delta"></div>
+  <div class="kpi-item" data-kpi="liquid">
+    <div class="kpi-flip-inner">
+      <div class="kpi-face-front">
+        <div class="kpi-label">Liquide Assets</div>
+        <div class="kpi-val" id="kpi-liquid">—</div>
+        <div class="kpi-delta" id="kpi-liquid-delta"></div>
+      </div>
+      <div class="kpi-face-back">
+        <div class="kpi-back-label">Liquide Assets</div>
+        <div class="kpi-back-text">Cash, ETFs, Bitcoin, Aktien und Edelmetalle</div>
+      </div>
+    </div>
   </div>
-  <div class="kpi-item">
-    <div class="kpi-label">Illiquide Assets</div>
-    <div class="kpi-val" id="kpi-illiquid">—</div>
-    <div class="kpi-delta" id="kpi-illiquid-delta"></div>
+  <div class="kpi-item" data-kpi="illiquid">
+    <div class="kpi-flip-inner">
+      <div class="kpi-face-front">
+        <div class="kpi-label">Illiquide Assets</div>
+        <div class="kpi-val" id="kpi-illiquid">—</div>
+        <div class="kpi-delta" id="kpi-illiquid-delta"></div>
+      </div>
+      <div class="kpi-face-back">
+        <div class="kpi-back-label">Illiquide Assets</div>
+        <div class="kpi-back-text">BAV, Uhren, Sonstiges und Immobilien</div>
+      </div>
+    </div>
   </div>
-  <div class="kpi-item liab">
-    <div class="kpi-label">Verbindlichkeiten</div>
-    <div class="kpi-val" id="kpi-liab">—</div>
-    <div class="kpi-delta" id="kpi-liab-delta"></div>
+  <div class="kpi-item liab" data-kpi="liab">
+    <div class="kpi-flip-inner">
+      <div class="kpi-face-front">
+        <div class="kpi-label">Verbindlichkeiten</div>
+        <div class="kpi-val" id="kpi-liab">—</div>
+        <div class="kpi-delta" id="kpi-liab-delta"></div>
+      </div>
+      <div class="kpi-face-back">
+        <div class="kpi-back-label">Verbindlichkeiten</div>
+        <div class="kpi-back-text">Alle Schulden und offenen Verbindlichkeiten</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -419,7 +497,7 @@ function renderNetChart(){
   /* Asset lines */
   const grayColor=!isDark?'rgba(90,85,75,0.25)':'rgba(232,228,222,0.25)';
   const aaf=[...FIELDS_LIQUID,...FIELDS_ILLIQUID].filter(k=>k!=='porsche911'&&k!=='mercedes');
-  const ad=aaf.map((k,i)=>{return{label:LABELS[k],data:ns.map(ym=>{let v=+data[ym][k]||0;if(k==='immobilien')v-=(+data[ym]['immkredit']||0);if(k==='sonstiges')v+=(+data[ym]['porsche911']||0)+(+data[ym]['mercedes']||0);return v;}),borderColor:grayColor,backgroundColor:'transparent',borderWidth:0.8,pointRadius:0,pointHoverRadius:3,tension:0.35,fill:false,_isAsset:true,hidden:!showAssets};});
+  const ad=aaf.map((k,i)=>{return{label:LABELS[k],data:ns.map(ym=>{let v=+data[ym][k]||0;if(k==='immobilien')v-=(+data[ym]['immkredit']||0);if(k==='sonstiges')v+=(+data[ym]['porsche911']||0)+(+data[ym]['mercedes']||0);return v;}),borderColor:grayColor,backgroundColor:!isDark?'rgba(90,85,75,0.06)':'rgba(232,228,222,0.06)',borderWidth:0.8,pointRadius:0,pointHoverRadius:3,tension:0.35,fill:true,_isAsset:true,hidden:!showAssets};});
   charts['net']=new Chart(ctx,{type:'line',data:{labels:lb,datasets:[
     {label:'Nettovermögen',data:nv,borderColor:ink,backgroundColor:gN,borderWidth:1.5,pointRadius:ns.length>24?1:2,pointHoverRadius:4,pointBackgroundColor:ink,pointBorderColor:!isDark?'#1c1c1a':'#f2efe9',pointBorderWidth:1,tension:0.35,fill:true,hidden:netLineHidden[0]},
     {label:'Vermögen',data:av,borderColor:grn,backgroundColor:gA,borderWidth:1.2,pointRadius:ns.length>24?0:2,tension:0.35,fill:true,hidden:netLineHidden[1]},
@@ -427,7 +505,7 @@ function renderNetChart(){
     ...ad
   ]},options:{...cd(),plugins:{...cd().plugins,legend:{display:false},tooltip:{mode:'nearest',intersect:false,filter:it=>!showAssets||it.dataset._isAsset||it.datasetIndex<3,titleFont:{family:'IBM Plex Sans'},bodyFont:{family:'IBM Plex Sans'},callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},scales:{
     x:{grid:{color:cc().grid},ticks:{color:cc().tick,font:{family:'IBM Plex Sans',size:8},maxRotation:0,maxTicksLimit:5}},
-    y:{grid:{color:cc().grid},ticks:{color:cc().tick,font:{family:'IBM Plex Sans',size:8},callback:v=>fmtAxis(v)}}
+    y:{grid:{color:cc().grid},ticks:{color:cc().tick,font:{family:'IBM Plex Sans',size:8},stepSize:150000,callback:v=>fmtAxis(v)}}
   }}});
   document.getElementById('assetsToggleBtn').classList.toggle('active',showAssets);
   setupChartInteraction();
@@ -724,58 +802,67 @@ function haptic(style='light'){
 }
 
 /* ── Chart Interaction ── */
-let chartInteractionActive=false,originalNetValue=null;
+let chartInteractionActive=false;
 function setupChartInteraction(){
   const canvas=document.getElementById('chartNet');
   const chart=charts['net'];
   if(!canvas||!chart)return;
-  
+
   let lastIndex=-1;
-  
-  canvas.addEventListener('touchstart',e=>{
-    chartInteractionActive=true;
-    const kpiEl=document.getElementById('kpi-net');
-    originalNetValue=kpiEl.textContent;
-    handleChartTouch(e,chart);
-  },{passive:true});
-  
-  canvas.addEventListener('touchmove',e=>{
-    if(!chartInteractionActive)return;
-    handleChartTouch(e,chart);
-  },{passive:true});
-  
-  canvas.addEventListener('touchend',()=>{
-    if(!chartInteractionActive)return;
-    chartInteractionActive=false;
-    lastIndex=-1;
-    if(originalNetValue){
-      const kpiEl=document.getElementById('kpi-net');
-      kpiEl.textContent=originalNetValue;
-      originalNetValue=null;
-    }
-  },{passive:true});
-  
-  function handleChartTouch(e,chart){
+  const netData=chart.data.datasets[0].data;
+  const labels=chart.data.labels;
+
+  function getIndexFromX(touchX){
     const rect=canvas.getBoundingClientRect();
-    const x=e.touches[0].clientX-rect.left;
-    const y=e.touches[0].clientY-rect.top;
-    
-    const elements=chart.getElementsAtEventForMode({x,y},'nearest',{intersect:false},false);
-    if(elements.length>0){
-      const element=elements[0];
-      const datasetIndex=element.datasetIndex;
-      const index=element.index;
-      
-      if(datasetIndex===0&&index!==lastIndex){
-        lastIndex=index;
-        haptic('light');
-        const value=chart.data.datasets[0].data[index];
-        const kpiEl=document.getElementById('kpi-net');
-        kpiEl.textContent=fmt(value).replace(' €','');
-        kpiEl.classList.add('kpi-has-eur');
-      }
+    const x=touchX-rect.left;
+    const xScale=chart.scales.x;
+    const pxPerTick=(xScale.right-xScale.left)/(netData.length-1);
+    let idx=Math.round((x-xScale.left)/pxPerTick);
+    return Math.max(0,Math.min(netData.length-1,idx));
+  }
+
+  function showValueAtIndex(idx){
+    if(idx===lastIndex)return;
+    lastIndex=idx;
+    haptic('light');
+    const val=netData[idx];
+    animateKpiValue('kpi-net',fmt(val),val);
+    const heroLabel=document.querySelector('.hero-label');
+    if(heroLabel)heroLabel.textContent=labels[idx];
+    const deltaEl=document.getElementById('kpi-net-delta');
+    if(deltaEl){
+      if(idx>0){setDelta('kpi-net-delta',netData[idx],netData[idx-1]);}
+      else{deltaEl.textContent='';}
     }
   }
+
+  function restoreCurrentValue(){
+    chartInteractionActive=false;
+    lastIndex=-1;
+    const heroLabel=document.querySelector('.hero-label');
+    if(heroLabel)heroLabel.textContent='Nettovermögen';
+    renderKPIs();
+  }
+
+  canvas.addEventListener('touchstart',e=>{
+    chartInteractionActive=true;
+    showValueAtIndex(getIndexFromX(e.touches[0].clientX));
+  },{passive:true});
+
+  canvas.addEventListener('touchmove',e=>{
+    if(!chartInteractionActive)return;
+    showValueAtIndex(getIndexFromX(e.touches[0].clientX));
+  },{passive:true});
+
+  canvas.addEventListener('touchend',()=>{
+    if(!chartInteractionActive)return;
+    restoreCurrentValue();
+  },{passive:true});
+
+  canvas.addEventListener('touchcancel',()=>{
+    if(!chartInteractionActive)return;
+    restoreCurrentValue();
+  },{passive:true});
 }
 
 /* ── Pull to Refresh ── */
@@ -865,6 +952,35 @@ function toggleNetLine(i){
   renderNetChart();
 }
 
+/* ── KPI Tile Click Handler ── */
+function setupKPIClickHandlers(){
+  document.querySelectorAll('.kpi-item').forEach(item=>{
+    item.addEventListener('click',()=>{
+      const wasFlipped=item.classList.contains('flipped');
+      // Close all other flipped cards
+      document.querySelectorAll('.kpi-item.flipped').forEach(other=>{
+        if(other!==item)other.classList.remove('flipped');
+      });
+      // Toggle this card
+      if(!wasFlipped){
+        item.classList.add('flipped');
+        haptic('medium');
+      }else{
+        item.classList.remove('flipped');
+      }
+    });
+  });
+  
+  // Close flipped card when clicking outside
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('.kpi-item')){
+      document.querySelectorAll('.kpi-item.flipped').forEach(item=>{
+        item.classList.remove('flipped');
+      });
+    }
+  });
+}
+
 /* ── Init ── */
 function initApp(){
   console.log('initApp() started');
@@ -912,6 +1028,10 @@ function initApp(){
     
     /* Pull to Refresh */
     setupPullToRefresh();
+    
+    /* KPI Click Handlers */
+    setupKPIClickHandlers();
+    
     document.querySelectorAll('[data-range]').forEach(btn=>{
       btn.addEventListener('click',()=>setNetRange(parseInt(btn.dataset.range),btn));
     });
