@@ -152,7 +152,7 @@ body {
 .stacked-seg.dimmed { opacity:0.3; }
 
 /* ── Range Buttons ── */
-.range-bar { display:flex;padding:6px 0 12px;align-items:center;justify-content:space-between; }
+.range-bar { display:flex;padding:6px 0 26px;align-items:center;justify-content:space-between; }
 .range-pills { display:flex;gap:2px;background:color-mix(in srgb,var(--border) 20%,transparent);border-radius:6px;padding:2px; }
 #assetsToggleBtn { margin-left:0; }
 .range-btn {
@@ -178,7 +178,7 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 .legend-pct { font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:28px;text-align:right; }
 
 /* ── KPI Grid ── */
-.kpi-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:4px 0 20px; }
+.kpi-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:4px 0 0; }
 .kpi-item {
   background:color-mix(in srgb,var(--bg2) 60%,transparent);
   border:1px solid color-mix(in srgb,var(--border) 40%,transparent);
@@ -263,17 +263,17 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 .chart-crosshair-v {
   position:absolute;top:0;bottom:0;width:1px;
   background:var(--muted);opacity:0;pointer-events:none;
-  transition:opacity .15s;transform:translateX(-0.5px);
+  transition:opacity .3s;transform:translateX(-0.5px);
 }
 .chart-crosshair-h {
   position:absolute;left:0;right:0;height:1px;
   background:var(--muted);opacity:0;pointer-events:none;
-  transition:opacity .15s;transform:translateY(-0.5px);
+  transition:opacity .3s;transform:translateY(-0.5px);
 }
 .chart-crosshair-dot {
   position:absolute;width:8px;height:8px;border-radius:50%;
   background:var(--ink);border:2px solid var(--bg);
-  opacity:0;pointer-events:none;transition:opacity .15s;
+  opacity:0;pointer-events:none;transition:opacity .3s;
   transform:translate(-4px,-4px);
 }
 .chart-crosshair-v.visible,.chart-crosshair-h.visible { opacity:0.3; }
@@ -513,6 +513,7 @@ function buildPicker(){
 
 /* ── Odometer Animation ── */
 const _kpiTimers={};
+const _kpiAnimating={};
 function animateKpiValue(id,newText,newNum){
   const el=document.getElementById(id);if(!el)return;
   const hasEur=newText.endsWith(' €');
@@ -520,20 +521,27 @@ function animateKpiValue(id,newText,newNum){
   hasEur?el.classList.add('kpi-has-eur'):el.classList.remove('kpi-has-eur');
   const oldNum=parseFloat(el.dataset.num||'0');
   if(Math.abs(newNum-oldNum)<1)return;
-  // Cancel any running animation
+  const fast=chartInteractionActive;
+  // During scrub: if animation is running, queue the value and let it finish
+  if(fast&&_kpiAnimating[id]){
+    el.dataset.num=String(newNum);
+    el.dataset.display=newNumStr;
+    el.dataset.queued=newNumStr;
+    return;
+  }
   if(_kpiTimers[id]){clearTimeout(_kpiTimers[id]);_kpiTimers[id]=null;}
-  // Get the displayed text (use dataset if mid-animation)
   const curText=el.dataset.display||el.textContent;
   el.dataset.num=String(newNum);
   el.dataset.display=newNumStr;
+  delete el.dataset.queued;
   if(curText===newNumStr)return;
   if(curText==='—'){el.textContent=newNumStr;return;}
-  const fast=chartInteractionActive;
   const upDir=Math.abs(newNum)>=Math.abs(oldNum),h=el.offsetHeight||30;
   function buildByDP(s){const map=new Map();let dp=0;for(let i=s.length-1;i>=0;i--)if(s[i]>='0'&&s[i]<='9'){map.set(dp,s[i]);dp++;}return map;}
   function buildDPM(s){const map=new Map();let dp=0;for(let i=s.length-1;i>=0;i--)if(s[i]>='0'&&s[i]<='9'){map.set(i,dp);dp++;}return map;}
   const newDPM=buildDPM(newNumStr),oldByDP=buildByDP(curText);
-  const getMs=dp=>fast?200+dp*40:180+dp*65;
+  const fixedMs=fast?300:0;
+  const getMs=dp=>fixedMs||180+dp*65;
   let maxMs=0,html='';
   for(let i=0;i<newNumStr.length;i++){
     const ch=newNumStr[i];
@@ -546,9 +554,22 @@ function animateKpiValue(id,newText,newNum){
     html+=`<span class="kpi-slot" style="height:${h}px;vertical-align:bottom"><span class="kpi-inner" style="transform:translateY(${startY})" data-end="${endY}" data-ms="${ms}"><span style="line-height:${h}px;height:${h}px;display:block">${row0}</span><span style="line-height:${h}px;height:${h}px;display:block">${row1}</span></span></span>`;
   }
   el.innerHTML=html;
+  _kpiAnimating[id]=true;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     el.querySelectorAll('.kpi-inner').forEach(inner=>{inner.style.transition=`transform ${inner.dataset.ms}ms cubic-bezier(.4,0,.2,1)`;inner.style.transform=`translateY(${inner.dataset.end})`;});
-    _kpiTimers[id]=setTimeout(()=>{el.textContent=newNumStr;_kpiTimers[id]=null;},maxMs+50);
+    _kpiTimers[id]=setTimeout(()=>{
+      const final=el.dataset.queued||newNumStr;
+      el.textContent=final;
+      el.dataset.display=final;
+      delete el.dataset.queued;
+      _kpiTimers[id]=null;
+      _kpiAnimating[id]=false;
+      // If a value was queued, animate to it now
+      if(final!==newNumStr){
+        const qNum=parseFloat(el.dataset.num||'0');
+        animateKpiValue(id,final+(hasEur?' €':''),qNum);
+      }
+    },maxMs+50);
   }));
 }
 function setDelta(id,curr,prev,inv=false){
