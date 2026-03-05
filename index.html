@@ -326,7 +326,7 @@ function animateKpiValue(id,newText,newNum){
   if(Math.abs(newNum-oldNum)<1)return;
   if(curText===newNumStr)return;
   if(curText==='—'||el.querySelector('.kpi-slot')){el.textContent=newNumStr;el.dataset.num=String(newNum);return;}
-  const oldNum=parseFloat(el.dataset.num||'0');el.dataset.num=String(newNum);
+  el.dataset.num=String(newNum);
   const upDir=Math.abs(newNum)>=Math.abs(oldNum),h=el.offsetHeight||30;
   function buildByDP(s){const map=new Map();let dp=0;for(let i=s.length-1;i>=0;i--)if(s[i]>='0'&&s[i]<='9'){map.set(dp,s[i]);dp++;}return map;}
   function buildDPM(s){const map=new Map();let dp=0;for(let i=s.length-1;i>=0;i--)if(s[i]>='0'&&s[i]<='9'){map.set(i,dp);dp++;}return map;}
