@@ -143,7 +143,7 @@ body {
 .chart-label { font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:10px;text-align:center; }
 
 /* ── Range Buttons ── */
-.range-bar { display:flex;gap:6px;padding:10px 20px 4px;flex-wrap:wrap;align-items:center;justify-content:flex-end; }
+.range-bar { display:flex;gap:6px;padding:10px 20px 4px 20px;flex-wrap:wrap;align-items:center;justify-content:flex-end; }
 .range-btn {
   background:transparent;border:1px solid var(--border);color:var(--muted);
   font-family:'IBM Plex Sans',sans-serif;font-size:11px;letter-spacing:0.06em;
@@ -225,12 +225,10 @@ body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
   <div class="range-bar">
     <button class="range-btn" id="assetsToggleBtn" style="border-style:dashed">Assets</button>
     <div class="live-status"><span class="live-dot" id="liveDot"></span><span id="liveLabel">Live</span></div>
-    <div style="display:flex;gap:6px">
-      <button class="range-btn" data-range="12">12M</button>
-      <button class="range-btn active" data-range="36">3J</button>
-      <button class="range-btn" data-range="60">5J</button>
-      <button class="range-btn" data-range="0">Alle</button>
-    </div>
+    <button class="range-btn" data-range="12">12M</button>
+    <button class="range-btn active" data-range="36">3J</button>
+    <button class="range-btn" data-range="60">5J</button>
+    <button class="range-btn" data-range="0">Alle</button>
   </div>
 </div>
 
