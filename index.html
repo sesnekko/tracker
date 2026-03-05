@@ -305,6 +305,31 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 .page.active { display:block; }
 .import-page { padding:20px 0; }
 .import-page-title { font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:16px; }
+
+/* ── Budget / Sankey ── */
+.sankey-wrap { position:relative;padding:8px 0 0;min-height:120px; }
+.sankey-row { display:flex;align-items:center;margin-bottom:6px;gap:0; }
+.sankey-label { font-size:11px;color:var(--muted);width:72px;text-align:right;padding-right:8px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.sankey-bar-wrap { flex:1;height:18px;position:relative; }
+.sankey-bar { height:100%;border-radius:3px;transition:width .5s ease;min-width:2px; }
+.sankey-val { font-size:11px;color:var(--ink);font-variant-numeric:tabular-nums;width:64px;text-align:right;padding-left:6px;flex-shrink:0; }
+.sankey-divider { height:1px;background:color-mix(in srgb,var(--border) 40%,transparent);margin:10px 0; }
+.sankey-section-label { font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:6px; }
+
+/* Budget Modal */
+.budget-modal { display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.4);align-items:center;justify-content:center; }
+.budget-modal.show { display:flex; }
+.budget-modal-content { background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;width:calc(100% - 40px);max-width:360px;max-height:80vh;overflow-y:auto; }
+.budget-modal-title { font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);font-weight:500;margin-bottom:14px; }
+.budget-form-group { margin-bottom:10px; }
+.budget-form-label { font-size:11px;color:var(--muted);margin-bottom:3px; }
+.budget-form-input {
+  width:100%;padding:8px 10px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;
+  background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--ink);
+  font-variant-numeric:tabular-nums;
+}
+.budget-form-input:focus { outline:none;border-color:var(--ink); }
+.budget-form-section { font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin:14px 0 8px;padding-top:8px;border-top:1px solid color-mix(in srgb,var(--border) 40%,transparent); }
 </style>
 
 <!-- Pull to Refresh Indicator -->
@@ -424,11 +449,86 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 </div><!-- /app-content -->
 </div><!-- /page-import -->
 
-<!-- Budget Page (Platzhalter) -->
+<!-- Budget Page -->
 <div id="page-budget" class="page">
 <div class="app-content">
-<div style="text-align:center;padding:60px 0;color:var(--muted);font-size:12px;">Kommt bald</div>
+
+<!-- Budget Hero -->
+<div class="hero">
+  <div class="hero-label">Sparquote</div>
+  <div class="hero-value" id="budget-sparquote" style="font-size:56px">—</div>
+  <div class="hero-delta" id="budget-sparquote-delta"></div>
 </div>
+
+<!-- Budget KPIs -->
+<div class="kpi-grid" style="padding-bottom:16px">
+  <div class="kpi-item" style="cursor:default">
+    <div class="kpi-flip-inner">
+      <div class="kpi-face-front">
+        <div class="kpi-label">Einnahmen</div>
+        <div class="kpi-val" id="budget-einnahmen">—</div>
+        <div class="kpi-delta" id="budget-einnahmen-delta"></div>
+      </div>
+    </div>
+  </div>
+  <div class="kpi-item" style="cursor:default">
+    <div class="kpi-flip-inner">
+      <div class="kpi-face-front">
+        <div class="kpi-label">Ausgaben</div>
+        <div class="kpi-val" id="budget-ausgaben">—</div>
+        <div class="kpi-delta" id="budget-ausgaben-delta"></div>
+      </div>
+    </div>
+  </div>
+  <div class="kpi-item" style="cursor:default">
+    <div class="kpi-flip-inner">
+      <div class="kpi-face-front">
+        <div class="kpi-label">Überschuss</div>
+        <div class="kpi-val" id="budget-ueberschuss">—</div>
+        <div class="kpi-delta" id="budget-ueberschuss-delta"></div>
+      </div>
+    </div>
+  </div>
+  <div class="kpi-item" style="cursor:default">
+    <div class="kpi-flip-inner">
+      <div class="kpi-face-front">
+        <div class="kpi-label">Investiert</div>
+        <div class="kpi-val" id="budget-invest">—</div>
+        <div class="kpi-delta" id="budget-invest-delta"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sankey Diagram -->
+<div class="chart-label">Geldfluss</div>
+<div class="sankey-wrap" id="sankeyWrap"></div>
+
+<!-- Budget Legend -->
+<div class="structure-section" style="padding-top:14px">
+  <div class="chart-label">Ausgaben</div>
+  <div class="stacked-bar" id="budgetStackedBar"></div>
+  <ul class="legend-list" id="budgetLegend"></ul>
+</div>
+
+<!-- Budget Edit -->
+<div style="padding:20px 0 10px">
+  <button class="import-btn" id="budgetEditBtn">Budget bearbeiten</button>
+</div>
+
+<!-- Budget Edit Modal -->
+<div class="budget-modal" id="budgetModal">
+  <div class="budget-modal-content">
+    <div class="budget-modal-title">Monatsbudget</div>
+    <div class="budget-form" id="budgetForm"></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="import-btn" id="budgetSaveBtn" style="flex:1">Speichern</button>
+      <button class="import-btn" id="budgetCancelBtn" style="flex:1">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app-content -->
 </div>
 
 <!-- Bottom Navigation -->
@@ -955,7 +1055,11 @@ function haptic(style='light'){
 
 /* ── Chart Interaction ── */
 let chartInteractionActive=false;
+let _chartCleanup=null;
 function setupChartInteraction(){
+  // Clean up previous instance
+  if(_chartCleanup)_chartCleanup();
+
   const canvas=document.getElementById('chartNet');
   const chart=charts['net'];
   if(!canvas||!chart)return;
@@ -967,6 +1071,8 @@ function setupChartInteraction(){
   // Crosshair elements
   const wrap=canvas.parentElement;
   wrap.style.position='relative';
+  // Remove any old crosshairs
+  wrap.querySelectorAll('.chart-crosshair-v,.chart-crosshair-h,.chart-crosshair-dot').forEach(el=>el.remove());
   const crossV=document.createElement('div');
   crossV.className='chart-crosshair-v';
   const crossH=document.createElement('div');
@@ -1035,27 +1141,34 @@ function setupChartInteraction(){
     renderKPIs();
   }
 
-  canvas.addEventListener('touchstart',e=>{
+  const onStart=e=>{
     chartInteractionActive=true;
     document.body.style.overflow='hidden';
     showValueAtIndex(getIndexFromX(e.touches[0].clientX));
-  },{passive:true});
-
-  canvas.addEventListener('touchmove',e=>{
+  };
+  const onMove=e=>{
     if(!chartInteractionActive)return;
     e.preventDefault();
     showValueAtIndex(getIndexFromX(e.touches[0].clientX));
-  },{passive:false});
-
-  canvas.addEventListener('touchend',()=>{
+  };
+  const onEnd=()=>{
     if(!chartInteractionActive)return;
     restoreCurrentValue();
-  },{passive:true});
+  };
 
-  canvas.addEventListener('touchcancel',()=>{
-    if(!chartInteractionActive)return;
-    restoreCurrentValue();
-  },{passive:true});
+  canvas.addEventListener('touchstart',onStart,{passive:true});
+  canvas.addEventListener('touchmove',onMove,{passive:false});
+  canvas.addEventListener('touchend',onEnd,{passive:true});
+  canvas.addEventListener('touchcancel',onEnd,{passive:true});
+
+  _chartCleanup=()=>{
+    canvas.removeEventListener('touchstart',onStart);
+    canvas.removeEventListener('touchmove',onMove);
+    canvas.removeEventListener('touchend',onEnd);
+    canvas.removeEventListener('touchcancel',onEnd);
+    crossV.remove();crossH.remove();crossDot.remove();
+    _chartCleanup=null;
+  };
 }
 
 /* ── Pull to Refresh ── */
@@ -1184,9 +1297,253 @@ function setupBottomNav(){
       document.getElementById('page-'+page).classList.add('active');
       btns.forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
+      if(page==='budget')renderBudgetPage();
       window.scrollTo(0,0);
     });
   });
+}
+
+/* ── Budget Module ── */
+const BUDGET_INCOME_FIELDS=[
+  {key:'gehalt',label:'Gehalt'},
+  {key:'nebeneinkommen',label:'Nebeneinkommen'},
+  {key:'kindergeld',label:'Kindergeld'},
+  {key:'sonstiges_ein',label:'Sonstiges'}
+];
+const BUDGET_EXPENSE_FIELDS=[
+  {key:'miete',label:'Miete / Wohnen'},
+  {key:'lebensmittel',label:'Lebensmittel'},
+  {key:'versicherungen',label:'Versicherungen'},
+  {key:'auto',label:'Auto / Mobilität'},
+  {key:'freizeit',label:'Freizeit'},
+  {key:'abos',label:'Abos / Streaming'},
+  {key:'kleidung',label:'Kleidung'},
+  {key:'gesundheit',label:'Gesundheit'},
+  {key:'sonstiges_aus',label:'Sonstiges'}
+];
+const BUDGET_INVEST_FIELDS=[
+  {key:'sparplan_etf',label:'Sparplan ETF'},
+  {key:'sparplan_btc',label:'Sparplan BTC'},
+  {key:'sondersparen',label:'Sondersparen'}
+];
+
+function loadBudgetData(){
+  try{const d=localStorage.getItem('budgetData');return d?JSON.parse(d):{};}catch{return{};}
+}
+function saveBudgetData(d){localStorage.setItem('budgetData',JSON.stringify(d));}
+
+function getBudgetForMonth(ym){
+  const d=loadBudgetData();
+  return d[ym]||null;
+}
+
+function calcBudget(b){
+  if(!b)return{einnahmen:0,ausgaben:0,invest:0,ueberschuss:0,sparquote:0};
+  const ein=BUDGET_INCOME_FIELDS.reduce((s,f)=>s+(+b[f.key]||0),0);
+  const aus=BUDGET_EXPENSE_FIELDS.reduce((s,f)=>s+(+b[f.key]||0),0);
+  const inv=BUDGET_INVEST_FIELDS.reduce((s,f)=>s+(+b[f.key]||0),0);
+  const ueb=ein-aus-inv;
+  const sq=ein>0?Math.round((ein-aus)/ein*100):0;
+  return{einnahmen:ein,ausgaben:aus,invest:inv,ueberschuss:ueb,sparquote:sq};
+}
+
+function renderBudgetPage(){
+  const b=getBudgetForMonth(selectedMonth);
+  const c=calcBudget(b);
+  const allData=loadBudgetData();
+  const sorted=Object.keys(allData).sort();
+  const idx=sorted.indexOf(selectedMonth);
+
+  // Hero: Sparquote
+  const sqEl=document.getElementById('budget-sparquote');
+  if(c.einnahmen>0){
+    sqEl.textContent=c.sparquote+'%';
+    sqEl.classList.remove('kpi-has-eur');
+  }else{
+    sqEl.textContent='—';
+  }
+
+  // KPIs
+  const einEl=document.getElementById('budget-einnahmen');
+  const ausEl=document.getElementById('budget-ausgaben');
+  const uebEl=document.getElementById('budget-ueberschuss');
+  const invEl=document.getElementById('budget-invest');
+  if(c.einnahmen>0||c.ausgaben>0){
+    einEl.textContent=fmt(c.einnahmen).replace(' €','');
+    einEl.classList.add('kpi-has-eur');
+    ausEl.textContent=fmt(c.ausgaben).replace(' €','');
+    ausEl.classList.add('kpi-has-eur');
+    uebEl.textContent=(c.ueberschuss>=0?'':'')+fmt(Math.abs(c.ueberschuss)).replace(' €','');
+    uebEl.classList.add('kpi-has-eur');
+    if(c.ueberschuss<0)uebEl.style.color='var(--red)';
+    else uebEl.style.color='';
+    invEl.textContent=fmt(c.invest).replace(' €','');
+    invEl.classList.add('kpi-has-eur');
+  }else{
+    [einEl,ausEl,uebEl,invEl].forEach(el=>{el.textContent='—';el.classList.remove('kpi-has-eur');});
+  }
+
+  // Deltas
+  if(idx>0){
+    const prev=calcBudget(allData[sorted[idx-1]]);
+    setDelta('budget-einnahmen-delta',c.einnahmen,prev.einnahmen);
+    setDelta('budget-ausgaben-delta',c.ausgaben,prev.ausgaben,true);
+    setDelta('budget-ueberschuss-delta',c.ueberschuss,prev.ueberschuss);
+    setDelta('budget-invest-delta',c.invest,prev.invest);
+    const sqDelta=document.getElementById('budget-sparquote-delta');
+    if(sqDelta){
+      const diff=c.sparquote-prev.sparquote;
+      if(diff===0)sqDelta.textContent='±0 pp';
+      else{sqDelta.textContent=(diff>0?'+':'')+diff+' pp';sqDelta.className='hero-delta '+(diff>0?'up':'down');}
+    }
+  }else{
+    ['budget-einnahmen-delta','budget-ausgaben-delta','budget-ueberschuss-delta','budget-invest-delta','budget-sparquote-delta'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
+  }
+
+  // Sankey
+  renderSankey(b,c);
+
+  // Expense breakdown
+  renderBudgetBreakdown(b,c);
+}
+
+function renderSankey(b,c){
+  const wrap=document.getElementById('sankeyWrap');
+  if(!b||c.einnahmen===0){wrap.innerHTML='<div style="text-align:center;padding:20px 0;color:var(--muted)">Keine Daten</div>';return;}
+  const maxVal=c.einnahmen;
+  const barColor=!isDark?'rgba(90,85,75,0.25)':'rgba(232,228,222,0.25)';
+  const greenBar=!isDark?'rgba(58,94,66,0.4)':'rgba(122,170,130,0.35)';
+  const redBar=!isDark?'rgba(110,59,48,0.35)':'rgba(192,112,88,0.3)';
+  const blueBar=!isDark?'rgba(70,80,100,0.35)':'rgba(140,160,200,0.3)';
+
+  let html='<div class="sankey-section-label">Einnahmen</div>';
+  BUDGET_INCOME_FIELDS.forEach(f=>{
+    const v=+b[f.key]||0;
+    if(v<=0)return;
+    const pct=Math.round(v/maxVal*100);
+    html+=`<div class="sankey-row"><span class="sankey-label">${f.label}</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${greenBar}"></div></div><span class="sankey-val">${fmt(v)}</span></div>`;
+  });
+
+  html+='<div class="sankey-divider"></div><div class="sankey-section-label">Ausgaben</div>';
+  BUDGET_EXPENSE_FIELDS.forEach(f=>{
+    const v=+b[f.key]||0;
+    if(v<=0)return;
+    const pct=Math.round(v/maxVal*100);
+    html+=`<div class="sankey-row"><span class="sankey-label">${f.label}</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${redBar}"></div></div><span class="sankey-val">${fmt(v)}</span></div>`;
+  });
+
+  if(c.invest>0){
+    html+='<div class="sankey-divider"></div><div class="sankey-section-label">Investitionen</div>';
+    BUDGET_INVEST_FIELDS.forEach(f=>{
+      const v=+b[f.key]||0;
+      if(v<=0)return;
+      const pct=Math.round(v/maxVal*100);
+      html+=`<div class="sankey-row"><span class="sankey-label">${f.label}</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${blueBar}"></div></div><span class="sankey-val">${fmt(v)}</span></div>`;
+    });
+  }
+
+  if(c.ueberschuss>0){
+    html+='<div class="sankey-divider"></div><div class="sankey-section-label">Überschuss</div>';
+    const pct=Math.round(c.ueberschuss/maxVal*100);
+    html+=`<div class="sankey-row"><span class="sankey-label">Frei</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${barColor}"></div></div><span class="sankey-val">${fmt(c.ueberschuss)}</span></div>`;
+  }
+
+  wrap.innerHTML=html;
+}
+
+function renderBudgetBreakdown(b,c){
+  const bar=document.getElementById('budgetStackedBar');
+  const legend=document.getElementById('budgetLegend');
+  if(!b||c.ausgaben===0){bar.innerHTML='';legend.innerHTML='';return;}
+
+  const _dk=!isDark?[110,59,48]:[192,112,88];
+  const _lt=!isDark?[195,170,155]:[240,220,200];
+  const items=[];
+  BUDGET_EXPENSE_FIELDS.forEach(f=>{
+    const v=+b[f.key]||0;
+    if(v>0)items.push({label:f.label,val:v});
+  });
+  items.sort((a,b)=>b.val-a.val);
+  const n=Math.max(items.length,1);
+  const colors=items.map((_,i)=>{const t=n<=1?0:i/(n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
+  const total=items.reduce((s,i)=>s+i.val,0);
+  const maxVal=Math.max(...items.map(i=>i.val));
+
+  // Stacked bar
+  bar.innerHTML='';
+  const segs=[];
+  items.forEach((item,i)=>{
+    const seg=document.createElement('div');
+    seg.className='stacked-seg';
+    seg.style.width=(item.val/total*100)+'%';
+    seg.style.background=colors[i];
+    seg.dataset.idx=String(i);
+    segs.push(seg);
+    bar.appendChild(seg);
+  });
+
+  // Legend
+  legend.innerHTML='';
+  const rows=[];
+  items.forEach((item,i)=>{
+    const pct=Math.round(item.val/total*100);
+    const barPct=Math.round(item.val/maxVal*100);
+    const li=document.createElement('li');
+    li.className='legend-row';
+    li.dataset.idx=String(i);
+    li.innerHTML=`<div class="legend-bar" style="background:${colors[i]}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${colors[i]};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
+    rows.push(li);
+    legend.appendChild(li);
+  });
+
+  // Click interaction
+  let activeIdx=null;
+  function highlight(idx){
+    if(activeIdx===idx){activeIdx=null;segs.forEach(s=>{s.classList.remove('highlighted','dimmed');});rows.forEach(r=>{r.style.opacity='';});return;}
+    activeIdx=idx;
+    segs.forEach(s=>{s.classList.toggle('highlighted',s.dataset.idx===String(idx));s.classList.toggle('dimmed',s.dataset.idx!==String(idx));});
+    rows.forEach(r=>{r.style.opacity=r.dataset.idx===String(idx)?'1':'0.35';});
+  }
+  segs.forEach(s=>s.addEventListener('click',()=>highlight(parseInt(s.dataset.idx))));
+  rows.forEach(r=>r.addEventListener('click',()=>highlight(parseInt(r.dataset.idx))));
+}
+
+function openBudgetModal(){
+  const modal=document.getElementById('budgetModal');
+  const form=document.getElementById('budgetForm');
+  const b=getBudgetForMonth(selectedMonth)||{};
+
+  let html='<div class="budget-form-section" style="border-top:none;margin-top:0">Einnahmen</div>';
+  BUDGET_INCOME_FIELDS.forEach(f=>{
+    html+=`<div class="budget-form-group"><div class="budget-form-label">${f.label}</div><input class="budget-form-input" id="bf-${f.key}" type="text" inputmode="numeric" value="${b[f.key]||''}"></div>`;
+  });
+  html+='<div class="budget-form-section">Ausgaben</div>';
+  BUDGET_EXPENSE_FIELDS.forEach(f=>{
+    html+=`<div class="budget-form-group"><div class="budget-form-label">${f.label}</div><input class="budget-form-input" id="bf-${f.key}" type="text" inputmode="numeric" value="${b[f.key]||''}"></div>`;
+  });
+  html+='<div class="budget-form-section">Investitionen</div>';
+  BUDGET_INVEST_FIELDS.forEach(f=>{
+    html+=`<div class="budget-form-group"><div class="budget-form-label">${f.label}</div><input class="budget-form-input" id="bf-${f.key}" type="text" inputmode="numeric" value="${b[f.key]||''}"></div>`;
+  });
+  form.innerHTML=html;
+  modal.classList.add('show');
+}
+
+function saveBudgetModal(){
+  const d=loadBudgetData();
+  const b={};
+  [...BUDGET_INCOME_FIELDS,...BUDGET_EXPENSE_FIELDS,...BUDGET_INVEST_FIELDS].forEach(f=>{
+    const el=document.getElementById('bf-'+f.key);
+    if(el){const v=parseFloat(el.value.replace(/\./g,'').replace(',','.'))||0;if(v>0)b[f.key]=v;}
+  });
+  d[selectedMonth]=b;
+  saveBudgetData(d);
+  document.getElementById('budgetModal').classList.remove('show');
+  renderBudgetPage();
+}
+
+function closeBudgetModal(){
+  document.getElementById('budgetModal').classList.remove('show');
 }
 
 /* ── Init ── */
@@ -1239,6 +1596,11 @@ function initApp(){
     
     /* Bottom Nav */
     setupBottomNav();
+    
+    /* Budget Page */
+    document.getElementById('budgetEditBtn').addEventListener('click',openBudgetModal);
+    document.getElementById('budgetSaveBtn').addEventListener('click',saveBudgetModal);
+    document.getElementById('budgetCancelBtn').addEventListener('click',closeBudgetModal);
     
     /* KPI Click Handlers */
     setupKPIClickHandlers();
