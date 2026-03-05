@@ -1385,11 +1385,18 @@ function calcBudgetMonth(bd,monthIdx){
 function calcAvgHaushaltsnetto(bd){
   if(!bd)return 0;
   let sum=0,count=0;
+  console.log('calcAvgHaushaltsnetto: calculating average over 12 months');
   for(let m=0;m<12;m++){
     const c=calcBudgetMonth(bd,m);
-    if(c&&c.einnahmen>0){sum+=c.netto;count++;}
+    if(c&&c.einnahmen>0){
+      console.log(`  Month ${m} (${MONTH_NAMES[m]}): Netto=${c.netto}`);
+      sum+=c.netto;
+      count++;
+    }
   }
-  return count>0?Math.round(sum/count):0;
+  const avg=count>0?Math.round(sum/count):0;
+  console.log(`calcAvgHaushaltsnetto: sum=${sum}, count=${count}, avg=${avg}`);
+  return avg;
 }
 
 function renderBudgetPage(){
