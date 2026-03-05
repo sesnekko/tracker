@@ -155,14 +155,17 @@ body {
 .range-btn.active{border-color:var(--ink);color:var(--ink);background:rgba(26,26,24,0.05)}
 body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
 
-/* ── Legend Table ── */
-.legend-table { width:100%;border-collapse:collapse;margin-top:10px; }
-.legend-table td { padding:6px 4px;font-size:12px;color:var(--text);vertical-align:middle; }
-.legend-table td:first-child { width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.legend-table td:last-child { width:40%;text-align:right;font-variant-numeric:tabular-nums; }
-.legend-table .leg-dot { width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle; }
-.legend-table .leg-name { color:var(--muted); }
-.legend-table .leg-val { text-align:right;font-variant-numeric:tabular-nums;font-weight:400; }
+/* ── Legend ── */
+.legend-list { list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:0; }
+.legend-row { display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid color-mix(in srgb,var(--border) 30%,transparent); }
+.legend-row:last-child { border-bottom:none; }
+.legend-bar { width:3px;border-radius:1.5px;height:16px;flex-shrink:0; }
+.legend-info { flex:1;min-width:0;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:8px; }
+.legend-name { font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.legend-track { height:3px;border-radius:1.5px;background:color-mix(in srgb,var(--border) 30%,transparent);overflow:hidden; }
+.legend-fill { height:100%;border-radius:1.5px;transition:width .4s ease; }
+.legend-val { font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:400;text-align:right;white-space:nowrap; }
+.legend-pct { font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:28px;text-align:right; }
 
 /* ── KPI Grid ── */
 .kpi-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:20px 0; }
@@ -317,7 +320,7 @@ body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
 <!-- Chart: Vermögensstruktur -->
 <div class="chart-section">
   <div class="chart-wrap pie"><canvas id="chartAssets"></canvas></div>
-  <table class="legend-table" id="legendAssets"></table>
+  <ul class="legend-list" id="legendAssets"></ul>
 </div>
 
 <!-- KPI Grid -->
@@ -499,7 +502,7 @@ function animateKpiValue(id,newText,newNum){
   function buildByDP(s){const map=new Map();let dp=0;for(let i=s.length-1;i>=0;i--)if(s[i]>='0'&&s[i]<='9'){map.set(dp,s[i]);dp++;}return map;}
   function buildDPM(s){const map=new Map();let dp=0;for(let i=s.length-1;i>=0;i--)if(s[i]>='0'&&s[i]<='9'){map.set(i,dp);dp++;}return map;}
   const newDPM=buildDPM(newNumStr),oldByDP=buildByDP(curText);
-  const getMs=dp=>fast?80+dp*20:180+dp*65;
+  const getMs=dp=>fast?200+dp*40:180+dp*65;
   let maxMs=0,html='';
   for(let i=0;i<newNumStr.length;i++){
     const ch=newNumStr[i];
@@ -599,10 +602,14 @@ function renderPieChart(){
   lA.innerHTML='';
   if(!total)return;
   const items=[];vals.forEach((v,i)=>{if(v>0)items.push({label:labels[i],val:v,color:colors[i]});});
+  const maxVal=Math.max(...items.map(i=>i.val));
   items.forEach(item=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td><span class="leg-dot" style="background:${item.color}"></span><span class="leg-name">${item.label}</span></td><td class="leg-val">${fmt(item.val)}</td>`;
-    lA.appendChild(tr);
+    const pct=Math.round(item.val/total*100);
+    const barPct=Math.round(item.val/maxVal*100);
+    const li=document.createElement('li');
+    li.className='legend-row';
+    li.innerHTML=`<div class="legend-bar" style="background:${item.color}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${item.color};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
+    lA.appendChild(li);
   });
 }
 
