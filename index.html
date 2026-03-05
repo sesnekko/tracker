@@ -719,6 +719,7 @@ function toggleNetLine(i){
 
 /* ── Init ── */
 function initApp(){
+  console.log('initApp() started');
   try{
     /* Theme: follow system preference, allow manual override */
     let stored=localStorage.getItem('darkMode');
@@ -752,8 +753,10 @@ function initApp(){
     picker.setVal(selectedMonth);
 
     /* Event Handlers */
+    console.log('Registering event handlers...');
     document.getElementById('themeToggle').addEventListener('click',toggleTheme);
     document.getElementById('csvInput').addEventListener('change',handleCsvUpload);
+    console.log('CSV input handler registered');
     document.getElementById('resetBtn').addEventListener('click',resetApp);
     document.getElementById('assetsToggleBtn').addEventListener('click',toggleAssets);
     document.querySelector('.live-status').addEventListener('click',showLivePopup);
@@ -770,6 +773,7 @@ function initApp(){
     livePriceTick();etfPriceTick();
     setInterval(livePriceTick,5000);
     setInterval(etfPriceTick,5000);
+    console.log('initApp() completed successfully');
   }catch(e){
     console.error('Init-Fehler:',e);
   }
