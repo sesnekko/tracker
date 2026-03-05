@@ -286,7 +286,7 @@ function saveData(d){localStorage.setItem('finData',JSON.stringify(d));}
 function calc(e){
   const l=FIELDS_LIQUID.reduce((s,k)=>s+(+e[k]||0),0),i=FIELDS_ILLIQUID.reduce((s,k)=>s+(+e[k]||0),0),a=l+i,b=FIELDS_LIAB.reduce((s,k)=>s+(+e[k]||0),0);
   const result={liquid:l,illiquid:i,assets:a,liab:b,net:a-b};
-  console.log('calc():',{liquid:l,illiquid:i,assets:a,liab:b,net:result.net,entry:e});
+  try{console.log('calc():',{liquid:l,illiquid:i,assets:a,liab:b,net:result.net});}catch(e){}
   return result;
 }
 function calcNet(e){
@@ -457,6 +457,7 @@ function handleCsvUpload(ev){
   const f=ev.target.files[0];if(!f)return;
   const r=new FileReader();
   r.onload=e=>{
+    try{
     const ls=e.target.result.split(/\r?\n/).filter(l=>l.trim());
     if(ls.length<2)return showCsvMsg('Datei leer.','error');
     const sep=ls[0].includes('\t')?'\t':ls[0].includes(';')?';':',';
@@ -517,11 +518,12 @@ function handleCsvUpload(ev){
       en.sonstiges=details.sonstiges||0;en.immobilien=details.immobilien||0;
       en.kredit1=0;en.kredit2=0;en.immkredit=details['kredit-haus']||0;
       en._details=details;en._units=units;d[ym]=en;im++;
-      console.log(`Imported ${ym}:`,{cash:en.cash,etf:en.etf,bitcoin:en.bitcoin,edelmetalle:en.edelmetalle,immobilien:en.immobilien,immkredit:en.immkredit,units});
+      try{console.log(`Imported ${ym}:`,{cash:en.cash,etf:en.etf,bitcoin:en.bitcoin,edelmetalle:en.edelmetalle,immobilien:en.immobilien,immkredit:en.immkredit,units});}catch(e){}
     }
     saveData(d);render();
     showCsvMsg(`✓ ${im} importiert${sk?', '+sk+' übersprungen':''}.`,'ok');
     ev.target.value='';
+    }catch(err){console.error('CSV Import Error:',err);showCsvMsg('Fehler beim Import: '+err.message,'error');}
   };
   r.readAsText(f);
 }
