@@ -316,20 +316,7 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 .sankey-divider { height:1px;background:color-mix(in srgb,var(--border) 40%,transparent);margin:10px 0; }
 .sankey-section-label { font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:6px; }
 
-/* Budget Modal */
-.budget-modal { display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.4);align-items:center;justify-content:center; }
-.budget-modal.show { display:flex; }
-.budget-modal-content { background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;width:calc(100% - 40px);max-width:360px;max-height:80vh;overflow-y:auto; }
-.budget-modal-title { font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);font-weight:500;margin-bottom:14px; }
-.budget-form-group { margin-bottom:10px; }
-.budget-form-label { font-size:11px;color:var(--muted);margin-bottom:3px; }
-.budget-form-input {
-  width:100%;padding:8px 10px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;
-  background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--ink);
-  font-variant-numeric:tabular-nums;
-}
-.budget-form-input:focus { outline:none;border-color:var(--ink); }
-.budget-form-section { font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin:14px 0 8px;padding-top:8px;border-top:1px solid color-mix(in srgb,var(--border) 40%,transparent); }
+/* Budget Modal - removed, data comes from CSV */
 </style>
 
 <!-- Pull to Refresh Indicator -->
@@ -455,9 +442,9 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 
 <!-- Budget Hero -->
 <div class="hero">
-  <div class="hero-label">Sparquote</div>
-  <div class="hero-value" id="budget-sparquote" style="font-size:56px">—</div>
-  <div class="hero-delta" id="budget-sparquote-delta"></div>
+  <div class="hero-label">Ø Haushaltsnetto</div>
+  <div class="hero-value kpi-has-eur" id="budget-hero">—</div>
+  <div class="hero-delta" id="budget-hero-delta"></div>
 </div>
 
 <!-- Budget KPIs -->
@@ -466,35 +453,35 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
     <div class="kpi-flip-inner">
       <div class="kpi-face-front">
         <div class="kpi-label">Einnahmen</div>
-        <div class="kpi-val" id="budget-einnahmen">—</div>
-        <div class="kpi-delta" id="budget-einnahmen-delta"></div>
+        <div class="kpi-val kpi-has-eur" id="budget-einnahmen">—</div>
+        <div class="kpi-delta" id="budget-einnahmen-sub"></div>
       </div>
     </div>
   </div>
   <div class="kpi-item" style="cursor:default">
     <div class="kpi-flip-inner">
       <div class="kpi-face-front">
-        <div class="kpi-label">Ausgaben</div>
-        <div class="kpi-val" id="budget-ausgaben">—</div>
-        <div class="kpi-delta" id="budget-ausgaben-delta"></div>
+        <div class="kpi-label">Fixkosten</div>
+        <div class="kpi-val kpi-has-eur" id="budget-fix">—</div>
+        <div class="kpi-delta" id="budget-fix-sub"></div>
       </div>
     </div>
   </div>
   <div class="kpi-item" style="cursor:default">
     <div class="kpi-flip-inner">
       <div class="kpi-face-front">
-        <div class="kpi-label">Überschuss</div>
-        <div class="kpi-val" id="budget-ueberschuss">—</div>
-        <div class="kpi-delta" id="budget-ueberschuss-delta"></div>
+        <div class="kpi-label">Variable Ausgaben</div>
+        <div class="kpi-val kpi-has-eur" id="budget-var">—</div>
+        <div class="kpi-delta" id="budget-var-sub"></div>
       </div>
     </div>
   </div>
   <div class="kpi-item" style="cursor:default">
     <div class="kpi-flip-inner">
       <div class="kpi-face-front">
-        <div class="kpi-label">Investiert</div>
-        <div class="kpi-val" id="budget-invest">—</div>
-        <div class="kpi-delta" id="budget-invest-delta"></div>
+        <div class="kpi-label">Sparquote</div>
+        <div class="kpi-val" id="budget-sparquote">—</div>
+        <div class="kpi-delta" id="budget-sparquote-sub"></div>
       </div>
     </div>
   </div>
@@ -504,28 +491,11 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 <div class="chart-label">Geldfluss</div>
 <div class="sankey-wrap" id="sankeyWrap"></div>
 
-<!-- Budget Legend -->
+<!-- Ausgaben Breakdown -->
 <div class="structure-section" style="padding-top:14px">
   <div class="chart-label">Ausgaben</div>
   <div class="stacked-bar" id="budgetStackedBar"></div>
   <ul class="legend-list" id="budgetLegend"></ul>
-</div>
-
-<!-- Budget Edit -->
-<div style="padding:20px 0 10px">
-  <button class="import-btn" id="budgetEditBtn">Budget bearbeiten</button>
-</div>
-
-<!-- Budget Edit Modal -->
-<div class="budget-modal" id="budgetModal">
-  <div class="budget-modal-content">
-    <div class="budget-modal-title">Monatsbudget</div>
-    <div class="budget-form" id="budgetForm"></div>
-    <div style="display:flex;gap:8px;margin-top:16px">
-      <button class="import-btn" id="budgetSaveBtn" style="flex:1">Speichern</button>
-      <button class="import-btn" id="budgetCancelBtn" style="flex:1">Abbrechen</button>
-    </div>
-  </div>
 </div>
 
 </div><!-- /app-content -->
@@ -811,74 +781,127 @@ function handleCsvUpload(ev){
   r.onload=e=>{
     try{
     console.log('CSV file loaded, size:',e.target.result.length);
-    const ls=e.target.result.split(/\r?\n/).filter(l=>l.trim());
-    if(ls.length<2)return showCsvMsg('Datei leer.','error');
-    const sep=ls[0].includes('\t')?'\t':ls[0].includes(';')?';':',';
-    const h=ls[0].split(sep).map(x=>normalizeColumnName(x));
-    let di=h.findIndex(x=>x==='datum'||x==='monat');if(di===-1)di=0;
-    const d=loadData();let im=0,sk=0;
-    for(let i=1;i<ls.length;i++){
-      const c=ls[i].split(sep);if(c.length<2){sk++;continue}
-      if(h[0]==='typ'&&c[0].toLowerCase()!=='vermoegen'){sk++;continue;}
-      const ym=parseCsvDate(c[di]||'');if(!ym){sk++;continue}
-      const details={},units={};
-      h.forEach((x,j)=>{
-        if(j===di||x==='typ')return;
-        const val=parseCsvNumber(c[j]);if(val===0)return;
-        let dk=null;
-        if(x==='tagesgeldkonto')dk='tagesgeldkonto';
-        else if(x==='verrechnungskonto')dk='verrechnungskonto';
-        else if(x==='autos')dk='autos';
-        else if(x==='bargeld')dk='bargeld';
-        else if(x==='lastschriften')dk='lastschriften';
-        else if(x==='msci acwi - a1jmdf')dk='msci-acwi';
-        else if(x==='dax ucits - a0rejq')dk='dax-ucits';
-        else if(x==='msci acwi papa - lyx00c')dk='msci-acwi-papa';
-        else if(x==='msci acwi patenkinder - lyx00c')dk='msci-acwi-patenkinder';
-        else if(x==='vwl lukas oskar')dk='vwl-lukas-oskar';
-        else if(x==='aktien')dk='aktien';
-        else if(x==='bitcoin')dk='bitcoin';
-        else if(x==='gold')dk='gold';
-        else if(x==='silber')dk='silber';
-        else if(x==='edelmetalle')dk='gold';
-        else if(x==='bausparvertrag')dk='bausparvertrag';
-        else if(x==='r+v rente miri'||x==='r+v lebensversicherung / rente miri')dk='rv-miri';
-        else if(x==='bav miri - allianz komfortdynamik')dk='bav-miri';
-        else if(x==='uhren')dk='uhren';
-        else if(x==='porsche 911')dk='porsche911';
-        else if(x==='mercedes c-klasse')dk='mercedes';
-        else if(x==='sonstiges')dk='sonstiges';
-        else if(x==='haus'||x==='haus (marktwert)')dk='immobilien';
-        else if(x==='kredit haus')dk='kredit-haus';
-        if(dk)details[dk]=val;
-        let uk=null;
-        if(x==='stk msci acwi')uk='msci-acwi';
-        else if(x==='stk dax ucits')uk='dax-ucits';
-        else if(x==='stk msci acwi papa')uk='msci-acwi-papa';
-        else if(x==='stk msci acwi patenkinder')uk='msci-acwi-patenkinder';
-        else if(x==='stk bitcoin')uk='bitcoin';
-        else if(x==='oz gold')uk='gold';
-        else if(x==='oz silber')uk='silber';
-        if(uk)units[uk]=val;
-      });
-      const en={};
-      en.cash=(details.tagesgeldkonto||0)+(details.verrechnungskonto||0)+(details.autos||0)+(details.bargeld||0)+(details.lastschriften||0);
-      en.etf=(details['msci-acwi']||0)+(details['dax-ucits']||0)+(details['msci-acwi-papa']||0)+(details['msci-acwi-patenkinder']||0)+(details['vwl-lukas-oskar']||0);
-      en.aktien=details.aktien||0;en.bitcoin=details.bitcoin||0;
-      en.edelmetalle=(details.gold||0)+(details.silber||0);
-      en.bav=(details.bausparvertrag||0)+(details['rv-miri']||0)+(details['bav-miri']||0);
-      en.uhren=details.uhren||0;en.porsche911=details.porsche911||0;en.mercedes=details.mercedes||0;
-      en.sonstiges=details.sonstiges||0;en.immobilien=details.immobilien||0;
-      en.kredit1=0;en.kredit2=0;en.immkredit=details['kredit-haus']||0;
-      en._details=details;en._units=units;d[ym]=en;im++;
-      try{console.log(`Imported ${ym}:`,{cash:en.cash,etf:en.etf,bitcoin:en.bitcoin,edelmetalle:en.edelmetalle,immobilien:en.immobilien,immkredit:en.immkredit,units});}catch(e){}
+    const allLines=e.target.result.split(/\r?\n/).filter(l=>l.trim());
+    if(allLines.length<2)return showCsvMsg('Datei leer.','error');
+    const sep=allLines[0].includes('\t')?'\t':allLines[0].includes(';')?';':',';
+
+    // Split into sections by detecting new header rows
+    const sections=[];
+    let currentHeader=null,currentRows=[];
+    for(let i=0;i<allLines.length;i++){
+      const cols=allLines[i].split(sep);
+      const firstCol=cols[0].trim().toLowerCase();
+      // Detect header: first col is 'typ' or line has mostly non-numeric content
+      if(firstCol==='typ'){
+        if(currentHeader)sections.push({header:currentHeader,rows:currentRows});
+        currentHeader=cols.map(x=>normalizeColumnName(x));
+        currentRows=[];
+      }else if(currentHeader){
+        currentRows.push(cols);
+      }
     }
+    if(currentHeader)sections.push({header:currentHeader,rows:currentRows});
+
+    const d=loadData();let im=0,sk=0;
+    const budgetData={einkommen:[],fixe:[],variable:[]};
+    let budgetImported=0;
+
+    for(const section of sections){
+      const h=section.header;
+      const firstTyp=section.rows[0]?section.rows[0][0].trim().toLowerCase():'';
+
+      // ── Vermögen section ──
+      if(firstTyp==='vermoegen'||firstTyp==='vermögen'){
+        let di=h.findIndex(x=>x==='datum'||x==='monat');if(di===-1)di=1;
+        for(const c of section.rows){
+          if(c.length<2){sk++;continue}
+          if(c[0].trim().toLowerCase()!=='vermoegen'&&c[0].trim().toLowerCase()!=='vermögen'){sk++;continue;}
+          const ym=parseCsvDate(c[di]||'');if(!ym){sk++;continue}
+          const details={},units={};
+          h.forEach((x,j)=>{
+            if(j===di||x==='typ')return;
+            const val=parseCsvNumber(c[j]);if(val===0)return;
+            let dk=null;
+            if(x==='tagesgeldkonto')dk='tagesgeldkonto';
+            else if(x==='verrechnungskonto')dk='verrechnungskonto';
+            else if(x==='autos')dk='autos';
+            else if(x==='bargeld')dk='bargeld';
+            else if(x==='lastschriften')dk='lastschriften';
+            else if(x==='msci acwi - a1jmdf')dk='msci-acwi';
+            else if(x==='dax ucits - a0rejq')dk='dax-ucits';
+            else if(x==='msci acwi papa - lyx00c')dk='msci-acwi-papa';
+            else if(x==='msci acwi patenkinder - lyx00c')dk='msci-acwi-patenkinder';
+            else if(x==='vwl lukas oskar')dk='vwl-lukas-oskar';
+            else if(x==='aktien')dk='aktien';
+            else if(x==='bitcoin')dk='bitcoin';
+            else if(x==='gold')dk='gold';
+            else if(x==='silber')dk='silber';
+            else if(x==='edelmetalle')dk='gold';
+            else if(x==='bausparvertrag')dk='bausparvertrag';
+            else if(x==='r+v rente miri'||x==='r+v lebensversicherung / rente miri')dk='rv-miri';
+            else if(x==='bav miri - allianz komfortdynamik')dk='bav-miri';
+            else if(x==='uhren')dk='uhren';
+            else if(x==='porsche 911')dk='porsche911';
+            else if(x==='mercedes c-klasse')dk='mercedes';
+            else if(x==='sonstiges')dk='sonstiges';
+            else if(x==='haus'||x==='haus (marktwert)')dk='immobilien';
+            else if(x==='kredit haus')dk='kredit-haus';
+            if(dk)details[dk]=val;
+            let uk=null;
+            if(x==='stk msci acwi')uk='msci-acwi';
+            else if(x==='stk dax ucits')uk='dax-ucits';
+            else if(x==='stk msci acwi papa')uk='msci-acwi-papa';
+            else if(x==='stk msci acwi patenkinder')uk='msci-acwi-patenkinder';
+            else if(x==='stk bitcoin')uk='bitcoin';
+            else if(x==='oz gold')uk='gold';
+            else if(x==='oz silber')uk='silber';
+            if(uk)units[uk]=val;
+          });
+          const en={};
+          en.cash=(details.tagesgeldkonto||0)+(details.verrechnungskonto||0)+(details.autos||0)+(details.bargeld||0)+(details.lastschriften||0);
+          en.etf=(details['msci-acwi']||0)+(details['dax-ucits']||0)+(details['msci-acwi-papa']||0)+(details['msci-acwi-patenkinder']||0)+(details['vwl-lukas-oskar']||0);
+          en.aktien=details.aktien||0;en.bitcoin=details.bitcoin||0;
+          en.edelmetalle=(details.gold||0)+(details.silber||0);
+          en.bav=(details.bausparvertrag||0)+(details['rv-miri']||0)+(details['bav-miri']||0);
+          en.uhren=details.uhren||0;en.porsche911=details.porsche911||0;en.mercedes=details.mercedes||0;
+          en.sonstiges=details.sonstiges||0;en.immobilien=details.immobilien||0;
+          en.kredit1=0;en.kredit2=0;en.immkredit=details['kredit-haus']||0;
+          en._details=details;en._units=units;d[ym]=en;im++;
+        }
+      }
+
+      // ── Budget section ──
+      else if(firstTyp==='budget'){
+        // Header: Typ;Kategorie;Bezeichnung;Jan;Feb;Mar;Apr;Mai;Jun;Jul;Aug;Sep;Okt;Nov;Dez
+        // Month columns start at index 3
+        for(const c of section.rows){
+          if(c.length<4)continue;
+          const typ=c[0].trim().toLowerCase();
+          if(typ!=='budget')continue;
+          const kategorie=c[1].trim().toLowerCase();
+          const name=c[2].trim();
+          if(!name)continue; // skip empty category header rows
+          const values=[];
+          for(let m=3;m<15;m++){values.push(parseCsvNumber(c[m]||''));}
+          if(kategorie==='einkommen')budgetData.einkommen.push({name,values});
+          else if(kategorie==='fixe ausgaben')budgetData.fixe.push({name,values});
+          else if(kategorie==='variable ausgaben')budgetData.variable.push({name,values});
+          budgetImported++;
+        }
+      }
+      // Skip Konto and Dauerauftrag sections silently
+    }
+
     saveData(d);
+    if(budgetImported>0)saveBudgetData(budgetData);
     const sorted=Object.keys(d).sort();
     selectedMonth=sorted.length?sorted[sorted.length-1]:nextYM();
     picker.setVal(selectedMonth);
     render();
-    showCsvMsg(`✓ ${im} importiert${sk?', '+sk+' übersprungen':''}.`,'ok');
+    let msg=`✓ ${im} Vermögen`;
+    if(budgetImported>0)msg+=`, ${budgetImported} Budget-Posten`;
+    if(sk>0)msg+=`, ${sk} übersprungen`;
+    showCsvMsg(msg+' importiert.','ok');
     ev.target.value='';
     }catch(err){console.error('CSV Import Error:',err);showCsvMsg('Fehler beim Import: '+err.message,'error');}
   };
@@ -1303,176 +1326,150 @@ function setupBottomNav(){
   });
 }
 
-/* ── Budget Module ── */
-const BUDGET_INCOME_FIELDS=[
-  {key:'gehalt',label:'Gehalt'},
-  {key:'nebeneinkommen',label:'Nebeneinkommen'},
-  {key:'kindergeld',label:'Kindergeld'},
-  {key:'sonstiges_ein',label:'Sonstiges'}
-];
-const BUDGET_EXPENSE_FIELDS=[
-  {key:'miete',label:'Miete / Wohnen'},
-  {key:'lebensmittel',label:'Lebensmittel'},
-  {key:'versicherungen',label:'Versicherungen'},
-  {key:'auto',label:'Auto / Mobilität'},
-  {key:'freizeit',label:'Freizeit'},
-  {key:'abos',label:'Abos / Streaming'},
-  {key:'kleidung',label:'Kleidung'},
-  {key:'gesundheit',label:'Gesundheit'},
-  {key:'sonstiges_aus',label:'Sonstiges'}
-];
-const BUDGET_INVEST_FIELDS=[
-  {key:'sparplan_etf',label:'Sparplan ETF'},
-  {key:'sparplan_btc',label:'Sparplan BTC'},
-  {key:'sondersparen',label:'Sondersparen'}
-];
-
+/* ── Budget Module (CSV-driven) ── */
 function loadBudgetData(){
-  try{const d=localStorage.getItem('budgetData');return d?JSON.parse(d):{};}catch{return{};}
+  try{const d=localStorage.getItem('budgetData');return d?JSON.parse(d):null;}catch{return null;}
 }
 function saveBudgetData(d){localStorage.setItem('budgetData',JSON.stringify(d));}
 
-function getBudgetForMonth(ym){
-  const d=loadBudgetData();
-  return d[ym]||null;
+function calcBudgetMonth(bd,monthIdx){
+  if(!bd)return null;
+  const mi=monthIdx; // 0-based month index (0=Jan)
+  let einnahmen=0,fixkosten=0,variable=0;
+  const einItems=[],fixItems=[],varItems=[];
+  (bd.einkommen||[]).forEach(r=>{
+    const v=r.values[mi]||0;
+    if(v>0){einnahmen+=v;einItems.push({label:r.name,val:v});}
+  });
+  (bd.fixe||[]).forEach(r=>{
+    const v=r.values[mi]||0;
+    if(v>0){fixkosten+=v;fixItems.push({label:r.name,val:v});}
+  });
+  (bd.variable||[]).forEach(r=>{
+    const v=r.values[mi]||0;
+    if(v>0){variable+=v;varItems.push({label:r.name,val:v});}
+  });
+  const ausgaben=fixkosten+variable;
+  const netto=einnahmen-ausgaben;
+  const sparquote=einnahmen>0?Math.round(netto/einnahmen*100):0;
+  return{einnahmen,fixkosten,variable,ausgaben,netto,sparquote,einItems,fixItems,varItems};
 }
 
-function calcBudget(b){
-  if(!b)return{einnahmen:0,ausgaben:0,invest:0,ueberschuss:0,sparquote:0};
-  const ein=BUDGET_INCOME_FIELDS.reduce((s,f)=>s+(+b[f.key]||0),0);
-  const aus=BUDGET_EXPENSE_FIELDS.reduce((s,f)=>s+(+b[f.key]||0),0);
-  const inv=BUDGET_INVEST_FIELDS.reduce((s,f)=>s+(+b[f.key]||0),0);
-  const ueb=ein-aus-inv;
-  const sq=ein>0?Math.round((ein-aus)/ein*100):0;
-  return{einnahmen:ein,ausgaben:aus,invest:inv,ueberschuss:ueb,sparquote:sq};
+function calcAvgHaushaltsnetto(bd){
+  if(!bd)return 0;
+  let sum=0,count=0;
+  for(let m=0;m<12;m++){
+    const c=calcBudgetMonth(bd,m);
+    if(c&&c.einnahmen>0){sum+=c.netto;count++;}
+  }
+  return count>0?Math.round(sum/count):0;
 }
 
 function renderBudgetPage(){
-  const b=getBudgetForMonth(selectedMonth);
-  const c=calcBudget(b);
-  const allData=loadBudgetData();
-  const sorted=Object.keys(allData).sort();
-  const idx=sorted.indexOf(selectedMonth);
+  const bd=loadBudgetData();
+  const now=new Date();
+  const selParts=selectedMonth.split('-');
+  const monthIdx=parseInt(selParts[1])-1; // 0-based
+  const c=calcBudgetMonth(bd,monthIdx);
+  const avgNetto=calcAvgHaushaltsnetto(bd);
 
-  // Hero: Sparquote
-  const sqEl=document.getElementById('budget-sparquote');
-  if(c.einnahmen>0){
-    sqEl.textContent=c.sparquote+'%';
-    sqEl.classList.remove('kpi-has-eur');
+  // Hero: Ø Haushaltsnetto
+  const heroEl=document.getElementById('budget-hero');
+  if(avgNetto>0){
+    heroEl.textContent=avgNetto.toLocaleString('de-DE');
   }else{
-    sqEl.textContent='—';
+    heroEl.textContent='—';
   }
+  // Delta: current month vs average
+  const deltaEl=document.getElementById('budget-hero-delta');
+  if(c&&c.netto&&avgNetto>0){
+    const diff=c.netto-avgNetto;
+    if(diff===0){deltaEl.textContent='±0 € vs. Ø';deltaEl.className='hero-delta';}
+    else{deltaEl.textContent=(diff>0?'+':'')+fmt(diff)+' vs. Ø';deltaEl.className='hero-delta '+(diff>0?'up':'down');}
+  }else{deltaEl.textContent='';}
 
   // KPIs
   const einEl=document.getElementById('budget-einnahmen');
-  const ausEl=document.getElementById('budget-ausgaben');
-  const uebEl=document.getElementById('budget-ueberschuss');
-  const invEl=document.getElementById('budget-invest');
-  if(c.einnahmen>0||c.ausgaben>0){
-    einEl.textContent=fmt(c.einnahmen).replace(' €','');
-    einEl.classList.add('kpi-has-eur');
-    ausEl.textContent=fmt(c.ausgaben).replace(' €','');
-    ausEl.classList.add('kpi-has-eur');
-    uebEl.textContent=(c.ueberschuss>=0?'':'')+fmt(Math.abs(c.ueberschuss)).replace(' €','');
-    uebEl.classList.add('kpi-has-eur');
-    if(c.ueberschuss<0)uebEl.style.color='var(--red)';
-    else uebEl.style.color='';
-    invEl.textContent=fmt(c.invest).replace(' €','');
-    invEl.classList.add('kpi-has-eur');
+  const fixEl=document.getElementById('budget-fix');
+  const varEl=document.getElementById('budget-var');
+  const sqEl=document.getElementById('budget-sparquote');
+  if(c&&c.einnahmen>0){
+    einEl.textContent=c.einnahmen.toLocaleString('de-DE');
+    fixEl.textContent=c.fixkosten.toLocaleString('de-DE');
+    varEl.textContent=c.variable.toLocaleString('de-DE');
+    sqEl.textContent=c.sparquote+'%';
+    // Sub-labels with percentages
+    const einSub=document.getElementById('budget-einnahmen-sub');
+    if(einSub)einSub.textContent=MONTH_NAMES[monthIdx]+' '+selParts[0];
+    const fixSub=document.getElementById('budget-fix-sub');
+    if(fixSub&&c.einnahmen>0)fixSub.textContent=Math.round(c.fixkosten/c.einnahmen*100)+'% der Einnahmen';
+    const varSub=document.getElementById('budget-var-sub');
+    if(varSub&&c.einnahmen>0)varSub.textContent=Math.round(c.variable/c.einnahmen*100)+'% der Einnahmen';
+    const sqSub=document.getElementById('budget-sparquote-sub');
+    if(sqSub)sqSub.textContent=fmt(c.netto)+' übrig';
   }else{
-    [einEl,ausEl,uebEl,invEl].forEach(el=>{el.textContent='—';el.classList.remove('kpi-has-eur');});
-  }
-
-  // Deltas
-  if(idx>0){
-    const prev=calcBudget(allData[sorted[idx-1]]);
-    setDelta('budget-einnahmen-delta',c.einnahmen,prev.einnahmen);
-    setDelta('budget-ausgaben-delta',c.ausgaben,prev.ausgaben,true);
-    setDelta('budget-ueberschuss-delta',c.ueberschuss,prev.ueberschuss);
-    setDelta('budget-invest-delta',c.invest,prev.invest);
-    const sqDelta=document.getElementById('budget-sparquote-delta');
-    if(sqDelta){
-      const diff=c.sparquote-prev.sparquote;
-      if(diff===0)sqDelta.textContent='±0 pp';
-      else{sqDelta.textContent=(diff>0?'+':'')+diff+' pp';sqDelta.className='hero-delta '+(diff>0?'up':'down');}
-    }
-  }else{
-    ['budget-einnahmen-delta','budget-ausgaben-delta','budget-ueberschuss-delta','budget-invest-delta','budget-sparquote-delta'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
+    einEl.textContent='—';fixEl.textContent='—';varEl.textContent='—';sqEl.textContent='—';
+    ['budget-einnahmen-sub','budget-fix-sub','budget-var-sub','budget-sparquote-sub'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
   }
 
   // Sankey
-  renderSankey(b,c);
-
-  // Expense breakdown
-  renderBudgetBreakdown(b,c);
+  renderBudgetSankey(c);
+  // Breakdown
+  renderBudgetBreakdown(c);
 }
 
-function renderSankey(b,c){
+function renderBudgetSankey(c){
   const wrap=document.getElementById('sankeyWrap');
-  if(!b||c.einnahmen===0){wrap.innerHTML='<div style="text-align:center;padding:20px 0;color:var(--muted)">Keine Daten</div>';return;}
+  if(!c||c.einnahmen===0){wrap.innerHTML='<div style="text-align:center;padding:20px 0;color:var(--muted)">Keine Budget-Daten. CSV importieren.</div>';return;}
   const maxVal=c.einnahmen;
-  const barColor=!isDark?'rgba(90,85,75,0.25)':'rgba(232,228,222,0.25)';
   const greenBar=!isDark?'rgba(58,94,66,0.4)':'rgba(122,170,130,0.35)';
   const redBar=!isDark?'rgba(110,59,48,0.35)':'rgba(192,112,88,0.3)';
-  const blueBar=!isDark?'rgba(70,80,100,0.35)':'rgba(140,160,200,0.3)';
+  const orangeBar=!isDark?'rgba(140,100,50,0.35)':'rgba(200,170,100,0.3)';
+  const barColor=!isDark?'rgba(90,85,75,0.25)':'rgba(232,228,222,0.25)';
 
   let html='<div class="sankey-section-label">Einnahmen</div>';
-  BUDGET_INCOME_FIELDS.forEach(f=>{
-    const v=+b[f.key]||0;
-    if(v<=0)return;
-    const pct=Math.round(v/maxVal*100);
-    html+=`<div class="sankey-row"><span class="sankey-label">${f.label}</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${greenBar}"></div></div><span class="sankey-val">${fmt(v)}</span></div>`;
+  c.einItems.sort((a,b)=>b.val-a.val).forEach(item=>{
+    const pct=Math.max(2,Math.round(item.val/maxVal*100));
+    html+=`<div class="sankey-row"><span class="sankey-label">${item.label}</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${greenBar}"></div></div><span class="sankey-val">${fmt(item.val)}</span></div>`;
   });
 
-  html+='<div class="sankey-divider"></div><div class="sankey-section-label">Ausgaben</div>';
-  BUDGET_EXPENSE_FIELDS.forEach(f=>{
-    const v=+b[f.key]||0;
-    if(v<=0)return;
-    const pct=Math.round(v/maxVal*100);
-    html+=`<div class="sankey-row"><span class="sankey-label">${f.label}</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${redBar}"></div></div><span class="sankey-val">${fmt(v)}</span></div>`;
+  html+='<div class="sankey-divider"></div><div class="sankey-section-label">Fixkosten</div>';
+  c.fixItems.sort((a,b)=>b.val-a.val).forEach(item=>{
+    const pct=Math.max(2,Math.round(item.val/maxVal*100));
+    html+=`<div class="sankey-row"><span class="sankey-label">${item.label}</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${redBar}"></div></div><span class="sankey-val">${fmt(item.val)}</span></div>`;
   });
 
-  if(c.invest>0){
-    html+='<div class="sankey-divider"></div><div class="sankey-section-label">Investitionen</div>';
-    BUDGET_INVEST_FIELDS.forEach(f=>{
-      const v=+b[f.key]||0;
-      if(v<=0)return;
-      const pct=Math.round(v/maxVal*100);
-      html+=`<div class="sankey-row"><span class="sankey-label">${f.label}</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${blueBar}"></div></div><span class="sankey-val">${fmt(v)}</span></div>`;
-    });
-  }
+  html+='<div class="sankey-divider"></div><div class="sankey-section-label">Variable Ausgaben</div>';
+  c.varItems.sort((a,b)=>b.val-a.val).forEach(item=>{
+    const pct=Math.max(2,Math.round(item.val/maxVal*100));
+    html+=`<div class="sankey-row"><span class="sankey-label">${item.label}</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${orangeBar}"></div></div><span class="sankey-val">${fmt(item.val)}</span></div>`;
+  });
 
-  if(c.ueberschuss>0){
+  if(c.netto>0){
     html+='<div class="sankey-divider"></div><div class="sankey-section-label">Überschuss</div>';
-    const pct=Math.round(c.ueberschuss/maxVal*100);
-    html+=`<div class="sankey-row"><span class="sankey-label">Frei</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${barColor}"></div></div><span class="sankey-val">${fmt(c.ueberschuss)}</span></div>`;
+    const pct=Math.max(2,Math.round(c.netto/maxVal*100));
+    html+=`<div class="sankey-row"><span class="sankey-label">Frei</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${barColor}"></div></div><span class="sankey-val">${fmt(c.netto)}</span></div>`;
   }
 
   wrap.innerHTML=html;
 }
 
-function renderBudgetBreakdown(b,c){
+function renderBudgetBreakdown(c){
   const bar=document.getElementById('budgetStackedBar');
   const legend=document.getElementById('budgetLegend');
-  if(!b||c.ausgaben===0){bar.innerHTML='';legend.innerHTML='';return;}
+  if(!c||c.ausgaben===0){bar.innerHTML='';legend.innerHTML='';return;}
 
+  const allItems=[...c.fixItems,...c.varItems].sort((a,b)=>b.val-a.val);
   const _dk=!isDark?[110,59,48]:[192,112,88];
   const _lt=!isDark?[195,170,155]:[240,220,200];
-  const items=[];
-  BUDGET_EXPENSE_FIELDS.forEach(f=>{
-    const v=+b[f.key]||0;
-    if(v>0)items.push({label:f.label,val:v});
-  });
-  items.sort((a,b)=>b.val-a.val);
-  const n=Math.max(items.length,1);
-  const colors=items.map((_,i)=>{const t=n<=1?0:i/(n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
-  const total=items.reduce((s,i)=>s+i.val,0);
-  const maxVal=Math.max(...items.map(i=>i.val));
+  const n=Math.max(allItems.length,1);
+  const colors=allItems.map((_,i)=>{const t=n<=1?0:i/(n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
+  const total=allItems.reduce((s,i)=>s+i.val,0);
+  const maxVal=Math.max(...allItems.map(i=>i.val));
 
-  // Stacked bar
   bar.innerHTML='';
   const segs=[];
-  items.forEach((item,i)=>{
+  allItems.forEach((item,i)=>{
     const seg=document.createElement('div');
     seg.className='stacked-seg';
     seg.style.width=(item.val/total*100)+'%';
@@ -1482,10 +1479,9 @@ function renderBudgetBreakdown(b,c){
     bar.appendChild(seg);
   });
 
-  // Legend
   legend.innerHTML='';
   const rows=[];
-  items.forEach((item,i)=>{
+  allItems.forEach((item,i)=>{
     const pct=Math.round(item.val/total*100);
     const barPct=Math.round(item.val/maxVal*100);
     const li=document.createElement('li');
@@ -1496,7 +1492,6 @@ function renderBudgetBreakdown(b,c){
     legend.appendChild(li);
   });
 
-  // Click interaction
   let activeIdx=null;
   function highlight(idx){
     if(activeIdx===idx){activeIdx=null;segs.forEach(s=>{s.classList.remove('highlighted','dimmed');});rows.forEach(r=>{r.style.opacity='';});return;}
@@ -1506,44 +1501,6 @@ function renderBudgetBreakdown(b,c){
   }
   segs.forEach(s=>s.addEventListener('click',()=>highlight(parseInt(s.dataset.idx))));
   rows.forEach(r=>r.addEventListener('click',()=>highlight(parseInt(r.dataset.idx))));
-}
-
-function openBudgetModal(){
-  const modal=document.getElementById('budgetModal');
-  const form=document.getElementById('budgetForm');
-  const b=getBudgetForMonth(selectedMonth)||{};
-
-  let html='<div class="budget-form-section" style="border-top:none;margin-top:0">Einnahmen</div>';
-  BUDGET_INCOME_FIELDS.forEach(f=>{
-    html+=`<div class="budget-form-group"><div class="budget-form-label">${f.label}</div><input class="budget-form-input" id="bf-${f.key}" type="text" inputmode="numeric" value="${b[f.key]||''}"></div>`;
-  });
-  html+='<div class="budget-form-section">Ausgaben</div>';
-  BUDGET_EXPENSE_FIELDS.forEach(f=>{
-    html+=`<div class="budget-form-group"><div class="budget-form-label">${f.label}</div><input class="budget-form-input" id="bf-${f.key}" type="text" inputmode="numeric" value="${b[f.key]||''}"></div>`;
-  });
-  html+='<div class="budget-form-section">Investitionen</div>';
-  BUDGET_INVEST_FIELDS.forEach(f=>{
-    html+=`<div class="budget-form-group"><div class="budget-form-label">${f.label}</div><input class="budget-form-input" id="bf-${f.key}" type="text" inputmode="numeric" value="${b[f.key]||''}"></div>`;
-  });
-  form.innerHTML=html;
-  modal.classList.add('show');
-}
-
-function saveBudgetModal(){
-  const d=loadBudgetData();
-  const b={};
-  [...BUDGET_INCOME_FIELDS,...BUDGET_EXPENSE_FIELDS,...BUDGET_INVEST_FIELDS].forEach(f=>{
-    const el=document.getElementById('bf-'+f.key);
-    if(el){const v=parseFloat(el.value.replace(/\./g,'').replace(',','.'))||0;if(v>0)b[f.key]=v;}
-  });
-  d[selectedMonth]=b;
-  saveBudgetData(d);
-  document.getElementById('budgetModal').classList.remove('show');
-  renderBudgetPage();
-}
-
-function closeBudgetModal(){
-  document.getElementById('budgetModal').classList.remove('show');
 }
 
 /* ── Init ── */
@@ -1598,9 +1555,6 @@ function initApp(){
     setupBottomNav();
     
     /* Budget Page */
-    document.getElementById('budgetEditBtn').addEventListener('click',openBudgetModal);
-    document.getElementById('budgetSaveBtn').addEventListener('click',saveBudgetModal);
-    document.getElementById('budgetCancelBtn').addEventListener('click',closeBudgetModal);
     
     /* KPI Click Handlers */
     setupKPIClickHandlers();
