@@ -185,7 +185,7 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
   border-radius:6px;
   cursor:pointer;
   perspective:900px;
-  height:96px;
+  height:120px;
   transition:box-shadow .4s,transform .35s cubic-bezier(.4,0,.2,1);
 }
 .kpi-item:not(.flipped):active {
@@ -213,6 +213,11 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
   -webkit-backface-visibility:hidden;
   border-radius:5px;
   padding:14px 10px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
 }
 .kpi-face-front {
   background:transparent;
@@ -220,9 +225,6 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 .kpi-face-back {
   transform:rotateX(180deg);
   background:var(--bg2);
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
   gap:10px;
 }
 .kpi-back-label {
@@ -238,10 +240,10 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
   color:var(--ink);
   opacity:0.85;
 }
-.kpi-label { font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:4px; }
-.kpi-val { font-size:28px;font-weight:300;color:var(--ink);letter-spacing:-0.01em;font-variant-numeric:tabular-nums;line-height:1.2; }
-.kpi-val.kpi-has-eur::after { content:' €';font-size:16px;font-weight:300;color:var(--muted); }
-.kpi-delta { font-size:12px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums; }
+.kpi-label { font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:6px; }
+.kpi-val { font-size:32px;font-weight:300;color:var(--ink);letter-spacing:-0.01em;font-variant-numeric:tabular-nums;line-height:1.2; }
+.kpi-val.kpi-has-eur::after { content:' €';font-size:18px;font-weight:300;color:var(--muted); }
+.kpi-delta { font-size:12px;color:var(--muted);margin-top:6px;font-variant-numeric:tabular-nums; }
 .kpi-delta.up{color:var(--green)} .kpi-delta.down{color:var(--red)}
 .kpi-item.liab .kpi-val{color:var(--red)}
 
