@@ -947,8 +947,8 @@ function fetchWithTimeout(url,ms=4000){
 
 async function fetchBitcoinEUR(){
   const mkProxy=[
-    u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
     u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
+    u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
   ];
   const sources=[
     {url:'https://api.bitstamp.net/v2/ticker/btceur/',parse:t=>parseFloat(JSON.parse(t).last)},
@@ -957,11 +957,11 @@ async function fetchBitcoinEUR(){
   ];
   const candidates=[
     ...sources.map(s=>async()=>{
-      const r=await fetchWithTimeout(s.url,4000);if(!r.ok)throw new Error(`HTTP ${r.status}`);
+      const r=await fetchWithTimeout(s.url,3000);if(!r.ok)throw new Error(`HTTP ${r.status}`);
       const v=s.parse(await r.text());if(!(v>0))throw new Error('kein Wert');return v;
     }),
     ...mkProxy.flatMap(px=>sources.map(s=>async()=>{
-      const r=await fetchWithTimeout(px(s.url),4500);if(!r.ok)throw new Error(`HTTP ${r.status}`);
+      const r=await fetchWithTimeout(px(s.url),4000);if(!r.ok)throw new Error(`HTTP ${r.status}`);
       const v=s.parse(await r.text());if(!(v>0))throw new Error('kein Wert');return v;
     })),
   ];
@@ -971,14 +971,14 @@ async function fetchBitcoinEUR(){
 let cachedEURRate=null,cacheTime=0;
 async function fetchUSDtoEUR(){
   if(cachedEURRate&&Date.now()-cacheTime<10*60*1000)return cachedEURRate;
-  const mkProxy=[u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,u=>`https://corsproxy.io/?${encodeURIComponent(u)}`];
+  const mkProxy=[u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`];
   const sources=[
     {url:'https://api.frankfurter.app/latest?from=USD&to=EUR',parse:t=>{try{return JSON.parse(t).rates?.EUR}catch{return null}}},
     {url:'https://query1.finance.yahoo.com/v8/finance/chart/EURUSD=X?interval=1d&range=1d',parse:t=>{try{const j=JSON.parse(t);const v=j.chart?.result?.[0]?.meta?.regularMarketPrice;return v>0?1/v:null}catch{return null}}},
   ];
   const candidates=[
-    ...sources.map(s=>async()=>{const r=await fetchWithTimeout(s.url,4000);if(!r.ok)throw new Error(`HTTP ${r.status}`);const v=s.parse(await r.text());if(!(v>0))throw new Error('kein Wert');return v;}),
-    ...mkProxy.flatMap(px=>sources.map(s=>async()=>{const r=await fetchWithTimeout(px(s.url),4500);if(!r.ok)throw new Error(`HTTP ${r.status}`);const v=s.parse(await r.text());if(!(v>0))throw new Error('kein Wert');return v;})),
+    ...sources.map(s=>async()=>{const r=await fetchWithTimeout(s.url,3000);if(!r.ok)throw new Error(`HTTP ${r.status}`);const v=s.parse(await r.text());if(!(v>0))throw new Error('kein Wert');return v;}),
+    ...mkProxy.flatMap(px=>sources.map(s=>async()=>{const r=await fetchWithTimeout(px(s.url),4000);if(!r.ok)throw new Error(`HTTP ${r.status}`);const v=s.parse(await r.text());if(!(v>0))throw new Error('kein Wert');return v;})),
   ];
   try{const rate=await Promise.any(candidates.map(fn=>fn()));cachedEURRate=rate;cacheTime=Date.now();return rate;}catch{return 0;}
 }
@@ -989,15 +989,15 @@ async function fetchETFPrice(id){
   const isPreciousMetal=/^(XAUEUR|XAGEUR)$/.test(idUp);
   const isISIN=/^[A-Z]{2}[A-Z0-9]{10}$/.test(idUp);
   const mkProxy=[
-    u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
     u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
+    u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
     u=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
   ];
   /* Stooq */
   if(hasExchange||isPreciousMetal){
     const stooqUrl=`https://stooq.com/q/l/?s=${idUp.toLowerCase()}&f=sd2t2ohlcv&e=csv`;
     const parseStooq=txt=>{const lines=txt.trim().split('\n');if(lines.length<2)return null;const cols=lines[1].split(',');const p=parseFloat(cols[6]);return p>0?p:null;};
-    const sc=[async()=>{const r=await fetchWithTimeout(stooqUrl,4000);if(!r.ok)throw new Error();const p=parseStooq(await r.text());if(!(p>0))throw new Error();return p;},...mkProxy.map(px=>async()=>{const r=await fetchWithTimeout(px(stooqUrl),4500);if(!r.ok)throw new Error();const p=parseStooq(await r.text());if(!(p>0))throw new Error();return p;})];
+    const sc=[async()=>{const r=await fetchWithTimeout(stooqUrl,3000);if(!r.ok)throw new Error();const p=parseStooq(await r.text());if(!(p>0))throw new Error();return p;},...mkProxy.map(px=>async()=>{const r=await fetchWithTimeout(px(stooqUrl),4000);if(!r.ok)throw new Error();const p=parseStooq(await r.text());if(!(p>0))throw new Error();return p;})];
     try{return await Promise.any(sc.map(fn=>fn()));}catch{}
   }
   /* Yahoo */
@@ -1008,7 +1008,7 @@ async function fetchETFPrice(id){
     else{yahooTicker=isPreciousMetal?`${idUp}=X`:idUp;}
     const yahooUrl=`https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
     const parseY=async txt=>{try{const j=JSON.parse(txt);const meta=j.chart?.result?.[0]?.meta;let p=meta?.regularMarketPrice;const cur=meta?.currency;if(needsUSD&&cur==='USD'&&p>0){const er=await fetchUSDtoEUR();p=p*(er>0?er:0.92);}if(!isPreciousMetal&&!needsUSD&&cur&&cur!=='EUR')return null;return p;}catch{return null}};
-    const yc=[async()=>{const r=await fetchWithTimeout(yahooUrl,4000);if(!r.ok)throw new Error();const p=await parseY(await r.text());if(!(p>0))throw new Error();return p;},...mkProxy.map(px=>async()=>{const r=await fetchWithTimeout(px(yahooUrl),4500);if(!r.ok)throw new Error();const p=await parseY(await r.text());if(!(p>0))throw new Error();return p;})];
+    const yc=[async()=>{const r=await fetchWithTimeout(yahooUrl,3000);if(!r.ok)throw new Error();const p=await parseY(await r.text());if(!(p>0))throw new Error();return p;},...mkProxy.map(px=>async()=>{const r=await fetchWithTimeout(px(yahooUrl),4000);if(!r.ok)throw new Error();const p=await parseY(await r.text());if(!(p>0))throw new Error();return p;})];
     try{return await Promise.any(yc.map(fn=>fn()));}catch{}
   }
   throw new Error(`Alle Quellen für ${idUp} fehlgeschlagen`);
