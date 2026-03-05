@@ -454,10 +454,12 @@ function parseCsvNumber(r){
   return parseFloat(r)||0;
 }
 function handleCsvUpload(ev){
+  console.log('CSV upload triggered, file:',ev.target.files[0]?.name);
   const f=ev.target.files[0];if(!f)return;
   const r=new FileReader();
   r.onload=e=>{
     try{
+    console.log('CSV file loaded, size:',e.target.result.length);
     const ls=e.target.result.split(/\r?\n/).filter(l=>l.trim());
     if(ls.length<2)return showCsvMsg('Datei leer.','error');
     const sep=ls[0].includes('\t')?'\t':ls[0].includes(';')?';':',';
