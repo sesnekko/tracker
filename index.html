@@ -874,20 +874,30 @@ function handleCsvUpload(ev){
       else if(firstTyp==='budget'){
         // Header: Typ;Kategorie;Bezeichnung;Jan;Feb;Mar;Apr;Mai;Jun;Jul;Aug;Sep;Okt;Nov;Dez
         // Month columns start at index 3
+        console.log('Budget section found, rows:',section.rows.length);
         for(const c of section.rows){
           if(c.length<4)continue;
           const typ=c[0].trim().toLowerCase();
           if(typ!=='budget')continue;
           const kategorie=c[1].trim().toLowerCase();
           const name=c[2].trim();
-          if(!name)continue; // skip empty category header rows
+          if(!name){
+            console.log('Skipping empty category header:',kategorie);
+            continue; // skip empty category header rows
+          }
           const values=[];
           for(let m=3;m<15;m++){values.push(parseCsvNumber(c[m]||''));}
+          console.log(`Budget row: ${kategorie} | ${name} | Jan=${values[0]}`);
           if(kategorie==='einkommen')budgetData.einkommen.push({name,values});
           else if(kategorie==='fixe ausgaben')budgetData.fixe.push({name,values});
           else if(kategorie==='variable ausgaben')budgetData.variable.push({name,values});
           budgetImported++;
         }
+        console.log('Budget data imported:',{
+          einkommen:budgetData.einkommen.length,
+          fixe:budgetData.fixe.length,
+          variable:budgetData.variable.length
+        });
       }
       // Skip Konto and Dauerauftrag sections silently
     }
@@ -1337,21 +1347,26 @@ function calcBudgetMonth(bd,monthIdx){
   const mi=monthIdx; // 0-based month index (0=Jan)
   let einnahmen=0,fixkosten=0,variable=0;
   const einItems=[],fixItems=[],varItems=[];
+  console.log(`calcBudgetMonth for month ${mi} (${MONTH_NAMES[mi]})`);
   (bd.einkommen||[]).forEach(r=>{
     const v=r.values[mi]||0;
     if(v>0){einnahmen+=v;einItems.push({label:r.name,val:v});}
   });
+  console.log(`Einnahmen: ${einnahmen} (${bd.einkommen?.length||0} items)`);
   (bd.fixe||[]).forEach(r=>{
     const v=r.values[mi]||0;
     if(v>0){fixkosten+=v;fixItems.push({label:r.name,val:v});}
   });
+  console.log(`Fixkosten: ${fixkosten} (${bd.fixe?.length||0} items)`);
   (bd.variable||[]).forEach(r=>{
     const v=r.values[mi]||0;
     if(v>0){variable+=v;varItems.push({label:r.name,val:v});}
   });
+  console.log(`Variable: ${variable} (${bd.variable?.length||0} items)`);
   const ausgaben=fixkosten+variable;
   const netto=einnahmen-ausgaben;
   const sparquote=einnahmen>0?Math.round(netto/einnahmen*100):0;
+  console.log(`Ausgaben: ${ausgaben}, Netto: ${netto}, Sparquote: ${sparquote}%`);
   return{einnahmen,fixkosten,variable,ausgaben,netto,sparquote,einItems,fixItems,varItems};
 }
 
