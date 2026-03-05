@@ -1,4 +1,4 @@
-const CACHE='verm-v34';
+const CACHE='verm-v35';
 const ASSETS=[
   './index.html',
   './manifest.json',
