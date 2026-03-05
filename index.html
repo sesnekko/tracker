@@ -293,19 +293,7 @@ function calcNet(e){
 }
 function getColors(){const d=isDark;return{cash:d?'#d8d0c0':'#605850',etf:d?'#c0b8a8':'#484038',bitcoin:d?'#d0c8b8':'#504840',aktien:d?'#b8b0a0':'#585048',edelmetalle:d?'#e0d8c8':'#706860',bav:d?'#a8a098':'#483f37',uhren:d?'#e8e0d0':'#787068',sonstiges:d?'#a09888':'#54493e',immobilien:d?'#989088':'#463b31'};}
 function cc(){return!isDark?{grid:'rgba(255,255,255,0.12)',tick:'#7a7568'}:{grid:'rgba(0,0,0,0.12)',tick:'#8a8578'};}
-function cd(){return{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false},tooltip:{enabled:true,titleFont:{family:'IBM Plex Sans'},bodyFont:{family:'IBM Plex Sans'},callbacks:{label:ctx=>' '+fmt(ctx.raw)}}},interaction:{mode:'nearest',intersect:false}};}
-
-/* Hide tooltips on touch end */
-function hideTooltipsOnTouchEnd(){
-  document.addEventListener('touchend',()=>{
-    Object.values(charts).forEach(chart=>{
-      if(chart&&chart.tooltip){
-        chart.tooltip.setActiveElements([],{x:0,y:0});
-        chart.update('none');
-      }
-    });
-  });
-}
+function cd(){return{responsive:true,maintainAspectRatio:false,events:['touchstart','touchmove'],plugins:{legend:{display:false},datalabels:{display:false},tooltip:{enabled:true,titleFont:{family:'IBM Plex Sans'},bodyFont:{family:'IBM Plex Sans'},callbacks:{label:ctx=>' '+fmt(ctx.raw)}}},interaction:{mode:'nearest',intersect:false}};}
 
 /* ── Month Picker ── */
 let picker;
@@ -368,7 +356,11 @@ function setDelta(id,curr,prev,inv=false){
 /* ── Render ── */
 function renderKPIs(){
   const data=loadData(),sorted=Object.keys(data).sort(),entry=data[selectedMonth];
-  if(!entry){['kpi-net','kpi-assets','kpi-liquid','kpi-illiquid','kpi-liab'].forEach(id=>{const e=document.getElementById(id);if(e){e.textContent='—';e.classList.remove('kpi-has-eur');}});return;}
+  if(!entry){
+    ['kpi-net','kpi-assets','kpi-liquid','kpi-illiquid','kpi-liab'].forEach(id=>{const e=document.getElementById(id);if(e){e.textContent='—';e.classList.remove('kpi-has-eur');}});
+    ['kpi-net-delta','kpi-assets-delta','kpi-liquid-delta','kpi-illiquid-delta','kpi-liab-delta'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='';});
+    return;
+  }
   const c=calc(entry);
   animateKpiValue('kpi-net',fmt(c.net),c.net);
   animateKpiValue('kpi-assets',fmt(c.assets),c.assets);
@@ -383,9 +375,10 @@ function renderKPIs(){
 function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
 
 function renderNetChart(){
-  destroyChart('net');
   const data=loadData(),sorted=Object.keys(data).sort();
-  if(sorted.length<2)return;
+  const entry=data[selectedMonth];
+  if(!entry||sorted.length<2){destroyChart('net');return;}
+  destroyChart('net');
   const ns=netRange>0?sorted.slice(-netRange):sorted;
   const nv=ns.map(k=>calc(data[k]).net),av=ns.map(k=>calc(data[k]).assets),lv=ns.map(k=>-calc(data[k]).liab),lb=ns.map(fmtMonth);
   const ctx=document.getElementById('chartNet').getContext('2d');
@@ -764,7 +757,6 @@ function initApp(){
 
     /* Render */
     render();
-    hideTooltipsOnTouchEnd();
 
     /* Live Prices */
     livePriceTick();etfPriceTick();
