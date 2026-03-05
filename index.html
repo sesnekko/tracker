@@ -45,7 +45,7 @@ body.dark::after {
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body {
   background:var(--bg);color:var(--text);
-  font-family:'IBM Plex Sans',sans-serif;font-weight:400;font-size:13px;
+  font-family:'IBM Plex Sans',sans-serif;font-weight:400;font-size:15px;
   min-height:100vh;min-height:100dvh;line-height:1.6;
   -webkit-font-smoothing:antialiased;overflow-x:hidden;letter-spacing:0.01em;
   padding:0 20px;
@@ -77,7 +77,7 @@ body {
   display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
   background:var(--bg2);border:1px solid var(--border);border-radius:8px;
   padding:16px 20px;z-index:10000;min-width:260px;max-width:320px;
-  font-size:11px;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.15);
+  font-size:13px;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.15);
 }
 .live-popup.show { display:block; }
 .live-popup-title { font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);font-weight:500;margin-bottom:10px; }
@@ -104,7 +104,7 @@ body {
 .month-picker select {
   appearance:none;-webkit-appearance:none;
   background:transparent;border:1px solid var(--border);color:var(--muted);
-  font-family:'IBM Plex Sans',sans-serif;font-size:11px;
+  font-family:'IBM Plex Sans',sans-serif;font-size:13px;
   padding:5px 8px;border-radius:4px;cursor:pointer;
   transition:border-color .2s,color .2s;
 }
@@ -132,7 +132,7 @@ body {
 .range-bar { display:flex;gap:6px;padding:10px 0 4px;flex-wrap:wrap;align-items:center; }
 .range-btn {
   background:transparent;border:1px solid var(--border);color:var(--muted);
-  font-family:'IBM Plex Sans',sans-serif;font-size:9px;letter-spacing:0.06em;
+  font-family:'IBM Plex Sans',sans-serif;font-size:11px;letter-spacing:0.06em;
   padding:4px 9px;border-radius:2px;cursor:pointer;
   transition:border-color .15s,color .15s,background .15s;
 }
@@ -142,7 +142,7 @@ body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
 
 /* ── Legend Table ── */
 .legend-table { width:100%;border-collapse:collapse;margin-top:10px; }
-.legend-table td { padding:5px 6px;font-size:11px;color:var(--text);vertical-align:middle; }
+.legend-table td { padding:5px 6px;font-size:13px;color:var(--text);vertical-align:middle; }
 .legend-table .leg-dot { width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle; }
 .legend-table .leg-name { color:var(--muted); }
 .legend-table .leg-val { text-align:right;font-variant-numeric:tabular-nums;font-weight:400; }
@@ -165,12 +165,12 @@ body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
 /* ── CSV Import ── */
 .import-section { padding:20px 0 40px;text-align:center; }
 .import-btn {
-  display:inline-block;padding:10px 20px;font-size:11px;color:var(--muted);
+  display:inline-block;padding:10px 20px;font-size:13px;color:var(--muted);
   background:transparent;border:1px dashed var(--border);border-radius:4px;
   cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;
 }
 .import-btn:active{border-color:var(--ink);color:var(--ink)}
-.csv-msg { display:none;font-size:11px;margin-top:8px; }
+.csv-msg { display:none;font-size:13px;margin-top:8px; }
 
 /* ── Odometer ── */
 .kpi-slot { display:inline-block;overflow:hidden;vertical-align:bottom; }
@@ -735,8 +735,8 @@ function initApp(){
 
     /* Live Prices */
     livePriceTick();etfPriceTick();
-    setInterval(livePriceTick,10000);
-    setInterval(etfPriceTick,10000);
+    setInterval(livePriceTick,5000);
+    setInterval(etfPriceTick,5000);
   }catch(e){
     console.error('Init-Fehler:',e);
   }
