@@ -74,9 +74,9 @@ body {
 
 /* ── Live Info Popup ── */
 .live-popup {
-  display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+  display:none;position:fixed !important;left:50% !important;top:50% !important;transform:translate(-50%,-50%) !important;
   background:var(--bg2);border:1px solid var(--border);border-radius:8px;
-  padding:16px 20px;z-index:10000;min-width:260px;max-width:320px;
+  padding:16px 20px;z-index:10000 !important;min-width:260px;max-width:320px;
   font-size:13px;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.15);
 }
 .live-popup.show { display:block; }
@@ -142,9 +142,11 @@ body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
 
 /* ── Legend Table ── */
 .legend-table { width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed; }
-.legend-table td { padding:5px 6px;font-size:13px;color:var(--text);vertical-align:middle; }
-.legend-table td:nth-child(odd) { width:40%; }
-.legend-table td:nth-child(even) { width:10%;text-align:right; }
+.legend-table td { padding:6px 4px;font-size:13px;color:var(--text);vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.legend-table td:nth-child(1) { width:42%; }
+.legend-table td:nth-child(2) { width:8%;text-align:right;font-variant-numeric:tabular-nums; }
+.legend-table td:nth-child(3) { width:42%; }
+.legend-table td:nth-child(4) { width:8%;text-align:right;font-variant-numeric:tabular-nums; }
 .legend-table .leg-dot { width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle; }
 .legend-table .leg-name { color:var(--muted); }
 .legend-table .leg-val { text-align:right;font-variant-numeric:tabular-nums;font-weight:400; }
@@ -328,6 +330,9 @@ function animateKpiValue(id,newText,newNum){
   const newNumStr=hasEur?newText.slice(0,-2):newText;
   hasEur?el.classList.add('kpi-has-eur'):el.classList.remove('kpi-has-eur');
   const curText=el.textContent;
+  const oldNum=parseFloat(el.dataset.num||'0');
+  // Skip animation if value hasn't changed
+  if(Math.abs(newNum-oldNum)<1)return;
   if(curText===newNumStr)return;
   if(curText==='—'||el.querySelector('.kpi-slot')){el.textContent=newNumStr;el.dataset.num=String(newNum);return;}
   const oldNum=parseFloat(el.dataset.num||'0');el.dataset.num=String(newNum);
@@ -628,8 +633,8 @@ function applyLivePrices(){
   e.etf=INPUT_FIELDS_ETF.reduce((s,k)=>s+(e._details[k]||0),0);
   e.edelmetalle=(e._details.gold||0)+(e._details.silber||0);
   d[ym]=e;saveData(d);
-  console.log('✓ Live prices applied, rendering...');
-  render();
+  console.log('✓ Live prices applied, updating KPIs...');
+  renderKPIs();renderPieChart();
 }
 
 async function livePriceTick(){
@@ -716,10 +721,18 @@ function initApp(){
   try{
     /* Theme: follow system preference, allow manual override */
     let stored=localStorage.getItem('darkMode');
-    // Clean up old 'auto' value from previous version
-    if(stored&&stored!=='0'&&stored!=='1'){localStorage.removeItem('darkMode');stored=null;}
+    // Clean up ANY old value that's not '0' or '1'
+    if(stored&&stored!=='0'&&stored!=='1'){
+      console.log('Cleaning up old darkMode value:',stored);
+      localStorage.removeItem('darkMode');
+      stored=null;
+    }
     if(stored==='1')isDark=true;
     else if(stored==='0')isDark=false;
+    else{
+      isDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+      console.log('Using system theme:',isDark?'dark':'light');
+    }
     else isDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
     document.body.classList.toggle('dark',isDark);
     document.getElementById('themeIcon').innerHTML=isDark?MOON:SUN;
