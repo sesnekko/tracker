@@ -136,39 +136,49 @@ body {
 .hero-delta.up{color:var(--green)} .hero-delta.down{color:var(--red)}
 
 /* ── Chart ── */
-.chart-section { padding:8px 0; }
+.chart-section { padding:4px 0; }
 .chart-wrap { position:relative;height:200px;-webkit-user-select:none;user-select:none; }
+.chart-wrap-net { margin-left:-20px;margin-right:-20px; }
 .chart-wrap.pie { height:260px;display:flex;align-items:center;justify-content:center; }
 .chart-wrap.pie canvas { max-height:240px;max-width:240px; }
 .chart-label { font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:10px;text-align:center; }
 
+/* ── Stacked Bar ── */
+.structure-section { padding:0 0 20px; }
+.stacked-bar { display:flex;height:24px;border-radius:6px;overflow:hidden;gap:2px; }
+.stacked-seg { transition:width .4s ease;cursor:pointer;opacity:0.85; }
+.stacked-seg:active { opacity:1; }
+.stacked-seg.highlighted { opacity:1; }
+.stacked-seg.dimmed { opacity:0.3; }
+
 /* ── Range Buttons ── */
-.range-bar { display:flex;gap:6px;padding:10px 0 4px 0;flex-wrap:wrap;align-items:center;justify-content:space-between; }
-#assetsToggleBtn { margin-left:30px; }
+.range-bar { display:flex;padding:6px 0 12px;align-items:center;justify-content:space-between; }
+.range-pills { display:flex;gap:2px;background:color-mix(in srgb,var(--border) 20%,transparent);border-radius:6px;padding:2px; }
+#assetsToggleBtn { margin-left:0; }
 .range-btn {
-  background:transparent;border:1px solid var(--border);color:var(--muted);
-  font-family:'IBM Plex Sans',sans-serif;font-size:12px;letter-spacing:0.06em;
-  padding:4px 9px;border-radius:2px;cursor:pointer;
-  transition:border-color .15s,color .15s,background .15s;
+  background:transparent;border:none;color:var(--muted);
+  font-family:'IBM Plex Sans',sans-serif;font-size:11px;letter-spacing:0.04em;
+  padding:4px 10px;border-radius:4px;cursor:pointer;
+  transition:color .2s,background .2s;
 }
-.range-btn:active{border-color:var(--ink);color:var(--ink)}
-.range-btn.active{border-color:var(--ink);color:var(--ink);background:rgba(26,26,24,0.05)}
-body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
+.range-btn:active{color:var(--ink)}
+.range-btn.active{color:var(--ink);background:color-mix(in srgb,var(--bg2) 80%,transparent);box-shadow:0 1px 3px rgba(0,0,0,0.08);}
+body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transparent);box-shadow:0 1px 3px rgba(0,0,0,0.2);}
 
 /* ── Legend ── */
 .legend-list { list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:0; }
-.legend-row { display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid color-mix(in srgb,var(--border) 30%,transparent); }
+.legend-row { display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid color-mix(in srgb,var(--border) 30%,transparent);cursor:pointer;transition:opacity .2s; }
 .legend-row:last-child { border-bottom:none; }
 .legend-bar { width:3px;border-radius:1.5px;height:16px;flex-shrink:0; }
 .legend-info { flex:1;min-width:0;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:8px; }
 .legend-name { font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.legend-track { height:3px;border-radius:1.5px;background:color-mix(in srgb,var(--border) 30%,transparent);overflow:hidden; }
-.legend-fill { height:100%;border-radius:1.5px;transition:width .4s ease; }
+.legend-track { height:6px;border-radius:3px;background:color-mix(in srgb,var(--border) 30%,transparent);overflow:hidden; }
+.legend-fill { height:100%;border-radius:3px;transition:width .4s ease; }
 .legend-val { font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:400;text-align:right;white-space:nowrap; }
 .legend-pct { font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:28px;text-align:right; }
 
 /* ── KPI Grid ── */
-.kpi-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:20px 0; }
+.kpi-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:4px 0 20px; }
 .kpi-item {
   background:color-mix(in srgb,var(--bg2) 60%,transparent);
   border:1px solid color-mix(in srgb,var(--border) 40%,transparent);
@@ -249,6 +259,26 @@ body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
 .kpi-slot { display:inline-block;overflow:hidden;vertical-align:bottom; }
 .kpi-inner { display:flex;flex-direction:column; }
 
+/* ── Chart Crosshair ── */
+.chart-crosshair-v {
+  position:absolute;top:0;bottom:0;width:1px;
+  background:var(--muted);opacity:0;pointer-events:none;
+  transition:opacity .15s;transform:translateX(-0.5px);
+}
+.chart-crosshair-h {
+  position:absolute;left:0;right:0;height:1px;
+  background:var(--muted);opacity:0;pointer-events:none;
+  transition:opacity .15s;transform:translateY(-0.5px);
+}
+.chart-crosshair-dot {
+  position:absolute;width:8px;height:8px;border-radius:50%;
+  background:var(--ink);border:2px solid var(--bg);
+  opacity:0;pointer-events:none;transition:opacity .15s;
+  transform:translate(-4px,-4px);
+}
+.chart-crosshair-v.visible,.chart-crosshair-h.visible { opacity:0.3; }
+.chart-crosshair-dot.visible { opacity:1; }
+
 /* ── Bottom Nav ── */
 .bottom-nav {
   position:fixed;bottom:0;left:0;right:0;
@@ -302,24 +332,25 @@ body.dark .range-btn.active{background:rgba(232,228,222,0.08)}
 
 <!-- Chart: Nettovermögen Verlauf -->
 <div class="chart-section">
-  <div class="chart-wrap"><canvas id="chartNet"></canvas></div>
-  <div class="range-bar">
-    <button class="range-btn" id="assetsToggleBtn" style="border-style:dashed">Assets</button>
+  <div class="chart-wrap chart-wrap-net"><canvas id="chartNet"></canvas></div>
+</div>
+
+<div class="range-bar">
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="range-btn" id="assetsToggleBtn">Assets</button>
     <div class="live-status"><span class="live-dot" id="liveDot"></span><span id="liveLabel">Live</span></div>
-    <div style="display:flex;gap:6px;padding-right:10px">
-      <button class="range-btn" data-range="12">12M</button>
-      <button class="range-btn active" data-range="36">3J</button>
-      <button class="range-btn" data-range="60">5J</button>
-      <button class="range-btn" data-range="0">Alle</button>
-    </div>
+  </div>
+  <div class="range-pills">
+    <button class="range-btn" data-range="12">12M</button>
+    <button class="range-btn active" data-range="36">3J</button>
+    <button class="range-btn" data-range="60">5J</button>
+    <button class="range-btn" data-range="0">Alle</button>
   </div>
 </div>
 
-<div style="height:10px"></div>
-
-<!-- Chart: Vermögensstruktur -->
-<div class="chart-section">
-  <div class="chart-wrap pie"><canvas id="chartAssets"></canvas></div>
+<!-- Vermögensstruktur -->
+<div class="structure-section">
+  <div class="stacked-bar" id="stackedBar"></div>
   <ul class="legend-list" id="legendAssets"></ul>
 </div>
 
@@ -572,9 +603,9 @@ function renderNetChart(){
     {label:'Vermögen',data:av,borderColor:grn,backgroundColor:gA,borderWidth:1.2,pointRadius:ns.length>24?0:2,tension:0.35,fill:true,hidden:netLineHidden[1]},
     {label:'Verbindlichkeiten',data:lv,borderColor:red,backgroundColor:gL,borderWidth:1.2,pointRadius:ns.length>24?0:2,tension:0.35,fill:true,hidden:netLineHidden[2]},
     ...ad
-  ]},options:{...cd(),plugins:{...cd().plugins,legend:{display:false},tooltip:{mode:'nearest',intersect:false,filter:it=>!showAssets||it.dataset._isAsset||it.datasetIndex<3,titleFont:{family:'IBM Plex Sans'},bodyFont:{family:'IBM Plex Sans'},callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},scales:{
-    x:{grid:{color:cc().grid},ticks:{color:cc().tick,font:{family:'IBM Plex Sans',size:8},maxRotation:0,maxTicksLimit:5}},
-    y:{grid:{color:cc().grid},ticks:{color:cc().tick,font:{family:'IBM Plex Sans',size:8},stepSize:150000,callback:v=>fmtAxis(v)}}
+  ]},options:{...cd(),layout:{padding:{left:0,right:0}},plugins:{...cd().plugins,legend:{display:false},tooltip:{mode:'nearest',intersect:false,filter:it=>!showAssets||it.dataset._isAsset||it.datasetIndex<3,titleFont:{family:'IBM Plex Sans'},bodyFont:{family:'IBM Plex Sans'},callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},scales:{
+    x:{display:false},
+    y:{display:false,ticks:{stepSize:150000}}
   }}});
   document.getElementById('assetsToggleBtn').classList.toggle('active',showAssets);
   setupChartInteraction();
@@ -583,7 +614,8 @@ function renderNetChart(){
 function renderPieChart(){
   const data=loadData(),entry=data[selectedMonth];
   const lA=document.getElementById('legendAssets');
-  if(!entry){destroyChart('assets');lA.innerHTML='';return;}
+  const bar=document.getElementById('stackedBar');
+  if(!entry){bar.innerHTML='';lA.innerHTML='';return;}
   const cn=calcNet(entry);
   const allFields=[...FIELDS_LIQUID,...FIELDS_ILLIQUID];
   const displayFields=allFields.filter(k=>k!=='porsche911'&&k!=='mercedes');
@@ -591,26 +623,52 @@ function renderPieChart(){
   let labels=displayFields.map(k=>{if(k==='cash'&&((+entry.kredit1||0)+(+entry.kredit2||0))>0)return'Cash (netto)';if(k==='immobilien'&&(+entry.immkredit||0)>0)return'Immobilien (netto)';return LABELS[k];});
   const idx=vals.map((_,i)=>i).sort((a,b)=>vals[b]-vals[a]);
   vals=idx.map(i=>vals[i]);labels=idx.map(i=>labels[i]);
-  /* brightness-stepped monochrome palette */
   const _dk=!isDark?[90,84,76]:[130,124,116],_lt=!isDark?[195,190,180]:[240,234,220];
   const _n=Math.max(vals.filter(v=>v>0).length,1);
   const colors=vals.map((_,i)=>{const t=_n<=1?0:i/(_n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
   const total=vals.reduce((a,b)=>a+b,0);
-  if(charts['assets']){charts['assets'].data.labels=total?labels:['—'];charts['assets'].data.datasets[0].data=total?vals:[1];charts['assets'].data.datasets[0].backgroundColor=total?colors:['rgba(0,0,0,0.04)'];charts['assets'].update();}
-  else{const ctx=document.getElementById('chartAssets').getContext('2d');charts['assets']=new Chart(ctx,{type:'doughnut',data:{labels:total?labels:['—'],datasets:[{data:total?vals:[1],backgroundColor:total?colors:['rgba(0,0,0,0.04)'],borderWidth:0,hoverOffset:3}]},options:{...cd(),cutout:'52%',plugins:{...cd().plugins,tooltip:{titleFont:{family:'IBM Plex Sans'},bodyFont:{family:'IBM Plex Sans'},callbacks:{label:c=>' '+c.label+': '+fmt(c.raw)}},datalabels:{color:!isDark?'rgba(232,228,222,0.9)':'rgba(242,239,233,0.85)',font:{family:'IBM Plex Sans',size:9,weight:'500'},formatter:(v,c)=>{const t=c.dataset.data.reduce((a,b)=>a+b,0);return v/t*100>=4?Math.round(v/t*100)+'%':'';}}}},plugins:[ChartDataLabels]});}
-  /* Legend as single-column list */
+  /* Stacked bar */
+  bar.innerHTML='';
+  let segIdx=0;
+  const segs=[],rows=[];
+  if(total){
+    vals.forEach((v,i)=>{
+      if(v<=0)return;
+      const seg=document.createElement('div');
+      seg.className='stacked-seg';
+      seg.style.width=(v/total*100)+'%';
+      seg.style.background=colors[i];
+      seg.dataset.idx=String(segIdx);
+      segs.push(seg);
+      bar.appendChild(seg);
+      segIdx++;
+    });
+  }
+  /* Legend */
   lA.innerHTML='';
   if(!total)return;
   const items=[];vals.forEach((v,i)=>{if(v>0)items.push({label:labels[i],val:v,color:colors[i]});});
   const maxVal=Math.max(...items.map(i=>i.val));
-  items.forEach(item=>{
+  items.forEach((item,j)=>{
     const pct=Math.round(item.val/total*100);
     const barPct=Math.round(item.val/maxVal*100);
     const li=document.createElement('li');
     li.className='legend-row';
+    li.dataset.idx=String(j);
     li.innerHTML=`<div class="legend-bar" style="background:${item.color}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${item.color};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
+    rows.push(li);
     lA.appendChild(li);
   });
+  /* Click interaction */
+  let activeIdx=null;
+  function highlight(idx){
+    if(activeIdx===idx){activeIdx=null;segs.forEach(s=>{s.classList.remove('highlighted','dimmed');});rows.forEach(r=>{r.style.opacity='';});return;}
+    activeIdx=idx;
+    segs.forEach(s=>{s.classList.toggle('highlighted',s.dataset.idx===String(idx));s.classList.toggle('dimmed',s.dataset.idx!==String(idx));});
+    rows.forEach(r=>{r.style.opacity=r.dataset.idx===String(idx)?'1':'0.35';});
+  }
+  segs.forEach(s=>s.addEventListener('click',()=>highlight(parseInt(s.dataset.idx))));
+  rows.forEach(r=>r.addEventListener('click',()=>highlight(parseInt(r.dataset.idx))));
 }
 
 function render(){renderKPIs();renderNetChart();renderPieChart();}
@@ -885,6 +943,17 @@ function setupChartInteraction(){
   const netData=chart.data.datasets[0].data;
   const labels=chart.data.labels;
 
+  // Crosshair elements
+  const wrap=canvas.parentElement;
+  wrap.style.position='relative';
+  const crossV=document.createElement('div');
+  crossV.className='chart-crosshair-v';
+  const crossH=document.createElement('div');
+  crossH.className='chart-crosshair-h';
+  const crossDot=document.createElement('div');
+  crossDot.className='chart-crosshair-dot';
+  wrap.appendChild(crossV);wrap.appendChild(crossH);wrap.appendChild(crossDot);
+
   function getIndexFromX(touchX){
     const rect=canvas.getBoundingClientRect();
     const x=touchX-rect.left;
@@ -892,6 +961,31 @@ function setupChartInteraction(){
     const pxPerTick=(xScale.right-xScale.left)/(netData.length-1);
     let idx=Math.round((x-xScale.left)/pxPerTick);
     return Math.max(0,Math.min(netData.length-1,idx));
+  }
+
+  function getPixelForIndex(idx){
+    const xScale=chart.scales.x;
+    const yScale=chart.scales.y;
+    const px=xScale.left+(idx/(netData.length-1))*(xScale.right-xScale.left);
+    const py=yScale.getPixelForValue(netData[idx]);
+    return{x:px,y:py};
+  }
+
+  function showCrosshair(idx){
+    const p=getPixelForIndex(idx);
+    crossV.style.left=p.x+'px';
+    crossH.style.top=p.y+'px';
+    crossDot.style.left=p.x+'px';
+    crossDot.style.top=p.y+'px';
+    crossV.classList.add('visible');
+    crossH.classList.add('visible');
+    crossDot.classList.add('visible');
+  }
+
+  function hideCrosshair(){
+    crossV.classList.remove('visible');
+    crossH.classList.remove('visible');
+    crossDot.classList.remove('visible');
   }
 
   function showValueAtIndex(idx){
@@ -907,11 +1001,14 @@ function setupChartInteraction(){
       if(idx>0){setDelta('kpi-net-delta',netData[idx],netData[idx-1]);}
       else{deltaEl.textContent='';}
     }
+    showCrosshair(idx);
   }
 
   function restoreCurrentValue(){
     chartInteractionActive=false;
     lastIndex=-1;
+    document.body.style.overflow='';
+    hideCrosshair();
     const heroLabel=document.querySelector('.hero-label');
     if(heroLabel)heroLabel.textContent='Nettovermögen';
     renderKPIs();
@@ -919,13 +1016,15 @@ function setupChartInteraction(){
 
   canvas.addEventListener('touchstart',e=>{
     chartInteractionActive=true;
+    document.body.style.overflow='hidden';
     showValueAtIndex(getIndexFromX(e.touches[0].clientX));
   },{passive:true});
 
   canvas.addEventListener('touchmove',e=>{
     if(!chartInteractionActive)return;
+    e.preventDefault();
     showValueAtIndex(getIndexFromX(e.touches[0].clientX));
-  },{passive:true});
+  },{passive:false});
 
   canvas.addEventListener('touchend',()=>{
     if(!chartInteractionActive)return;
