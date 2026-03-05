@@ -291,7 +291,19 @@ function calcNet(e){
 }
 function getColors(){const d=isDark;return{cash:d?'#d8d0c0':'#605850',etf:d?'#c0b8a8':'#484038',bitcoin:d?'#d0c8b8':'#504840',aktien:d?'#b8b0a0':'#585048',edelmetalle:d?'#e0d8c8':'#706860',bav:d?'#a8a098':'#483f37',uhren:d?'#e8e0d0':'#787068',sonstiges:d?'#a09888':'#54493e',immobilien:d?'#989088':'#463b31'};}
 function cc(){return!isDark?{grid:'rgba(255,255,255,0.12)',tick:'#7a7568'}:{grid:'rgba(0,0,0,0.12)',tick:'#8a8578'};}
-function cd(){return{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false},tooltip:{titleFont:{family:'IBM Plex Sans'},bodyFont:{family:'IBM Plex Sans'},callbacks:{label:ctx=>' '+fmt(ctx.raw)}}}};}
+function cd(){return{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false},tooltip:{enabled:true,titleFont:{family:'IBM Plex Sans'},bodyFont:{family:'IBM Plex Sans'},callbacks:{label:ctx=>' '+fmt(ctx.raw)}}},interaction:{mode:'nearest',intersect:false}};}
+
+/* Hide tooltips on touch end */
+function hideTooltipsOnTouchEnd(){
+  document.addEventListener('touchend',()=>{
+    Object.values(charts).forEach(chart=>{
+      if(chart&&chart.tooltip){
+        chart.tooltip.setActiveElements([],{x:0,y:0});
+        chart.update('none');
+      }
+    });
+  });
+}
 
 /* ── Month Picker ── */
 let picker;
@@ -739,6 +751,7 @@ function initApp(){
 
     /* Render */
     render();
+    hideTooltipsOnTouchEnd();
 
     /* Live Prices */
     livePriceTick();etfPriceTick();
