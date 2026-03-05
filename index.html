@@ -451,39 +451,55 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 
 <!-- Budget KPIs -->
 <div class="kpi-grid" style="padding-bottom:16px">
-  <div class="kpi-item" style="cursor:default">
+  <div class="kpi-item">
     <div class="kpi-flip-inner">
       <div class="kpi-face-front">
         <div class="kpi-label">Einnahmen</div>
         <div class="kpi-val kpi-has-eur" id="budget-einnahmen">—</div>
         <div class="kpi-delta" id="budget-einnahmen-sub"></div>
       </div>
+      <div class="kpi-face-back">
+        <div class="kpi-back-label">Einnahmen</div>
+        <div class="kpi-back-text">Summe aller Geldeingänge: Gehälter, Boni, Kindergeld und Pflegekasse für den gewählten Monat.</div>
+      </div>
     </div>
   </div>
-  <div class="kpi-item" style="cursor:default">
+  <div class="kpi-item">
     <div class="kpi-flip-inner">
       <div class="kpi-face-front">
         <div class="kpi-label">Fixkosten</div>
         <div class="kpi-val kpi-has-eur" id="budget-fix">—</div>
         <div class="kpi-delta" id="budget-fix-sub"></div>
       </div>
+      <div class="kpi-face-back">
+        <div class="kpi-back-label">Fixkosten</div>
+        <div class="kpi-back-text">Regelmäßige monatliche Ausgaben: Tilgung, Versicherungen, Abos, Nebenkosten und Fahrzeugkosten.</div>
+      </div>
     </div>
   </div>
-  <div class="kpi-item" style="cursor:default">
+  <div class="kpi-item">
     <div class="kpi-flip-inner">
       <div class="kpi-face-front">
         <div class="kpi-label">Variable Ausgaben</div>
         <div class="kpi-val kpi-has-eur" id="budget-var">—</div>
         <div class="kpi-delta" id="budget-var-sub"></div>
       </div>
+      <div class="kpi-face-back">
+        <div class="kpi-back-label">Variable Ausgaben</div>
+        <div class="kpi-back-text">Flexible Ausgaben: Lebensmittel, Lifestyle, Drogerie, Frisör sowie Sparpläne für ETFs und Bitcoin.</div>
+      </div>
     </div>
   </div>
-  <div class="kpi-item" style="cursor:default">
+  <div class="kpi-item">
     <div class="kpi-flip-inner">
       <div class="kpi-face-front">
         <div class="kpi-label">Sparquote</div>
         <div class="kpi-val" id="budget-sparquote">—</div>
         <div class="kpi-delta" id="budget-sparquote-sub"></div>
+      </div>
+      <div class="kpi-face-back">
+        <div class="kpi-back-label">Sparquote</div>
+        <div class="kpi-back-text">Prozentualer Anteil der Einnahmen, der nach Abzug aller Ausgaben übrig bleibt.</div>
       </div>
     </div>
   </div>
