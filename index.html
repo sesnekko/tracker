@@ -1248,6 +1248,7 @@ function setupChartInteraction(){
   function showValueAtIndex(idx){
     if(idx===lastIndex)return;
     lastIndex=idx;
+    haptic('light');
     const val=netData[idx];
     const ym=labels[idx];
     
