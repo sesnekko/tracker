@@ -361,7 +361,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
 .sankey-node-label { font-size:11px;color:var(--ink);font-weight:400;line-height:1.3;max-width:100%; }
 .sankey-node-value { font-size:13px;color:var(--ink);font-weight:500;margin-top:6px; }
 .sankey-node-back-label { font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500; }
-.sankey-node-back-iban { font-size:9px;color:var(--ink);font-weight:400;line-height:1.4;word-break:break-all; }
+.sankey-node-back-iban { font-size:9px;color:var(--ink);font-weight:400;line-height:1.4; }
 
 /* Budget Modal - removed, data comes from CSV */
 </style>
@@ -484,9 +484,9 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
 
 <!-- Import Page -->
 <div id="page-import" class="page">
-<div class="app-content">
+<div class="app-content" style="display:flex;align-items:center;justify-content:center;min-height:calc(100dvh - 120px)">
 
-<div class="import-section" style="padding-top:40px">
+<div class="import-section" style="padding:0">
   <div style="text-align:center;color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto">
     Importiere deine CSV-Datei mit Vermögensdaten und Budget-Informationen. Die App speichert alle Daten lokal in deinem Browser.
   </div>
@@ -622,6 +622,7 @@ function nextYM(){const d=new Date();d.setMonth(d.getMonth()+1);return d.getFull
 function fmtMonth(ym){const[y,m]=ym.split('-');return MONTH_NAMES[+m-1]+' '+y;}
 function fmt(n){if(n==null||isNaN(n))return'—';return n.toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:0})+' €';}
 function fmtAxis(n){if(n==null||isNaN(n))return'';if(Math.abs(n)>=1e6)return(n/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})+'M';if(Math.abs(n)>=1e3)return(n/1e3).toLocaleString('de-DE',{maximumFractionDigits:0})+'k';return n.toLocaleString('de-DE',{minimumFractionDigits:0});}
+function fmtIban(s){if(!s)return'';const clean=s.replace(/\s/g,'');const spaced=clean.replace(/(.{4})/g,'$1 ').trim();if(clean.length>12){return spaced.slice(0,14)+'<br>'+spaced.slice(14).trim();}return spaced;}
 function loadData(){try{const l=localStorage.getItem('finData');if(l)return JSON.parse(l);}catch{}return{};}
 function saveData(d){localStorage.setItem('finData',JSON.stringify(d));}
 
@@ -1739,7 +1740,7 @@ function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal){
           </div>
           <div class="sankey-node-back">
             <div class="sankey-node-back-label">IBAN</div>
-            <div class="sankey-node-back-iban">${iban}</div>
+            <div class="sankey-node-back-iban">${fmtIban(iban)}</div>
           </div>
         </div>
       </div>
@@ -1766,7 +1767,7 @@ function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal){
           </div>
           <div class="sankey-node-back">
             <div class="sankey-node-back-label">IBAN</div>
-            <div class="sankey-node-back-iban">${iban}</div>
+            <div class="sankey-node-back-iban">${fmtIban(iban)}</div>
           </div>
         </div>
       </div>
