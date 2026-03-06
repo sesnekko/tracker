@@ -165,7 +165,7 @@ body {
 /* ── Stacked Bar (Budget only) ── */
 .structure-section { padding:0 0 20px; }
 .stacked-bar { display:flex;height:12px;border-radius:4px;overflow:hidden;gap:1px;margin-bottom:12px; }
-.breakdown-collapsible { cursor:pointer;transition:opacity .2s; }
+.breakdown-collapsible { cursor:pointer;transition:opacity .2s,transform .35s cubic-bezier(.4,0,.2,1); }
 .breakdown-collapsible:active { opacity:0.8; }
 .breakdown-details { margin-top:8px; }
 .stacked-seg { transition:width .4s ease;cursor:pointer;opacity:0.85; }
@@ -189,7 +189,7 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 
 /* ── Legend ── */
 .legend-list { list-style:none;display:flex;flex-direction:column;gap:4px; }
-.legend-row { display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid color-mix(in srgb,var(--border) 30%,transparent);cursor:pointer;transition:opacity .2s; }
+.legend-row { display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid color-mix(in srgb,var(--border) 30%,transparent);cursor:pointer;transition:opacity .2s,transform .35s cubic-bezier(.4,0,.2,1); }
 .legend-row:last-child { border-bottom:none; }
 .legend-bar { width:3px;border-radius:1.5px;height:16px;flex-shrink:0; }
 .legend-info { flex:1;min-width:0;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:8px; }
@@ -718,6 +718,39 @@ function syncAllPickers(){
 /* ── Odometer Animation ── */
 const _kpiTimers={};
 const _kpiAnimating={};
+
+/* Lightweight odometer for small inline values */
+function animateSmallValue(el,newText,newNum){
+  if(!el)return;
+  const oldNum=parseFloat(el.dataset.num||'0');
+  if(Math.abs(newNum-oldNum)<1)return;
+  const oldText=el.dataset.display||el.textContent.trim();
+  el.dataset.num=String(newNum);el.dataset.display=newText;
+  if(oldText===newText)return;
+  if(oldText==='\u2014'||!oldText){el.textContent=newText;return;}
+  const h=el.offsetHeight||18;
+  const upDir=Math.abs(newNum)>=Math.abs(oldNum);
+  function charMap(s){const m=new Map();let dp=0;for(let i=s.length-1;i>=0;i--)if(s[i]>='0'&&s[i]<='9'){m.set(dp,s[i]);dp++;}return m;}
+  function dpMap(s){const m=new Map();let dp=0;for(let i=s.length-1;i>=0;i--)if(s[i]>='0'&&s[i]<='9'){m.set(i,dp);dp++;}return m;}
+  const newDPM=dpMap(newText),oldByDP=charMap(oldText);
+  let html='';
+  for(let i=0;i<newText.length;i++){
+    const ch=newText[i];
+    if(!(ch>='0'&&ch<='9')){html+=ch==='<'?'&lt;':ch;continue;}
+    const dp=newDPM.get(i),oldCh=oldByDP.has(dp)?oldByDP.get(dp):ch;
+    if(oldCh===ch){html+=ch;continue;}
+    const ms=180+dp*40;
+    const row0=upDir?oldCh:ch,row1=upDir?ch:oldCh;
+    const startY=upDir?'0':`-${h}px`,endY=upDir?`-${h}px`:'0';
+    html+=`<span class="kpi-slot" style="height:${h}px"><span class="kpi-inner" style="transform:translateY(${startY})" data-end="${endY}" data-ms="${ms}"><span style="line-height:${h}px;height:${h}px;display:block">${row0}</span><span style="line-height:${h}px;height:${h}px;display:block">${row1}</span></span></span>`;
+  }
+  el.innerHTML=html;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    el.querySelectorAll('.kpi-inner').forEach(inner=>{inner.style.transition=`transform ${inner.dataset.ms}ms cubic-bezier(.4,0,.2,1)`;inner.style.transform=`translateY(${inner.dataset.end})`;});
+    setTimeout(()=>{el.textContent=newText;el.dataset.display=newText;},400);
+  }));
+}
+
 function animateKpiValue(id,newText,newNum){
   const el=document.getElementById(id);if(!el)return;
   const hasEur=newText.endsWith(' €');
@@ -1239,10 +1272,12 @@ function showLivePopup(){
   c.innerHTML=html;
   document.getElementById('livePopup').classList.add('show');
   document.getElementById('liveOverlay').classList.add('show');
+  document.body.style.overflow='hidden';
 }
 function closeLivePopup(){
   document.getElementById('livePopup').classList.remove('show');
   document.getElementById('liveOverlay').classList.remove('show');
+  document.body.style.overflow='';
 }
 
 /* ── Asset Detail Popup ── */
@@ -1333,11 +1368,14 @@ function showAssetDetail(assetKey){
   document.getElementById('assetPopupContent').innerHTML=html;
   document.getElementById('assetPopup').classList.add('show');
   document.getElementById('assetOverlay').classList.add('show');
+  document.body.style.overflow='hidden';
+  haptic('light');
 }
 
 function closeAssetPopup(){
   document.getElementById('assetPopup').classList.remove('show');
   document.getElementById('assetOverlay').classList.remove('show');
+  document.body.style.overflow='';
 }
 
 /* ── Haptic Feedback ── */
@@ -1421,49 +1459,81 @@ function setupChartInteraction(){
     const ym=dataKeys[idx];
     const ymLabel=labels[idx];
     
-    // Update KPI
     animateKpiValue('kpi-net',fmt(val),val);
     const heroLabel=document.querySelector('.hero-label');
     if(heroLabel)heroLabel.textContent=ymLabel;
     const deltaEl=document.getElementById('kpi-net-delta');
     if(deltaEl){
       if(idx>0){setDelta('kpi-net-delta',netData[idx],netData[idx-1]);}
-      else{deltaEl.textContent='±0 €';deltaEl.className='hero-delta';}
+      else{deltaEl.textContent='\u00b10 \u20ac';deltaEl.className='hero-delta';}
     }
     
-    // Update asset list for this month
     const data=loadData();
     const entry=data[ym];
-    if(entry){
-      const cn=calcNet(entry);
-      const allFields=[...FIELDS_LIQUID,...FIELDS_ILLIQUID];
-      const displayFields=allFields.filter(k=>k!=='porsche911'&&k!=='mercedes');
-      let vals=displayFields.map(k=>{if(k==='cash')return cn.cash_net;if(k==='immobilien')return cn.immobilien_net;if(k==='sonstiges')return(+entry.sonstiges||0)+(+entry.porsche911||0)+(+entry.mercedes||0);return+entry[k]||0;});
-      let lbls=displayFields.map(k=>{if(k==='cash'&&((+entry.kredit1||0)+(+entry.kredit2||0))>0)return'Cash (netto)';if(k==='immobilien'&&(+entry.immkredit||0)>0)return'Immobilien (netto)';return LABELS[k];});
-      const sortIdx=vals.map((_,i)=>i).sort((a,b)=>vals[b]-vals[a]);
-      vals=sortIdx.map(i=>vals[i]);lbls=sortIdx.map(i=>lbls[i]);
-      const total=vals.reduce((a,b)=>a+b,0);
-      const maxVal=Math.max(...vals);
-      
-      // Rebuild legend with correct sorting for this month
-      const lA=document.getElementById('legendAssets');
+    if(!entry){showCrosshair(idx);return;}
+    
+    const cn=calcNet(entry);
+    const allFields=[...FIELDS_LIQUID,...FIELDS_ILLIQUID];
+    const displayFields=allFields.filter(k=>k!=='porsche911'&&k!=='mercedes');
+    let vals=displayFields.map(k=>{if(k==='cash')return cn.cash_net;if(k==='immobilien')return cn.immobilien_net;if(k==='sonstiges')return(+entry.sonstiges||0)+(+entry.porsche911||0)+(+entry.mercedes||0);return+entry[k]||0;});
+    let lbls=displayFields.map(k=>{if(k==='cash'&&((+entry.kredit1||0)+(+entry.kredit2||0))>0)return'Cash (netto)';if(k==='immobilien'&&(+entry.immkredit||0)>0)return'Immobilien (netto)';return LABELS[k];});
+    let keys=displayFields.slice();
+    const sortIdx=vals.map((_,i)=>i).sort((a,b)=>vals[b]-vals[a]);
+    vals=sortIdx.map(i=>vals[i]);lbls=sortIdx.map(i=>lbls[i]);keys=sortIdx.map(i=>keys[i]);
+    const total=vals.reduce((a,b)=>a+b,0);
+    
+    const lA=document.getElementById('legendAssets');
+    const existingRows=lA.querySelectorAll('.legend-row');
+    const items=[];
+    vals.forEach((v,i)=>{if(v>0)items.push({label:lbls[i],val:v,key:keys[i]});});
+    const _dk=!isDark?[90,84,76]:[130,124,116],_lt=!isDark?[195,190,180]:[240,234,220];
+    const _n=Math.max(items.length,1);
+    const colors=items.map((_,i)=>{const t=_n<=1?0:i/(_n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
+    const mxV=items.length?Math.max(...items.map(i=>i.val)):1;
+    
+    if(existingRows.length!==items.length||!existingRows.length){
       lA.innerHTML='';
-      if(total>0){
-        const items=[];
-        vals.forEach((v,i)=>{if(v>0)items.push({label:lbls[i],val:v});});
-        const _dk=!isDark?[90,84,76]:[130,124,116],_lt=!isDark?[195,190,180]:[240,234,220];
-        const _n=Math.max(items.length,1);
-        const colors=items.map((_,i)=>{const t=_n<=1?0:i/(_n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
-        items.forEach((item,j)=>{
-          const pct=Math.round(item.val/total*100);
-          const barPct=Math.round(item.val/maxVal*100);
-          const li=document.createElement('li');
-          li.className='legend-row';
-          li.innerHTML=`<div class="legend-bar" style="background:${colors[j]}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${colors[j]};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
-          lA.appendChild(li);
-        });
-      }
+      items.forEach((item,j)=>{
+        const pct=Math.round(item.val/total*100);
+        const barPct=Math.round(item.val/mxV*100);
+        const li=document.createElement('li');
+        li.className='legend-row';
+        li.dataset.assetKey=item.key;
+        li.innerHTML=`<div class="legend-bar" style="background:${colors[j]}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${colors[j]};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
+        lA.appendChild(li);
+      });
+      showCrosshair(idx);
+      return;
     }
+    
+    const rowMap={};
+    existingRows.forEach(r=>{rowMap[r.dataset.assetKey]={el:r,top:r.getBoundingClientRect().top};});
+    items.forEach(item=>{const row=rowMap[item.key];if(row)lA.appendChild(row.el);});
+    items.forEach((item,j)=>{
+      const row=rowMap[item.key];if(!row)return;
+      const el=row.el;
+      const delta=row.top-el.getBoundingClientRect().top;
+      if(Math.abs(delta)>1){
+        el.style.transition='none';
+        el.style.transform=`translateY(${delta}px)`;
+        requestAnimationFrame(()=>requestAnimationFrame(()=>{
+          el.style.transition='transform .35s cubic-bezier(.4,0,.2,1)';
+          el.style.transform='';
+        }));
+      }
+      const valEl=el.querySelector('.legend-val');
+      const pctEl=el.querySelector('.legend-pct');
+      const fillEl=el.querySelector('.legend-fill');
+      const barEl=el.querySelector('.legend-bar');
+      const nameEl=el.querySelector('.legend-name');
+      const pct=Math.round(item.val/total*100);
+      const barPct=Math.round(item.val/mxV*100);
+      if(nameEl)nameEl.textContent=item.label;
+      if(barEl)barEl.style.background=colors[j];
+      if(fillEl){fillEl.style.width=barPct+'%';fillEl.style.background=colors[j];}
+      if(pctEl)pctEl.textContent=pct+'%';
+      if(valEl)animateSmallValue(valEl,fmt(item.val),item.val);
+    });
     
     showCrosshair(idx);
   }
