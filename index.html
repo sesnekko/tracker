@@ -55,10 +55,9 @@ body {
 
 /* ── Header ── */
 .app-header {
-  display:flex;align-items:center;
-  padding:8px 0 0;gap:8px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 0 0;
 }
-.header-actions { display:flex;gap:8px;align-items:center; }
 .icon-btn {
   width:32px;height:32px;border-radius:50%;background:transparent;
   border:1px solid var(--border);color:var(--muted);cursor:pointer;
@@ -67,6 +66,13 @@ body {
 }
 .icon-btn:active{border-color:var(--ink);color:var(--ink)}
 .icon-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.date-btn {
+  background:transparent;border:1px solid var(--border);color:var(--muted);
+  font-family:'IBM Plex Sans',sans-serif;font-size:14px;
+  padding:5px 10px;border-radius:4px;cursor:pointer;
+  transition:border-color .2s,color .2s;
+}
+.date-btn:active{border-color:var(--ink);color:var(--ink)}
 .live-status { font-size:14px;color:var(--muted);display:flex;align-items:center;cursor:pointer; }
 .live-dot {
   width:6px;height:6px;border-radius:50%;background:var(--green);
@@ -112,16 +118,30 @@ body {
 }
 @keyframes spin { to{transform:rotate(360deg)} }
 
-/* ── Month Picker ── */
-.month-picker { display:flex;gap:4px;align-items:center;justify-content:center;padding:12px 0; }
-.month-picker select {
-  appearance:none;-webkit-appearance:none;
-  background:transparent;border:1px solid var(--border);color:var(--muted);
-  font-family:'IBM Plex Sans',sans-serif;font-size:14px;
-  padding:5px 8px;border-radius:4px;cursor:pointer;
-  transition:border-color .2s,color .2s;
+/* ── Month Picker Popup ── */
+.picker-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;opacity:0;pointer-events:none;transition:opacity .25s; }
+.picker-overlay.show { opacity:1;pointer-events:auto; }
+.picker-popup {
+  position:fixed;bottom:0;left:0;right:0;z-index:101;
+  background:var(--bg);border-top:1px solid var(--border);
+  border-radius:16px 16px 0 0;
+  padding:20px 20px max(20px,env(safe-area-inset-bottom));
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
 }
-.month-picker select:active{border-color:var(--ink);color:var(--ink)}
+.picker-popup.show { transform:translateY(0); }
+.picker-popup-title { font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;text-align:center;margin-bottom:16px; }
+.picker-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px; }
+.picker-cell {
+  padding:10px 0;text-align:center;border-radius:6px;cursor:pointer;
+  font-size:14px;color:var(--ink);border:1px solid transparent;
+  transition:background .15s,border-color .15s;
+}
+.picker-cell:active { background:color-mix(in srgb,var(--border) 50%,transparent); }
+.picker-cell.active { border-color:var(--ink);font-weight:500; }
+.picker-year-row { display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:16px; }
+.picker-year-btn { background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 8px; }
+.picker-year-btn:active { color:var(--ink); }
+.picker-year-label { font-size:18px;font-weight:400;color:var(--ink);min-width:60px;text-align:center; }
 
 /* ── Hero KPI ── */
 .hero { text-align:center;padding:20px 0 4px;-webkit-user-select:none;user-select:none; }
@@ -327,16 +347,25 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 
 <!-- ── APP HTML ── -->
 <div class="app-header">
+  <button class="date-btn" id="dateBtn">Apr 2026</button>
   <button class="icon-btn" id="themeToggle" title="Dark/Light Mode">
     <svg id="themeIcon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
   </button>
 </div>
 
+<!-- Month Picker Popup -->
+<div class="picker-overlay" id="pickerOverlay"></div>
+<div class="picker-popup" id="pickerPopup">
+  <div class="picker-year-row">
+    <button class="picker-year-btn" id="pickerYearPrev">‹</button>
+    <span class="picker-year-label" id="pickerYearLabel">2026</span>
+    <button class="picker-year-btn" id="pickerYearNext">›</button>
+  </div>
+  <div class="picker-grid" id="pickerMonthGrid"></div>
+</div>
+
 <div id="page-home" class="page active">
 <div class="app-content">
-
-<!-- Month Picker -->
-<div class="month-picker" id="monthPicker"></div>
 
 <!-- Hero: Nettovermögen -->
 <div class="hero">
@@ -432,9 +461,6 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 <div id="page-import" class="page">
 <div class="app-content">
 
-<!-- Month Picker -->
-<div class="month-picker" id="monthPickerImport"></div>
-
 <div class="import-section" style="padding-top:40px">
   <div style="text-align:center;color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto">
     Importiere deine CSV-Datei mit Vermögensdaten und Budget-Informationen. Die App speichert alle Daten lokal in deinem Browser.
@@ -449,9 +475,6 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 <!-- Budget Page -->
 <div id="page-budget" class="page">
 <div class="app-content">
-
-<!-- Month Picker -->
-<div class="month-picker" id="monthPickerBudget"></div>
 
 <!-- Budget Hero -->
 <div class="hero">
@@ -596,41 +619,68 @@ function cd(){return{responsive:true,maintainAspectRatio:false,events:[],plugins
 
 /* ── Month Picker ── */
 let picker;
+let _pickerYear;
 function buildPicker(){
-  const pickers=['monthPicker','monthPickerImport','monthPickerBudget'];
-  const instances=[];
+  const btn=document.getElementById('dateBtn');
+  const overlay=document.getElementById('pickerOverlay');
+  const popup=document.getElementById('pickerPopup');
+  const grid=document.getElementById('pickerMonthGrid');
+  const yearLabel=document.getElementById('pickerYearLabel');
   
-  pickers.forEach(id=>{
-    const w=document.getElementById(id);
-    if(!w)return;
-    w.innerHTML='';
-    const sM=document.createElement('select'),sY=document.createElement('select');
-    MONTH_NAMES.forEach((n,i)=>{const o=document.createElement('option');o.value=String(i+1).padStart(2,'0');o.textContent=n;sM.appendChild(o);});
-    const ny=new Date().getFullYear();
-    for(let y=2018;y<=ny+5;y++){const o=document.createElement('option');o.value=y;o.textContent=y;sY.appendChild(o);}
-    w.appendChild(sM);w.appendChild(sY);
-    const gv=()=>sY.value+'-'+sM.value;
-    const sv=ym=>{const[y,m]=ym.split('-');sY.value=y;sM.value=m;};
-    const onChange=()=>{selectedMonth=gv();render();applyLivePrices();syncAllPickers();};
-    sM.addEventListener('change',onChange);sY.addEventListener('change',onChange);
-    instances.push({getVal:gv,setVal:sv});
-  });
+  function updateBtn(){
+    const[y,m]=selectedMonth.split('-');
+    btn.textContent=MONTH_NAMES[parseInt(m)-1]+' '+y;
+  }
   
-  return instances[0];
+  function renderGrid(){
+    grid.innerHTML='';
+    const[,selM]=selectedMonth.split('-');
+    const selY=parseInt(selectedMonth.split('-')[0]);
+    MONTH_NAMES.forEach((name,i)=>{
+      const cell=document.createElement('div');
+      cell.className='picker-cell';
+      cell.textContent=name;
+      if(_pickerYear===selY&&(i+1)===parseInt(selM))cell.classList.add('active');
+      cell.addEventListener('click',()=>{
+        selectedMonth=_pickerYear+'-'+String(i+1).padStart(2,'0');
+        updateBtn();
+        closePickerPopup();
+        render();applyLivePrices();
+      });
+      grid.appendChild(cell);
+    });
+    yearLabel.textContent=_pickerYear;
+  }
+  
+  function openPickerPopup(){
+    _pickerYear=parseInt(selectedMonth.split('-')[0]);
+    renderGrid();
+    overlay.classList.add('show');
+    popup.classList.add('show');
+  }
+  
+  function closePickerPopup(){
+    overlay.classList.remove('show');
+    popup.classList.remove('show');
+  }
+  
+  btn.addEventListener('click',openPickerPopup);
+  overlay.addEventListener('click',closePickerPopup);
+  document.getElementById('pickerYearPrev').addEventListener('click',()=>{_pickerYear--;renderGrid();});
+  document.getElementById('pickerYearNext').addEventListener('click',()=>{_pickerYear++;renderGrid();});
+  
+  return{
+    getVal:()=>selectedMonth,
+    setVal:ym=>{selectedMonth=ym;updateBtn();}
+  };
 }
 
 function syncAllPickers(){
-  const pickers=['monthPicker','monthPickerImport','monthPickerBudget'];
-  pickers.forEach(id=>{
-    const w=document.getElementById(id);
-    if(!w)return;
-    const sM=w.querySelector('select:first-child');
-    const sY=w.querySelector('select:last-child');
-    if(sM&&sY){
-      const[y,m]=selectedMonth.split('-');
-      sY.value=y;sM.value=m;
-    }
-  });
+  const btn=document.getElementById('dateBtn');
+  if(btn){
+    const[y,m]=selectedMonth.split('-');
+    btn.textContent=MONTH_NAMES[parseInt(m)-1]+' '+y;
+  }
 }
 
 /* ── Odometer Animation ── */
