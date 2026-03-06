@@ -1642,14 +1642,14 @@ function renderBudgetSankey(c){
 
 function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal){
   const width=Math.min(window.innerWidth-40,600);
-  const nodeWidth=Math.min(width*0.35,180);
-  const nodePadding=8;
+  const nodeWidth=Math.min(width*0.28,140);
+  const nodePadding=12;
   const margin={top:32,right:10,bottom:12,left:10};
   
   const leftCount=leftNodes.length;
   const rightCount=rightNodes.length;
   const maxCount=Math.max(leftCount,rightCount);
-  const nodeHeight=Math.max(40,Math.min(70,200/maxCount));
+  const nodeHeight=Math.max(50,Math.min(90,240/maxCount));
   const height=maxCount*nodeHeight+(maxCount-1)*nodePadding+margin.top+margin.bottom;
   
   // Position nodes
