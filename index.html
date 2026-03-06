@@ -329,17 +329,7 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 
 /* ── Budget / Sankey ── */
 .sankey-wrap { position:relative;padding:8px 0 0;min-height:120px; }
-.sankey-row { display:flex;align-items:center;margin-bottom:6px;gap:0; }
-.sankey-collapsible { cursor:pointer;transition:opacity .2s; }
-.sankey-collapsible:active { opacity:0.7; }
-.sankey-detail { padding-left:12px;opacity:0.85; }
-.sankey-details { overflow:hidden; }
-.sankey-label { font-size:13px;color:var(--muted);width:72px;text-align:right;padding-right:8px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.sankey-bar-wrap { flex:1;height:18px;position:relative; }
-.sankey-bar { height:100%;border-radius:3px;transition:width .5s ease;min-width:2px; }
-.sankey-val { font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums;width:64px;text-align:right;padding-left:6px;flex-shrink:0; }
-.sankey-divider { height:1px;background:color-mix(in srgb,var(--border) 40%,transparent);margin:10px 0; }
-.sankey-section-label { font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:6px; }
+.sankey-wrap svg { display:block;margin:0 auto; }
 
 /* Budget Modal - removed, data comes from CSV */
 </style>
@@ -1592,13 +1582,16 @@ function renderBudgetPage(){
 function renderBudgetSankey(c){
   const wrap=document.getElementById('sankeyWrap');
   if(!c||c.einnahmen===0){wrap.innerHTML='<div style="text-align:center;padding:20px 0;color:var(--muted)">Keine Budget-Daten. CSV importieren.</div>';return;}
+  
+  // Prepare data
+  const flows=[];
   const maxVal=c.einnahmen;
-  const greenBar=!isDark?'rgba(58,94,66,0.4)':'rgba(122,170,130,0.35)';
-  const redBar=!isDark?'rgba(110,59,48,0.35)':'rgba(192,112,88,0.3)';
-  const orangeBar=!isDark?'rgba(140,100,50,0.35)':'rgba(200,170,100,0.3)';
-  const barColor=!isDark?'rgba(90,85,75,0.25)':'rgba(232,228,222,0.25)';
-
-  // Einnahmen zusammenfassen
+  
+  // Einnahmen → Ausgaben flows
+  const totalAusgaben=c.fixkosten+c.variable+c.sparplaene;
+  
+  // Einnahmen nodes
+  const einnahmenNodes=[];
   let gehaltLukas=0,gehaltMiri=0,sonstiges=0;
   c.einItems.forEach(item=>{
     const n=item.label.toLowerCase();
@@ -1606,8 +1599,14 @@ function renderBudgetSankey(c){
     else if(n.includes('miri')||n.includes('miriam'))gehaltMiri+=item.val;
     else sonstiges+=item.val;
   });
-
-  // Fixkosten zusammenfassen
+  if(gehaltLukas>0)einnahmenNodes.push({label:'Gehaltskonto Lukas',val:gehaltLukas});
+  if(gehaltMiri>0)einnahmenNodes.push({label:'Gehaltskonto Miri',val:gehaltMiri});
+  if(sonstiges>0)einnahmenNodes.push({label:'Sonstiges',val:sonstiges});
+  
+  // Ausgaben nodes
+  const ausgabenNodes=[];
+  
+  // Fixkosten aufschlüsseln
   let wohnen=0,versicherungen=0,fahrzeuge=0,abos=0;
   c.fixItems.forEach(item=>{
     const n=item.label.toLowerCase();
@@ -1616,95 +1615,142 @@ function renderBudgetSankey(c){
     else if(n.includes('911')||n.includes('c-klasse')||n.includes('tanken')||n.includes('steuer')||n.includes('services')||n.includes('wartung'))fahrzeuge+=item.val;
     else abos+=item.val;
   });
-
-  const lebenshaltung=c.variable;
-  const sparen=c.sparplaene;
-
-  let html='';
   
-  // ── Einnahmen (collapsible) ──
-  html+=`<div class="sankey-section-label">Einnahmen</div>`;
-  html+=`<div class="sankey-row sankey-collapsible" data-section="einnahmen">
-    <span class="sankey-label">Einnahmen</span>
-    <div class="sankey-bar-wrap"><div class="sankey-bar" style="width:100%;background:${greenBar}"></div></div>
-    <span class="sankey-val">${fmt(c.einnahmen)}</span>
-  </div>`;
-  html+=`<div class="sankey-details" id="sankey-einnahmen" style="display:none">`;
-  if(gehaltLukas>0){
-    const pct=Math.max(2,Math.round(gehaltLukas/maxVal*100));
-    html+=`<div class="sankey-row sankey-detail"><span class="sankey-label">Gehalt Lukas</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${greenBar}"></div></div><span class="sankey-val">${fmt(gehaltLukas)}</span></div>`;
-  }
-  if(gehaltMiri>0){
-    const pct=Math.max(2,Math.round(gehaltMiri/maxVal*100));
-    html+=`<div class="sankey-row sankey-detail"><span class="sankey-label">Gehalt Miriam</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${greenBar}"></div></div><span class="sankey-val">${fmt(gehaltMiri)}</span></div>`;
-  }
-  if(sonstiges>0){
-    const pct=Math.max(2,Math.round(sonstiges/maxVal*100));
-    html+=`<div class="sankey-row sankey-detail"><span class="sankey-label">Sonstiges</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${greenBar}"></div></div><span class="sankey-val">${fmt(sonstiges)}</span></div>`;
-  }
-  html+=`</div>`;
-
-  // ── Fixkosten (collapsible) ──
-  html+='<div class="sankey-divider"></div><div class="sankey-section-label">Fixkosten</div>';
-  html+=`<div class="sankey-row sankey-collapsible" data-section="fixkosten">
-    <span class="sankey-label">Fixkosten</span>
-    <div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${Math.max(2,Math.round(c.fixkosten/maxVal*100))}%;background:${redBar}"></div></div>
-    <span class="sankey-val">${fmt(c.fixkosten)}</span>
-  </div>`;
-  html+=`<div class="sankey-details" id="sankey-fixkosten" style="display:none">`;
-  if(wohnen>0){
-    const pct=Math.max(2,Math.round(wohnen/maxVal*100));
-    html+=`<div class="sankey-row sankey-detail"><span class="sankey-label">Wohnen & Nebenkosten</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${redBar}"></div></div><span class="sankey-val">${fmt(wohnen)}</span></div>`;
-  }
-  if(fahrzeuge>0){
-    const pct=Math.max(2,Math.round(fahrzeuge/maxVal*100));
-    html+=`<div class="sankey-row sankey-detail"><span class="sankey-label">Fahrzeuge</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${redBar}"></div></div><span class="sankey-val">${fmt(fahrzeuge)}</span></div>`;
-  }
-  if(versicherungen>0){
-    const pct=Math.max(2,Math.round(versicherungen/maxVal*100));
-    html+=`<div class="sankey-row sankey-detail"><span class="sankey-label">Versicherungen</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${redBar}"></div></div><span class="sankey-val">${fmt(versicherungen)}</span></div>`;
-  }
-  if(abos>0){
-    const pct=Math.max(2,Math.round(abos/maxVal*100));
-    html+=`<div class="sankey-row sankey-detail"><span class="sankey-label">Abos & Sonstiges</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${redBar}"></div></div><span class="sankey-val">${fmt(abos)}</span></div>`;
-  }
-  html+=`</div>`;
-
-  // ── Lebenshaltung (nicht collapsible, da nur ein Item) ──
-  html+='<div class="sankey-divider"></div><div class="sankey-section-label">Lebenshaltung</div>';
-  if(lebenshaltung>0){
-    const pct=Math.max(2,Math.round(lebenshaltung/maxVal*100));
-    html+=`<div class="sankey-row"><span class="sankey-label">Lebenshaltung</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${orangeBar}"></div></div><span class="sankey-val">${fmt(lebenshaltung)}</span></div>`;
-  }
-
-  // ── Sparpläne (nicht collapsible, da nur ein Item) ──
-  html+='<div class="sankey-divider"></div><div class="sankey-section-label">Sparpläne</div>';
-  if(sparen>0){
-    const pct=Math.max(2,Math.round(sparen/maxVal*100));
-    html+=`<div class="sankey-row"><span class="sankey-label">Sparpläne</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${greenBar}"></div></div><span class="sankey-val">${fmt(sparen)}</span></div>`;
-  }
-
-  // ── Überschuss ──
-  if(c.netto>0){
-    html+='<div class="sankey-divider"></div><div class="sankey-section-label">Überschuss</div>';
-    const pct=Math.max(2,Math.round(c.netto/maxVal*100));
-    html+=`<div class="sankey-row"><span class="sankey-label">Frei verfügbar</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${barColor}"></div></div><span class="sankey-val">${fmt(c.netto)}</span></div>`;
-  }
-
-  wrap.innerHTML=html;
+  // Ausgaben-Kategorien mit Werten
+  const ausgabenKategorien=[
+    {label:'Gem. Lastschriften',val:wohnen+versicherungen,color:'#8b6f5e'},
+    {label:'Autos',val:fahrzeuge,color:'#a68976'},
+    {label:'Depot Verrechnungskonto',val:abos,color:'#c4a896'},
+    {label:'Haushaltskonto',val:c.variable+c.sparplaene,color:'#d4b8a6'}
+  ].filter(k=>k.val>0);
   
-  // Event handlers for collapsible sections
-  document.querySelectorAll('.sankey-collapsible').forEach(row=>{
-    row.addEventListener('click',()=>{
-      const section=row.dataset.section;
-      const details=document.getElementById('sankey-'+section);
-      if(details){
-        const isVisible=details.style.display!=='none';
-        details.style.display=isVisible?'none':'block';
-        row.classList.toggle('expanded',!isVisible);
+  ausgabenNodes.push(...ausgabenKategorien);
+  
+  // Flows berechnen (proportional)
+  einnahmenNodes.forEach(ein=>{
+    const einPct=ein.val/c.einnahmen;
+    ausgabenNodes.forEach(aus=>{
+      const flowVal=aus.val*einPct;
+      if(flowVal>0){
+        flows.push({from:ein.label,to:aus.label,val:flowVal,fromTotal:ein.val,toTotal:aus.val});
       }
     });
   });
+  
+  renderSankeyDiagram(wrap,einnahmenNodes,ausgabenNodes,flows,maxVal);
+}
+
+function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal){
+  const width=Math.min(window.innerWidth-40,600);
+  const nodeWidth=Math.min(width*0.35,180);
+  const nodePadding=8;
+  const margin={top:32,right:10,bottom:12,left:10};
+  
+  const leftCount=leftNodes.length;
+  const rightCount=rightNodes.length;
+  const maxCount=Math.max(leftCount,rightCount);
+  const nodeHeight=Math.max(40,Math.min(70,200/maxCount));
+  const height=maxCount*nodeHeight+(maxCount-1)*nodePadding+margin.top+margin.bottom;
+  
+  // Position nodes
+  leftNodes.forEach((n,i)=>{
+    n.x=margin.left;
+    n.y=margin.top+i*(nodeHeight+nodePadding);
+    n.h=nodeHeight;
+    n.w=nodeWidth;
+  });
+  
+  rightNodes.forEach((n,i)=>{
+    n.x=width-margin.right-nodeWidth;
+    n.y=margin.top+i*(nodeHeight+nodePadding);
+    n.h=nodeHeight;
+    n.w=nodeWidth;
+  });
+  
+  // Colors
+  const isDk=isDark;
+  const leftColor=!isDk?'rgba(58,94,66,0.7)':'rgba(122,170,130,0.6)';
+  const rightColors=rightNodes.map((_,i)=>{
+    const t=rightNodes.length<=1?0:i/(rightNodes.length-1);
+    const r=Math.round(139+t*(212-139));
+    const g=Math.round(111+t*(184-111));
+    const b=Math.round(94+t*(166-94));
+    return`rgba(${r},${g},${b},0.7)`;
+  });
+  
+  // Build SVG
+  let svg=`<svg viewBox="0 0 ${width} ${height}" style="width:100%;height:auto;max-height:400px">`;
+  
+  // Section labels
+  svg+=`<text x="${margin.left+nodeWidth/2}" y="18" text-anchor="middle" font-size="11" fill="var(--muted)" letter-spacing="0.1em" font-weight="500">EINNAHMEN</text>`;
+  svg+=`<text x="${width-margin.right-nodeWidth/2}" y="18" text-anchor="middle" font-size="11" fill="var(--muted)" letter-spacing="0.1em" font-weight="500">AUSGABEN</text>`;
+  
+  // Flows
+  const leftOffsets=new Map();
+  const rightOffsets=new Map();
+  
+  flows.forEach(flow=>{
+    const fromNode=leftNodes.find(n=>n.label===flow.from);
+    const toNode=rightNodes.find(n=>n.label===flow.to);
+    if(!fromNode||!toNode)return;
+    
+    const fromIdx=leftNodes.indexOf(fromNode);
+    const toIdx=rightNodes.indexOf(toNode);
+    
+    const flowHeightLeft=(flow.val/fromNode.val)*fromNode.h*0.85;
+    const flowHeightRight=(flow.val/toNode.val)*toNode.h*0.85;
+    
+    const leftOff=leftOffsets.get(flow.from)||0;
+    const rightOff=rightOffsets.get(flow.to)||0;
+    
+    leftOffsets.set(flow.from,leftOff+flowHeightLeft);
+    rightOffsets.set(flow.to,rightOff+flowHeightRight);
+    
+    const x1=fromNode.x+fromNode.w;
+    const y1=fromNode.y+leftOff+flowHeightLeft/2;
+    const x2=toNode.x;
+    const y2=toNode.y+rightOff+flowHeightRight/2;
+    
+    const path=createFlowPath(x1,y1,x2,y2,flowHeightLeft,flowHeightRight);
+    
+    const gradId=`grad-${fromIdx}-${toIdx}`;
+    svg+=`<defs><linearGradient id="${gradId}" x1="0%" x2="100%"><stop offset="0%" stop-color="${leftColor}" stop-opacity="0.5"/><stop offset="100%" stop-color="${rightColors[toIdx]}" stop-opacity="0.5"/></linearGradient></defs>`;
+    svg+=`<path d="${path}" fill="url(#${gradId})" stroke="none"/>`;
+  });
+  
+  // Nodes
+  leftNodes.forEach((n,i)=>{
+    svg+=renderSankeyNode(n,leftColor,true);
+  });
+  rightNodes.forEach((n,i)=>{
+    svg+=renderSankeyNode(n,rightColors[i],false);
+  });
+  
+  svg+=`</svg>`;
+  container.innerHTML=svg;
+}
+
+function createFlowPath(x1,y1,x2,y2,h1,h2){
+  const cx1=x1+(x2-x1)*0.4;
+  const cx2=x1+(x2-x1)*0.6;
+  return`M${x1},${y1-h1/2} C${cx1},${y1-h1/2} ${cx2},${y2-h2/2} ${x2},${y2-h2/2} L${x2},${y2+h2/2} C${cx2},${y2+h2/2} ${cx1},${y1+h1/2} ${x1},${y1+h1/2} Z`;
+}
+
+function renderSankeyNode(node,color,isLeft){
+  const accentW=3;
+  const accentX=isLeft?node.w-accentW:0;
+  const textX=isLeft?node.w/2-2:accentW+node.w/2;
+  const cy=node.h/2;
+  
+  let label=node.label;
+  if(label.length>20)label=label.substring(0,18)+'...';
+  
+  return`<g transform="translate(${node.x},${node.y})">
+    <rect width="${node.w}" height="${node.h}" fill="${color}" fill-opacity="0.15" stroke="${color}" stroke-opacity="0.4" stroke-width="1" rx="2"/>
+    <rect x="${accentX}" width="${accentW}" height="${node.h}" fill="${color}" fill-opacity="0.85" rx="1"/>
+    <text x="${textX}" y="${cy-5}" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="400">${label}</text>
+    <text x="${textX}" y="${cy+8}" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="500">${fmt(node.val)}</text>
+  </g>`;
 }
 
 function renderBudgetBreakdown(c){
