@@ -1742,14 +1742,42 @@ function renderSankeyNode(node,color,isLeft){
   const textX=isLeft?node.w/2-2:accentW+node.w/2;
   const cy=node.h/2;
   
-  let label=node.label;
-  if(label.length>20)label=label.substring(0,18)+'...';
+  // Split label into multiple lines if too long
+  let labelLines=[];
+  const maxCharsPerLine=14;
+  if(node.label.length>maxCharsPerLine){
+    const words=node.label.split(' ');
+    let currentLine='';
+    words.forEach(word=>{
+      if((currentLine+' '+word).trim().length<=maxCharsPerLine){
+        currentLine=(currentLine+' '+word).trim();
+      }else{
+        if(currentLine)labelLines.push(currentLine);
+        currentLine=word;
+      }
+    });
+    if(currentLine)labelLines.push(currentLine);
+  }else{
+    labelLines=[node.label];
+  }
+  
+  // Adjust text positioning based on number of lines
+  const lineHeight=11;
+  const totalTextHeight=labelLines.length*lineHeight+14;
+  const startY=cy-totalTextHeight/2+lineHeight;
+  
+  let labelSvg='';
+  labelLines.forEach((line,i)=>{
+    labelSvg+=`<text x="${textX}" y="${startY+i*lineHeight}" text-anchor="middle" font-size="10" fill="var(--ink)" font-weight="400">${line}</text>`;
+  });
+  
+  const valueY=startY+labelLines.length*lineHeight+10;
   
   return`<g transform="translate(${node.x},${node.y})">
     <rect width="${node.w}" height="${node.h}" fill="${color}" fill-opacity="0.15" stroke="${color}" stroke-opacity="0.4" stroke-width="1" rx="2"/>
     <rect x="${accentX}" width="${accentW}" height="${node.h}" fill="${color}" fill-opacity="0.85" rx="1"/>
-    <text x="${textX}" y="${cy-5}" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="400">${label}</text>
-    <text x="${textX}" y="${cy+8}" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="500">${fmt(node.val)}</text>
+    ${labelSvg}
+    <text x="${textX}" y="${valueY}" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="500">${fmt(node.val)}</text>
   </g>`;
 }
 
