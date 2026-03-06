@@ -162,7 +162,7 @@ body {
 .chart-wrap.pie canvas { max-height:240px;max-width:240px; }
 .chart-label { font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:10px;text-align:center; }
 
-/* ── Stacked Bar ── */
+/* ── Stacked Bar (Budget only) ── */
 .structure-section { padding:0 0 20px; }
 .stacked-bar { display:flex;height:12px;border-radius:4px;overflow:hidden;gap:1px;margin-bottom:12px; }
 .stacked-seg { transition:width .4s ease;cursor:pointer;opacity:0.85; }
@@ -171,7 +171,7 @@ body {
 .stacked-seg.dimmed { opacity:0.3; }
 
 /* ── Range Buttons ── */
-.range-bar { display:flex;padding:6px 0 26px;align-items:center;justify-content:space-between; }
+.range-bar { display:flex;padding:4px 0 8px;align-items:center;justify-content:center;gap:12px; }
 .range-pills { display:flex;gap:2px;background:color-mix(in srgb,var(--border) 20%,transparent);border-radius:6px;padding:2px; }
 #assetsToggleBtn { margin-left:0; }
 .range-btn {
@@ -185,7 +185,7 @@ body {
 body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transparent);box-shadow:0 1px 3px rgba(0,0,0,0.2);}
 
 /* ── Legend ── */
-.legend-list { list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:0; }
+.legend-list { list-style:none;display:flex;flex-direction:column;gap:0; }
 .legend-row { display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid color-mix(in srgb,var(--border) 30%,transparent);cursor:pointer;transition:opacity .2s; }
 .legend-row:last-child { border-bottom:none; }
 .legend-bar { width:3px;border-radius:1.5px;height:16px;flex-shrink:0; }
@@ -380,11 +380,9 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 </div>
 
 <div class="range-bar">
-  <div style="display:flex;align-items:center;gap:8px">
-    <button class="range-btn" id="assetsToggleBtn">Assets</button>
-    <div class="live-status"><span class="live-dot" id="liveDot"></span><span id="liveLabel">Live</span></div>
-  </div>
+  <div class="live-status"><span class="live-dot" id="liveDot"></span><span id="liveLabel">Live</span></div>
   <div class="range-pills">
+    <button class="range-btn" id="assetsToggleBtn">Assets</button>
     <button class="range-btn active" data-range="12">12M</button>
     <button class="range-btn" data-range="36">3J</button>
     <button class="range-btn" data-range="60">5J</button>
@@ -394,7 +392,6 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 
 <!-- Vermögensstruktur -->
 <div class="structure-section">
-  <div class="stacked-bar" id="stackedBar"></div>
   <ul class="legend-list" id="legendAssets"></ul>
 </div>
 
@@ -807,8 +804,7 @@ function renderNetChart(){
 function renderPieChart(){
   const data=loadData(),entry=data[selectedMonth];
   const lA=document.getElementById('legendAssets');
-  const bar=document.getElementById('stackedBar');
-  if(!entry){bar.innerHTML='';lA.innerHTML='';return;}
+  if(!entry){lA.innerHTML='';return;}
   const cn=calcNet(entry);
   const allFields=[...FIELDS_LIQUID,...FIELDS_ILLIQUID];
   const displayFields=allFields.filter(k=>k!=='porsche911'&&k!=='mercedes');
@@ -820,28 +816,12 @@ function renderPieChart(){
   const _n=Math.max(vals.filter(v=>v>0).length,1);
   const colors=vals.map((_,i)=>{const t=_n<=1?0:i/(_n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
   const total=vals.reduce((a,b)=>a+b,0);
-  /* Stacked bar */
-  bar.innerHTML='';
-  let segIdx=0;
-  const segs=[],rows=[];
-  if(total){
-    vals.forEach((v,i)=>{
-      if(v<=0)return;
-      const seg=document.createElement('div');
-      seg.className='stacked-seg';
-      seg.style.width=(v/total*100)+'%';
-      seg.style.background=colors[i];
-      seg.dataset.idx=String(segIdx);
-      segs.push(seg);
-      bar.appendChild(seg);
-      segIdx++;
-    });
-  }
   /* Legend */
   lA.innerHTML='';
   if(!total)return;
   const items=[];vals.forEach((v,i)=>{if(v>0)items.push({label:labels[i],val:v,color:colors[i]});});
   const maxVal=Math.max(...items.map(i=>i.val));
+  const rows=[];
   items.forEach((item,j)=>{
     const pct=Math.round(item.val/total*100);
     const barPct=Math.round(item.val/maxVal*100);
@@ -855,12 +835,10 @@ function renderPieChart(){
   /* Click interaction */
   let activeIdx=null;
   function highlight(idx){
-    if(activeIdx===idx){activeIdx=null;segs.forEach(s=>{s.classList.remove('highlighted','dimmed');});rows.forEach(r=>{r.style.opacity='';});return;}
+    if(activeIdx===idx){activeIdx=null;rows.forEach(r=>{r.style.opacity='';});return;}
     activeIdx=idx;
-    segs.forEach(s=>{s.classList.toggle('highlighted',s.dataset.idx===String(idx));s.classList.toggle('dimmed',s.dataset.idx!==String(idx));});
     rows.forEach(r=>{r.style.opacity=r.dataset.idx===String(idx)?'1':'0.35';});
   }
-  segs.forEach(s=>s.addEventListener('click',()=>highlight(parseInt(s.dataset.idx))));
   rows.forEach(r=>r.addEventListener('click',()=>highlight(parseInt(r.dataset.idx))));
 }
 
@@ -1305,15 +1283,6 @@ function setupChartInteraction(){
             const barPct=Math.round(vals[i]/maxVal*100);
             fillEl.style.width=`${barPct}%`;
           }
-        }
-      });
-      
-      // Update stacked bar segments
-      const bar=document.getElementById('stackedBar');
-      const segs=bar.querySelectorAll('.stacked-seg');
-      segs.forEach((seg,i)=>{
-        if(i<vals.length&&vals[i]>0){
-          seg.style.width=(vals[i]/total*100)+'%';
         }
       });
     }
