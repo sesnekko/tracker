@@ -83,7 +83,7 @@ body {
 .live-popup {
   display:none;position:fixed !important;left:50% !important;top:50% !important;transform:translate(-50%,-50%) !important;
   background:var(--bg2);border:1px solid var(--border);border-radius:8px;
-  padding:16px 20px;z-index:10000 !important;min-width:260px;max-width:320px;
+  padding:16px 20px;z-index:10000 !important;min-width:300px;max-width:90vw;
   font-size:14px;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.15);
 }
 .live-popup.show { display:block; }
@@ -600,6 +600,14 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   <div class="live-popup-close"><button id="livePopupClose">Schließen</button></div>
 </div>
 
+<!-- Asset Detail Popup -->
+<div class="live-overlay" id="assetOverlay"></div>
+<div class="live-popup" id="assetPopup">
+  <div class="live-popup-title" id="assetPopupTitle">Asset Details</div>
+  <div id="assetPopupContent"></div>
+  <div class="live-popup-close"><button id="assetPopupClose">Schließen</button></div>
+</div>
+
 <script>
 /* ── Constants ── */
 const FIELDS_LIQUID=['cash','etf','bitcoin','aktien','edelmetalle','bav'];
@@ -837,8 +845,9 @@ function renderPieChart(){
   const displayFields=allFields.filter(k=>k!=='porsche911'&&k!=='mercedes');
   let vals=displayFields.map(k=>{if(k==='cash')return cn.cash_net;if(k==='immobilien')return cn.immobilien_net;if(k==='sonstiges')return(+entry.sonstiges||0)+(+entry.porsche911||0)+(+entry.mercedes||0);return+entry[k]||0;});
   let labels=displayFields.map(k=>{if(k==='cash'&&((+entry.kredit1||0)+(+entry.kredit2||0))>0)return'Cash (netto)';if(k==='immobilien'&&(+entry.immkredit||0)>0)return'Immobilien (netto)';return LABELS[k];});
+  let keys=displayFields.slice();
   const idx=vals.map((_,i)=>i).sort((a,b)=>vals[b]-vals[a]);
-  vals=idx.map(i=>vals[i]);labels=idx.map(i=>labels[i]);
+  vals=idx.map(i=>vals[i]);labels=idx.map(i=>labels[i]);keys=idx.map(i=>keys[i]);
   const _dk=!isDark?[90,84,76]:[130,124,116],_lt=!isDark?[195,190,180]:[240,234,220];
   const _n=Math.max(vals.filter(v=>v>0).length,1);
   const colors=vals.map((_,i)=>{const t=_n<=1?0:i/(_n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
@@ -846,7 +855,7 @@ function renderPieChart(){
   /* Legend */
   lA.innerHTML='';
   if(!total)return;
-  const items=[];vals.forEach((v,i)=>{if(v>0)items.push({label:labels[i],val:v,color:colors[i]});});
+  const items=[];vals.forEach((v,i)=>{if(v>0)items.push({label:labels[i],val:v,color:colors[i],key:keys[i]});});
   const maxVal=Math.max(...items.map(i=>i.val));
   const rows=[];
   items.forEach((item,j)=>{
@@ -855,18 +864,16 @@ function renderPieChart(){
     const li=document.createElement('li');
     li.className='legend-row';
     li.dataset.idx=String(j);
+    li.dataset.assetKey=item.key;
     li.innerHTML=`<div class="legend-bar" style="background:${item.color}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${item.color};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
     rows.push(li);
     lA.appendChild(li);
   });
   /* Click interaction */
-  let activeIdx=null;
-  function highlight(idx){
-    if(activeIdx===idx){activeIdx=null;rows.forEach(r=>{r.style.opacity='';});return;}
-    activeIdx=idx;
-    rows.forEach(r=>{r.style.opacity=r.dataset.idx===String(idx)?'1':'0.35';});
-  }
-  rows.forEach(r=>r.addEventListener('click',()=>highlight(parseInt(r.dataset.idx))));
+  rows.forEach(r=>r.addEventListener('click',()=>{
+    const assetKey=r.dataset.assetKey;
+    if(assetKey)showAssetDetail(assetKey);
+  }));
 }
 
 function render(){renderKPIs();renderNetChart();renderPieChart();}
@@ -1236,6 +1243,101 @@ function showLivePopup(){
 function closeLivePopup(){
   document.getElementById('livePopup').classList.remove('show');
   document.getElementById('liveOverlay').classList.remove('show');
+}
+
+/* ── Asset Detail Popup ── */
+const ASSET_DETAIL_MAP={
+  'cash':[
+    {key:'tagesgeldkonto',label:'Tagesgeldkonto',unit:null},
+    {key:'verrechnungskonto',label:'Verrechnungskonto',unit:null},
+    {key:'autos',label:'Autos',unit:null},
+    {key:'bargeld',label:'Bargeld',unit:null},
+    {key:'lastschriften',label:'Lastschriften',unit:null}
+  ],
+  'etf':[
+    {key:'msci-acwi',label:'MSCI ACWI - A1JMDF',unit:'msci-acwi'},
+    {key:'dax-ucits',label:'DAX UCITS - A0REJQ',unit:'dax-ucits'},
+    {key:'msci-acwi-papa',label:'MSCI ACWI Papa - LYX00C',unit:'msci-acwi-papa'},
+    {key:'msci-acwi-patenkinder',label:'MSCI ACWI PK - LYX00C',unit:'msci-acwi-patenkinder'},
+    {key:'vwl-lukas-oskar',label:'VWL Lukas OSKAR',unit:null}
+  ],
+  'bitcoin':[{key:'bitcoin',label:'Bitcoin',unit:'bitcoin'}],
+  'aktien':[{key:'aktien',label:'Aktien',unit:null}],
+  'edelmetalle':[
+    {key:'gold',label:'Gold',unit:'gold'},
+    {key:'silber',label:'Silber',unit:'silber'}
+  ],
+  'bav':[
+    {key:'bausparvertrag',label:'Bausparvertrag',unit:null},
+    {key:'rv-miri',label:'R+V Rente Miri',unit:null},
+    {key:'bav-miri',label:'BAV Miri - Allianz',unit:null}
+  ],
+  'uhren':[{key:'uhren',label:'Uhren',unit:null}],
+  'sonstiges':[
+    {key:'sonstiges',label:'Sonstiges',unit:null},
+    {key:'porsche911',label:'Porsche 911',unit:null},
+    {key:'mercedes',label:'Mercedes C-Klasse',unit:null}
+  ],
+  'immobilien':[
+    {key:'immobilien',label:'Haus (Marktwert)',unit:null},
+    {key:'immkredit',label:'Kredit Haus',unit:null,negative:true}
+  ]
+};
+
+function showAssetDetail(assetKey){
+  const data=loadData();
+  const entry=data[selectedMonth];
+  if(!entry)return;
+  
+  const mapping=ASSET_DETAIL_MAP[assetKey];
+  if(!mapping)return;
+  
+  const title=LABELS[assetKey]||assetKey;
+  document.getElementById('assetPopupTitle').textContent=title;
+  
+  const details=entry._details||{};
+  const units=entry._units||{};
+  
+  let html='';
+  let totalValue=0;
+  
+  mapping.forEach(item=>{
+    // Try details first, then top-level entry
+    const val=details[item.key]!==undefined?details[item.key]:(entry[item.key]||0);
+    const unitCount=item.unit?units[item.unit]||0:null;
+    
+    if(val!==0||unitCount){
+      const displayVal=item.negative?-val:val;
+      totalValue+=displayVal;
+      
+      html+=`<div class="live-popup-row">`;
+      html+=`<span class="live-popup-name">${item.label}</span>`;
+      html+=`<div style="text-align:right">`;
+      if(unitCount){
+        const unitLabel=item.unit==='gold'||item.unit==='silber'?'oz':'Stk';
+        html+=`<div style="font-size:11px;color:var(--muted)">${unitCount.toLocaleString('de-DE',{maximumFractionDigits:4})} ${unitLabel}</div>`;
+      }
+      html+=`<span class="live-popup-val">${fmt(displayVal)}</span>`;
+      html+=`</div>`;
+      html+=`</div>`;
+    }
+  });
+  
+  if(mapping.length>1){
+    html+=`<div class="live-popup-row" style="border-top:2px solid var(--border);margin-top:8px;padding-top:8px;font-weight:500">`;
+    html+=`<span class="live-popup-name">Gesamt</span>`;
+    html+=`<span class="live-popup-val">${fmt(totalValue)}</span>`;
+    html+=`</div>`;
+  }
+  
+  document.getElementById('assetPopupContent').innerHTML=html;
+  document.getElementById('assetPopup').classList.add('show');
+  document.getElementById('assetOverlay').classList.add('show');
+}
+
+function closeAssetPopup(){
+  document.getElementById('assetPopup').classList.remove('show');
+  document.getElementById('assetOverlay').classList.remove('show');
 }
 
 /* ── Haptic Feedback ── */
@@ -2046,6 +2148,8 @@ function initApp(){
     document.querySelector('.live-status').addEventListener('click',showLivePopup);
     document.getElementById('livePopupClose').addEventListener('click',closeLivePopup);
     document.getElementById('liveOverlay').addEventListener('click',closeLivePopup);
+    document.getElementById('assetPopupClose').addEventListener('click',closeAssetPopup);
+    document.getElementById('assetOverlay').addEventListener('click',closeAssetPopup);
     
     /* Pull to Refresh */
     setupPullToRefresh();
