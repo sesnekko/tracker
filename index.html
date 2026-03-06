@@ -513,13 +513,13 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
   <div class="kpi-item">
     <div class="kpi-flip-inner">
       <div class="kpi-face-front">
-        <div class="kpi-label">Variable Ausgaben</div>
+        <div class="kpi-label">Lebenshaltung</div>
         <div class="kpi-val kpi-has-eur" id="budget-var">—</div>
         <div class="kpi-delta" id="budget-var-sub"></div>
       </div>
       <div class="kpi-face-back">
-        <div class="kpi-back-label">Variable Ausgaben</div>
-        <div class="kpi-back-text">Lebenshaltung und Sparpläne</div>
+        <div class="kpi-back-label">Lebenshaltung</div>
+        <div class="kpi-back-text">Variable Ausgaben ohne Sparpläne</div>
       </div>
     </div>
   </div>
@@ -1492,16 +1492,27 @@ function calcBudgetMonth(bd,monthIdx){
     if(v>0){fixkosten+=v;fixItems.push({label:r.name,val:v});}
   });
   console.log(`Fixkosten: ${fixkosten} (${bd.fixe?.length||0} items)`);
+  let sparplaene=0;
+  const sparItems=[];
   (bd.variable||[]).forEach(r=>{
     const v=r.values[mi]||0;
-    if(v>0){variable+=v;varItems.push({label:r.name,val:v});}
+    if(v<=0)return;
+    const n=r.name.toLowerCase();
+    // Sparpläne: ETF, BTC, Cash
+    if(n.includes('etf')||n.includes('btc')||n.includes('cash')){
+      sparplaene+=v;
+      sparItems.push({label:r.name,val:v});
+    }else{
+      variable+=v;
+      varItems.push({label:r.name,val:v});
+    }
   });
-  console.log(`Variable: ${variable} (${bd.variable?.length||0} items)`);
+  console.log(`Variable (ohne Sparpläne): ${variable}, Sparpläne: ${sparplaene}`);
   const ausgaben=fixkosten+variable;
-  const netto=einnahmen-ausgaben;
-  const sparquote=einnahmen>0?Math.round(netto/einnahmen*100):0;
-  console.log(`Ausgaben: ${ausgaben}, Netto: ${netto}, Sparquote: ${sparquote}%`);
-  return{einnahmen,fixkosten,variable,ausgaben,netto,sparquote,einItems,fixItems,varItems};
+  const netto=einnahmen-ausgaben-sparplaene;
+  const sparquote=einnahmen>0?Math.round(sparplaene/einnahmen*100):0;
+  console.log(`Ausgaben: ${ausgaben}, Sparpläne: ${sparplaene}, Netto: ${netto}, Sparquote: ${sparquote}%`);
+  return{einnahmen,fixkosten,variable,sparplaene,ausgaben,netto,sparquote,einItems,fixItems,varItems,sparItems};
 }
 
 function calcAvgHaushaltsnetto(bd){
@@ -1562,7 +1573,7 @@ function renderBudgetPage(){
     const varSub=document.getElementById('budget-var-sub');
     if(varSub&&c.einnahmen>0)varSub.textContent=Math.round(c.variable/c.einnahmen*100)+'% der Einnahmen';
     const sqSub=document.getElementById('budget-sparquote-sub');
-    if(sqSub)sqSub.textContent=fmt(c.netto)+' übrig';
+    if(sqSub)sqSub.textContent=fmt(c.sparplaene)+' gespart';
   }else{
     einEl.textContent='—';fixEl.textContent='—';varEl.textContent='—';sqEl.textContent='—';
     ['budget-einnahmen-sub','budget-fix-sub','budget-var-sub','budget-sparquote-sub'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
@@ -1634,22 +1645,20 @@ function renderBudgetSankey(c){
     html+=`<div class="sankey-row"><span class="sankey-label">Abos & Sonstiges</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${redBar}"></div></div><span class="sankey-val">${fmt(abos)}</span></div>`;
   }
 
-  // Variable Ausgaben zusammenfassen
-  let lebenshaltung=0,sparen=0;
-  c.varItems.forEach(item=>{
-    const n=item.label.toLowerCase();
-    if(n.includes('etf')||n.includes('btc')||n.includes('sparplan')||n.includes('cash'))sparen+=item.val;
-    else lebenshaltung+=item.val;
-  });
+  // Variable Ausgaben (nur Lebenshaltung, Sparpläne sind jetzt separat)
+  const lebenshaltung=c.variable;
+  const sparen=c.sparplaene;
 
   html+='<div class="sankey-divider"></div><div class="sankey-section-label">Variable Ausgaben</div>';
   if(lebenshaltung>0){
     const pct=Math.max(2,Math.round(lebenshaltung/maxVal*100));
     html+=`<div class="sankey-row"><span class="sankey-label">Lebenshaltung</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${orangeBar}"></div></div><span class="sankey-val">${fmt(lebenshaltung)}</span></div>`;
   }
+
+  html+='<div class="sankey-divider"></div><div class="sankey-section-label">Sparpläne</div>';
   if(sparen>0){
     const pct=Math.max(2,Math.round(sparen/maxVal*100));
-    html+=`<div class="sankey-row"><span class="sankey-label">Sparpläne</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${orangeBar}"></div></div><span class="sankey-val">${fmt(sparen)}</span></div>`;
+    html+=`<div class="sankey-row"><span class="sankey-label">Sparpläne</span><div class="sankey-bar-wrap"><div class="sankey-bar" style="width:${pct}%;background:${greenBar}"></div></div><span class="sankey-val">${fmt(sparen)}</span></div>`;
   }
 
   if(c.netto>0){
@@ -1664,9 +1673,9 @@ function renderBudgetSankey(c){
 function renderBudgetBreakdown(c){
   const bar=document.getElementById('budgetStackedBar');
   const legend=document.getElementById('budgetLegend');
-  if(!c||c.ausgaben===0){bar.innerHTML='';legend.innerHTML='';return;}
+  if(!c||(c.ausgaben===0&&c.sparplaene===0)){bar.innerHTML='';legend.innerHTML='';return;}
 
-  const allItems=[...c.fixItems,...c.varItems].sort((a,b)=>b.val-a.val);
+  const allItems=[...c.fixItems,...c.varItems,...c.sparItems].sort((a,b)=>b.val-a.val);
   const _dk=!isDark?[110,59,48]:[192,112,88];
   const _lt=!isDark?[195,170,155]:[240,220,200];
   const n=Math.max(allItems.length,1);
