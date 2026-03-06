@@ -241,8 +241,8 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
   opacity:0.85;
 }
 .kpi-label { font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:6px; }
-.kpi-val { font-size:32px;font-weight:300;color:var(--ink);letter-spacing:-0.01em;font-variant-numeric:tabular-nums;line-height:1.2; }
-.kpi-val.kpi-has-eur::after { content:' €';font-size:18px;font-weight:300;color:var(--muted); }
+.kpi-val { font-size:28px;font-weight:300;color:var(--ink);letter-spacing:-0.01em;font-variant-numeric:tabular-nums;line-height:1.2; }
+.kpi-val.kpi-has-eur::after { content:' €';font-size:16px;font-weight:300;color:var(--muted); }
 .kpi-delta { font-size:12px;color:var(--muted);margin-top:6px;font-variant-numeric:tabular-nums; }
 .kpi-delta.up{color:var(--green)} .kpi-delta.down{color:var(--red)}
 .kpi-item.liab .kpi-val{color:var(--red)}
@@ -355,8 +355,8 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
     <div class="live-status"><span class="live-dot" id="liveDot"></span><span id="liveLabel">Live</span></div>
   </div>
   <div class="range-pills">
-    <button class="range-btn" data-range="12">12M</button>
-    <button class="range-btn active" data-range="36">3J</button>
+    <button class="range-btn active" data-range="12">12M</button>
+    <button class="range-btn" data-range="36">3J</button>
     <button class="range-btn" data-range="60">5J</button>
     <button class="range-btn" data-range="0">Alle</button>
   </div>
@@ -554,7 +554,7 @@ const INPUT_FIELDS_ETF=['msci-acwi','dax-ucits','msci-acwi-papa','msci-acwi-pate
 const MONTH_NAMES=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 const LIVE_PRICE_TICKERS={'msci-acwi':'IUSQ.DE','dax-ucits':'CG1G.DE','msci-acwi-papa':'ACWI.PA','msci-acwi-patenkinder':'ACWI.PA','gold':'XAUEUR','silber':'XAGEUR'};
 
-let isDark=false, selectedMonth, charts={}, netRange=36, showAssets=true;
+let isDark=false, selectedMonth, charts={}, netRange=12, showAssets=true;
 const livePrices={}, netLineHidden={0:false,1:true,2:true};
 const MOON='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
 const SUN='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
@@ -1033,6 +1033,7 @@ async function fetchETFPrice(id){
 }
 
 function applyLivePrices(){
+  if(chartInteractionActive){console.log('Live prices: paused during chart interaction');return;}
   const ym=selectedMonth;
   if(!ym||ym!==nextYM()){console.log('Live prices: not next month');return;}
   const d=loadData(),e=d[ym];if(!e){console.log('Live prices: no data for',ym);return;}
@@ -1183,14 +1184,40 @@ function setupChartInteraction(){
     lastIndex=idx;
     haptic('light');
     const val=netData[idx];
+    const ym=labels[idx];
+    
+    // Update KPI
     animateKpiValue('kpi-net',fmt(val),val);
     const heroLabel=document.querySelector('.hero-label');
-    if(heroLabel)heroLabel.textContent=labels[idx];
+    if(heroLabel)heroLabel.textContent=ym;
     const deltaEl=document.getElementById('kpi-net-delta');
     if(deltaEl){
       if(idx>0){setDelta('kpi-net-delta',netData[idx],netData[idx-1]);}
       else{deltaEl.textContent='';}
     }
+    
+    // Update asset list for this month
+    const data=loadData();
+    const entry=data[ym];
+    if(entry){
+      const cn=calcNet(entry);
+      const allFields=[...FIELDS_LIQUID,...FIELDS_ILLIQUID];
+      const displayFields=allFields.filter(k=>k!=='porsche911'&&k!=='mercedes');
+      let vals=displayFields.map(k=>{if(k==='cash')return cn.cash_net;if(k==='immobilien')return cn.immobilien_net;if(k==='sonstiges')return(+entry.sonstiges||0)+(+entry.porsche911||0)+(+entry.mercedes||0);return+entry[k]||0;});
+      let lbls=displayFields.map(k=>{if(k==='cash'&&((+entry.kredit1||0)+(+entry.kredit2||0))>0)return'Cash (netto)';if(k==='immobilien'&&(+entry.immkredit||0)>0)return'Immobilien (netto)';return LABELS[k];});
+      const sortIdx=vals.map((_,i)=>i).sort((a,b)=>vals[b]-vals[a]);
+      vals=sortIdx.map(i=>vals[i]);lbls=sortIdx.map(i=>lbls[i]);
+      
+      // Update legend values
+      const legendItems=document.querySelectorAll('#legendAssets .legend-row');
+      legendItems.forEach((row,i)=>{
+        if(i<vals.length&&vals[i]>0){
+          const valEl=row.querySelector('.legend-val');
+          if(valEl)valEl.textContent=fmt(vals[i]);
+        }
+      });
+    }
+    
     showCrosshair(idx);
   }
 
@@ -1202,6 +1229,7 @@ function setupChartInteraction(){
     const heroLabel=document.querySelector('.hero-label');
     if(heroLabel)heroLabel.textContent='Nettovermögen';
     renderKPIs();
+    renderPieChart(); // Restore asset list to current month
   }
 
   const onStart=e=>{
