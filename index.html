@@ -332,16 +332,20 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 
 /* ── Budget / Sankey ── */
 .sankey-wrap { position:relative;padding:8px 0 0;min-height:120px; }
-.sankey-container-html { display:grid;grid-template-columns:140px 1fr 140px;grid-template-rows:auto 1fr;gap:0 20px;padding:32px 10px 12px;position:relative;min-height:300px;max-width:600px;margin:0 auto; }
+.sankey-container-html { display:grid;grid-template-columns:110px 1fr 110px;grid-template-rows:auto 1fr;gap:0 0;padding:24px 0 12px;position:relative;min-height:300px;margin:0 -20px; }
 .sankey-section-header { grid-row:1;text-align:center;padding-bottom:12px; }
 .sankey-section-header:first-child { grid-column:1; }
 .sankey-section-right { grid-column:3; }
 .sankey-section-title { font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500; }
-.sankey-column { grid-row:2;display:flex;flex-direction:column;gap:12px;justify-content:center; }
+.sankey-column { grid-row:2;display:flex;flex-direction:column;gap:10px;justify-content:center; }
 .sankey-left { grid-column:1; }
 .sankey-right { grid-column:3; }
 .sankey-flows-wrap { grid-column:1/4;grid-row:2;position:relative;pointer-events:none;z-index:0; }
 .sankey-flows-svg { position:absolute;inset:0;width:100%;height:100%; }
+.sankey-flow-path { pointer-events:auto;cursor:pointer;transition:opacity .2s; }
+.sankey-flow-path:active { opacity:0.8; }
+.sankey-flow-label { position:absolute;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:4px 8px;font-size:11px;color:var(--ink);font-weight:500;white-space:nowrap;pointer-events:none;z-index:20;transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,0.1);opacity:0;transition:opacity .2s; }
+.sankey-flow-label.visible { opacity:1; }
 .sankey-node-card { perspective:900px;height:80px;cursor:pointer;transition:transform .35s,box-shadow .4s;position:relative;z-index:1; }
 .sankey-node-card:not(.flipped):active { transform:scale(0.98); }
 .sankey-node-card.flipped { transform:scale(1.12);z-index:10;box-shadow:0 18px 48px rgba(0,0,0,0.16); }
@@ -1877,10 +1881,40 @@ function renderSankeyFlows(leftNodes,rightNodes,flows){
     
     const gradId=`grad-${fromIdx}-${toIdx}`;
     paths+=`<defs><linearGradient id="${gradId}" x1="0%" x2="100%"><stop offset="0%" stop-color="${leftColor}" stop-opacity="0.4"/><stop offset="100%" stop-color="${rightColors[toIdx]}" stop-opacity="0.45"/></linearGradient></defs>`;
-    paths+=`<path d="${path}" fill="url(#${gradId})" stroke="none"/>`;
+    paths+=`<path class="sankey-flow-path" d="${path}" fill="url(#${gradId})" stroke="none" data-amount="${fmt(flow.val)}" data-cx="${(x1+x2)/2}" data-cy="${(y1+y2)/2}"/>`;
   });
   
   svg.innerHTML=paths;
+  
+  // Click handlers for flow labels
+  let activeLabel=null;
+  svg.querySelectorAll('.sankey-flow-path').forEach(path=>{
+    path.addEventListener('click',e=>{
+      e.stopPropagation();
+      // Remove existing label
+      if(activeLabel){activeLabel.remove();activeLabel=null;}
+      
+      const cx=parseFloat(path.dataset.cx);
+      const cy=parseFloat(path.dataset.cy);
+      const amount=path.dataset.amount;
+      
+      const label=document.createElement('div');
+      label.className='sankey-flow-label';
+      label.textContent=amount;
+      label.style.left=cx+'px';
+      label.style.top=cy+'px';
+      flowsWrap.appendChild(label);
+      requestAnimationFrame(()=>label.classList.add('visible'));
+      activeLabel=label;
+      
+      haptic('light');
+    });
+  });
+  
+  // Click outside to dismiss label
+  document.addEventListener('click',()=>{
+    if(activeLabel){activeLabel.remove();activeLabel=null;}
+  },{once:false});
 }
 
 function createFlowPath(x1,y1,x2,y2,h1,h2){
