@@ -332,7 +332,26 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 
 /* ── Budget / Sankey ── */
 .sankey-wrap { position:relative;padding:8px 0 0;min-height:120px; }
-.sankey-wrap svg { display:block;margin:0 auto; }
+.sankey-container-html { display:flex;gap:20px;align-items:center;justify-content:center;padding:32px 0 12px;position:relative;min-height:280px; }
+.sankey-column { display:flex;flex-direction:column;gap:12px;flex:0 0 auto;width:140px; }
+.sankey-flows-wrap { position:absolute;inset:0;pointer-events:none;z-index:0; }
+.sankey-flows-svg { width:100%;height:100%; }
+.sankey-node-card { perspective:900px;height:70px;cursor:pointer;transition:transform .35s,box-shadow .4s;position:relative;z-index:1; }
+.sankey-node-card:not(.flipped):active { transform:scale(0.98); }
+.sankey-node-card.flipped { transform:scale(1.12);z-index:10;box-shadow:0 18px 48px rgba(0,0,0,0.16); }
+.sankey-node-flip-inner { position:relative;height:100%;transform-style:preserve-3d;transition:transform .52s .08s cubic-bezier(.4,0,.2,1); }
+.sankey-node-card.flipped .sankey-node-flip-inner { transform:rotateY(180deg); }
+.sankey-node-front,.sankey-node-back { position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8px;background:color-mix(in srgb,var(--bg2) 80%,transparent);border:1px solid color-mix(in srgb,var(--border) 40%,transparent); }
+.sankey-node-back { transform:rotateY(180deg);gap:6px; }
+.sankey-node-accent { position:absolute;width:3px;height:100%;top:0;border-radius:1px; }
+.sankey-accent-right { right:0;background:rgba(88,108,96,0.85); }
+.sankey-accent-left { left:0;background:rgba(110,85,70,0.75); }
+body.dark .sankey-accent-right { background:rgba(122,170,130,0.8); }
+body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
+.sankey-node-label { font-size:10px;color:var(--ink);font-weight:400;line-height:1.3;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical; }
+.sankey-node-value { font-size:12px;color:var(--ink);font-weight:500;margin-top:4px; }
+.sankey-node-back-label { font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500; }
+.sankey-node-back-iban { font-size:10px;color:var(--ink);font-weight:400;line-height:1.4;word-break:break-all; }
 
 /* Budget Modal - removed, data comes from CSV */
 </style>
@@ -1009,7 +1028,26 @@ function handleCsvUpload(ev){
         }
         console.log('Standing orders imported:',budgetData.standingOrders.length);
       }
-      // Skip Konto section silently
+      
+      // ── Konto section ──
+      else if(firstTyp==='konto'){
+        // Header: Typ;Funktion;Anbieter;Empfaenger;IBAN
+        console.log('Konto section found, rows:',section.rows.length);
+        if(!budgetData.accounts)budgetData.accounts={};
+        for(const c of section.rows){
+          if(c.length<5)continue;
+          const typ=c[0].trim().toLowerCase();
+          if(typ!=='konto')continue;
+          const name=c[1].trim();
+          const iban=c[4].trim();
+          if(name&&iban){
+            budgetData.accounts[name]=iban;
+            console.log(`  → Konto: ${name} = ${iban}`);
+            budgetImported++;
+          }
+        }
+        console.log('Accounts imported:',Object.keys(budgetData.accounts).length);
+      }
     }
 
     saveData(d);
@@ -1665,53 +1703,98 @@ function renderBudgetSankey(c){
 }
 
 function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal){
-  const width=Math.min(window.innerWidth-40,600);
-  const nodeHeight=Math.min(width*0.28,140);
-  const nodeWidth=12;
-  const nodePadding=12;
-  const margin={top:32,right:10,bottom:32,left:10};
+  const bd=loadBudgetData();
+  const accounts=(bd&&bd.accounts)||{};
   
-  const topCount=leftNodes.length;
-  const bottomCount=rightNodes.length;
-  const maxCount=Math.max(topCount,bottomCount);
-  const totalWidth=maxCount*nodeHeight+(maxCount-1)*nodePadding;
-  const height=400;
+  // Build HTML structure instead of SVG for flip animation
+  let html='<div class="sankey-container-html">';
   
-  // Position nodes - TOP (Einnahmen)
-  leftNodes.forEach((n,i)=>{
-    // Center horizontally if fewer nodes than bottom side
-    const horizontalOffset=topCount<bottomCount?((bottomCount-topCount)*(nodeHeight+nodePadding))/2:0;
-    n.x=margin.left+horizontalOffset+i*(nodeHeight+nodePadding);
-    n.y=margin.top;
-    n.w=nodeHeight;
-    n.h=nodeWidth;
+  // Left nodes (Einnahmen)
+  html+='<div class="sankey-column sankey-left">';
+  leftNodes.forEach((node,i)=>{
+    const iban=accounts[node.label]||'Keine IBAN hinterlegt';
+    html+=`
+      <div class="sankey-node-card" data-node="${node.label}">
+        <div class="sankey-node-flip-inner">
+          <div class="sankey-node-front">
+            <div class="sankey-node-accent sankey-accent-right"></div>
+            <div class="sankey-node-label">${node.label}</div>
+            <div class="sankey-node-value">${fmt(node.val)}</div>
+          </div>
+          <div class="sankey-node-back">
+            <div class="sankey-node-back-label">IBAN</div>
+            <div class="sankey-node-back-iban">${iban}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  html+='</div>';
+  
+  // Flows (SVG overlay)
+  html+='<div class="sankey-flows-wrap"><svg class="sankey-flows-svg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg></div>';
+  
+  // Right nodes (Ausgaben)
+  html+='<div class="sankey-column sankey-right">';
+  rightNodes.forEach((node,i)=>{
+    const iban=accounts[node.label]||'Keine IBAN hinterlegt';
+    html+=`
+      <div class="sankey-node-card" data-node="${node.label}">
+        <div class="sankey-node-flip-inner">
+          <div class="sankey-node-front">
+            <div class="sankey-node-accent sankey-accent-left"></div>
+            <div class="sankey-node-label">${node.label}</div>
+            <div class="sankey-node-value">${fmt(node.val)}</div>
+          </div>
+          <div class="sankey-node-back">
+            <div class="sankey-node-back-label">IBAN</div>
+            <div class="sankey-node-back-iban">${iban}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  html+='</div>';
+  
+  html+='</div>';
+  container.innerHTML=html;
+  
+  // Add click handlers for flip
+  document.querySelectorAll('.sankey-node-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      const wasFlipped=card.classList.contains('flipped');
+      // Close all other flipped cards
+      document.querySelectorAll('.sankey-node-card.flipped').forEach(other=>{
+        if(other!==card)other.classList.remove('flipped');
+      });
+      // Toggle this card
+      if(!wasFlipped){
+        card.classList.add('flipped');
+        haptic('medium');
+      }else{
+        card.classList.remove('flipped');
+      }
+    });
   });
   
-  // Position nodes - BOTTOM (Ausgaben)
-  rightNodes.forEach((n,i)=>{
-    // Center horizontally if fewer nodes than top side
-    const horizontalOffset=bottomCount<topCount?((topCount-bottomCount)*(nodeHeight+nodePadding))/2:0;
-    n.x=margin.left+horizontalOffset+i*(nodeHeight+nodePadding);
-    n.y=height-margin.bottom-nodeWidth;
-    n.w=nodeHeight;
-    n.h=nodeWidth;
-  });
+  // Render flows as SVG paths
+  renderSankeyFlows(leftNodes,rightNodes,flows);
+}
+
+function renderSankeyFlows(leftNodes,rightNodes,flows){
+  const svg=document.querySelector('.sankey-flows-svg');
+  if(!svg)return;
   
-  // Colors - beige/brown gradient for flows
   const isDk=isDark;
-  const topColor=!isDk?'rgba(88,108,96,0.6)':'rgba(122,170,130,0.5)';
-  
-  // Bottom side colors - beige to brown gradient
-  const bottomColors=rightNodes.map((_,i)=>{
+  const leftColor=!isDk?'rgba(88,108,96,0.6)':'rgba(122,170,130,0.5)';
+  const rightColors=rightNodes.map((_,i)=>{
     const t=rightNodes.length<=1?0:i/(rightNodes.length-1);
     if(!isDk){
-      // Light mode: beige to brown
       const r=Math.round(139+t*(110-139));
       const g=Math.round(111+t*(85-111));
       const b=Math.round(94+t*(70-94));
       return`rgba(${r},${g},${b},0.65)`;
     }else{
-      // Dark mode
       const r=Math.round(160+t*(140-160));
       const g=Math.round(140+t*(110-140));
       const b=Math.round(120+t*(90-120));
@@ -1719,16 +1802,9 @@ function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal){
     }
   });
   
-  // Build SVG
-  let svg=`<svg viewBox="0 0 ${totalWidth+margin.left+margin.right} ${height}" style="width:100%;height:auto;max-height:500px">`;
-  
-  // Section labels
-  svg+=`<text x="${(totalWidth+margin.left+margin.right)/2}" y="18" text-anchor="middle" font-size="11" fill="var(--muted)" letter-spacing="0.1em" font-weight="500">EINNAHMEN</text>`;
-  svg+=`<text x="${(totalWidth+margin.left+margin.right)/2}" y="${height-8}" text-anchor="middle" font-size="11" fill="var(--muted)" letter-spacing="0.1em" font-weight="500">AUSGABEN</text>`;
-  
-  // Flows
-  const topOffsets=new Map();
-  const bottomOffsets=new Map();
+  let paths='';
+  const leftOffsets=new Map();
+  const rightOffsets=new Map();
   
   flows.forEach(flow=>{
     const fromNode=leftNodes.find(n=>n.label===flow.from);
@@ -1738,88 +1814,36 @@ function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal){
     const fromIdx=leftNodes.indexOf(fromNode);
     const toIdx=rightNodes.indexOf(toNode);
     
-    const flowWidthTop=(flow.val/fromNode.val)*fromNode.w*0.85;
-    const flowWidthBottom=(flow.val/toNode.val)*toNode.w*0.85;
+    // Calculate positions in percentage
+    const leftOff=leftOffsets.get(flow.from)||0;
+    const rightOff=rightOffsets.get(flow.to)||0;
     
-    const topOff=topOffsets.get(flow.from)||0;
-    const bottomOff=bottomOffsets.get(flow.to)||0;
+    const flowHeightLeft=(flow.val/fromNode.val)*85;
+    const flowHeightRight=(flow.val/toNode.val)*85;
     
-    topOffsets.set(flow.from,topOff+flowWidthTop);
-    bottomOffsets.set(flow.to,bottomOff+flowWidthBottom);
+    leftOffsets.set(flow.from,leftOff+flowHeightLeft);
+    rightOffsets.set(flow.to,rightOff+flowHeightRight);
     
-    const x1=fromNode.x+topOff+flowWidthTop/2;
-    const y1=fromNode.y+fromNode.h;
-    const x2=toNode.x+bottomOff+flowWidthBottom/2;
-    const y2=toNode.y;
+    // Positions in viewBox coordinates (0-100)
+    const x1=0;
+    const y1=7.5+leftOff+flowHeightLeft/2;
+    const x2=100;
+    const y2=7.5+rightOff+flowHeightRight/2;
     
-    const path=createVerticalFlowPath(x1,y1,x2,y2,flowWidthTop,flowWidthBottom);
+    const path=createFlowPath(x1,y1,x2,y2,flowHeightLeft,flowHeightRight);
     
     const gradId=`grad-${fromIdx}-${toIdx}`;
-    svg+=`<defs><linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="${topColor}" stop-opacity="0.4"/><stop offset="100%" stop-color="${bottomColors[toIdx]}" stop-opacity="0.45"/></linearGradient></defs>`;
-    svg+=`<path d="${path}" fill="url(#${gradId})" stroke="none"/>`;
+    paths+=`<defs><linearGradient id="${gradId}" x1="0%" x2="100%"><stop offset="0%" stop-color="${leftColor}" stop-opacity="0.4"/><stop offset="100%" stop-color="${rightColors[toIdx]}" stop-opacity="0.45"/></linearGradient></defs>`;
+    paths+=`<path d="${path}" fill="url(#${gradId})" stroke="none"/>`;
   });
   
-  // Nodes
-  leftNodes.forEach((n,i)=>{
-    svg+=renderVerticalSankeyNode(n,topColor,true);
-  });
-  rightNodes.forEach((n,i)=>{
-    svg+=renderVerticalSankeyNode(n,bottomColors[i],false);
-  });
-  
-  svg+=`</svg>`;
-  container.innerHTML=svg;
+  svg.innerHTML=paths;
 }
 
-function createVerticalFlowPath(x1,y1,x2,y2,w1,w2){
-  const cy1=y1+(y2-y1)*0.4;
-  const cy2=y1+(y2-y1)*0.6;
-  return`M${x1-w1/2},${y1} C${x1-w1/2},${cy1} ${x2-w2/2},${cy2} ${x2-w2/2},${y2} L${x2+w2/2},${y2} C${x2+w2/2},${cy2} ${x1+w1/2},${cy1} ${x1+w1/2},${y1} Z`;
-}
-
-function renderVerticalSankeyNode(node,color,isTop){
-  const accentH=3;
-  const accentY=isTop?node.h-accentH:0;
-  const textY=node.h/2;
-  
-  // Split label into multiple lines if too long
-  let labelLines=[];
-  const maxCharsPerLine=14;
-  if(node.label.length>maxCharsPerLine){
-    const words=node.label.split(' ');
-    let currentLine='';
-    words.forEach(word=>{
-      if((currentLine+' '+word).trim().length<=maxCharsPerLine){
-        currentLine=(currentLine+' '+word).trim();
-      }else{
-        if(currentLine)labelLines.push(currentLine);
-        currentLine=word;
-      }
-    });
-    if(currentLine)labelLines.push(currentLine);
-  }else{
-    labelLines=[node.label];
-  }
-  
-  // Position text
-  const lineHeight=11;
-  const totalTextHeight=labelLines.length*lineHeight+14;
-  const textX=node.w/2;
-  const startY=isTop?(node.h+8):(0-totalTextHeight+node.h-8);
-  
-  let labelSvg='';
-  labelLines.forEach((line,i)=>{
-    labelSvg+=`<text x="${textX}" y="${startY+i*lineHeight}" text-anchor="middle" font-size="10" fill="var(--ink)" font-weight="400">${line}</text>`;
-  });
-  
-  const valueY=startY+labelLines.length*lineHeight+10;
-  
-  return`<g transform="translate(${node.x},${node.y})">
-    <rect width="${node.w}" height="${node.h}" fill="${color}" fill-opacity="0.15" stroke="${color}" stroke-opacity="0.4" stroke-width="1" rx="2"/>
-    <rect y="${accentY}" width="${node.w}" height="${accentH}" fill="${color}" fill-opacity="0.85" rx="1"/>
-    ${labelSvg}
-    <text x="${textX}" y="${valueY}" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="500">${fmt(node.val)}</text>
-  </g>`;
+function createFlowPath(x1,y1,x2,y2,h1,h2){
+  const cx1=x1+(x2-x1)*0.4;
+  const cx2=x1+(x2-x1)*0.6;
+  return`M${x1},${y1-h1/2} C${cx1},${y1-h1/2} ${cx2},${y2-h2/2} ${x2},${y2-h2/2} L${x2},${y2+h2/2} C${cx2},${y2+h2/2} ${cx1},${y1+h1/2} ${x1},${y1+h1/2} Z`;
 }
 
 function renderBudgetBreakdown(c){
