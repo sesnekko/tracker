@@ -1216,14 +1216,13 @@ function setupChartInteraction(){
     const pxPerTick=(xScale.right-xScale.left)/(netData.length-1);
     let idx=Math.round((x-xScale.left)/pxPerTick);
     idx=Math.max(0,Math.min(netData.length-1,idx));
-    // Prevent jumping when at leftmost position
-    if(idx===0&&x<xScale.left-10)return 0;
     return idx;
   }
 
   function getPixelForIndex(idx){
     const xScale=chart.scales.x;
     const yScale=chart.scales.y;
+    // Ensure we use the actual data point position from the chart
     const px=xScale.left+(idx/(netData.length-1))*(xScale.right-xScale.left);
     const py=yScale.getPixelForValue(netData[idx]);
     return{x:px,y:py};
@@ -1251,7 +1250,6 @@ function setupChartInteraction(){
     lastIndex=idx;
     const val=netData[idx];
     const ym=labels[idx];
-    haptic('light');
     
     // Update KPI
     animateKpiValue('kpi-net',fmt(val),val);
@@ -1277,19 +1275,24 @@ function setupChartInteraction(){
       const total=vals.reduce((a,b)=>a+b,0);
       const maxVal=Math.max(...vals);
       
-      // Update legend values AND bars
-      const legendItems=document.querySelectorAll('#legendAssets .legend-row');
-      legendItems.forEach((row,i)=>{
-        if(i<vals.length&&vals[i]>0){
-          const valEl=row.querySelector('.legend-val');
-          const fillEl=row.querySelector('.legend-fill');
-          if(valEl)valEl.textContent=fmt(vals[i]);
-          if(fillEl){
-            const barPct=Math.round(vals[i]/maxVal*100);
-            fillEl.style.width=`${barPct}%`;
-          }
-        }
-      });
+      // Rebuild legend with correct sorting for this month
+      const lA=document.getElementById('legendAssets');
+      lA.innerHTML='';
+      if(total>0){
+        const items=[];
+        vals.forEach((v,i)=>{if(v>0)items.push({label:lbls[i],val:v});});
+        const _dk=!isDark?[90,84,76]:[130,124,116],_lt=!isDark?[195,190,180]:[240,234,220];
+        const _n=Math.max(items.length,1);
+        const colors=items.map((_,i)=>{const t=_n<=1?0:i/(_n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
+        items.forEach((item,j)=>{
+          const pct=Math.round(item.val/total*100);
+          const barPct=Math.round(item.val/maxVal*100);
+          const li=document.createElement('li');
+          li.className='legend-row';
+          li.innerHTML=`<div class="legend-bar" style="background:${colors[j]}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${colors[j]};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
+          lA.appendChild(li);
+        });
+      }
     }
     
     showCrosshair(idx);
