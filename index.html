@@ -1666,41 +1666,43 @@ function renderBudgetSankey(c){
 
 function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal){
   const width=Math.min(window.innerWidth-40,600);
-  const nodeWidth=Math.min(width*0.28,140);
+  const nodeHeight=Math.min(width*0.28,140);
+  const nodeWidth=12;
   const nodePadding=12;
-  const margin={top:32,right:10,bottom:12,left:10};
+  const margin={top:32,right:10,bottom:32,left:10};
   
-  const leftCount=leftNodes.length;
-  const rightCount=rightNodes.length;
-  const maxCount=Math.max(leftCount,rightCount);
-  const nodeHeight=Math.max(50,Math.min(90,240/maxCount));
-  const height=maxCount*nodeHeight+(maxCount-1)*nodePadding+margin.top+margin.bottom;
+  const topCount=leftNodes.length;
+  const bottomCount=rightNodes.length;
+  const maxCount=Math.max(topCount,bottomCount);
+  const totalWidth=maxCount*nodeHeight+(maxCount-1)*nodePadding;
+  const height=400;
   
-  // Position nodes
+  // Position nodes - TOP (Einnahmen)
   leftNodes.forEach((n,i)=>{
-    n.x=margin.left;
-    // Center vertically if fewer nodes than right side
-    const verticalOffset=leftCount<rightCount?((rightCount-leftCount)*(nodeHeight+nodePadding))/2:0;
-    n.y=margin.top+verticalOffset+i*(nodeHeight+nodePadding);
-    n.h=nodeHeight;
-    n.w=nodeWidth;
+    // Center horizontally if fewer nodes than bottom side
+    const horizontalOffset=topCount<bottomCount?((bottomCount-topCount)*(nodeHeight+nodePadding))/2:0;
+    n.x=margin.left+horizontalOffset+i*(nodeHeight+nodePadding);
+    n.y=margin.top;
+    n.w=nodeHeight;
+    n.h=nodeWidth;
   });
   
+  // Position nodes - BOTTOM (Ausgaben)
   rightNodes.forEach((n,i)=>{
-    n.x=width-margin.right-nodeWidth;
-    // Center vertically if fewer nodes than left side
-    const verticalOffset=rightCount<leftCount?((leftCount-rightCount)*(nodeHeight+nodePadding))/2:0;
-    n.y=margin.top+verticalOffset+i*(nodeHeight+nodePadding);
-    n.h=nodeHeight;
-    n.w=nodeWidth;
+    // Center horizontally if fewer nodes than top side
+    const horizontalOffset=bottomCount<topCount?((topCount-bottomCount)*(nodeHeight+nodePadding))/2:0;
+    n.x=margin.left+horizontalOffset+i*(nodeHeight+nodePadding);
+    n.y=height-margin.bottom-nodeWidth;
+    n.w=nodeHeight;
+    n.h=nodeWidth;
   });
   
   // Colors - beige/brown gradient for flows
   const isDk=isDark;
-  const leftColor=!isDk?'rgba(88,108,96,0.6)':'rgba(122,170,130,0.5)';
+  const topColor=!isDk?'rgba(88,108,96,0.6)':'rgba(122,170,130,0.5)';
   
-  // Right side colors - beige to brown gradient
-  const rightColors=rightNodes.map((_,i)=>{
+  // Bottom side colors - beige to brown gradient
+  const bottomColors=rightNodes.map((_,i)=>{
     const t=rightNodes.length<=1?0:i/(rightNodes.length-1);
     if(!isDk){
       // Light mode: beige to brown
@@ -1718,15 +1720,15 @@ function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal){
   });
   
   // Build SVG
-  let svg=`<svg viewBox="0 0 ${width} ${height}" style="width:100%;height:auto;max-height:400px">`;
+  let svg=`<svg viewBox="0 0 ${totalWidth+margin.left+margin.right} ${height}" style="width:100%;height:auto;max-height:500px">`;
   
   // Section labels
-  svg+=`<text x="${margin.left+nodeWidth/2}" y="18" text-anchor="middle" font-size="11" fill="var(--muted)" letter-spacing="0.1em" font-weight="500">EINNAHMEN</text>`;
-  svg+=`<text x="${width-margin.right-nodeWidth/2}" y="18" text-anchor="middle" font-size="11" fill="var(--muted)" letter-spacing="0.1em" font-weight="500">AUSGABEN</text>`;
+  svg+=`<text x="${(totalWidth+margin.left+margin.right)/2}" y="18" text-anchor="middle" font-size="11" fill="var(--muted)" letter-spacing="0.1em" font-weight="500">EINNAHMEN</text>`;
+  svg+=`<text x="${(totalWidth+margin.left+margin.right)/2}" y="${height-8}" text-anchor="middle" font-size="11" fill="var(--muted)" letter-spacing="0.1em" font-weight="500">AUSGABEN</text>`;
   
   // Flows
-  const leftOffsets=new Map();
-  const rightOffsets=new Map();
+  const topOffsets=new Map();
+  const bottomOffsets=new Map();
   
   flows.forEach(flow=>{
     const fromNode=leftNodes.find(n=>n.label===flow.from);
@@ -1736,50 +1738,49 @@ function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal){
     const fromIdx=leftNodes.indexOf(fromNode);
     const toIdx=rightNodes.indexOf(toNode);
     
-    const flowHeightLeft=(flow.val/fromNode.val)*fromNode.h*0.85;
-    const flowHeightRight=(flow.val/toNode.val)*toNode.h*0.85;
+    const flowWidthTop=(flow.val/fromNode.val)*fromNode.w*0.85;
+    const flowWidthBottom=(flow.val/toNode.val)*toNode.w*0.85;
     
-    const leftOff=leftOffsets.get(flow.from)||0;
-    const rightOff=rightOffsets.get(flow.to)||0;
+    const topOff=topOffsets.get(flow.from)||0;
+    const bottomOff=bottomOffsets.get(flow.to)||0;
     
-    leftOffsets.set(flow.from,leftOff+flowHeightLeft);
-    rightOffsets.set(flow.to,rightOff+flowHeightRight);
+    topOffsets.set(flow.from,topOff+flowWidthTop);
+    bottomOffsets.set(flow.to,bottomOff+flowWidthBottom);
     
-    const x1=fromNode.x+fromNode.w;
-    const y1=fromNode.y+leftOff+flowHeightLeft/2;
-    const x2=toNode.x;
-    const y2=toNode.y+rightOff+flowHeightRight/2;
+    const x1=fromNode.x+topOff+flowWidthTop/2;
+    const y1=fromNode.y+fromNode.h;
+    const x2=toNode.x+bottomOff+flowWidthBottom/2;
+    const y2=toNode.y;
     
-    const path=createFlowPath(x1,y1,x2,y2,flowHeightLeft,flowHeightRight);
+    const path=createVerticalFlowPath(x1,y1,x2,y2,flowWidthTop,flowWidthBottom);
     
     const gradId=`grad-${fromIdx}-${toIdx}`;
-    svg+=`<defs><linearGradient id="${gradId}" x1="0%" x2="100%"><stop offset="0%" stop-color="${leftColor}" stop-opacity="0.4"/><stop offset="100%" stop-color="${rightColors[toIdx]}" stop-opacity="0.45"/></linearGradient></defs>`;
+    svg+=`<defs><linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="${topColor}" stop-opacity="0.4"/><stop offset="100%" stop-color="${bottomColors[toIdx]}" stop-opacity="0.45"/></linearGradient></defs>`;
     svg+=`<path d="${path}" fill="url(#${gradId})" stroke="none"/>`;
   });
   
   // Nodes
   leftNodes.forEach((n,i)=>{
-    svg+=renderSankeyNode(n,leftColor,true);
+    svg+=renderVerticalSankeyNode(n,topColor,true);
   });
   rightNodes.forEach((n,i)=>{
-    svg+=renderSankeyNode(n,rightColors[i],false);
+    svg+=renderVerticalSankeyNode(n,bottomColors[i],false);
   });
   
   svg+=`</svg>`;
   container.innerHTML=svg;
 }
 
-function createFlowPath(x1,y1,x2,y2,h1,h2){
-  const cx1=x1+(x2-x1)*0.4;
-  const cx2=x1+(x2-x1)*0.6;
-  return`M${x1},${y1-h1/2} C${cx1},${y1-h1/2} ${cx2},${y2-h2/2} ${x2},${y2-h2/2} L${x2},${y2+h2/2} C${cx2},${y2+h2/2} ${cx1},${y1+h1/2} ${x1},${y1+h1/2} Z`;
+function createVerticalFlowPath(x1,y1,x2,y2,w1,w2){
+  const cy1=y1+(y2-y1)*0.4;
+  const cy2=y1+(y2-y1)*0.6;
+  return`M${x1-w1/2},${y1} C${x1-w1/2},${cy1} ${x2-w2/2},${cy2} ${x2-w2/2},${y2} L${x2+w2/2},${y2} C${x2+w2/2},${cy2} ${x1+w1/2},${cy1} ${x1+w1/2},${y1} Z`;
 }
 
-function renderSankeyNode(node,color,isLeft){
-  const accentW=3;
-  const accentX=isLeft?node.w-accentW:0;
-  const textX=isLeft?node.w/2-2:accentW+node.w/2;
-  const cy=node.h/2;
+function renderVerticalSankeyNode(node,color,isTop){
+  const accentH=3;
+  const accentY=isTop?node.h-accentH:0;
+  const textY=node.h/2;
   
   // Split label into multiple lines if too long
   let labelLines=[];
@@ -1800,10 +1801,11 @@ function renderSankeyNode(node,color,isLeft){
     labelLines=[node.label];
   }
   
-  // Adjust text positioning based on number of lines
+  // Position text
   const lineHeight=11;
   const totalTextHeight=labelLines.length*lineHeight+14;
-  const startY=cy-totalTextHeight/2+lineHeight;
+  const textX=node.w/2;
+  const startY=isTop?(node.h+8):(0-totalTextHeight+node.h-8);
   
   let labelSvg='';
   labelLines.forEach((line,i)=>{
@@ -1814,7 +1816,7 @@ function renderSankeyNode(node,color,isLeft){
   
   return`<g transform="translate(${node.x},${node.y})">
     <rect width="${node.w}" height="${node.h}" fill="${color}" fill-opacity="0.15" stroke="${color}" stroke-opacity="0.4" stroke-width="1" rx="2"/>
-    <rect x="${accentX}" width="${accentW}" height="${node.h}" fill="${color}" fill-opacity="0.85" rx="1"/>
+    <rect y="${accentY}" width="${node.w}" height="${accentH}" fill="${color}" fill-opacity="0.85" rx="1"/>
     ${labelSvg}
     <text x="${textX}" y="${valueY}" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="500">${fmt(node.val)}</text>
   </g>`;
