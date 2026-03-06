@@ -987,7 +987,28 @@ function handleCsvUpload(ev){
           variable:budgetData.variable.length
         });
       }
-      // Skip Konto and Dauerauftrag sections silently
+      
+      // ── Dauerauftrag section ──
+      else if(firstTyp==='dauerauftrag'){
+        // Header: Typ;Von_Konto;An_Verwendungszweck;Betrag
+        console.log('Dauerauftrag section found, rows:',section.rows.length);
+        if(!budgetData.standingOrders)budgetData.standingOrders=[];
+        for(const c of section.rows){
+          if(c.length<4)continue;
+          const typ=c[0].trim().toLowerCase();
+          if(typ!=='dauerauftrag')continue;
+          const from=c[1].trim();
+          const to=c[2].trim();
+          const amount=parseCsvNumber(c[3]||'');
+          if(from&&to&&amount>0){
+            budgetData.standingOrders.push({from,to,amount});
+            console.log(`  → Dauerauftrag: ${from} → ${to}: ${amount}€`);
+            budgetImported++;
+          }
+        }
+        console.log('Standing orders imported:',budgetData.standingOrders.length);
+      }
+      // Skip Konto section silently
     }
 
     saveData(d);
@@ -1583,60 +1604,62 @@ function renderBudgetSankey(c){
   const wrap=document.getElementById('sankeyWrap');
   if(!c||c.einnahmen===0){wrap.innerHTML='<div style="text-align:center;padding:20px 0;color:var(--muted)">Keine Budget-Daten. CSV importieren.</div>';return;}
   
-  // Prepare data
+  // Load standing orders from budget data
+  const bd=loadBudgetData();
+  const orders=(bd&&bd.standingOrders)||[];
+  
+  if(!orders.length){
+    wrap.innerHTML='<div style="text-align:center;padding:20px 0;color:var(--muted);line-height:1.6">Keine Daueraufträge definiert.<br><span style="font-size:11px">CSV-Datei um Daueraufträge ergänzen</span></div>';
+    return;
+  }
+  
+  // Filter out Kindergeld from source accounts (it flows into target accounts)
+  const kindergeldOrders=orders.filter(o=>o.from==='Kindergeld');
+  const mainOrders=orders.filter(o=>o.from!=='Kindergeld'&&o.amount>0);
+  
+  if(!mainOrders.length){
+    wrap.innerHTML='<div style="text-align:center;padding:20px 0;color:var(--muted)">Keine Daueraufträge vorhanden.</div>';
+    return;
+  }
+  
+  // Calculate Kindergeld amounts per target
+  const kindergeldByTarget=new Map();
+  kindergeldOrders.forEach(o=>{
+    kindergeldByTarget.set(o.to,(kindergeldByTarget.get(o.to)||0)+o.amount);
+  });
+  
+  // Build source nodes (Einnahmen)
+  const sourceLabels=[...new Set(mainOrders.map(o=>o.from))];
+  const einnahmenNodes=sourceLabels.map(label=>{
+    const total=mainOrders.filter(o=>o.from===label).reduce((s,o)=>s+o.amount,0);
+    return{label,val:total};
+  });
+  
+  // Build target nodes (Ausgaben)
+  const targetLabels=[...new Set(mainOrders.map(o=>o.to))];
+  const ausgabenNodes=targetLabels.map(label=>{
+    const fromOrders=mainOrders.filter(o=>o.to===label).reduce((s,o)=>s+o.amount,0);
+    const fromKindergeld=kindergeldByTarget.get(label)||0;
+    return{label,val:fromOrders+fromKindergeld};
+  });
+  
+  // Build flows
   const flows=[];
-  const maxVal=c.einnahmen;
-  
-  // Einnahmen → Ausgaben flows
-  const totalAusgaben=c.fixkosten+c.variable+c.sparplaene;
-  
-  // Einnahmen nodes
-  const einnahmenNodes=[];
-  let gehaltLukas=0,gehaltMiri=0,sonstiges=0;
-  c.einItems.forEach(item=>{
-    const n=item.label.toLowerCase();
-    if(n.includes('lukas'))gehaltLukas+=item.val;
-    else if(n.includes('miri')||n.includes('miriam'))gehaltMiri+=item.val;
-    else sonstiges+=item.val;
-  });
-  if(gehaltLukas>0)einnahmenNodes.push({label:'Gehaltskonto Lukas',val:gehaltLukas});
-  if(gehaltMiri>0)einnahmenNodes.push({label:'Gehaltskonto Miri',val:gehaltMiri});
-  if(sonstiges>0)einnahmenNodes.push({label:'Sonstiges',val:sonstiges});
-  
-  // Ausgaben nodes
-  const ausgabenNodes=[];
-  
-  // Fixkosten aufschlüsseln
-  let wohnen=0,versicherungen=0,fahrzeuge=0,abos=0;
-  c.fixItems.forEach(item=>{
-    const n=item.label.toLowerCase();
-    if(n.includes('tilgung')||n.includes('gas')||n.includes('strom')||n.includes('wasser')||n.includes('abfall')||n.includes('grundsteuer')||n.includes('heizung')||n.includes('gebäude')||n.includes('putzfrau')||n.includes('telefon')||n.includes('internet')||n.includes('gez'))wohnen+=item.val;
-    else if(n.includes('versicherung')||n.includes('haftpflicht')||n.includes('hausrat')||n.includes('berufsunfähigkeit')||n.includes('rechtschutz')||n.includes('adac'))versicherungen+=item.val;
-    else if(n.includes('911')||n.includes('c-klasse')||n.includes('tanken')||n.includes('steuer')||n.includes('services')||n.includes('wartung'))fahrzeuge+=item.val;
-    else abos+=item.val;
+  mainOrders.forEach(order=>{
+    const fromNode=einnahmenNodes.find(n=>n.label===order.from);
+    const toNode=ausgabenNodes.find(n=>n.label===order.to);
+    if(fromNode&&toNode){
+      flows.push({
+        from:order.from,
+        to:order.to,
+        val:order.amount,
+        fromTotal:fromNode.val,
+        toTotal:toNode.val
+      });
+    }
   });
   
-  // Ausgaben-Kategorien mit Werten
-  const ausgabenKategorien=[
-    {label:'Gem. Lastschriften',val:wohnen+versicherungen,color:'#8b6f5e'},
-    {label:'Autos',val:fahrzeuge,color:'#a68976'},
-    {label:'Depot Verrechnungskonto',val:abos,color:'#c4a896'},
-    {label:'Haushaltskonto',val:c.variable+c.sparplaene,color:'#d4b8a6'}
-  ].filter(k=>k.val>0);
-  
-  ausgabenNodes.push(...ausgabenKategorien);
-  
-  // Flows berechnen (proportional)
-  einnahmenNodes.forEach(ein=>{
-    const einPct=ein.val/c.einnahmen;
-    ausgabenNodes.forEach(aus=>{
-      const flowVal=aus.val*einPct;
-      if(flowVal>0){
-        flows.push({from:ein.label,to:aus.label,val:flowVal,fromTotal:ein.val,toTotal:aus.val});
-      }
-    });
-  });
-  
+  const maxVal=Math.max(...einnahmenNodes.map(n=>n.val));
   renderSankeyDiagram(wrap,einnahmenNodes,ausgabenNodes,flows,maxVal);
 }
 
