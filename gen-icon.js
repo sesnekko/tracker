@@ -4,114 +4,75 @@ const fs = require('fs');
 function generateIcon(size, filename) {
   const canvas = createCanvas(size, size);
   const ctx = canvas.getContext('2d');
-  const s = size / 512; // scale factor
+  const s = size / 512;
 
-  // Background - warm paper tone matching app
+  // Background - warm paper tone
   ctx.fillStyle = '#eae8e3';
   ctx.beginPath();
-  const r = 112 * s; // iOS rounded rect radius
-  roundRect(ctx, 0, 0, size, size, r);
+  roundRect(ctx, 0, 0, size, size, 112 * s);
   ctx.fill();
 
-  // Subtle radial gradient overlay
-  const grad = ctx.createRadialGradient(size * 0.3, size * 0.2, 0, size * 0.5, size * 0.5, size * 0.7);
-  grad.addColorStop(0, 'rgba(255,255,255,0.15)');
-  grad.addColorStop(1, 'rgba(0,0,0,0.03)');
+  // Subtle radial warmth
+  const grad = ctx.createRadialGradient(size * 0.25, size * 0.25, 0, size * 0.5, size * 0.5, size * 0.75);
+  grad.addColorStop(0, 'rgba(255,255,255,0.12)');
+  grad.addColorStop(1, 'rgba(0,0,0,0.02)');
   ctx.fillStyle = grad;
   ctx.beginPath();
-  roundRect(ctx, 0, 0, size, size, r);
+  roundRect(ctx, 0, 0, size, size, 112 * s);
   ctx.fill();
 
-  // Chart area
-  const padL = 80 * s, padR = 60 * s;
-  const padT = 140 * s, padB = 160 * s;
-  const w = size - padL - padR;
-  const h = size - padT - padB;
+  // Clip to rounded rect
+  ctx.save();
+  ctx.beginPath();
+  roundRect(ctx, 0, 0, size, size, 112 * s);
+  ctx.clip();
 
-  // Three lines representing Nettovermögen, Assets, Liabilities
-  const lines = [
-    { // Main line (Nettovermögen) - bold, dark
-      points: [0.45, 0.50, 0.42, 0.35, 0.28, 0.22, 0.18, 0.15, 0.12, 0.10, 0.13, 0.08],
-      color: '#1a1a18',
-      width: 3.5 * s,
-      fillAlpha: 0.08,
-      dots: true
-    },
-    { // Assets line - green tint, medium
-      points: [0.55, 0.58, 0.52, 0.48, 0.40, 0.35, 0.30, 0.28, 0.25, 0.22, 0.26, 0.20],
-      color: '#3a5e42',
-      width: 2 * s,
-      fillAlpha: 0.06,
-      dots: false
-    },
-    { // Liabilities line - red tint, thin, bottom
-      points: [0.82, 0.81, 0.80, 0.79, 0.78, 0.78, 0.77, 0.77, 0.76, 0.76, 0.77, 0.76],
-      color: '#6e3b30',
-      width: 1.5 * s,
-      fillAlpha: 0.05,
-      dots: false
-    }
+  // Flowing waves - organic, abstract, not chart-like
+  const waves = [
+    { yBase: 0.62, amp: 0.035, freq: 0.8, phase: 0,    color: '#1a1a18', alpha: 0.05, width: 0 },
+    { yBase: 0.55, amp: 0.04,  freq: 0.7, phase: 0.5,  color: '#1a1a18', alpha: 0.06, width: 0 },
+    { yBase: 0.47, amp: 0.045, freq: 0.9, phase: 1.2,  color: '#1a1a18', alpha: 0.07, width: 0 },
+    { yBase: 0.38, amp: 0.05,  freq: 0.6, phase: 2.0,  color: '#3a5e42', alpha: 0.08, width: 0 },
+    { yBase: 0.30, amp: 0.04,  freq: 1.0, phase: 0.8,  color: '#1a1a18', alpha: 0.04, width: 0 },
+    // Accent lines (stroked, no fill)
+    { yBase: 0.44, amp: 0.06,  freq: 0.55, phase: 1.5, color: '#1a1a18', alpha: 0.18, width: 2.5, fill: false },
+    { yBase: 0.35, amp: 0.05,  freq: 0.75, phase: 0.3, color: '#3a5e42', alpha: 0.14, width: 1.8, fill: false },
+    { yBase: 0.56, amp: 0.04,  freq: 0.65, phase: 2.2, color: '#6e3b30', alpha: 0.10, width: 1.2, fill: false },
   ];
 
-  // Draw fills first, then lines on top
-  lines.forEach(line => {
-    const pts = line.points.map((y, i) => ({
-      x: padL + (i / (line.points.length - 1)) * w,
-      y: padT + y * h
-    }));
+  waves.forEach(wave => {
+    const pts = [];
+    const steps = 60;
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const x = -20 * s + t * (size + 40 * s);
+      const y = size * wave.yBase +
+        Math.sin(t * Math.PI * 2 * wave.freq + wave.phase) * size * wave.amp +
+        Math.sin(t * Math.PI * 3.3 * wave.freq + wave.phase * 1.7) * size * wave.amp * 0.4;
+      pts.push({ x, y });
+    }
 
-    // Fill
     ctx.beginPath();
     drawSmoothLine(ctx, pts);
-    ctx.lineTo(padL + w, padT + h);
-    ctx.lineTo(padL, padT + h);
-    ctx.closePath();
-    ctx.fillStyle = hexToRgba(line.color, line.fillAlpha);
-    ctx.fill();
-  });
 
-  lines.forEach(line => {
-    const pts = line.points.map((y, i) => ({
-      x: padL + (i / (line.points.length - 1)) * w,
-      y: padT + y * h
-    }));
-
-    // Line
-    ctx.beginPath();
-    drawSmoothLine(ctx, pts);
-    ctx.strokeStyle = line.color;
-    ctx.lineWidth = line.width;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.stroke();
-
-    // Dots on main line
-    if (line.dots) {
-      pts.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 4 * s, 0, Math.PI * 2);
-        ctx.fillStyle = line.color;
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 2 * s, 0, Math.PI * 2);
-        ctx.fillStyle = '#eae8e3';
-        ctx.fill();
-      });
+    if (wave.fill !== false) {
+      // Filled wave band
+      ctx.lineTo(size + 20 * s, size + 20 * s);
+      ctx.lineTo(-20 * s, size + 20 * s);
+      ctx.closePath();
+      ctx.fillStyle = hexToRgba(wave.color, wave.alpha);
+      ctx.fill();
+    } else {
+      // Stroked line
+      ctx.strokeStyle = hexToRgba(wave.color, wave.alpha);
+      ctx.lineWidth = wave.width * s;
+      ctx.lineCap = 'round';
+      ctx.stroke();
     }
   });
 
-  // Subtle horizontal grid lines
-  ctx.strokeStyle = 'rgba(26,26,24,0.06)';
-  ctx.lineWidth = 1 * s;
-  for (let i = 1; i <= 3; i++) {
-    const y = padT + (i / 4) * h;
-    ctx.beginPath();
-    ctx.moveTo(padL, y);
-    ctx.lineTo(padL + w, y);
-    ctx.stroke();
-  }
+  ctx.restore();
 
-  // Save
   const buf = canvas.toBuffer('image/png');
   fs.writeFileSync(filename, buf);
   console.log(`✓ ${filename} (${size}x${size})`);
@@ -121,7 +82,7 @@ function drawSmoothLine(ctx, pts) {
   if (pts.length < 2) return;
   ctx.moveTo(pts[0].x, pts[0].y);
   for (let i = 0; i < pts.length - 1; i++) {
-    const cp = (pts[i + 1].x - pts[i].x) * 0.35;
+    const cp = (pts[i + 1].x - pts[i].x) * 0.4;
     ctx.bezierCurveTo(
       pts[i].x + cp, pts[i].y,
       pts[i + 1].x - cp, pts[i + 1].y,
