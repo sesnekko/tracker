@@ -165,6 +165,9 @@ body {
 /* ── Stacked Bar (Budget only) ── */
 .structure-section { padding:0 0 20px; }
 .stacked-bar { display:flex;height:12px;border-radius:4px;overflow:hidden;gap:1px;margin-bottom:12px; }
+.breakdown-collapsible { cursor:pointer;transition:opacity .2s; }
+.breakdown-collapsible:active { opacity:0.8; }
+.breakdown-details { margin-top:8px; }
 .stacked-seg { transition:width .4s ease;cursor:pointer;opacity:0.85; }
 .stacked-seg:active { opacity:1; }
 .stacked-seg.highlighted { opacity:1; }
@@ -536,11 +539,9 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 <div class="chart-label">Geldfluss</div>
 <div class="sankey-wrap" id="sankeyWrap"></div>
 
-<!-- Ausgaben Breakdown -->
+<!-- Einnahmen & Ausgaben Breakdown -->
 <div class="structure-section" style="padding-top:14px">
-  <div class="chart-label">Ausgaben</div>
-  <div class="stacked-bar" id="budgetStackedBar"></div>
-  <ul class="legend-list" id="budgetLegend"></ul>
+  <div id="budgetBreakdown"></div>
 </div>
 
 </div><!-- /app-content -->
@@ -1820,52 +1821,81 @@ function renderSankeyNode(node,color,isLeft){
 }
 
 function renderBudgetBreakdown(c){
-  const bar=document.getElementById('budgetStackedBar');
-  const legend=document.getElementById('budgetLegend');
-  if(!c||(c.ausgaben===0&&c.sparplaene===0)){bar.innerHTML='';legend.innerHTML='';return;}
+  const container=document.getElementById('budgetBreakdown');
+  if(!c||(c.ausgaben===0&&c.sparplaene===0&&c.einnahmen===0)){container.innerHTML='';return;}
 
-  const allItems=[...c.fixItems,...c.varItems,...c.sparItems].sort((a,b)=>b.val-a.val);
-  const _dk=!isDark?[110,59,48]:[192,112,88];
-  const _lt=!isDark?[195,170,155]:[240,220,200];
-  const n=Math.max(allItems.length,1);
-  const colors=allItems.map((_,i)=>{const t=n<=1?0:i/(n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
-  const total=allItems.reduce((s,i)=>s+i.val,0);
-  const maxVal=Math.max(...allItems.map(i=>i.val));
-
-  bar.innerHTML='';
-  const segs=[];
-  allItems.forEach((item,i)=>{
-    const seg=document.createElement('div');
-    seg.className='stacked-seg';
-    seg.style.width=(item.val/total*100)+'%';
-    seg.style.background=colors[i];
-    seg.dataset.idx=String(i);
-    segs.push(seg);
-    bar.appendChild(seg);
-  });
-
-  legend.innerHTML='';
-  const rows=[];
-  allItems.forEach((item,i)=>{
-    const pct=Math.round(item.val/total*100);
-    const barPct=Math.round(item.val/maxVal*100);
-    const li=document.createElement('li');
-    li.className='legend-row';
-    li.dataset.idx=String(i);
-    li.innerHTML=`<div class="legend-bar" style="background:${colors[i]}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${colors[i]};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
-    rows.push(li);
-    legend.appendChild(li);
-  });
-
-  let activeIdx=null;
-  function highlight(idx){
-    if(activeIdx===idx){activeIdx=null;segs.forEach(s=>{s.classList.remove('highlighted','dimmed');});rows.forEach(r=>{r.style.opacity='';});return;}
-    activeIdx=idx;
-    segs.forEach(s=>{s.classList.toggle('highlighted',s.dataset.idx===String(idx));s.classList.toggle('dimmed',s.dataset.idx!==String(idx));});
-    rows.forEach(r=>{r.style.opacity=r.dataset.idx===String(idx)?'1':'0.35';});
+  let html='';
+  
+  // ── Einnahmen Section ──
+  if(c.einnahmen>0&&c.einItems.length>0){
+    const einItems=[...c.einItems].sort((a,b)=>b.val-a.val);
+    const einTotal=einItems.reduce((s,i)=>s+i.val,0);
+    const einMax=Math.max(...einItems.map(i=>i.val));
+    
+    // Colors for Einnahmen (green gradient)
+    const _dk=!isDark?[58,94,66]:[122,170,130];
+    const _lt=!isDark?[120,150,130]:[180,210,180];
+    const n=Math.max(einItems.length,1);
+    const einColors=einItems.map((_,i)=>{const t=n<=1?0:i/(n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
+    
+    html+=`<div class="chart-label">Einnahmen</div>`;
+    html+=`<div class="stacked-bar breakdown-collapsible" data-section="einnahmen">`;
+    einItems.forEach((item,i)=>{
+      const pct=(item.val/einTotal*100);
+      html+=`<div class="stacked-seg" style="width:${pct}%;background:${einColors[i]}"></div>`;
+    });
+    html+=`</div>`;
+    html+=`<ul class="legend-list breakdown-details" id="breakdown-einnahmen" style="display:none">`;
+    einItems.forEach((item,i)=>{
+      const pct=Math.round(item.val/einTotal*100);
+      const barPct=Math.round(item.val/einMax*100);
+      html+=`<li class="legend-row"><div class="legend-bar" style="background:${einColors[i]}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${einColors[i]};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div></li>`;
+    });
+    html+=`</ul>`;
   }
-  segs.forEach(s=>s.addEventListener('click',()=>highlight(parseInt(s.dataset.idx))));
-  rows.forEach(r=>r.addEventListener('click',()=>highlight(parseInt(r.dataset.idx))));
+  
+  // ── Ausgaben Section ──
+  const ausgabenItems=[...c.fixItems,...c.varItems,...c.sparItems].sort((a,b)=>b.val-a.val);
+  if(ausgabenItems.length>0){
+    const ausTotal=ausgabenItems.reduce((s,i)=>s+i.val,0);
+    const ausMax=Math.max(...ausgabenItems.map(i=>i.val));
+    
+    // Colors for Ausgaben (red/brown gradient)
+    const _dk=!isDark?[110,59,48]:[192,112,88];
+    const _lt=!isDark?[195,170,155]:[240,220,200];
+    const n=Math.max(ausgabenItems.length,1);
+    const ausColors=ausgabenItems.map((_,i)=>{const t=n<=1?0:i/(n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
+    
+    html+=`<div class="chart-label" style="margin-top:20px">Ausgaben</div>`;
+    html+=`<div class="stacked-bar breakdown-collapsible" data-section="ausgaben">`;
+    ausgabenItems.forEach((item,i)=>{
+      const pct=(item.val/ausTotal*100);
+      html+=`<div class="stacked-seg" style="width:${pct}%;background:${ausColors[i]}"></div>`;
+    });
+    html+=`</div>`;
+    html+=`<ul class="legend-list breakdown-details" id="breakdown-ausgaben" style="display:none">`;
+    ausgabenItems.forEach((item,i)=>{
+      const pct=Math.round(item.val/ausTotal*100);
+      const barPct=Math.round(item.val/ausMax*100);
+      html+=`<li class="legend-row"><div class="legend-bar" style="background:${ausColors[i]}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${ausColors[i]};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div></li>`;
+    });
+    html+=`</ul>`;
+  }
+  
+  container.innerHTML=html;
+  
+  // Event handlers for collapsible bars
+  document.querySelectorAll('.breakdown-collapsible').forEach(bar=>{
+    bar.addEventListener('click',()=>{
+      const section=bar.dataset.section;
+      const details=document.getElementById('breakdown-'+section);
+      if(details){
+        const isVisible=details.style.display!=='none';
+        details.style.display=isVisible?'none':'block';
+        bar.classList.toggle('expanded',!isVisible);
+      }
+    });
+  });
 }
 
 /* ── Init ── */
