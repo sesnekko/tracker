@@ -1261,7 +1261,7 @@ function setupChartInteraction(){
     const deltaEl=document.getElementById('kpi-net-delta');
     if(deltaEl){
       if(idx>0){setDelta('kpi-net-delta',netData[idx],netData[idx-1]);}
-      else{deltaEl.textContent='';}
+      else{deltaEl.textContent='±0 €';deltaEl.className='hero-delta';}
     }
     
     // Update asset list for this month
