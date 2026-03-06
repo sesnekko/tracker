@@ -790,7 +790,7 @@ function renderNetChart(){
   const grayColor=!isDark?'rgba(90,85,75,0.25)':'rgba(232,228,222,0.25)';
   const aaf=[...FIELDS_LIQUID,...FIELDS_ILLIQUID].filter(k=>k!=='porsche911'&&k!=='mercedes');
   const ad=aaf.map((k,i)=>{return{label:LABELS[k],data:ns.map(ym=>{let v=+data[ym][k]||0;if(k==='immobilien')v-=(+data[ym]['immkredit']||0);if(k==='sonstiges')v+=(+data[ym]['porsche911']||0)+(+data[ym]['mercedes']||0);return v;}),borderColor:grayColor,backgroundColor:!isDark?'rgba(90,85,75,0.06)':'rgba(232,228,222,0.06)',borderWidth:0.8,pointRadius:0,pointHoverRadius:3,tension:0.35,fill:true,_isAsset:true,hidden:!showAssets};});
-  charts['net']=new Chart(ctx,{type:'line',data:{labels:lb,datasets:[
+  charts['net']=new Chart(ctx,{type:'line',data:{labels:lb,_keys:ns,datasets:[
     {label:'Nettovermögen',data:nv,borderColor:ink,backgroundColor:gN,borderWidth:1.5,pointRadius:ns.length>24?1:2,pointHoverRadius:4,pointBackgroundColor:ink,pointBorderColor:!isDark?'#1c1c1a':'#f2efe9',pointBorderWidth:1,tension:0.35,fill:true,hidden:netLineHidden[0]},
     {label:'Vermögen',data:av,borderColor:grn,backgroundColor:gA,borderWidth:1.2,pointRadius:ns.length>24?0:2,tension:0.35,fill:true,hidden:netLineHidden[1]},
     {label:'Verbindlichkeiten',data:lv,borderColor:red,backgroundColor:gL,borderWidth:1.2,pointRadius:ns.length>24?0:2,tension:0.35,fill:true,hidden:netLineHidden[2]},
@@ -1195,6 +1195,7 @@ function setupChartInteraction(){
   let lastIndex=-1;
   const netData=chart.data.datasets[0].data;
   const labels=chart.data.labels;
+  const dataKeys=chart.data._keys||labels;
 
   // Crosshair elements
   const wrap=canvas.parentElement;
@@ -1250,12 +1251,13 @@ function setupChartInteraction(){
     lastIndex=idx;
     haptic('light');
     const val=netData[idx];
-    const ym=labels[idx];
+    const ym=dataKeys[idx];
+    const ymLabel=labels[idx];
     
     // Update KPI
     animateKpiValue('kpi-net',fmt(val),val);
     const heroLabel=document.querySelector('.hero-label');
-    if(heroLabel)heroLabel.textContent=ym;
+    if(heroLabel)heroLabel.textContent=ymLabel;
     const deltaEl=document.getElementById('kpi-net-delta');
     if(deltaEl){
       if(idx>0){setDelta('kpi-net-delta',netData[idx],netData[idx-1]);}
