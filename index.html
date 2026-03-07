@@ -392,6 +392,9 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   .hero-value.kpi-has-eur::after { font-size: 36px; }
   .hero-delta { font-size: 16px; }
   
+  /* Chart section closer to hero */
+  .chart-section { padding: 12px 0; }
+  
   /* Range buttons larger */
   .range-btn { font-size: 15px; padding: 6px 14px; }
   .date-btn { font-size: 16px; padding: 6px 12px; }
@@ -524,6 +527,9 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   .hero-value.kpi-has-eur::after { font-size: 40px; }
   .hero-delta { font-size: 17px; }
   
+  /* Chart section closer to hero */
+  .chart-section { padding: 16px 0; }
+  
   /* KPI tiles even larger */
   .kpi-item { height: 160px; }
   .kpi-label { font-size: 14px; }
@@ -605,6 +611,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
 <div class="range-bar">
   <div class="range-pills">
     <button class="range-btn" id="assetsToggleBtn">Assets</button>
+    <button class="range-btn" id="scaleToggleBtn">Log</button>
     <button class="range-btn active" data-range="12">12M</button>
     <button class="range-btn" data-range="36">3J</button>
     <button class="range-btn" data-range="60">5J</button>
@@ -876,7 +883,7 @@ const INPUT_FIELDS_ETF=['msci-acwi','dax-ucits','msci-acwi-papa','msci-acwi-pate
 const MONTH_NAMES=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 const LIVE_PRICE_TICKERS={'msci-acwi':'IUSQ.DE','dax-ucits':'CG1G.DE','msci-acwi-papa':'ACWI.PA','msci-acwi-patenkinder':'ACWI.PA','gold':'XAUEUR','silber':'XAGEUR'};
 
-let isDark=false, selectedMonth, charts={}, netRange=12, showAssets=true;
+let isDark=false, selectedMonth, charts={}, netRange=12, showAssets=true, useLogScale=false;
 const livePrices={}, netLineHidden={0:false,1:true,2:true};
 const MOON='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
 const SUN='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
@@ -1175,9 +1182,10 @@ function renderNetChart(){
     ...ad
   ]},options:{...cd(),layout:{padding:{left:0,right:0}},plugins:{...cd().plugins,legend:{display:false},tooltip:{mode:'nearest',intersect:false,filter:it=>!showAssets||it.dataset._isAsset||it.datasetIndex<3,titleFont:{family:'IBM Plex Sans'},bodyFont:{family:'IBM Plex Sans'},callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},scales:{
     x:{display:false},
-    y:{display:false,ticks:{stepSize:150000}}
+    y:{type:'linear',display:false,ticks:{stepSize:150000}}
   }}});
   document.getElementById('assetsToggleBtn').classList.toggle('active',showAssets);
+  document.getElementById('scaleToggleBtn').classList.toggle('active',useLogScale);
   setupChartInteraction();
 }
 
@@ -2007,6 +2015,26 @@ function toggleAssets(){
   document.getElementById('assetsToggleBtn').classList.toggle('active',showAssets);
 }
 
+function toggleScale(){
+  useLogScale=!useLogScale;
+  const chart=charts['net'];
+  if(!chart)return;
+  
+  // Update scale type dynamically
+  if(useLogScale){
+    chart.options.scales.y.type='logarithmic';
+    chart.options.scales.y.min=1000;
+    chart.options.scales.y.ticks={callback:v=>fmtAxis(v)};
+  }else{
+    chart.options.scales.y.type='linear';
+    delete chart.options.scales.y.min;
+    chart.options.scales.y.ticks={stepSize:150000};
+  }
+  
+  chart.update();
+  document.getElementById('scaleToggleBtn').classList.toggle('active',useLogScale);
+}
+
 function toggleNetLine(i){
   netLineHidden[i]=!netLineHidden[i];
   renderNetChart();
@@ -2610,6 +2638,7 @@ function initApp(){
     console.log('CSV input handler registered');
     document.getElementById('resetBtn').addEventListener('click',resetApp);
     document.getElementById('assetsToggleBtn').addEventListener('click',toggleAssets);
+    document.getElementById('scaleToggleBtn').addEventListener('click',toggleScale);
     document.querySelector('.live-status').addEventListener('click',showLivePopup);
     document.getElementById('livePopupClose').addEventListener('click',closeLivePopup);
     document.getElementById('liveOverlay').addEventListener('click',closeLivePopup);
