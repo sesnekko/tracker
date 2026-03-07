@@ -59,7 +59,7 @@ body {
   padding:8px 0 0;
 }
 .icon-btn {
-  width:32px;height:32px;border-radius:50%;background:transparent;
+  width:32px;height:32px;border-radius:4px;background:transparent;
   border:1px solid var(--border);color:var(--muted);cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   transition:border-color .2s,color .2s;flex-shrink:0;
@@ -201,6 +201,13 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 
 /* ── KPI Grid ── */
 .kpi-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:4px 0 0; }
+
+/* Wrapper for iPad layout - on mobile it's just a container */
+.kpi-and-assets-wrapper { display: contents; }
+.structure-section-ipad { display: none; }
+
+/* Savings rate section - hidden on mobile, shown on iPad */
+.savings-rate-section { display: none; }
 .kpi-item {
   background:color-mix(in srgb,var(--bg2) 60%,transparent);
   border:1px solid color-mix(in srgb,var(--border) 40%,transparent);
@@ -346,7 +353,7 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 .sankey-flow-path:active { opacity:0.8; }
 .sankey-flow-label { position:absolute;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:4px 8px;font-size:11px;color:var(--ink);font-weight:500;white-space:nowrap;pointer-events:none;z-index:20;transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,0.1);opacity:0;transition:opacity .2s; }
 .sankey-flow-label.visible { opacity:1; }
-.sankey-node-card { perspective:900px;height:80px;cursor:pointer;transition:transform .35s,box-shadow .4s;position:relative;z-index:1; }
+.sankey-node-card { perspective:900px;height:80px;cursor:pointer;transition:transform .35s,box-shadow .4s;position:relative;z-index:1;flex-shrink:0; }
 .sankey-node-card:not(.flipped):active { transform:scale(0.98); }
 .sankey-node-card.flipped { transform:scale(1.12);z-index:10;box-shadow:0 18px 48px rgba(0,0,0,0.16); }
 .sankey-node-flip-inner { position:relative;height:100%;transform-style:preserve-3d;transition:transform .52s .08s cubic-bezier(.4,0,.2,1); }
@@ -364,6 +371,295 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
 .sankey-node-back-iban { font-size:9px;color:var(--ink);font-weight:400;line-height:1.4; }
 
 /* Budget Modal - removed, data comes from CSV */
+
+/* ── iPad Optimizations ── */
+@media (min-width: 768px) {
+  body {
+    padding: 0 40px;
+    padding-top: max(20px, env(safe-area-inset-top));
+    font-size: 16px;
+  }
+  
+  /* Optimized chart height on iPad */
+  .chart-wrap { height: 420px; }
+  .chart-wrap.pie { height: 400px; }
+  
+  /* Hero KPI larger */
+  .hero { padding: 28px 0 8px; }
+  .hero-label { font-size: 16px; }
+  .hero-value { font-size: 92px; min-height: 104px; }
+  .hero-value.kpi-has-eur::after { font-size: 36px; }
+  .hero-delta { font-size: 16px; }
+  
+  /* Range buttons larger */
+  .range-btn { font-size: 15px; padding: 6px 14px; }
+  .date-btn { font-size: 16px; padding: 6px 12px; }
+  
+  /* Two-column layout: KPIs + Asset List side by side */
+  .kpi-and-assets-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+    padding-top: 8px;
+  }
+  
+  .kpi-grid {
+    grid-column: 1;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  
+  .structure-section-ipad {
+    display: block;
+    grid-column: 2;
+    padding: 0;
+  }
+  
+  .structure-section-mobile {
+    display: none;
+  }
+  
+  /* Larger KPI tiles */
+  .kpi-item { height: 160px; }
+  .kpi-label { font-size: 13px; margin-bottom: 8px; }
+  .kpi-val { font-size: 34px; }
+  .kpi-val.kpi-has-eur::after { font-size: 19px; }
+  .kpi-delta { font-size: 14px; margin-top: 8px; }
+  
+  /* Legend larger */
+  .legend-name { font-size: 16px; }
+  .legend-val { font-size: 16px; }
+  .legend-pct { font-size: 14px; min-width: 32px; }
+  .legend-row { padding: 10px 0; }
+  .legend-bar { height: 18px; }
+  
+  /* Savings rate section */
+  .savings-rate-section {
+    display: block;
+    padding: 20px 0 0;
+  }
+  
+  .savings-rate-title {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  
+  .savings-plans-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .savings-plan-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 25%, transparent);
+  }
+  
+  .savings-plan-row:last-child {
+    border-bottom: none;
+  }
+  
+  .savings-plan-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .savings-plan-bar {
+    width: 4px;
+    height: 28px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  
+  .savings-plan-bar.etf {
+    background: linear-gradient(180deg, #4a9d7f 0%, #3a7d6f 100%);
+  }
+  
+  .savings-plan-bar.btc {
+    background: linear-gradient(180deg, #d4a574 0%, #b48554 100%);
+  }
+  
+  .savings-plan-bar.tilgung {
+    background: linear-gradient(180deg, #8b7355 0%, #6b5345 100%);
+  }
+  
+  .savings-plan-bar.cash {
+    background: linear-gradient(180deg, #7a9d8f 0%, #5a7d6f 100%);
+  }
+  
+  .savings-plan-info {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .savings-plan-name {
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 400;
+    line-height: 1.3;
+  }
+  
+  .savings-plan-subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  
+  .savings-plan-amount {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+  
+  .savings-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 14px;
+    margin-top: 10px;
+    border-top: 2px solid color-mix(in srgb, var(--border) 40%, transparent);
+  }
+  
+  .savings-total-label {
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+  
+  .savings-total-value {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  
+  /* Liabilities chart section */
+  .liabilities-chart-section {
+    display: block;
+    padding: 20px 0 0;
+  }
+  
+  .liabilities-chart-wrap {
+    position: relative;
+    height: 240px;
+    margin-top: 12px;
+  }
+  
+  /* Budget page optimizations */
+  .sankey-container-html {
+    grid-template-columns: 180px 1fr 180px;
+    min-height: 450px;
+    padding: 32px 0 16px;
+    gap: 0 16px;
+  }
+  
+  .sankey-node-card { 
+    height: auto;
+    min-height: 60px;
+  }
+  
+  .sankey-section-title { font-size: 13px; }
+  .sankey-node-label { font-size: 13px; }
+  .sankey-node-value { font-size: 15px; margin-top: 8px; }
+  .sankey-node-back-label { font-size: 11px; }
+  .sankey-node-back-iban { font-size: 11px; }
+  
+  /* Budget KPIs */
+  #page-budget .hero-label { font-size: 16px; }
+  #page-budget .hero-value { font-size: 82px; }
+  #page-budget .hero-value.kpi-has-eur::after { font-size: 32px; }
+  
+  #page-budget .kpi-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  
+  #page-budget .kpi-item { height: 140px; }
+  #page-budget .kpi-label { font-size: 13px; }
+  #page-budget .kpi-val { font-size: 32px; }
+  #page-budget .kpi-val.kpi-has-eur::after { font-size: 18px; }
+  
+  /* Breakdown sections */
+  .breakdown-collapsible { font-size: 15px; }
+  .stacked-bar { height: 14px; }
+  
+  /* Import page */
+  .import-page-title { font-size: 16px; }
+  .import-btn { font-size: 16px; padding: 12px 24px; }
+  .import-section > div { font-size: 16px; }
+  
+  /* Bottom nav */
+  .bottom-nav { height: calc(64px + env(safe-area-inset-bottom)); }
+  .nav-btn { font-size: 13px; height: 64px; }
+  .nav-btn svg { width: 24px; height: 24px; }
+  .app-content { padding-bottom: 76px; }
+}
+
+@media (min-width: 1024px) {
+  body {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 60px;
+    font-size: 17px;
+  }
+  
+  /* Optimized chart on larger iPads */
+  .chart-wrap { height: 460px; }
+  
+  .hero { padding: 32px 0 12px; }
+  .hero-label { font-size: 17px; }
+  .hero-value { font-size: 108px; min-height: 120px; }
+  .hero-value.kpi-has-eur::after { font-size: 40px; }
+  .hero-delta { font-size: 17px; }
+  
+  /* KPI tiles even larger */
+  .kpi-item { height: 160px; }
+  .kpi-label { font-size: 14px; }
+  .kpi-val { font-size: 38px; }
+  .kpi-val.kpi-has-eur::after { font-size: 22px; }
+  .kpi-delta { font-size: 15px; }
+  
+  /* Legend even larger */
+  .legend-name { font-size: 17px; }
+  .legend-val { font-size: 17px; }
+  .legend-pct { font-size: 15px; }
+  .legend-bar { height: 20px; }
+  
+  /* Budget page optimizations */
+  .sankey-container-html {
+    grid-template-columns: 200px 1fr 200px;
+    min-height: 500px;
+  }
+  
+  .sankey-node-label { font-size: 14px; }
+  .sankey-node-value { font-size: 16px; }
+  
+  #page-budget .hero-value { font-size: 96px; }
+  #page-budget .hero-value.kpi-has-eur::after { font-size: 36px; }
+  
+  #page-budget .kpi-item { height: 160px; }
+  #page-budget .kpi-val { font-size: 36px; }
+  #page-budget .kpi-val.kpi-has-eur::after { font-size: 20px; }
+  
+  .import-btn { font-size: 17px; }
+  .import-section > div { font-size: 17px; }
+}
 </style>
 
 <!-- Pull to Refresh Indicator -->
@@ -419,63 +715,126 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
 </div>
 
 <!-- Vermögensstruktur -->
-<div class="structure-section">
+<div class="structure-section structure-section-mobile">
   <ul class="legend-list" id="legendAssets"></ul>
 </div>
 
-<!-- KPI Grid -->
-<div class="kpi-grid">
-  <div class="kpi-item" data-kpi="assets">
-    <div class="kpi-flip-inner">
-      <div class="kpi-face-front">
-        <div class="kpi-label">Gesamtvermögen</div>
-        <div class="kpi-val" id="kpi-assets">—</div>
-        <div class="kpi-delta" id="kpi-assets-delta"></div>
+<!-- KPI Grid + Asset List Wrapper (side by side on iPad) -->
+<div class="kpi-and-assets-wrapper">
+  <!-- KPI Grid -->
+  <div class="kpi-grid">
+    <div class="kpi-item" data-kpi="assets">
+      <div class="kpi-flip-inner">
+        <div class="kpi-face-front">
+          <div class="kpi-label">Gesamtvermögen</div>
+          <div class="kpi-val" id="kpi-assets">—</div>
+          <div class="kpi-delta" id="kpi-assets-delta"></div>
+        </div>
+        <div class="kpi-face-back">
+          <div class="kpi-back-label">Gesamtvermögen</div>
+          <div class="kpi-back-text">Summe aller Assets (liquide + illiquide)</div>
+        </div>
       </div>
-      <div class="kpi-face-back">
-        <div class="kpi-back-label">Gesamtvermögen</div>
-        <div class="kpi-back-text">Summe aller Assets (liquide + illiquide) abgl. Verbindlichkeiten</div>
+    </div>
+    <div class="kpi-item" data-kpi="liquid">
+      <div class="kpi-flip-inner">
+        <div class="kpi-face-front">
+          <div class="kpi-label">Liquide Assets</div>
+          <div class="kpi-val" id="kpi-liquid">—</div>
+          <div class="kpi-delta" id="kpi-liquid-delta"></div>
+        </div>
+        <div class="kpi-face-back">
+          <div class="kpi-back-label">Liquide Assets</div>
+          <div class="kpi-back-text">Cash, ETFs, Bitcoin, Aktien und Edelmetalle</div>
+        </div>
+      </div>
+    </div>
+    <div class="kpi-item" data-kpi="illiquid">
+      <div class="kpi-flip-inner">
+        <div class="kpi-face-front">
+          <div class="kpi-label">Illiquide Assets</div>
+          <div class="kpi-val" id="kpi-illiquid">—</div>
+          <div class="kpi-delta" id="kpi-illiquid-delta"></div>
+        </div>
+        <div class="kpi-face-back">
+          <div class="kpi-back-label">Illiquide Assets</div>
+          <div class="kpi-back-text">BAV, Uhren, Sonstiges und Immobilien</div>
+        </div>
+      </div>
+    </div>
+    <div class="kpi-item liab" data-kpi="liab">
+      <div class="kpi-flip-inner">
+        <div class="kpi-face-front">
+          <div class="kpi-label">Verbindlichkeiten</div>
+          <div class="kpi-val" id="kpi-liab">—</div>
+          <div class="kpi-delta" id="kpi-liab-delta"></div>
+        </div>
+        <div class="kpi-face-back">
+          <div class="kpi-back-label">Verbindlichkeiten</div>
+          <div class="kpi-back-text">Alle Schulden und offenen Verbindlichkeiten</div>
+        </div>
       </div>
     </div>
   </div>
-  <div class="kpi-item" data-kpi="liquid">
-    <div class="kpi-flip-inner">
-      <div class="kpi-face-front">
-        <div class="kpi-label">Liquide Assets</div>
-        <div class="kpi-val" id="kpi-liquid">—</div>
-        <div class="kpi-delta" id="kpi-liquid-delta"></div>
+  
+  <!-- Vermögensstruktur (iPad only) -->
+  <div class="structure-section structure-section-ipad">
+    <ul class="legend-list" id="legendAssets-ipad"></ul>
+  </div>
+</div>
+
+<!-- Savings Rate Section (iPad only) -->
+<div class="savings-rate-section">
+  <div class="savings-rate-title">Monatliche Sparpläne</div>
+  <div class="savings-plans-list">
+    <div class="savings-plan-row">
+      <div class="savings-plan-left">
+        <div class="savings-plan-bar etf"></div>
+        <div class="savings-plan-info">
+          <div class="savings-plan-name">ETF Sparplan</div>
+          <div class="savings-plan-subtitle">MSCI ACWI</div>
+        </div>
       </div>
-      <div class="kpi-face-back">
-        <div class="kpi-back-label">Liquide Assets</div>
-        <div class="kpi-back-text">Cash, ETFs, Bitcoin, Aktien und Edelmetalle</div>
+      <div class="savings-plan-amount" id="savingsETF">—</div>
+    </div>
+    
+    <div class="savings-plan-row">
+      <div class="savings-plan-left">
+        <div class="savings-plan-bar btc"></div>
+        <div class="savings-plan-info">
+          <div class="savings-plan-name">Bitcoin Sparplan</div>
+          <div class="savings-plan-subtitle">BTC</div>
+        </div>
       </div>
+      <div class="savings-plan-amount" id="savingsBTC">—</div>
+    </div>
+    
+    <div class="savings-plan-row">
+      <div class="savings-plan-left">
+        <div class="savings-plan-bar tilgung"></div>
+        <div class="savings-plan-info">
+          <div class="savings-plan-name">Tilgung</div>
+          <div class="savings-plan-subtitle">Immobilienkredit</div>
+        </div>
+      </div>
+      <div class="savings-plan-amount" id="savingsTilgung">—</div>
+    </div>
+    
+    <div class="savings-plan-row">
+      <div class="savings-plan-left">
+        <div class="savings-plan-bar cash"></div>
+        <div class="savings-plan-info">
+          <div class="savings-plan-name">Cash Sparplan</div>
+          <div class="savings-plan-subtitle">Tagesgeld</div>
+        </div>
+      </div>
+      <div class="savings-plan-amount" id="savingsCash">—</div>
     </div>
   </div>
-  <div class="kpi-item" data-kpi="illiquid">
-    <div class="kpi-flip-inner">
-      <div class="kpi-face-front">
-        <div class="kpi-label">Illiquide Assets</div>
-        <div class="kpi-val" id="kpi-illiquid">—</div>
-        <div class="kpi-delta" id="kpi-illiquid-delta"></div>
-      </div>
-      <div class="kpi-face-back">
-        <div class="kpi-back-label">Illiquide Assets</div>
-        <div class="kpi-back-text">BAV, Uhren, Sonstiges und Immobilien</div>
-      </div>
-    </div>
-  </div>
-  <div class="kpi-item liab" data-kpi="liab">
-    <div class="kpi-flip-inner">
-      <div class="kpi-face-front">
-        <div class="kpi-label">Verbindlichkeiten</div>
-        <div class="kpi-val" id="kpi-liab">—</div>
-        <div class="kpi-delta" id="kpi-liab-delta"></div>
-      </div>
-      <div class="kpi-face-back">
-        <div class="kpi-back-label">Verbindlichkeiten</div>
-        <div class="kpi-back-text">Alle Schulden und offenen Verbindlichkeiten</div>
-      </div>
-    </div>
+  
+  <div class="savings-total-row">
+    <span class="savings-total-label">Gesamt</span>
+    <span class="savings-total-value" id="savingsTotal">—</span>
   </div>
 </div>
 
@@ -834,6 +1193,61 @@ function renderKPIs(){
   const idx=sorted.indexOf(selectedMonth);
   if(idx>0){const p=calc(data[sorted[idx-1]]);setDelta('kpi-net-delta',c.net,p.net);setDelta('kpi-assets-delta',c.assets,p.assets);setDelta('kpi-liquid-delta',c.liquid,p.liquid);setDelta('kpi-illiquid-delta',c.illiquid,p.illiquid);setDelta('kpi-liab-delta',c.liab,p.liab,true);}
   else ['kpi-net-delta','kpi-assets-delta','kpi-liquid-delta','kpi-illiquid-delta','kpi-liab-delta'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='';});
+  
+  // Update savings rate section
+  renderSavingsRate(data,sorted,idx);
+}
+
+function renderSavingsRate(data,sorted,currentIdx){
+  // This function now renders monthly savings plans from budget data
+  const bd=loadBudgetData();
+  if(!bd||!bd.variable)return;
+  
+  const now=new Date();
+  const selParts=selectedMonth.split('-');
+  const monthIdx=parseInt(selParts[1])-1; // 0-based
+  
+  // Find savings plan values from budget variable expenses
+  let etfAmount=0, btcAmount=0, cashAmount=0;
+  
+  (bd.variable||[]).forEach(r=>{
+    const val=r.values[monthIdx]||0;
+    const name=r.name.toLowerCase();
+    
+    if(name.includes('etf')||name.includes('msci')){
+      etfAmount+=val;
+    }else if(name.includes('btc')||name.includes('bitcoin')){
+      btcAmount+=val;
+    }else if(name.includes('cash')||name.includes('tagesgeld')){
+      cashAmount+=val;
+    }
+  });
+  
+  // Get Tilgung from fixed expenses
+  let tilgungAmount=0;
+  (bd.fixe||[]).forEach(r=>{
+    const val=r.values[monthIdx]||0;
+    const name=r.name.toLowerCase();
+    
+    if(name.includes('tilgung')||name.includes('kredit')){
+      tilgungAmount+=val;
+    }
+  });
+  
+  const total=etfAmount+btcAmount+tilgungAmount+cashAmount;
+  
+  // Update display
+  const etfEl=document.getElementById('savingsETF');
+  const btcEl=document.getElementById('savingsBTC');
+  const tilgungEl=document.getElementById('savingsTilgung');
+  const cashEl=document.getElementById('savingsCash');
+  const totalEl=document.getElementById('savingsTotal');
+  
+  if(etfEl)etfEl.textContent=etfAmount>0?fmt(etfAmount):'—';
+  if(btcEl)btcEl.textContent=btcAmount>0?fmt(btcAmount):'—';
+  if(tilgungEl)tilgungEl.textContent=tilgungAmount>0?fmt(tilgungAmount):'—';
+  if(cashEl)cashEl.textContent=cashAmount>0?fmt(cashAmount):'—';
+  if(totalEl)totalEl.textContent=total>0?fmt(total):'—';
 }
 
 function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
@@ -872,12 +1286,17 @@ function renderNetChart(){
 function renderPieChart(){
   const data=loadData(),entry=data[selectedMonth];
   const lA=document.getElementById('legendAssets');
-  if(!entry){lA.innerHTML='';return;}
+  const lAiPad=document.getElementById('legendAssets-ipad');
+  if(!entry){
+    lA.innerHTML='';
+    if(lAiPad)lAiPad.innerHTML='';
+    return;
+  }
   const cn=calcNet(entry);
   const allFields=[...FIELDS_LIQUID,...FIELDS_ILLIQUID];
   const displayFields=allFields.filter(k=>k!=='porsche911'&&k!=='mercedes');
   let vals=displayFields.map(k=>{if(k==='cash')return cn.cash_net;if(k==='immobilien')return cn.immobilien_net;if(k==='sonstiges')return(+entry.sonstiges||0)+(+entry.porsche911||0)+(+entry.mercedes||0);return+entry[k]||0;});
-  let labels=displayFields.map(k=>{if(k==='cash'&&((+entry.kredit1||0)+(+entry.kredit2||0))>0)return'Cash (netto)';if(k==='immobilien'&&(+entry.immkredit||0)>0)return'Immobilien (netto)';return LABELS[k];});
+  let labels=displayFields.map(k=>{if(k==='cash'&&((+entry.kredit1||0)+(+entry.kredit2||0))>0)return'Cash (netto)';if(k==='immobilien')return'Immobilien';return LABELS[k];});
   let keys=displayFields.slice();
   const idx=vals.map((_,i)=>i).sort((a,b)=>vals[b]-vals[a]);
   vals=idx.map(i=>vals[i]);labels=idx.map(i=>labels[i]);keys=idx.map(i=>keys[i]);
@@ -887,26 +1306,29 @@ function renderPieChart(){
   const total=vals.reduce((a,b)=>a+b,0);
   /* Legend */
   lA.innerHTML='';
+  if(lAiPad)lAiPad.innerHTML='';
   if(!total)return;
   const items=[];vals.forEach((v,i)=>{if(v>0)items.push({label:labels[i],val:v,color:colors[i],key:keys[i]});});
   const maxVal=Math.max(...items.map(i=>i.val));
-  const rows=[];
-  items.forEach((item,j)=>{
-    const pct=Math.round(item.val/total*100);
-    const barPct=Math.round(item.val/maxVal*100);
-    const li=document.createElement('li');
-    li.className='legend-row';
-    li.dataset.idx=String(j);
-    li.dataset.assetKey=item.key;
-    li.innerHTML=`<div class="legend-bar" style="background:${item.color}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${item.color};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
-    rows.push(li);
-    lA.appendChild(li);
+  
+  // Render to both lists
+  [lA, lAiPad].forEach(container => {
+    if(!container)return;
+    items.forEach((item,j)=>{
+      const pct=Math.round(item.val/total*100);
+      const barPct=Math.round(item.val/maxVal*100);
+      const li=document.createElement('li');
+      li.className='legend-row';
+      li.dataset.idx=String(j);
+      li.dataset.assetKey=item.key;
+      li.innerHTML=`<div class="legend-bar" style="background:${item.color}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${item.color};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
+      li.addEventListener('click',()=>{
+        const assetKey=li.dataset.assetKey;
+        if(assetKey)showAssetDetail(assetKey);
+      });
+      container.appendChild(li);
+    });
   });
-  /* Click interaction */
-  rows.forEach(r=>r.addEventListener('click',()=>{
-    const assetKey=r.dataset.assetKey;
-    if(assetKey)showAssetDetail(assetKey);
-  }));
 }
 
 function render(){renderKPIs();renderNetChart();renderPieChart();}
@@ -1273,11 +1695,15 @@ function showLivePopup(){
   document.getElementById('livePopup').classList.add('show');
   document.getElementById('liveOverlay').classList.add('show');
   document.body.style.overflow='hidden';
+  document.body.style.position='fixed';
+  document.body.style.width='100%';
 }
 function closeLivePopup(){
   document.getElementById('livePopup').classList.remove('show');
   document.getElementById('liveOverlay').classList.remove('show');
   document.body.style.overflow='';
+  document.body.style.position='';
+  document.body.style.width='';
 }
 
 /* ── Asset Detail Popup ── */
@@ -1369,6 +1795,8 @@ function showAssetDetail(assetKey){
   document.getElementById('assetPopup').classList.add('show');
   document.getElementById('assetOverlay').classList.add('show');
   document.body.style.overflow='hidden';
+  document.body.style.position='fixed';
+  document.body.style.width='100%';
   haptic('light');
 }
 
@@ -1376,13 +1804,25 @@ function closeAssetPopup(){
   document.getElementById('assetPopup').classList.remove('show');
   document.getElementById('assetOverlay').classList.remove('show');
   document.body.style.overflow='';
+  document.body.style.position='';
+  document.body.style.width='';
 }
 
 /* ── Haptic Feedback ── */
 function haptic(style='light'){
-  if(window.navigator&&window.navigator.vibrate){
-    const patterns={light:5,medium:10,heavy:20};
-    window.navigator.vibrate(patterns[style]||5);
+  try {
+    if(window.navigator&&window.navigator.vibrate){
+      const patterns={light:10,medium:20,heavy:30};
+      window.navigator.vibrate(patterns[style]||10);
+    }
+    // iOS Haptic Feedback (if available)
+    if(window.Taptic){
+      if(style==='light')window.Taptic.selection();
+      else if(style==='medium')window.Taptic.impact({style:'medium'});
+      else if(style==='heavy')window.Taptic.impact({style:'heavy'});
+    }
+  } catch(e) {
+    // Haptic feedback not supported
   }
 }
 
@@ -1476,14 +1916,12 @@ function setupChartInteraction(){
     const allFields=[...FIELDS_LIQUID,...FIELDS_ILLIQUID];
     const displayFields=allFields.filter(k=>k!=='porsche911'&&k!=='mercedes');
     let vals=displayFields.map(k=>{if(k==='cash')return cn.cash_net;if(k==='immobilien')return cn.immobilien_net;if(k==='sonstiges')return(+entry.sonstiges||0)+(+entry.porsche911||0)+(+entry.mercedes||0);return+entry[k]||0;});
-    let lbls=displayFields.map(k=>{if(k==='cash'&&((+entry.kredit1||0)+(+entry.kredit2||0))>0)return'Cash (netto)';if(k==='immobilien'&&(+entry.immkredit||0)>0)return'Immobilien (netto)';return LABELS[k];});
+    let lbls=displayFields.map(k=>{if(k==='cash'&&((+entry.kredit1||0)+(+entry.kredit2||0))>0)return'Cash (netto)';if(k==='immobilien')return'Immobilien';return LABELS[k];});
     let keys=displayFields.slice();
     const sortIdx=vals.map((_,i)=>i).sort((a,b)=>vals[b]-vals[a]);
     vals=sortIdx.map(i=>vals[i]);lbls=sortIdx.map(i=>lbls[i]);keys=sortIdx.map(i=>keys[i]);
     const total=vals.reduce((a,b)=>a+b,0);
     
-    const lA=document.getElementById('legendAssets');
-    const existingRows=lA.querySelectorAll('.legend-row');
     const items=[];
     vals.forEach((v,i)=>{if(v>0)items.push({label:lbls[i],val:v,key:keys[i]});});
     const _dk=!isDark?[90,84,76]:[130,124,116],_lt=!isDark?[195,190,180]:[240,234,220];
@@ -1491,48 +1929,53 @@ function setupChartInteraction(){
     const colors=items.map((_,i)=>{const t=_n<=1?0:i/(_n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
     const mxV=items.length?Math.max(...items.map(i=>i.val)):1;
     
-    if(existingRows.length!==items.length||!existingRows.length){
-      lA.innerHTML='';
+    // Update both legend lists
+    [document.getElementById('legendAssets'), document.getElementById('legendAssets-ipad')].forEach(lA => {
+      if(!lA)return;
+      const existingRows=lA.querySelectorAll('.legend-row');
+      
+      if(existingRows.length!==items.length||!existingRows.length){
+        lA.innerHTML='';
+        items.forEach((item,j)=>{
+          const pct=Math.round(item.val/total*100);
+          const barPct=Math.round(item.val/mxV*100);
+          const li=document.createElement('li');
+          li.className='legend-row';
+          li.dataset.assetKey=item.key;
+          li.innerHTML=`<div class="legend-bar" style="background:${colors[j]}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${colors[j]};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
+          lA.appendChild(li);
+        });
+        return;
+      }
+      
+      const rowMap={};
+      existingRows.forEach(r=>{rowMap[r.dataset.assetKey]={el:r,top:r.getBoundingClientRect().top};});
+      items.forEach(item=>{const row=rowMap[item.key];if(row)lA.appendChild(row.el);});
       items.forEach((item,j)=>{
+        const row=rowMap[item.key];if(!row)return;
+        const el=row.el;
+        const delta=row.top-el.getBoundingClientRect().top;
+        if(Math.abs(delta)>1){
+          el.style.transition='none';
+          el.style.transform=`translateY(${delta}px)`;
+          requestAnimationFrame(()=>requestAnimationFrame(()=>{
+            el.style.transition='transform .35s cubic-bezier(.4,0,.2,1)';
+            el.style.transform='';
+          }));
+        }
+        const valEl=el.querySelector('.legend-val');
+        const pctEl=el.querySelector('.legend-pct');
+        const fillEl=el.querySelector('.legend-fill');
+        const barEl=el.querySelector('.legend-bar');
+        const nameEl=el.querySelector('.legend-name');
         const pct=Math.round(item.val/total*100);
         const barPct=Math.round(item.val/mxV*100);
-        const li=document.createElement('li');
-        li.className='legend-row';
-        li.dataset.assetKey=item.key;
-        li.innerHTML=`<div class="legend-bar" style="background:${colors[j]}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${colors[j]};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
-        lA.appendChild(li);
+        if(nameEl)nameEl.textContent=item.label;
+        if(barEl)barEl.style.background=colors[j];
+        if(fillEl){fillEl.style.width=barPct+'%';fillEl.style.background=colors[j];}
+        if(pctEl)pctEl.textContent=pct+'%';
+        if(valEl)animateSmallValue(valEl,fmt(item.val),item.val);
       });
-      showCrosshair(idx);
-      return;
-    }
-    
-    const rowMap={};
-    existingRows.forEach(r=>{rowMap[r.dataset.assetKey]={el:r,top:r.getBoundingClientRect().top};});
-    items.forEach(item=>{const row=rowMap[item.key];if(row)lA.appendChild(row.el);});
-    items.forEach((item,j)=>{
-      const row=rowMap[item.key];if(!row)return;
-      const el=row.el;
-      const delta=row.top-el.getBoundingClientRect().top;
-      if(Math.abs(delta)>1){
-        el.style.transition='none';
-        el.style.transform=`translateY(${delta}px)`;
-        requestAnimationFrame(()=>requestAnimationFrame(()=>{
-          el.style.transition='transform .35s cubic-bezier(.4,0,.2,1)';
-          el.style.transform='';
-        }));
-      }
-      const valEl=el.querySelector('.legend-val');
-      const pctEl=el.querySelector('.legend-pct');
-      const fillEl=el.querySelector('.legend-fill');
-      const barEl=el.querySelector('.legend-bar');
-      const nameEl=el.querySelector('.legend-name');
-      const pct=Math.round(item.val/total*100);
-      const barPct=Math.round(item.val/mxV*100);
-      if(nameEl)nameEl.textContent=item.label;
-      if(barEl)barEl.style.background=colors[j];
-      if(fillEl){fillEl.style.width=barPct+'%';fillEl.style.background=colors[j];}
-      if(pctEl)pctEl.textContent=pct+'%';
-      if(valEl)animateSmallValue(valEl,fmt(item.val),item.val);
     });
     
     showCrosshair(idx);
@@ -1784,13 +2227,30 @@ function renderBudgetPage(){
   }else{
     heroEl.textContent='—';
   }
-  // Delta: current month vs average
+  
+  // Calculate min/max monthly income for the year
   const deltaEl=document.getElementById('budget-hero-delta');
-  if(c&&c.netto&&avgNetto>0){
-    const diff=c.netto-avgNetto;
-    if(diff===0){deltaEl.textContent='±0 € vs. Ø';deltaEl.className='hero-delta';}
-    else{deltaEl.textContent=(diff>0?'+':'')+fmt(diff)+' vs. Ø';deltaEl.className='hero-delta '+(diff>0?'up':'down');}
-  }else{deltaEl.textContent='';}
+  if(bd&&bd.einkommen){
+    let minIncome=Infinity;
+    let maxIncome=0;
+    
+    for(let m=0;m<12;m++){
+      const monthCalc=calcBudgetMonth(bd,m);
+      if(monthCalc&&monthCalc.einnahmen>0){
+        minIncome=Math.min(minIncome,monthCalc.einnahmen);
+        maxIncome=Math.max(maxIncome,monthCalc.einnahmen);
+      }
+    }
+    
+    if(minIncome!==Infinity&&maxIncome>0){
+      deltaEl.textContent=`↓ ${fmt(minIncome)} • ↑ ${fmt(maxIncome)}`;
+      deltaEl.className='hero-delta';
+    }else{
+      deltaEl.textContent='';
+    }
+  }else{
+    deltaEl.textContent='';
+  }
 
   // KPIs
   const einEl=document.getElementById('budget-einnahmen');
@@ -1889,6 +2349,14 @@ function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal){
   const bd=loadBudgetData();
   const accounts=(bd&&bd.accounts)||{};
   
+  // Check if we're on iPad (viewport width >= 768px)
+  const isIPad=window.innerWidth>=768;
+  
+  // Calculate proportional heights based on values (only for iPad)
+  const totalLeft=leftNodes.reduce((sum,n)=>sum+n.val,0);
+  const totalRight=rightNodes.reduce((sum,n)=>sum+n.val,0);
+  const maxTotal=Math.max(totalLeft,totalRight);
+  
   // Build HTML structure instead of SVG for flip animation
   let html='<div class="sankey-container-html">';
   
@@ -1902,8 +2370,18 @@ function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal){
     const iban=accounts[node.label]||'Keine IBAN hinterlegt';
     const labelLines=node.label.length>18?node.label.split(' '):[ node.label];
     const labelHtml=labelLines.map(line=>line.length>18?line.substring(0,16)+'...':line).join('<br>');
+    
+    // Calculate proportional height only on iPad
+    let styleAttr='';
+    if(isIPad){
+      const heightPct=(node.val/maxTotal)*100;
+      const minHeight=60;
+      const flexGrow=Math.max(0.5,heightPct/10);
+      styleAttr=` style="flex-grow:${flexGrow};min-height:${minHeight}px"`;
+    }
+    
     html+=`
-      <div class="sankey-node-card" data-node="${node.label}">
+      <div class="sankey-node-card" data-node="${node.label}"${styleAttr}>
         <div class="sankey-node-flip-inner">
           <div class="sankey-node-front">
             <div class="sankey-node-accent sankey-accent-right"></div>
@@ -1929,8 +2407,18 @@ function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal){
     const iban=accounts[node.label]||'Keine IBAN hinterlegt';
     const labelLines=node.label.length>18?node.label.split(' '):[node.label];
     const labelHtml=labelLines.map(line=>line.length>18?line.substring(0,16)+'...':line).join('<br>');
+    
+    // Calculate proportional height only on iPad
+    let styleAttr='';
+    if(isIPad){
+      const heightPct=(node.val/maxTotal)*100;
+      const minHeight=60;
+      const flexGrow=Math.max(0.5,heightPct/10);
+      styleAttr=` style="flex-grow:${flexGrow};min-height:${minHeight}px"`;
+    }
+    
     html+=`
-      <div class="sankey-node-card" data-node="${node.label}">
+      <div class="sankey-node-card" data-node="${node.label}"${styleAttr}>
         <div class="sankey-node-flip-inner">
           <div class="sankey-node-front">
             <div class="sankey-node-accent sankey-accent-left"></div>
