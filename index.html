@@ -1890,10 +1890,13 @@ function setupChartInteraction(){
   function restoreCurrentValue(){
     chartInteractionActive=false;
     lastIndex=-1;
+    const scrollY=parseInt(document.body.dataset.scrollY||'0',10);
     document.body.style.overflow='';
     document.body.style.position='';
     document.body.style.width='';
     document.body.style.top='';
+    delete document.body.dataset.scrollY;
+    window.scrollTo(0,scrollY);
     hideCrosshair();
     const heroLabel=document.querySelector('.hero-label');
     if(heroLabel)heroLabel.textContent='Nettovermögen';
@@ -1904,10 +1907,12 @@ function setupChartInteraction(){
   const onStart=e=>{
     e.preventDefault();
     chartInteractionActive=true;
+    const scrollY=window.scrollY;
     document.body.style.overflow='hidden';
     document.body.style.position='fixed';
     document.body.style.width='100%';
-    document.body.style.top='0';
+    document.body.style.top=`-${scrollY}px`;
+    document.body.dataset.scrollY=scrollY;
     showValueAtIndex(getIndexFromX(e.touches[0].clientX));
   };
   const onMove=e=>{
