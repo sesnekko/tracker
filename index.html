@@ -1081,19 +1081,64 @@ function animateKpiValue(id,newText,newNum){
 function setDelta(id,curr,prev,inv=false){
   const el=document.getElementById(id);if(!el)return;
   const diff=curr-prev,pct=prev!==0?((diff/Math.abs(prev))*100).toFixed(1)+'%':'—';
-  if(diff===0){el.textContent='±0 €';el.className=el.className.replace(/ up| down/g,'');return;}
+  if(diff===0){el.textContent='±0 €';el.className='kpi-delta';return;}
   el.textContent=(diff>0?'+':'')+fmt(diff)+' ('+pct+')';
-  el.className=el.className.replace(/ up| down/g,'')+' '+((diff>0)!==inv?'up':'down');
+  el.className='kpi-delta '+((diff>0)!==inv?'up':'down');
 }
 
 /* ── Render ── */
 function renderKPIs(){
   const data=loadData(),sorted=Object.keys(data).sort(),entry=data[selectedMonth];
   if(!entry){
-    ['kpi-net','kpi-assets','kpi-liquid','kpi-illiquid','kpi-liab'].forEach(id=>{const e=document.getElementById(id);if(e){e.textContent='—';e.classList.remove('kpi-has-eur');}});
-    ['kpi-net-delta','kpi-assets-delta','kpi-liquid-delta','kpi-illiquid-delta','kpi-liab-delta'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='';});
+    // Clear all KPI values and remove EUR formatting
+    const kpiNet=document.getElementById('kpi-net');
+    if(kpiNet){
+      kpiNet.textContent='—';
+      kpiNet.classList.remove('kpi-has-eur');
+    }
+    ['kpi-assets','kpi-liquid','kpi-illiquid','kpi-liab'].forEach(id=>{
+      const e=document.getElementById(id);
+      if(e){
+        e.textContent='—';
+        e.classList.remove('kpi-has-eur');
+      }
+    });
+    
+    // Clear all delta elements
+    ['kpi-net-delta','kpi-assets-delta','kpi-liquid-delta','kpi-illiquid-delta','kpi-liab-delta'].forEach(id=>{
+      const e=document.getElementById(id);
+      if(e){
+        e.textContent='';
+        e.className='kpi-delta'; // Reset classes
+      }
+    });
+    
+    // Check if selected month is in the future
+    const now=new Date();
+    const currentYM=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+    const [selY,selM]=selectedMonth.split('-');
+    const selDate=new Date(parseInt(selY),parseInt(selM)-1,1);
+    const curDate=new Date(now.getFullYear(),now.getMonth(),1);
+    const isFuture=selDate>curDate;
+    
+    const deltaEl=document.getElementById('kpi-net-delta');
+    if(deltaEl){
+      if(isFuture){
+        deltaEl.textContent='Keine Daten für zukünftigen Monat';
+        deltaEl.className='hero-delta';
+        deltaEl.style.color='var(--muted)';
+      }else{
+        deltaEl.style.color='';
+      }
+    }
+    
     return;
   }
+  
+  // Clear any future month message
+  const deltaEl=document.getElementById('kpi-net-delta');
+  if(deltaEl)deltaEl.style.color='';
+  
   const c=calc(entry);
   animateKpiValue('kpi-net',fmt(c.net),c.net);
   animateKpiValue('kpi-assets',fmt(c.assets),c.assets);
@@ -2245,6 +2290,10 @@ function renderBudgetPage(){
 
 function renderBudgetSankey(c){
   const wrap=document.getElementById('sankeyWrap');
+  
+  // Skip rendering if hidden
+  if(wrap.style.display==='none')return;
+  
   if(!c||c.einnahmen===0){wrap.innerHTML='<div style="text-align:center;padding:20px 0;color:var(--muted)">Keine Budget-Daten. CSV importieren.</div>';return;}
   
   // Load standing orders from budget data
@@ -2778,12 +2827,22 @@ function initApp(){
     document.getElementById('assetOverlay').addEventListener('click',closeAssetPopup);
     
     /* Geldfluss Toggle */
+    let sankeyVisible=true;
     document.getElementById('geldflussLabel').addEventListener('click',()=>{
       const wrap=document.getElementById('sankeyWrap');
       if(wrap){
-        const isVisible=wrap.style.display!=='none';
-        wrap.style.display=isVisible?'none':'block';
+        sankeyVisible=!sankeyVisible;
+        wrap.style.display=sankeyVisible?'block':'none';
         haptic('light');
+        // Re-render flows when showing again
+        if(sankeyVisible){
+          setTimeout(()=>{
+            const budgetPage=document.getElementById('page-budget');
+            if(budgetPage&&budgetPage.classList.contains('active')){
+              renderBudgetPage();
+            }
+          },50);
+        }
       }
     });
     
