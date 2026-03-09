@@ -767,7 +767,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
 
 <!-- Budget Hero -->
 <div class="hero">
-  <div class="hero-label">Ø Haushaltsnetto</div>
+  <div class="hero-label">Ø Monatsnetto</div>
   <div class="hero-value kpi-has-eur" id="budget-hero">—</div>
   <div class="hero-delta" id="budget-hero-delta"></div>
 </div>
@@ -829,7 +829,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
 </div>
 
 <!-- Sankey Diagram -->
-<div class="chart-label">Geldfluss</div>
+<div class="chart-label" id="geldflussLabel" style="cursor:pointer;user-select:none;-webkit-user-select:none">Geldfluss</div>
 <div class="sankey-wrap" id="sankeyWrap"></div>
 
 <!-- Einnahmen & Ausgaben Breakdown -->
@@ -942,6 +942,11 @@ function buildPicker(){
         updateBtn();
         closePickerPopup();
         render();applyLivePrices();
+        // Update budget page if it's active
+        const budgetPage=document.getElementById('page-budget');
+        if(budgetPage&&budgetPage.classList.contains('active')){
+          renderBudgetPage();
+        }
       });
       grid.appendChild(cell);
     });
@@ -1890,13 +1895,6 @@ function setupChartInteraction(){
   function restoreCurrentValue(){
     chartInteractionActive=false;
     lastIndex=-1;
-    const scrollY=parseInt(document.body.dataset.scrollY||'0',10);
-    document.body.style.overflow='';
-    document.body.style.position='';
-    document.body.style.width='';
-    document.body.style.top='';
-    delete document.body.dataset.scrollY;
-    window.scrollTo(0,scrollY);
     hideCrosshair();
     const heroLabel=document.querySelector('.hero-label');
     if(heroLabel)heroLabel.textContent='Nettovermögen';
@@ -1907,12 +1905,6 @@ function setupChartInteraction(){
   const onStart=e=>{
     e.preventDefault();
     chartInteractionActive=true;
-    const scrollY=window.scrollY;
-    document.body.style.overflow='hidden';
-    document.body.style.position='fixed';
-    document.body.style.width='100%';
-    document.body.style.top=`-${scrollY}px`;
-    document.body.dataset.scrollY=scrollY;
     showValueAtIndex(getIndexFromX(e.touches[0].clientX));
   };
   const onMove=e=>{
@@ -2158,32 +2150,40 @@ function renderBudgetPage(){
   const selParts=selectedMonth.split('-');
   const monthIdx=parseInt(selParts[1])-1; // 0-based
   const c=calcBudgetMonth(bd,monthIdx);
-  const avgNetto=calcAvgHaushaltsnetto(bd);
 
-  // Hero: Ø Haushaltsnetto
+  // Hero: Durchschnittliche monatliche Einnahmen
   const heroEl=document.getElementById('budget-hero');
-  if(avgNetto>0){
-    heroEl.textContent=avgNetto.toLocaleString('de-DE');
-  }else{
-    heroEl.textContent='—';
+  let avgEinnahmen=0;
+  if(bd){
+    let sum=0,count=0;
+    for(let m=0;m<12;m++){
+      const monthCalc=calcBudgetMonth(bd,m);
+      if(monthCalc&&monthCalc.einnahmen>0){
+        sum+=monthCalc.einnahmen;
+        count++;
+      }
+    }
+    avgEinnahmen=count>0?Math.round(sum/count):0;
   }
   
-  // Calculate min/max monthly income for the year
+  heroEl.textContent=avgEinnahmen>0?avgEinnahmen.toLocaleString('de-DE'):'—';
+  
+  // Delta: Min/Max Einnahmen über das Jahr
   const deltaEl=document.getElementById('budget-hero-delta');
-  if(bd&&bd.einkommen){
-    let minIncome=Infinity;
-    let maxIncome=0;
+  if(bd){
+    let minEinnahmen=Infinity;
+    let maxEinnahmen=0;
     
     for(let m=0;m<12;m++){
       const monthCalc=calcBudgetMonth(bd,m);
       if(monthCalc&&monthCalc.einnahmen>0){
-        minIncome=Math.min(minIncome,monthCalc.einnahmen);
-        maxIncome=Math.max(maxIncome,monthCalc.einnahmen);
+        minEinnahmen=Math.min(minEinnahmen,monthCalc.einnahmen);
+        maxEinnahmen=Math.max(maxEinnahmen,monthCalc.einnahmen);
       }
     }
     
-    if(minIncome!==Infinity&&maxIncome>0){
-      deltaEl.textContent=`↓ ${fmt(minIncome)} • ↑ ${fmt(maxIncome)}`;
+    if(minEinnahmen!==Infinity&&maxEinnahmen>0){
+      deltaEl.textContent=`↓ ${minEinnahmen.toLocaleString('de-DE')} € • ↑ ${maxEinnahmen.toLocaleString('de-DE')} €`;
       deltaEl.className='hero-delta';
     }else{
       deltaEl.textContent='';
@@ -2192,25 +2192,46 @@ function renderBudgetPage(){
     deltaEl.textContent='';
   }
 
-  // KPIs
+  // KPIs - Mix aus Monatswerten und Jahresdurchschnitten
   const einEl=document.getElementById('budget-einnahmen');
   const fixEl=document.getElementById('budget-fix');
   const varEl=document.getElementById('budget-var');
   const sqEl=document.getElementById('budget-sparquote');
-  if(c&&c.einnahmen>0){
-    einEl.textContent=c.einnahmen.toLocaleString('de-DE');
-    fixEl.textContent=c.fixkosten.toLocaleString('de-DE');
-    varEl.textContent=c.variable.toLocaleString('de-DE');
-    sqEl.textContent=c.sparquote+'%';
-    // Sub-labels with percentages
+  
+  if(bd&&c){
+    // Einnahmen: Wert des ausgewählten Monats
+    einEl.textContent=c.einnahmen>0?c.einnahmen.toLocaleString('de-DE'):'—';
+    
+    // Berechne Durchschnitte über alle 12 Monate für die anderen KPIs
+    let sumFix=0,sumVar=0,sumSpar=0,count=0;
+    for(let m=0;m<12;m++){
+      const monthCalc=calcBudgetMonth(bd,m);
+      if(monthCalc){
+        sumFix+=monthCalc.fixkosten||0;
+        sumVar+=monthCalc.variable||0;
+        sumSpar+=monthCalc.sparplaene||0;
+        count++;
+      }
+    }
+    
+    const avgFix=count>0?Math.round(sumFix/count):0;
+    const avgVar=count>0?Math.round(sumVar/count):0;
+    const avgSpar=count>0?Math.round(sumSpar/count):0;
+    const avgSparquote=c.einnahmen>0?Math.round(avgSpar/c.einnahmen*100):0;
+    
+    fixEl.textContent=avgFix>0?avgFix.toLocaleString('de-DE'):'—';
+    varEl.textContent=avgVar>0?avgVar.toLocaleString('de-DE'):'—';
+    sqEl.textContent=avgSparquote>0?avgSparquote+'%':'—';
+    
+    // Sub-labels
     const einSub=document.getElementById('budget-einnahmen-sub');
     if(einSub)einSub.textContent=MONTH_NAMES[monthIdx]+' '+selParts[0];
     const fixSub=document.getElementById('budget-fix-sub');
-    if(fixSub&&c.einnahmen>0)fixSub.textContent=Math.round(c.fixkosten/c.einnahmen*100)+'% der Einnahmen';
+    if(fixSub&&c.einnahmen>0)fixSub.textContent=Math.round(avgFix/c.einnahmen*100)+'% der Einnahmen';
     const varSub=document.getElementById('budget-var-sub');
-    if(varSub&&c.einnahmen>0)varSub.textContent=Math.round(c.variable/c.einnahmen*100)+'% der Einnahmen';
+    if(varSub&&c.einnahmen>0)varSub.textContent=Math.round(avgVar/c.einnahmen*100)+'% der Einnahmen';
     const sqSub=document.getElementById('budget-sparquote-sub');
-    if(sqSub)sqSub.textContent=fmt(c.sparplaene)+' gespart';
+    if(sqSub)sqSub.textContent=avgSpar>0?avgSpar.toLocaleString('de-DE')+' € Ø gespart':'';
   }else{
     einEl.textContent='—';fixEl.textContent='—';varEl.textContent='—';sqEl.textContent='—';
     ['budget-einnahmen-sub','budget-fix-sub','budget-var-sub','budget-sparquote-sub'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
@@ -2542,7 +2563,10 @@ function renderBudgetBreakdown(c){
     const n=Math.max(einItems.length,1);
     const einColors=einItems.map((_,i)=>{const t=n<=1?0:i/(n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
     
-    html+=`<div class="chart-label">Einnahmen</div>`;
+    html+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">`;
+    html+=`<div class="chart-label" style="margin:0">Einnahmen</div>`;
+    html+=`<div style="font-size:14px;color:var(--ink);font-weight:500">${fmt(einTotal)}</div>`;
+    html+=`</div>`;
     html+=`<div class="stacked-bar breakdown-collapsible" data-section="einnahmen">`;
     einItems.forEach((item,i)=>{
       const pct=(item.val/einTotal*100);
@@ -2558,7 +2582,7 @@ function renderBudgetBreakdown(c){
     html+=`</ul>`;
   }
   
-  // ── Ausgaben Section ──
+  // ── Ausgaben Section aggregiert ──
   const ausgabenItems=[...c.fixItems,...c.varItems,...c.sparItems].sort((a,b)=>b.val-a.val);
   if(ausgabenItems.length>0){
     const ausTotal=ausgabenItems.reduce((s,i)=>s+i.val,0);
@@ -2570,25 +2594,128 @@ function renderBudgetBreakdown(c){
     const n=Math.max(ausgabenItems.length,1);
     const ausColors=ausgabenItems.map((_,i)=>{const t=n<=1?0:i/(n-1);return`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;});
     
-    html+=`<div class="chart-label" style="margin-top:20px">Ausgaben</div>`;
+    html+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;margin-bottom:8px">`;
+    html+=`<div class="chart-label" style="margin:0">Ausgaben</div>`;
+    html+=`<div style="font-size:14px;color:var(--ink);font-weight:500">${fmt(ausTotal)}</div>`;
+    html+=`</div>`;
     html+=`<div class="stacked-bar breakdown-collapsible" data-section="ausgaben">`;
     ausgabenItems.forEach((item,i)=>{
       const pct=(item.val/ausTotal*100);
       html+=`<div class="stacked-seg" style="width:${pct}%;background:${ausColors[i]}"></div>`;
     });
     html+=`</div>`;
-    html+=`<ul class="legend-list breakdown-details" id="breakdown-ausgaben" style="display:none">`;
-    ausgabenItems.forEach((item,i)=>{
-      const pct=Math.round(item.val/ausTotal*100);
-      const barPct=Math.round(item.val/ausMax*100);
-      html+=`<li class="legend-row"><div class="legend-bar" style="background:${ausColors[i]}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${ausColors[i]};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div></li>`;
+    
+    // Details mit Kategorien
+    html+=`<div class="breakdown-details" id="breakdown-ausgaben" style="display:none">`;
+    
+    // Hauptkategorien definieren
+    const categories=[
+      {name:'Fixe Ausgaben',items:c.fixItems,key:'fixe'},
+      {name:'Variable Ausgaben',items:c.varItems,key:'variable'},
+      {name:'Sparen',items:c.sparItems,key:'sparen'}
+    ];
+    
+    // Unterkategorien für Fixe Ausgaben
+    const fixeSubcats={
+      'Haus':[],
+      'Betreuung':[],
+      'Versicherungen':[],
+      'Sonstiges':[],
+      'Verträge':[],
+      'Autos':[]
+    };
+    
+    // Items den Unterkategorien zuordnen
+    c.fixItems.forEach(item=>{
+      const name=item.label.toLowerCase();
+      if(name.includes('tilgung')||name.includes('nebenkosten')||name.includes('haus')){
+        fixeSubcats['Haus'].push(item);
+      }else if(name.includes('kita')||name.includes('betreuung')||name.includes('kindergarten')){
+        fixeSubcats['Betreuung'].push(item);
+      }else if(name.includes('versicherung')||name.includes('kranken')||name.includes('haftpflicht')){
+        fixeSubcats['Versicherungen'].push(item);
+      }else if(name.includes('vertrag')||name.includes('abo')||name.includes('mitgliedschaft')){
+        fixeSubcats['Verträge'].push(item);
+      }else if(name.includes('auto')||name.includes('kfz')||name.includes('benzin')){
+        fixeSubcats['Autos'].push(item);
+      }else{
+        fixeSubcats['Sonstiges'].push(item);
+      }
     });
-    html+=`</ul>`;
+    
+    categories.forEach((cat,catIdx)=>{
+      if(cat.items.length===0)return;
+      
+      const catTotal=cat.items.reduce((s,i)=>s+i.val,0);
+      const catMax=Math.max(...cat.items.map(i=>i.val));
+      
+      // Farbe für Kategorie
+      const t=catIdx/Math.max(categories.length-1,1);
+      const catColor=`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*t)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*t)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*t)})`;
+      
+      html+=`<div style="margin-top:12px">`;
+      html+=`<div class="breakdown-collapsible" data-section="${cat.key}" style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;cursor:pointer;border-bottom:1px solid var(--border)">`;
+      html+=`<div style="display:flex;align-items:center;gap:10px">`;
+      html+=`<div class="legend-bar" style="background:${catColor}"></div>`;
+      html+=`<span style="font-size:14px;color:var(--ink);font-weight:500">${cat.name}</span>`;
+      html+=`</div>`;
+      html+=`<span style="font-size:14px;color:var(--ink);font-weight:500">${fmt(catTotal)}</span>`;
+      html+=`</div>`;
+      
+      // Unterkategorien für Fixe Ausgaben
+      if(cat.key==='fixe'){
+        html+=`<div class="breakdown-details" id="breakdown-${cat.key}" style="display:none;padding-left:0">`;
+        Object.keys(fixeSubcats).forEach(subcatName=>{
+          const subcatItems=fixeSubcats[subcatName];
+          if(subcatItems.length===0)return;
+          
+          const subcatTotal=subcatItems.reduce((s,i)=>s+i.val,0);
+          const subcatColor=`rgba(${_dk[0]},${_dk[1]},${_dk[2]},0.7)`;
+          
+          html+=`<div style="margin-top:8px">`;
+          html+=`<div class="breakdown-collapsible" data-section="${cat.key}-${subcatName}" style="display:flex;justify-content:space-between;align-items:center;padding:8px 0 8px 20px;cursor:pointer;border-bottom:1px solid color-mix(in srgb,var(--border) 30%,transparent)">`;
+          html+=`<div style="display:flex;align-items:center;gap:8px">`;
+          html+=`<div style="width:2px;height:12px;background:${subcatColor};border-radius:1px"></div>`;
+          html+=`<span style="font-size:13px;color:var(--muted)">${subcatName}</span>`;
+          html+=`</div>`;
+          html+=`<span style="font-size:13px;color:var(--ink)">${fmt(subcatTotal)}</span>`;
+          html+=`</div>`;
+          
+          html+=`<ul class="legend-list breakdown-details" id="breakdown-${cat.key}-${subcatName}" style="display:none;padding-left:30px">`;
+          subcatItems.forEach((item,i)=>{
+            const pct=Math.round(item.val/subcatTotal*100);
+            const barPct=Math.round(item.val/catMax*100);
+            const n=Math.max(subcatItems.length,1);
+            const itemT=n<=1?0:i/(n-1);
+            const itemColor=`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*itemT)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*itemT)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*itemT)})`;
+            html+=`<li class="legend-row" style="padding:6px 0"><div class="legend-bar" style="background:${itemColor};width:2px;height:12px"></div><div class="legend-info"><span class="legend-name" style="font-size:12px">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${itemColor};opacity:0.5"></div></div><span class="legend-val" style="font-size:12px">${fmt(item.val)}</span><span class="legend-pct" style="font-size:11px">${pct}%</span></div></li>`;
+          });
+          html+=`</ul>`;
+          html+=`</div>`;
+        });
+        html+=`</div>`;
+      }else{
+        // Normale Darstellung für Variable Ausgaben und Sparen
+        html+=`<ul class="legend-list breakdown-details" id="breakdown-${cat.key}" style="display:none">`;
+        cat.items.forEach((item,i)=>{
+          const pct=Math.round(item.val/catTotal*100);
+          const barPct=Math.round(item.val/catMax*100);
+          const n=Math.max(cat.items.length,1);
+          const itemT=n<=1?0:i/(n-1);
+          const itemColor=`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*itemT)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*itemT)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*itemT)})`;
+          html+=`<li class="legend-row"><div class="legend-bar" style="background:${itemColor}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${itemColor};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div></li>`;
+        });
+        html+=`</ul>`;
+      }
+      html+=`</div>`;
+    });
+    
+    html+=`</div>`;
   }
   
   container.innerHTML=html;
   
-  // Event handlers for collapsible bars
+  // Event handlers for collapsible sections
   document.querySelectorAll('.breakdown-collapsible').forEach(bar=>{
     bar.addEventListener('click',()=>{
       const section=bar.dataset.section;
@@ -2649,6 +2776,16 @@ function initApp(){
     document.getElementById('liveOverlay').addEventListener('click',closeLivePopup);
     document.getElementById('assetPopupClose').addEventListener('click',closeAssetPopup);
     document.getElementById('assetOverlay').addEventListener('click',closeAssetPopup);
+    
+    /* Geldfluss Toggle */
+    document.getElementById('geldflussLabel').addEventListener('click',()=>{
+      const wrap=document.getElementById('sankeyWrap');
+      if(wrap){
+        const isVisible=wrap.style.display!=='none';
+        wrap.style.display=isVisible?'none':'block';
+        haptic('light');
+      }
+    });
     
     /* Pull to Refresh */
     setupPullToRefresh();
