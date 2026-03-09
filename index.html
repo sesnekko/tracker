@@ -338,7 +338,8 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 .import-page-title { font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:16px; }
 
 /* ── Budget / Sankey ── */
-.sankey-wrap { position:relative;padding:8px 0 0;min-height:120px; }
+.sankey-wrap { position:relative;padding:8px 0 0;min-height:120px;overflow:hidden;transition:max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.4s ease, margin 0.4s ease; }
+.sankey-wrap.collapsed { max-height:0;opacity:0;padding-top:0;padding-bottom:0;margin-bottom:0; }
 .sankey-container-html { display:grid;grid-template-columns:110px 1fr 110px;grid-template-rows:auto 1fr;gap:0 0;padding:24px 0 12px;position:relative;min-height:300px; }
 .sankey-section-header { grid-row:1;text-align:center;padding-bottom:12px; }
 .sankey-section-header:first-child { grid-column:1; }
@@ -381,9 +382,9 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   }
   
   /* Optimized chart height on iPad - full width */
-  .chart-wrap { height: 420px; }
+  .chart-wrap { height: 440px; }
   .chart-wrap-net { margin-left: -40px; margin-right: -40px; }
-  .chart-wrap.pie { height: 420px; }
+  .chart-wrap.pie { height: 440px; }
   
   /* Hero KPI larger */
   .hero { padding: 28px 0 8px; }
@@ -404,7 +405,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 28px;
-    align-items: start;
+    align-items: center;
     padding-top: 8px;
   }
   
@@ -418,6 +419,10 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
     display: block;
     grid-column: 2;
     padding: 0;
+    max-height: 352px; /* 2 rows of KPI tiles (160px each) + gap (16px) + 16px extra */
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
   
   .structure-section-mobile {
@@ -518,7 +523,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   }
   
   /* Optimized chart on larger iPads - full width */
-  .chart-wrap { height: 440px; }
+  .chart-wrap { height: 460px; }
   .chart-wrap-net { margin-left: -60px; margin-right: -60px; }
   
   .hero { padding: 32px 0 12px; }
@@ -542,6 +547,11 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   .legend-val { font-size: 17px; }
   .legend-pct { font-size: 15px; }
   .legend-bar { height: 20px; }
+  
+  /* Asset list scrollable height adjusted for larger tiles */
+  .structure-section-ipad {
+    max-height: 352px; /* Same as 768px breakpoint since tile height is same */
+  }
   
   /* Budget page optimizations */
   .sankey-container-html {
@@ -829,11 +839,11 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
 </div>
 
 <!-- Sankey Diagram -->
-<div class="chart-label" id="geldflussLabel" style="cursor:pointer;user-select:none;-webkit-user-select:none">Geldfluss</div>
+<div class="chart-label" id="geldflussLabel" style="cursor:pointer;user-select:none;-webkit-user-select:none;margin-bottom:10px;transition:margin-bottom 0.4s ease">Geldfluss</div>
 <div class="sankey-wrap" id="sankeyWrap"></div>
 
 <!-- Einnahmen & Ausgaben Breakdown -->
-<div class="structure-section" style="padding-top:14px">
+<div class="structure-section" id="budgetBreakdownSection" style="padding-top:14px;transition:padding-top 0.4s ease">
   <div id="budgetBreakdown"></div>
 </div>
 
@@ -2669,26 +2679,105 @@ function renderBudgetBreakdown(c){
       'Haus':[],
       'Betreuung':[],
       'Versicherungen':[],
-      'Sonstiges':[],
       'Verträge':[],
-      'Autos':[]
+      'Autos':[],
+      'Sonstiges':[]
     };
     
-    // Items den Unterkategorien zuordnen
+    // Unterkategorien für Variable Ausgaben
+    const variableSubcats={
+      'Lebensmittel':[],
+      'Lifestyle':[],
+      'Drogerie':[],
+      'Medikamente':[],
+      'Frisör':[],
+      'Sonstiges':[]
+    };
+    
+    // Unterkategorien für Sparen
+    const sparenSubcats={
+      'ETF Sparpläne MSCI':[],
+      'BTC Sparplan':[],
+      'Cash':[],
+      'Sonstiges':[]
+    };
+    
+    // Items den Unterkategorien zuordnen - Fixe Ausgaben
     c.fixItems.forEach(item=>{
       const name=item.label.toLowerCase();
-      if(name.includes('tilgung')||name.includes('nebenkosten')||name.includes('haus')){
-        fixeSubcats['Haus'].push(item);
-      }else if(name.includes('kita')||name.includes('betreuung')||name.includes('kindergarten')){
-        fixeSubcats['Betreuung'].push(item);
-      }else if(name.includes('versicherung')||name.includes('kranken')||name.includes('haftpflicht')){
-        fixeSubcats['Versicherungen'].push(item);
-      }else if(name.includes('vertrag')||name.includes('abo')||name.includes('mitgliedschaft')){
-        fixeSubcats['Verträge'].push(item);
-      }else if(name.includes('auto')||name.includes('kfz')||name.includes('benzin')){
+      let assigned=false;
+      
+      // Autos zuerst prüfen (inkl. Auto-Versicherungen)
+      if(name.includes('911')||name.includes('c-klasse')||name.includes('auto')||name.includes('kfz')||name.includes('tanken')||name.includes('services wartung')||(name.includes('versicherung')&&(name.includes('911')||name.includes('c-klasse')))||(name.includes('steuer')&&(name.includes('911')||name.includes('c-klasse')))){
         fixeSubcats['Autos'].push(item);
-      }else{
+        assigned=true;
+      }else if(name.includes('tilgung')||name.includes('gas')||name.includes('strom')||name.includes('grundsteuer')||name.includes('abfall')||name.includes('abwasser')||name.includes('frischwasser')||name.includes('wartung heizung')||name.includes('telefon')||name.includes('internet')||name.includes('putzfrau')||name.includes('gez')||name.includes('kontoführung')||name.includes('haus')||name.includes('nebenkosten')){
+        fixeSubcats['Haus'].push(item);
+        assigned=true;
+      }else if(name.includes('ogata')||name.includes('essensgeld')||name.includes('betreuung')||name.includes('kindergarten')||name.includes('kita')){
+        fixeSubcats['Betreuung'].push(item);
+        assigned=true;
+      }else if(name.includes('versicherung')||name.includes('haftpflicht')||name.includes('hausrat')||name.includes('berufsunfähigkeit')||name.includes('bankschließfach')||name.includes('auslandsversicherung')||name.includes('adac')||name.includes('gebäudeversicherung')||name.includes('bausparvertrag')||name.includes('rechtschutz')){
+        fixeSubcats['Versicherungen'].push(item);
+        assigned=true;
+      }else if(name.includes('handy')||name.includes('amazon prime')||name.includes('apple icloud')||name.includes('netflix')||name.includes('spotify')||name.includes('fitnessstudio')||name.includes('physio')||name.includes('vertrag')||name.includes('abo')||name.includes('mitgliedschaft')){
+        fixeSubcats['Verträge'].push(item);
+        assigned=true;
+      }
+      
+      if(!assigned){
         fixeSubcats['Sonstiges'].push(item);
+        console.log('Fixe Ausgabe nicht zugeordnet:',item.label);
+      }
+    });
+    
+    // Items den Unterkategorien zuordnen - Variable Ausgaben
+    c.varItems.forEach(item=>{
+      const name=item.label.toLowerCase();
+      let assigned=false;
+      
+      if(name.includes('lebensmittel')||name.includes('supermarkt')||name.includes('edeka')||name.includes('rewe')){
+        variableSubcats['Lebensmittel'].push(item);
+        assigned=true;
+      }else if(name.includes('lifestyle')||name.includes('freizeit')||name.includes('hobby')){
+        variableSubcats['Lifestyle'].push(item);
+        assigned=true;
+      }else if(name.includes('drogerie')||name.includes('dm')||name.includes('rossmann')){
+        variableSubcats['Drogerie'].push(item);
+        assigned=true;
+      }else if(name.includes('medikament')||name.includes('apotheke')||name.includes('arzt')){
+        variableSubcats['Medikamente'].push(item);
+        assigned=true;
+      }else if(name.includes('frisör')||name.includes('friseur')||name.includes('haarschnitt')){
+        variableSubcats['Frisör'].push(item);
+        assigned=true;
+      }
+      
+      if(!assigned){
+        variableSubcats['Sonstiges'].push(item);
+        console.log('Variable Ausgabe nicht zugeordnet:',item.label);
+      }
+    });
+    
+    // Items den Unterkategorien zuordnen - Sparen
+    c.sparItems.forEach(item=>{
+      const name=item.label.toLowerCase();
+      let assigned=false;
+      
+      if(name.includes('etf')||name.includes('msci')||name.includes('sparplan')){
+        sparenSubcats['ETF Sparpläne MSCI'].push(item);
+        assigned=true;
+      }else if(name.includes('btc')||name.includes('bitcoin')||name.includes('crypto')){
+        sparenSubcats['BTC Sparplan'].push(item);
+        assigned=true;
+      }else if(name.includes('cash')||name.includes('tagesgeld')||name.includes('sparbuch')){
+        sparenSubcats['Cash'].push(item);
+        assigned=true;
+      }
+      
+      if(!assigned){
+        sparenSubcats['Sonstiges'].push(item);
+        console.log('Sparposition nicht zugeordnet:',item.label);
       }
     });
     
@@ -2743,8 +2832,74 @@ function renderBudgetBreakdown(c){
           html+=`</div>`;
         });
         html+=`</div>`;
+      }
+      // Unterkategorien für Variable Ausgaben
+      else if(cat.key==='variable'){
+        html+=`<div class="breakdown-details" id="breakdown-${cat.key}" style="display:none;padding-left:0">`;
+        Object.keys(variableSubcats).forEach(subcatName=>{
+          const subcatItems=variableSubcats[subcatName];
+          if(subcatItems.length===0)return;
+          
+          const subcatTotal=subcatItems.reduce((s,i)=>s+i.val,0);
+          const subcatColor=`rgba(${_dk[0]},${_dk[1]},${_dk[2]},0.7)`;
+          
+          html+=`<div style="margin-top:8px">`;
+          html+=`<div class="breakdown-collapsible" data-section="${cat.key}-${subcatName}" style="display:flex;justify-content:space-between;align-items:center;padding:8px 0 8px 20px;cursor:pointer;border-bottom:1px solid color-mix(in srgb,var(--border) 30%,transparent)">`;
+          html+=`<div style="display:flex;align-items:center;gap:8px">`;
+          html+=`<div style="width:2px;height:12px;background:${subcatColor};border-radius:1px"></div>`;
+          html+=`<span style="font-size:13px;color:var(--muted)">${subcatName}</span>`;
+          html+=`</div>`;
+          html+=`<span style="font-size:13px;color:var(--ink)">${fmt(subcatTotal)}</span>`;
+          html+=`</div>`;
+          
+          html+=`<ul class="legend-list breakdown-details" id="breakdown-${cat.key}-${subcatName}" style="display:none;padding-left:30px">`;
+          subcatItems.forEach((item,i)=>{
+            const pct=Math.round(item.val/subcatTotal*100);
+            const barPct=Math.round(item.val/catMax*100);
+            const n=Math.max(subcatItems.length,1);
+            const itemT=n<=1?0:i/(n-1);
+            const itemColor=`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*itemT)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*itemT)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*itemT)})`;
+            html+=`<li class="legend-row" style="padding:6px 0"><div class="legend-bar" style="background:${itemColor};width:2px;height:12px"></div><div class="legend-info"><span class="legend-name" style="font-size:12px">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${itemColor};opacity:0.5"></div></div><span class="legend-val" style="font-size:12px">${fmt(item.val)}</span><span class="legend-pct" style="font-size:11px">${pct}%</span></div></li>`;
+          });
+          html+=`</ul>`;
+          html+=`</div>`;
+        });
+        html+=`</div>`;
+      }
+      // Unterkategorien für Sparen
+      else if(cat.key==='sparen'){
+        html+=`<div class="breakdown-details" id="breakdown-${cat.key}" style="display:none;padding-left:0">`;
+        Object.keys(sparenSubcats).forEach(subcatName=>{
+          const subcatItems=sparenSubcats[subcatName];
+          if(subcatItems.length===0)return;
+          
+          const subcatTotal=subcatItems.reduce((s,i)=>s+i.val,0);
+          const subcatColor=`rgba(${_dk[0]},${_dk[1]},${_dk[2]},0.7)`;
+          
+          html+=`<div style="margin-top:8px">`;
+          html+=`<div class="breakdown-collapsible" data-section="${cat.key}-${subcatName}" style="display:flex;justify-content:space-between;align-items:center;padding:8px 0 8px 20px;cursor:pointer;border-bottom:1px solid color-mix(in srgb,var(--border) 30%,transparent)">`;
+          html+=`<div style="display:flex;align-items:center;gap:8px">`;
+          html+=`<div style="width:2px;height:12px;background:${subcatColor};border-radius:1px"></div>`;
+          html+=`<span style="font-size:13px;color:var(--muted)">${subcatName}</span>`;
+          html+=`</div>`;
+          html+=`<span style="font-size:13px;color:var(--ink)">${fmt(subcatTotal)}</span>`;
+          html+=`</div>`;
+          
+          html+=`<ul class="legend-list breakdown-details" id="breakdown-${cat.key}-${subcatName}" style="display:none;padding-left:30px">`;
+          subcatItems.forEach((item,i)=>{
+            const pct=Math.round(item.val/subcatTotal*100);
+            const barPct=Math.round(item.val/catMax*100);
+            const n=Math.max(subcatItems.length,1);
+            const itemT=n<=1?0:i/(n-1);
+            const itemColor=`rgb(${Math.round(_dk[0]+(_lt[0]-_dk[0])*itemT)},${Math.round(_dk[1]+(_lt[1]-_dk[1])*itemT)},${Math.round(_dk[2]+(_lt[2]-_dk[2])*itemT)})`;
+            html+=`<li class="legend-row" style="padding:6px 0"><div class="legend-bar" style="background:${itemColor};width:2px;height:12px"></div><div class="legend-info"><span class="legend-name" style="font-size:12px">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${itemColor};opacity:0.5"></div></div><span class="legend-val" style="font-size:12px">${fmt(item.val)}</span><span class="legend-pct" style="font-size:11px">${pct}%</span></div></li>`;
+          });
+          html+=`</ul>`;
+          html+=`</div>`;
+        });
+        html+=`</div>`;
       }else{
-        // Normale Darstellung für Variable Ausgaben und Sparen
+        // Fallback für andere Kategorien ohne Unterkategorien
         html+=`<ul class="legend-list breakdown-details" id="breakdown-${cat.key}" style="display:none">`;
         cat.items.forEach((item,i)=>{
           const pct=Math.round(item.val/catTotal*100);
@@ -2830,18 +2985,30 @@ function initApp(){
     let sankeyVisible=true;
     document.getElementById('geldflussLabel').addEventListener('click',()=>{
       const wrap=document.getElementById('sankeyWrap');
+      const breakdownSection=document.getElementById('budgetBreakdownSection');
+      const label=document.getElementById('geldflussLabel');
       if(wrap){
         sankeyVisible=!sankeyVisible;
-        wrap.style.display=sankeyVisible?'block':'none';
-        haptic('light');
-        // Re-render flows when showing again
+        
         if(sankeyVisible){
+          // Showing: remove collapsed class to trigger animation
+          wrap.classList.remove('collapsed');
+          if(breakdownSection)breakdownSection.style.paddingTop='14px';
+          if(label)label.style.marginBottom='10px';
+          haptic('light');
+          // Re-render flows when showing again
           setTimeout(()=>{
             const budgetPage=document.getElementById('page-budget');
             if(budgetPage&&budgetPage.classList.contains('active')){
               renderBudgetPage();
             }
           },50);
+        } else {
+          // Hiding: add collapsed class to trigger animation
+          wrap.classList.add('collapsed');
+          if(breakdownSection)breakdownSection.style.paddingTop='0px';
+          if(label)label.style.marginBottom='0px';
+          haptic('light');
         }
       }
     });
