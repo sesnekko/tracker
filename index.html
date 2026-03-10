@@ -321,6 +321,12 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
   border-top:1px solid color-mix(in srgb,var(--border) 50%,transparent);
   z-index:100;
 }
+
+/* Ensure bottom nav stays in place when body is fixed */
+body[style*="position: fixed"] .bottom-nav {
+  position: fixed !important;
+  bottom: 0 !important;
+}
 .nav-btn {
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
   background:none;border:none;color:var(--muted);cursor:pointer;
@@ -838,14 +844,14 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   </div>
 </div>
 
-<!-- Sankey Diagram -->
-<div class="chart-label" id="geldflussLabel" style="cursor:pointer;user-select:none;-webkit-user-select:none;margin-bottom:10px;transition:margin-bottom 0.4s ease">Geldfluss</div>
-<div class="sankey-wrap" id="sankeyWrap"></div>
-
 <!-- Einnahmen & Ausgaben Breakdown -->
 <div class="structure-section" id="budgetBreakdownSection" style="padding-top:14px;transition:padding-top 0.4s ease">
   <div id="budgetBreakdown"></div>
 </div>
+
+<!-- Sankey Diagram -->
+<div class="chart-label" id="geldflussLabel" style="cursor:pointer;user-select:none;-webkit-user-select:none;margin-bottom:10px;transition:margin-bottom 0.4s ease">Geldfluss</div>
+<div class="sankey-wrap" id="sankeyWrap"></div>
 
 </div><!-- /app-content -->
 </div>
@@ -1646,20 +1652,43 @@ let _scrollY=0;
 // Helper functions for popup scroll preservation
 function lockBodyScroll(){
   _scrollY=window.pageYOffset||document.documentElement.scrollTop;
+  
+  // Lock both html and body
+  document.documentElement.style.position='fixed';
+  document.documentElement.style.top=`-${_scrollY}px`;
+  document.documentElement.style.left='0';
+  document.documentElement.style.right='0';
+  document.documentElement.style.width='100%';
+  document.documentElement.style.overflow='hidden';
+  
   document.body.style.position='fixed';
   document.body.style.top=`-${_scrollY}px`;
   document.body.style.left='0';
   document.body.style.right='0';
+  document.body.style.width='100%';
   document.body.style.overflow='hidden';
 }
 
 function unlockBodyScroll(){
+  // Unlock both html and body
+  document.documentElement.style.position='';
+  document.documentElement.style.top='';
+  document.documentElement.style.left='';
+  document.documentElement.style.right='';
+  document.documentElement.style.width='';
+  document.documentElement.style.overflow='';
+  
   document.body.style.position='';
   document.body.style.top='';
   document.body.style.left='';
   document.body.style.right='';
+  document.body.style.width='';
   document.body.style.overflow='';
-  window.scrollTo(0,_scrollY);
+  
+  // Restore scroll position
+  requestAnimationFrame(()=>{
+    window.scrollTo(0,_scrollY);
+  });
 }
 function showLivePopup(){
   const c=document.getElementById('livePopupContent');
