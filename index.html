@@ -279,7 +279,7 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 /* ── CSV Import ── */
 .import-section { padding:20px 0;text-align:center; }
 .import-btn {
-  display:inline-block;padding:10px 20px;font-size:14px;color:var(--muted);
+  display:block;width:100%;max-width:280px;margin:0 auto;padding:10px 20px;font-size:14px;color:var(--muted);
   background:transparent;border:1px dashed var(--border);border-radius:4px;
   cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;
 }
@@ -864,11 +864,11 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   </button>
   <button class="nav-btn active" data-page="home">
     <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    Home
+    Assets
   </button>
   <button class="nav-btn" data-page="import">
     <svg viewBox="0 0 24 24"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    Import
+    Data
   </button>
 </nav>
 
