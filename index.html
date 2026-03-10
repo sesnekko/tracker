@@ -1641,6 +1641,26 @@ function updateLiveDot(ok){
 }
 
 const LIVE_LABELS={'bitcoin':'Bitcoin','msci-acwi':'MSCI ACWI','dax-ucits':'DAX UCITS','msci-acwi-papa':'MSCI ACWI Papa','msci-acwi-patenkinder':'MSCI ACWI PK','gold':'Gold','silber':'Silber'};
+let _scrollY=0;
+
+// Helper functions for popup scroll preservation
+function lockBodyScroll(){
+  _scrollY=window.pageYOffset||document.documentElement.scrollTop;
+  document.body.style.position='fixed';
+  document.body.style.top=`-${_scrollY}px`;
+  document.body.style.left='0';
+  document.body.style.right='0';
+  document.body.style.overflow='hidden';
+}
+
+function unlockBodyScroll(){
+  document.body.style.position='';
+  document.body.style.top='';
+  document.body.style.left='';
+  document.body.style.right='';
+  document.body.style.overflow='';
+  window.scrollTo(0,_scrollY);
+}
 function showLivePopup(){
   const c=document.getElementById('livePopupContent');
   const allKeys=['bitcoin',...Object.keys(LIVE_PRICE_TICKERS)];
@@ -1658,18 +1678,14 @@ function showLivePopup(){
     }
   });
   c.innerHTML=html;
+  lockBodyScroll();
   document.getElementById('livePopup').classList.add('show');
   document.getElementById('liveOverlay').classList.add('show');
-  document.body.style.overflow='hidden';
-  document.body.style.position='fixed';
-  document.body.style.width='100%';
 }
 function closeLivePopup(){
   document.getElementById('livePopup').classList.remove('show');
   document.getElementById('liveOverlay').classList.remove('show');
-  document.body.style.overflow='';
-  document.body.style.position='';
-  document.body.style.width='';
+  unlockBodyScroll();
 }
 
 /* ── Asset Detail Popup ── */
@@ -1758,20 +1774,16 @@ function showAssetDetail(assetKey){
   }
   
   document.getElementById('assetPopupContent').innerHTML=html;
+  lockBodyScroll();
   document.getElementById('assetPopup').classList.add('show');
   document.getElementById('assetOverlay').classList.add('show');
-  document.body.style.overflow='hidden';
-  document.body.style.position='fixed';
-  document.body.style.width='100%';
   haptic('light');
 }
 
 function closeAssetPopup(){
   document.getElementById('assetPopup').classList.remove('show');
   document.getElementById('assetOverlay').classList.remove('show');
-  document.body.style.overflow='';
-  document.body.style.position='';
-  document.body.style.width='';
+  unlockBodyScroll();
 }
 
 /* ── Haptic Feedback ── */
