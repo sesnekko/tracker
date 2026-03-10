@@ -1648,47 +1648,79 @@ function updateLiveDot(ok){
 
 const LIVE_LABELS={'bitcoin':'Bitcoin','msci-acwi':'MSCI ACWI','dax-ucits':'DAX UCITS','msci-acwi-papa':'MSCI ACWI Papa','msci-acwi-patenkinder':'MSCI ACWI PK','gold':'Gold','silber':'Silber'};
 let _scrollY=0;
+let _touchStartY=0;
+
+// Check if running as PWA/standalone
+const isPWA=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone||document.referrer.includes('android-app://');
+
+// Prevent scroll during popup
+function preventScroll(e){
+  e.preventDefault();
+  e.stopPropagation();
+  return false;
+}
+
+function preventTouchMove(e){
+  e.preventDefault();
+}
 
 // Helper functions for popup scroll preservation
 function lockBodyScroll(){
   _scrollY=window.pageYOffset||document.documentElement.scrollTop;
   
-  // Lock both html and body
-  document.documentElement.style.position='fixed';
-  document.documentElement.style.top=`-${_scrollY}px`;
-  document.documentElement.style.left='0';
-  document.documentElement.style.right='0';
-  document.documentElement.style.width='100%';
-  document.documentElement.style.overflow='hidden';
-  
-  document.body.style.position='fixed';
-  document.body.style.top=`-${_scrollY}px`;
-  document.body.style.left='0';
-  document.body.style.right='0';
-  document.body.style.width='100%';
-  document.body.style.overflow='hidden';
+  if(isPWA){
+    // PWA-specific: Just prevent scroll events without changing layout
+    document.addEventListener('wheel',preventScroll,{passive:false});
+    document.addEventListener('touchmove',preventTouchMove,{passive:false});
+    document.addEventListener('scroll',preventScroll,{passive:false});
+    document.body.style.overflow='hidden';
+  }else{
+    // Browser: Use position fixed
+    document.documentElement.style.position='fixed';
+    document.documentElement.style.top=`-${_scrollY}px`;
+    document.documentElement.style.left='0';
+    document.documentElement.style.right='0';
+    document.documentElement.style.width='100%';
+    document.documentElement.style.overflow='hidden';
+    
+    document.body.style.position='fixed';
+    document.body.style.top=`-${_scrollY}px`;
+    document.body.style.left='0';
+    document.body.style.right='0';
+    document.body.style.width='100%';
+    document.body.style.overflow='hidden';
+  }
 }
 
 function unlockBodyScroll(){
-  // Unlock both html and body
-  document.documentElement.style.position='';
-  document.documentElement.style.top='';
-  document.documentElement.style.left='';
-  document.documentElement.style.right='';
-  document.documentElement.style.width='';
-  document.documentElement.style.overflow='';
-  
-  document.body.style.position='';
-  document.body.style.top='';
-  document.body.style.left='';
-  document.body.style.right='';
-  document.body.style.width='';
-  document.body.style.overflow='';
-  
-  // Restore scroll position
-  requestAnimationFrame(()=>{
-    window.scrollTo(0,_scrollY);
-  });
+  if(isPWA){
+    // PWA-specific: Remove event listeners
+    document.removeEventListener('wheel',preventScroll);
+    document.removeEventListener('touchmove',preventTouchMove);
+    document.removeEventListener('scroll',preventScroll);
+    document.body.style.overflow='';
+    // Don't change scroll position - it should stay where it was
+  }else{
+    // Browser: Remove position fixed
+    document.documentElement.style.position='';
+    document.documentElement.style.top='';
+    document.documentElement.style.left='';
+    document.documentElement.style.right='';
+    document.documentElement.style.width='';
+    document.documentElement.style.overflow='';
+    
+    document.body.style.position='';
+    document.body.style.top='';
+    document.body.style.left='';
+    document.body.style.right='';
+    document.body.style.width='';
+    document.body.style.overflow='';
+    
+    // Restore scroll position
+    requestAnimationFrame(()=>{
+      window.scrollTo(0,_scrollY);
+    });
+  }
 }
 function showLivePopup(){
   const c=document.getElementById('livePopupContent');
