@@ -589,9 +589,13 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
     font-size: 17px;
   }
   
-  /* Optimized chart on larger iPads - full width */
+  /* Optimized chart on larger iPads - full width, breaks out of max-width */
   .chart-wrap { height: 560px; }
-  .chart-wrap-net { margin-left: -60px; margin-right: -60px; }
+  .chart-wrap-net {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+  }
   
   .hero { padding: 32px 0 12px; }
   .hero-label { font-size: 17px; }
