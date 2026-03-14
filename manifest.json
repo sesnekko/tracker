@@ -1,7 +1,7 @@
 {
-  "name": "Vermögensübersicht",
-  "short_name": "Vermögen",
-  "description": "Vermögensübersicht – Dashboard",
+  "name": "Assets",
+  "short_name": "Assets",
+  "description": "Assets – Dashboard",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#e8e4de",

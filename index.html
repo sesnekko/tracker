@@ -122,11 +122,11 @@ body {
 .picker-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;opacity:0;pointer-events:none;transition:opacity .25s; }
 .picker-overlay.show { opacity:1;pointer-events:auto; }
 .picker-popup {
-  position:fixed;bottom:0;left:0;right:0;z-index:101;
-  background:var(--bg);border-top:1px solid var(--border);
-  border-radius:16px 16px 0 0;
-  padding:20px 20px max(20px,env(safe-area-inset-bottom));
-  transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  position:fixed;top:0;left:0;right:0;z-index:101;
+  background:var(--bg);border-bottom:1px solid var(--border);
+  border-radius:0 0 16px 16px;
+  padding:max(20px,env(safe-area-inset-top)) 20px 20px;
+  transform:translateY(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
 }
 .picker-popup.show { transform:translateY(0); }
 .picker-popup-title { font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;text-align:center;margin-bottom:16px; }
@@ -156,7 +156,7 @@ body {
 
 /* ── Chart ── */
 .chart-section { padding:4px 0; }
-.chart-wrap { position:relative;height:200px;-webkit-user-select:none;user-select:none; }
+.chart-wrap { position:relative;height:200px;-webkit-user-select:none;user-select:none;cursor:crosshair; }
 .chart-wrap-net { margin-left:-20px;margin-right:-20px; }
 .chart-wrap.pie { height:260px;display:flex;align-items:center;justify-content:center; }
 .chart-wrap.pie canvas { max-height:240px;max-width:240px; }
@@ -286,6 +286,43 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 .import-btn:active{border-color:var(--ink);color:var(--ink)}
 .csv-msg { display:none;font-size:14px;margin-top:8px; }
 
+/* ── Data Entry Form ── */
+.section-title{font-weight:500;font-size:14px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink);margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.input-panel{background:color-mix(in srgb,var(--bg2) 60%,transparent);border:1px solid color-mix(in srgb,var(--border) 40%,transparent);border-radius:6px;padding:14px;margin-bottom:24px;overflow:hidden}
+.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-bottom:12px}
+.input-group{display:flex;flex-direction:column;gap:3px;min-width:0}
+.input-group label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.num-input{
+  background:var(--bg);border:1px solid var(--border);color:var(--text);
+  padding:8px 10px;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;
+  font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;
+  width:100%;min-width:0;min-height:36px;-webkit-appearance:none;appearance:none;
+  font-variant-numeric:tabular-nums;box-sizing:border-box;
+}
+.num-input:focus{border-color:var(--ink-soft);box-shadow:0 0 0 2px rgba(26,26,24,0.06)}
+body.dark .num-input:focus{box-shadow:0 0 0 2px rgba(232,228,222,0.08)}
+.input-units-label{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);opacity:0.65;display:block;margin-top:3px}
+.num-input-units{font-size:12px;min-height:26px;padding:4px 8px;color:var(--muted);border-style:dashed;background:var(--bg);width:60%;max-width:120px}
+.num-input-units:focus{border-color:var(--ink-soft);border-style:solid;box-shadow:0 0 0 2px rgba(26,26,24,0.06)}
+.divider{height:1px;background:var(--border);margin:22px 0}
+.form-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{padding:10px 24px;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;border:none;transition:all .2s;min-height:44px;touch-action:manipulation}
+.btn-primary{background:var(--ink);color:var(--bg);font-weight:500}
+.btn-primary:active{opacity:0.85}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:active{border-color:var(--ink-soft);color:var(--text)}
+.btn-danger{border-color:rgba(110,59,48,0.3);color:var(--red)}
+.btn-danger:active{border-color:var(--red);background:rgba(110,59,48,0.04)}
+.save-msg{font-size:13px;color:var(--green);opacity:0;transition:opacity .3s}
+.save-msg.show{opacity:1}
+.data-action-row{display:flex;flex-direction:column;gap:10px;padding-bottom:20px}
+.data-action-row .btn{width:100%;text-align:center}
+@media (min-width: 768px) {
+  .input-grid{grid-template-columns:repeat(3,1fr);gap:10px 14px}
+  .input-panel{padding:24px}
+  .input-group label{white-space:normal}
+}
+
 /* ── Odometer ── */
 .kpi-slot { display:inline-block;overflow:hidden;vertical-align:bottom; }
 .kpi-inner { display:flex;flex-direction:column; }
@@ -311,6 +348,29 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 .chart-crosshair-dot.visible { opacity:1; }
 
 /* ── Bottom Nav ── */
+.sidebar-toggle { display:none; }
+.sidebar-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;opacity:0;transition:opacity .3s; }
+.sidebar-overlay.show { display:block;opacity:1; }
+.sidebar {
+  position:fixed;top:0;left:0;bottom:0;width:240px;z-index:201;
+  background:var(--bg);border-right:1px solid var(--border);
+  transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  padding:max(20px,env(safe-area-inset-top)) 16px 20px;
+  display:flex;flex-direction:column;gap:4px;
+}
+.sidebar.open { transform:translateX(0); }
+.sidebar-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:20px; }
+.sidebar-title { font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500; }
+.sidebar-item {
+  display:flex;align-items:center;gap:12px;
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-family:'IBM Plex Sans',sans-serif;font-size:15px;letter-spacing:0.02em;
+  padding:12px 12px;border-radius:6px;transition:color .2s,background .2s;
+  width:100%;text-align:left;
+}
+.sidebar-item svg { width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0; }
+.sidebar-item.active { color:var(--ink);background:color-mix(in srgb,var(--border) 25%,transparent); }
+.sidebar-item:active { color:var(--ink); }
 .bottom-nav {
   position:fixed;bottom:0;left:0;right:0;
   display:flex;align-items:center;justify-content:space-around;
@@ -388,7 +448,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   }
   
   /* Optimized chart height on iPad - full width */
-  .chart-wrap { height: 440px; }
+  .chart-wrap { height: 540px; }
   .chart-wrap-net { margin-left: -40px; margin-right: -40px; }
   .chart-wrap.pie { height: 440px; }
   
@@ -505,18 +565,19 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   
   /* Breakdown sections */
   .breakdown-collapsible { font-size: 15px; }
-  .stacked-bar { height: 14px; }
+  .stacked-bar { height: 28px;border-radius:6px; }
   
   /* Import page */
   .import-page-title { font-size: 16px; }
   .import-btn { font-size: 16px; padding: 12px 24px; }
   .import-section > div { font-size: 16px; }
+  .data-action-row { flex-direction:row; }
+  .data-action-row .btn { width:auto;flex:1; }
   
-  /* Bottom nav */
-  .bottom-nav { height: calc(64px + env(safe-area-inset-bottom)); }
-  .nav-btn { font-size: 13px; height: 64px; }
-  .nav-btn svg { width: 24px; height: 24px; }
-  .app-content { padding-bottom: 76px; }
+  /* Bottom nav - hidden on iPad, replaced by sidebar */
+  .bottom-nav { display:none; }
+  .sidebar-toggle { display:flex; }
+  .app-content { padding-bottom: 20px; }
 }
 
 @media (min-width: 1024px) {
@@ -529,7 +590,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   }
   
   /* Optimized chart on larger iPads - full width */
-  .chart-wrap { height: 460px; }
+  .chart-wrap { height: 560px; }
   .chart-wrap-net { margin-left: -60px; margin-right: -60px; }
   
   .hero { padding: 32px 0 12px; }
@@ -589,7 +650,12 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
 
 <!-- ── APP HTML ── -->
 <div class="app-header">
-  <button class="date-btn" id="dateBtn">Apr 2026</button>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="icon-btn sidebar-toggle" id="sidebarToggle" title="Menü">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <button class="date-btn" id="dateBtn">Apr 2026</button>
+  </div>
   <div style="display:flex;align-items:center;gap:8px">
     <div class="live-status"><span class="live-dot" id="liveDot"></span><span id="liveLabel">Live</span></div>
     <button class="icon-btn" id="themeToggle" title="Dark/Light Mode">
@@ -597,6 +663,29 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
     </button>
   </div>
 </div>
+
+<!-- Sidebar Navigation (iPad) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <span class="sidebar-title">Navigation</span>
+    <button class="icon-btn" id="sidebarClose" title="Schließen">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <button class="sidebar-item active" data-page="home">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Assets
+  </button>
+  <button class="sidebar-item" data-page="budget">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Budgets
+  </button>
+  <button class="sidebar-item" data-page="import">
+    <svg viewBox="0 0 24 24"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Data
+  </button>
+</nav>
 
 <!-- Month Picker Popup -->
 <div class="picker-overlay" id="pickerOverlay"></div>
@@ -762,18 +851,104 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
 </div><!-- /app-content -->
 </div><!-- /page-home -->
 
-<!-- Import Page -->
+<!-- Import/Data Page -->
 <div id="page-import" class="page">
-<div class="app-content" style="display:flex;align-items:center;justify-content:center;min-height:calc(100dvh - 120px)">
+<div class="app-content import-page">
 
-<div class="import-section" style="padding:0">
-  <div style="text-align:center;color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto">
-    Importiere deine CSV-Datei mit Vermögensdaten und Budget-Informationen. Die App speichert alle Daten lokal in deinem Browser.
+<div class="input-panel">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap">
+    <div class="section-title" style="margin:0;border:none;padding:0">Vermögenswerte</div>
+    <button class="btn btn-ghost" id="editFieldsBtn" onclick="toggleFieldEditor()" style="margin-left:auto;font-size:11px;padding:6px 12px">Felder bearbeiten</button>
   </div>
-  <label class="import-btn">CSV importieren<input type="file" accept=".csv" id="csvInput" style="display:none"></label>
-  <button class="import-btn" id="resetBtn" style="margin-top:12px;border-style:dashed;background:transparent;cursor:pointer">Alle Daten löschen</button>
-  <div class="csv-msg" id="csvMsg"></div>
+  <div id="fieldEditorPanel" style="display:none;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:16px">
+    <div style="font-size:12px;font-weight:500;margin-bottom:12px;color:var(--text)">Eingabefelder verwalten</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px">Hier kannst du neue Eingabefelder hinzufügen oder bestehende löschen.</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <input type="text" id="newFieldLabel" placeholder="Feldname (z.B. Tagesgeld III)" style="flex:1;min-width:120px;padding:8px 12px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text);font-size:13px;font-family:'IBM Plex Sans'">
+      <select id="newFieldCategory" style="padding:8px 12px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text);font-size:13px;font-family:'IBM Plex Sans'">
+        <option value="cash">Cash</option>
+        <option value="etf">ETF</option>
+        <option value="other">Weitere Liquide Assets</option>
+        <option value="bav">BAV</option>
+        <option value="illiquid">Illiquide Assets</option>
+      </select>
+      <button class="btn btn-primary" onclick="addCustomField()" style="font-size:11px;padding:8px 14px;white-space:nowrap">+ Hinzufügen</button>
+    </div>
+    <div id="customFieldsList" style="display:flex;flex-direction:column;gap:6px"></div>
+    <div style="margin-top:12px">
+      <button class="btn btn-ghost" onclick="toggleFieldEditor()" style="font-size:11px;padding:6px 12px">Schließen</button>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:start">
+    <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);background:rgba(var(--green-rgb),0.08);padding:2px 6px;border-radius:3px;font-weight:500;align-self:start;white-space:nowrap;margin-top:28px">Cash</span>
+    <div class="input-grid" style="margin-bottom:0">
+      <div class="input-group"><label>Tagesgeldkonto</label><input class="num-input" type="text" inputmode="decimal" id="f-tagesgeldkonto" placeholder="0"></div>
+      <div class="input-group"><label>Verrechnungskonto</label><input class="num-input" type="text" inputmode="decimal" id="f-verrechnungskonto" placeholder="0"></div>
+      <div class="input-group"><label>Autos</label><input class="num-input" type="text" inputmode="decimal" id="f-autos" placeholder="0"></div>
+      <div class="input-group"><label>Bargeld</label><input class="num-input" type="text" inputmode="decimal" id="f-bargeld" placeholder="0"></div>
+      <div class="input-group"><label>Lastschriften</label><input class="num-input" type="text" inputmode="decimal" id="f-lastschriften" placeholder="0"></div>
+    </div>
+
+    <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);background:rgba(var(--green-rgb),0.08);padding:2px 6px;border-radius:3px;font-weight:500;align-self:start;white-space:nowrap;margin-top:40px">ETF</span>
+    <div class="input-grid" style="margin-bottom:0;margin-top:12px">
+      <div class="input-group"><label>MSCI ACWI - A1JMDF</label><input class="num-input" type="text" inputmode="decimal" id="f-msci-acwi" placeholder="0 €"><span class="input-units-label">Stückzahl</span><input class="num-input num-input-units" type="text" inputmode="decimal" id="fu-msci-acwi" placeholder="0 Stk."></div>
+      <div class="input-group"><label>DAX UCITS - A0REJQ</label><input class="num-input" type="text" inputmode="decimal" id="f-dax-ucits" placeholder="0 €"><span class="input-units-label">Stückzahl</span><input class="num-input num-input-units" type="text" inputmode="decimal" id="fu-dax-ucits" placeholder="0 Stk."></div>
+      <div class="input-group"><label>MSCI ACWI Kind - LYX00C</label><input class="num-input" type="text" inputmode="decimal" id="f-msci-acwi-papa" placeholder="0 €"><span class="input-units-label">Stückzahl</span><input class="num-input num-input-units" type="text" inputmode="decimal" id="fu-msci-acwi-papa" placeholder="0 Stk."></div>
+      <div class="input-group"><label>ACWI Patenkinder</label><input class="num-input" type="text" inputmode="decimal" id="f-msci-acwi-patenkinder" placeholder="0 €"><span class="input-units-label">Stückzahl</span><input class="num-input num-input-units" type="text" inputmode="decimal" id="fu-msci-acwi-patenkinder" placeholder="0 Stk."></div>
+      <div class="input-group"><label>VWL OSKAR</label><input class="num-input" type="text" inputmode="decimal" id="f-vwl-lukas-oskar" placeholder="0"></div>
+    </div>
+
+    <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);background:rgba(var(--green-rgb),0.08);padding:2px 6px;border-radius:3px;font-weight:500;align-self:start;white-space:nowrap;margin-top:40px">Weitere</span>
+    <div class="input-grid" style="margin-bottom:0;margin-top:12px">
+      <div class="input-group"><label>Bitcoin</label><input class="num-input" type="text" inputmode="decimal" id="f-bitcoin" placeholder="0 €"><span class="input-units-label">Stückzahl</span><input class="num-input num-input-units" type="text" inputmode="decimal" id="fu-bitcoin" placeholder="0 Stk."></div>
+      <div class="input-group"><label>Silber</label><input class="num-input" type="text" inputmode="decimal" id="f-silber" placeholder="0 €"><span class="input-units-label">Unzen (oz)</span><input class="num-input num-input-units" type="text" inputmode="decimal" id="fu-silber" placeholder="0 oz"></div>
+      <div class="input-group"><label>Gold</label><input class="num-input" type="text" inputmode="decimal" id="f-gold" placeholder="0 €"><span class="input-units-label">Unzen (oz)</span><input class="num-input num-input-units" type="text" inputmode="decimal" id="fu-gold" placeholder="0 oz"></div>
+      <div class="input-group"><label>Aktien</label><input class="num-input" type="text" inputmode="decimal" id="f-aktien" placeholder="0"></div>
+    </div>
+
+    <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);background:rgba(var(--green-rgb),0.08);padding:2px 6px;border-radius:3px;font-weight:500;align-self:start;white-space:nowrap;margin-top:40px">BAV</span>
+    <div class="input-grid" style="margin-bottom:0;margin-top:12px">
+      <div class="input-group"><label>Bausparvertrag</label><input class="num-input" type="text" inputmode="decimal" id="f-bausparvertrag" placeholder="0"></div>
+      <div class="input-group"><label>R+V Rente</label><input class="num-input" type="text" inputmode="decimal" id="f-rv-miri" placeholder="0"></div>
+      <div class="input-group"><label>BAV Allianz KomfortDynamik</label><input class="num-input" type="text" inputmode="decimal" id="f-bav-miri" placeholder="0"></div>
+    </div>
+
+    <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);background:rgba(var(--green-rgb),0.08);padding:2px 6px;border-radius:3px;font-weight:500;align-self:start;white-space:nowrap;margin-top:40px">Illiquide</span>
+    <div class="input-grid" style="margin-bottom:0;margin-top:12px">
+      <div class="input-group"><label>Uhren</label><input class="num-input" type="text" inputmode="decimal" id="f-uhren" placeholder="0"></div>
+      <div class="input-group"><label>Auto 2</label><input class="num-input" type="text" inputmode="decimal" id="f-porsche911" placeholder="0"></div>
+      <div class="input-group"><label>Auto 1</label><input class="num-input" type="text" inputmode="decimal" id="f-mercedes" placeholder="0"></div>
+      <div class="input-group"><label>Sonstiges</label><input class="num-input" type="text" inputmode="decimal" id="f-sonstiges" placeholder="0"></div>
+      <div class="input-group"><label>Haus (Marktwert)</label><input class="num-input" type="text" inputmode="decimal" id="f-immobilien" placeholder="0"></div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-title">Verbindlichkeiten</div>
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:start">
+    <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);background:rgba(var(--red-rgb),0.08);padding:2px 6px;border-radius:3px;font-weight:500;align-self:start;white-space:nowrap;margin-top:28px">Kredite</span>
+    <div class="input-grid" style="margin-bottom:0">
+      <div class="input-group"><label>Kredit Haus</label><input class="num-input" type="text" inputmode="decimal" id="f-kredit-haus" placeholder="0"></div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="form-actions" id="formActions">
+    <button class="btn btn-ghost" id="btnEditMode" onclick="enterEditMode()">Bearbeiten</button>
+    <button class="btn btn-primary" id="btnSave" onclick="saveEntry()" style="display:none">Speichern</button>
+    <button class="btn btn-ghost" id="btnCancel" onclick="cancelEditMode()" style="display:none">Abbrechen</button>
+    <span class="save-msg" id="saveMsg">✓ Gespeichert</span>
+  </div>
 </div>
+
+<input type="file" accept=".csv" id="csvInput" style="display:none">
+<div class="csv-msg" id="csvMsg"></div>
+
+<div class="divider"></div>
+<div class="data-action-row">
+  <button class="btn btn-ghost" onclick="exportWealthCSV()">CSV exportieren</button>
+  <label class="btn btn-ghost" style="cursor:pointer">CSV importieren<input type="file" accept=".csv" id="csvInput2" style="display:none" onchange="document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
+  <button class="btn btn-ghost btn-danger" id="resetBtn">Alle Daten löschen</button>
+</div>
+
 </div><!-- /app-content -->
 </div><!-- /page-import -->
 
@@ -893,9 +1068,15 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
 const FIELDS_LIQUID=['cash','etf','bitcoin','aktien','edelmetalle','bav'];
 const FIELDS_ILLIQUID=['uhren','porsche911','mercedes','sonstiges','immobilien'];
 const FIELDS_LIAB=['kredit1','kredit2','immkredit'];
-const LABELS={cash:'Cash',etf:'ETF',bitcoin:'Bitcoin',aktien:'Aktien',edelmetalle:'Edelmetalle',bav:'BAV',uhren:'Uhren',porsche911:'Porsche 911',mercedes:'Mercedes C-Klasse',sonstiges:'Sonstiges',immobilien:'Immobilien'};
+const LABELS={cash:'Cash',etf:'ETF',bitcoin:'Bitcoin',aktien:'Aktien',edelmetalle:'Edelmetalle',bav:'BAV',uhren:'Uhren',porsche911:'Auto 2',mercedes:'Auto 1',sonstiges:'Sonstiges',immobilien:'Immobilien'};
 const UNIT_FIELDS=['msci-acwi','dax-ucits','msci-acwi-papa','msci-acwi-patenkinder','bitcoin','gold','silber'];
 const INPUT_FIELDS_ETF=['msci-acwi','dax-ucits','msci-acwi-papa','msci-acwi-patenkinder','vwl-lukas-oskar'];
+const INPUT_FIELDS_CASH=['tagesgeldkonto','verrechnungskonto','autos','bargeld','lastschriften'];
+const INPUT_FIELDS_OTHER=['aktien','bitcoin','gold','silber'];
+const INPUT_FIELDS_BAV=['bausparvertrag','rv-miri','bav-miri'];
+const INPUT_FIELDS_ILLIQUID=['uhren','porsche911','mercedes','sonstiges','immobilien'];
+const INPUT_FIELDS_LIAB=['kredit-haus'];
+const ALL_INPUT_FIELDS=[...INPUT_FIELDS_CASH,...INPUT_FIELDS_ETF,...INPUT_FIELDS_OTHER,...INPUT_FIELDS_BAV,...INPUT_FIELDS_ILLIQUID,...INPUT_FIELDS_LIAB];
 const MONTH_NAMES=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 const LIVE_PRICE_TICKERS={'msci-acwi':'IUSQ.DE','dax-ucits':'CG1G.DE','msci-acwi-papa':'ACWI.PA','msci-acwi-patenkinder':'ACWI.PA','gold':'XAUEUR','silber':'XAGEUR'};
 
@@ -963,6 +1144,12 @@ function buildPicker(){
         if(budgetPage&&budgetPage.classList.contains('active')){
           renderBudgetPage();
         }
+        // Update data form if it's active
+        const importPage=document.getElementById('page-import');
+        if(importPage&&importPage.classList.contains('active')){
+          setFormReadOnly(true);
+          loadFormForMonth(selectedMonth);
+        }
       });
       grid.appendChild(cell);
     });
@@ -1013,26 +1200,49 @@ function animateSmallValue(el,newText,newNum){
   el.dataset.num=String(newNum);el.dataset.display=newText;
   if(oldText===newText)return;
   if(oldText==='\u2014'||!oldText){el.textContent=newText;return;}
+  const fast=chartInteractionActive;
+  /* During scrub: queue value if animation is running */
+  const animKey='_sva_'+el.id+(el.dataset.assetKey||'');
+  if(fast&&el._svaRunning){
+    el.dataset.queued=newText;
+    return;
+  }
+  if(el._svaTimer){clearTimeout(el._svaTimer);el._svaTimer=null;}
+  delete el.dataset.queued;
   const h=el.offsetHeight||18;
   const upDir=Math.abs(newNum)>=Math.abs(oldNum);
   function charMap(s){const m=new Map();let dp=0;for(let i=s.length-1;i>=0;i--)if(s[i]>='0'&&s[i]<='9'){m.set(dp,s[i]);dp++;}return m;}
   function dpMap(s){const m=new Map();let dp=0;for(let i=s.length-1;i>=0;i--)if(s[i]>='0'&&s[i]<='9'){m.set(i,dp);dp++;}return m;}
   const newDPM=dpMap(newText),oldByDP=charMap(oldText);
-  let html='';
+  const fixedMs=fast?300:0;
+  const getMs=dp=>fixedMs||180+dp*40;
+  let maxMs=0,html='';
   for(let i=0;i<newText.length;i++){
     const ch=newText[i];
     if(!(ch>='0'&&ch<='9')){html+=ch==='<'?'&lt;':ch;continue;}
     const dp=newDPM.get(i),oldCh=oldByDP.has(dp)?oldByDP.get(dp):ch;
     if(oldCh===ch){html+=ch;continue;}
-    const ms=180+dp*40;
+    const ms=getMs(dp);if(ms>maxMs)maxMs=ms;
     const row0=upDir?oldCh:ch,row1=upDir?ch:oldCh;
     const startY=upDir?'0':`-${h}px`,endY=upDir?`-${h}px`:'0';
     html+=`<span class="kpi-slot" style="height:${h}px"><span class="kpi-inner" style="transform:translateY(${startY})" data-end="${endY}" data-ms="${ms}"><span style="line-height:${h}px;height:${h}px;display:block">${row0}</span><span style="line-height:${h}px;height:${h}px;display:block">${row1}</span></span></span>`;
   }
   el.innerHTML=html;
+  el._svaRunning=true;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     el.querySelectorAll('.kpi-inner').forEach(inner=>{inner.style.transition=`transform ${inner.dataset.ms}ms cubic-bezier(.4,0,.2,1)`;inner.style.transform=`translateY(${inner.dataset.end})`;});
-    setTimeout(()=>{el.textContent=newText;el.dataset.display=newText;},400);
+    el._svaTimer=setTimeout(()=>{
+      const final=el.dataset.queued||newText;
+      el.textContent=final;
+      el.dataset.display=final;
+      delete el.dataset.queued;
+      el._svaTimer=null;
+      el._svaRunning=false;
+      if(final!==newText){
+        const qNum=parseFloat(el.dataset.num||'0');
+        animateSmallValue(el,final,qNum);
+      }
+    },maxMs+50);
   }));
 }
 
@@ -1370,20 +1580,20 @@ function handleCsvUpload(ev){
             else if(x==='lastschriften')dk='lastschriften';
             else if(x==='msci acwi - a1jmdf')dk='msci-acwi';
             else if(x==='dax ucits - a0rejq')dk='dax-ucits';
-            else if(x==='msci acwi papa - lyx00c')dk='msci-acwi-papa';
+            else if(x==='msci acwi papa - lyx00c'||x==='msci acwi kind - lyx00c')dk='msci-acwi-papa';
             else if(x==='msci acwi patenkinder - lyx00c')dk='msci-acwi-patenkinder';
-            else if(x==='vwl lukas oskar')dk='vwl-lukas-oskar';
+            else if(x==='vwl lukas oskar'||x==='vwl oskar')dk='vwl-lukas-oskar';
             else if(x==='aktien')dk='aktien';
             else if(x==='bitcoin')dk='bitcoin';
             else if(x==='gold')dk='gold';
             else if(x==='silber')dk='silber';
             else if(x==='edelmetalle')dk='gold';
             else if(x==='bausparvertrag')dk='bausparvertrag';
-            else if(x==='r+v rente miri'||x==='r+v lebensversicherung / rente miri')dk='rv-miri';
-            else if(x==='bav miri - allianz komfortdynamik')dk='bav-miri';
+            else if(x==='r+v rente miri'||x==='r+v lebensversicherung / rente miri'||x==='r+v rente')dk='rv-miri';
+            else if(x==='bav miri - allianz komfortdynamik'||x==='bav allianz komfortdynamik')dk='bav-miri';
             else if(x==='uhren')dk='uhren';
-            else if(x==='porsche 911')dk='porsche911';
-            else if(x==='mercedes c-klasse')dk='mercedes';
+            else if(x==='porsche 911'||x==='auto 2')dk='porsche911';
+            else if(x==='mercedes c-klasse'||x==='auto 1')dk='mercedes';
             else if(x==='sonstiges')dk='sonstiges';
             else if(x==='haus'||x==='haus (marktwert)')dk='immobilien';
             else if(x==='kredit haus')dk='kredit-haus';
@@ -1391,7 +1601,7 @@ function handleCsvUpload(ev){
             let uk=null;
             if(x==='stk msci acwi')uk='msci-acwi';
             else if(x==='stk dax ucits')uk='dax-ucits';
-            else if(x==='stk msci acwi papa')uk='msci-acwi-papa';
+            else if(x==='stk msci acwi papa'||x==='stk msci acwi kind')uk='msci-acwi-papa';
             else if(x==='stk msci acwi patenkinder')uk='msci-acwi-patenkinder';
             else if(x==='stk bitcoin')uk='bitcoin';
             else if(x==='oz gold')uk='gold';
@@ -1646,7 +1856,7 @@ function updateLiveDot(ok){
   else{dot.style.background='var(--red)';lbl.textContent='Offline';}
 }
 
-const LIVE_LABELS={'bitcoin':'Bitcoin','msci-acwi':'MSCI ACWI','dax-ucits':'DAX UCITS','msci-acwi-papa':'MSCI ACWI Papa','msci-acwi-patenkinder':'MSCI ACWI PK','gold':'Gold','silber':'Silber'};
+const LIVE_LABELS={'bitcoin':'Bitcoin','msci-acwi':'MSCI ACWI','dax-ucits':'DAX UCITS','msci-acwi-papa':'MSCI ACWI Kind','msci-acwi-patenkinder':'MSCI ACWI PK','gold':'Gold','silber':'Silber'};
 let _scrollY=0;
 let _touchStartY=0;
 
@@ -1761,9 +1971,9 @@ const ASSET_DETAIL_MAP={
   'etf':[
     {key:'msci-acwi',label:'MSCI ACWI - A1JMDF',unit:'msci-acwi'},
     {key:'dax-ucits',label:'DAX UCITS - A0REJQ',unit:'dax-ucits'},
-    {key:'msci-acwi-papa',label:'MSCI ACWI Papa - LYX00C',unit:'msci-acwi-papa'},
+    {key:'msci-acwi-papa',label:'MSCI ACWI Kind - LYX00C',unit:'msci-acwi-papa'},
     {key:'msci-acwi-patenkinder',label:'MSCI ACWI PK - LYX00C',unit:'msci-acwi-patenkinder'},
-    {key:'vwl-lukas-oskar',label:'VWL Lukas OSKAR',unit:null}
+    {key:'vwl-lukas-oskar',label:'VWL OSKAR',unit:null}
   ],
   'bitcoin':[{key:'bitcoin',label:'Bitcoin',unit:'bitcoin'}],
   'aktien':[{key:'aktien',label:'Aktien',unit:null}],
@@ -1773,14 +1983,14 @@ const ASSET_DETAIL_MAP={
   ],
   'bav':[
     {key:'bausparvertrag',label:'Bausparvertrag',unit:null},
-    {key:'rv-miri',label:'R+V Rente Miri',unit:null},
-    {key:'bav-miri',label:'BAV Miri - Allianz',unit:null}
+    {key:'rv-miri',label:'R+V Rente',unit:null},
+    {key:'bav-miri',label:'BAV Allianz',unit:null}
   ],
   'uhren':[{key:'uhren',label:'Uhren',unit:null}],
   'sonstiges':[
     {key:'sonstiges',label:'Sonstiges',unit:null},
-    {key:'porsche911',label:'Porsche 911',unit:null},
-    {key:'mercedes',label:'Mercedes C-Klasse',unit:null}
+    {key:'porsche911',label:'Auto 2',unit:null},
+    {key:'mercedes',label:'Auto 1',unit:null}
   ],
   'immobilien':[
     {key:'immobilien',label:'Haus (Marktwert)',unit:null},
@@ -2052,11 +2262,25 @@ function setupChartInteraction(){
   canvas.addEventListener('touchend',onEnd,{passive:false});
   canvas.addEventListener('touchcancel',onEnd,{passive:false});
 
+  /* Mouse interaction (desktop / iPad pointer) */
+  const onMouseMove=e=>{
+    chartInteractionActive=true;
+    showValueAtIndex(getIndexFromX(e.clientX));
+  };
+  const onMouseLeave=e=>{
+    if(!chartInteractionActive)return;
+    restoreCurrentValue();
+  };
+  canvas.addEventListener('mousemove',onMouseMove);
+  canvas.addEventListener('mouseleave',onMouseLeave);
+
   _chartCleanup=()=>{
     canvas.removeEventListener('touchstart',onStart);
     canvas.removeEventListener('touchmove',onMove);
     canvas.removeEventListener('touchend',onEnd);
     canvas.removeEventListener('touchcancel',onEnd);
+    canvas.removeEventListener('mousemove',onMouseMove);
+    canvas.removeEventListener('mouseleave',onMouseLeave);
     crossV.remove();crossH.remove();crossDot.remove();
     _chartCleanup=null;
   };
@@ -2196,18 +2420,45 @@ function setupKPIClickHandlers(){
 
 /* ── Bottom Navigation ── */
 function setupBottomNav(){
+  /* Bottom nav (mobile) */
   const btns=document.querySelectorAll('.nav-btn');
   btns.forEach(btn=>{
     btn.addEventListener('click',()=>{
       const page=btn.dataset.page;
-      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-      document.getElementById('page-'+page).classList.add('active');
-      btns.forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      if(page==='budget')renderBudgetPage();
-      window.scrollTo(0,0);
+      navigateToPage(page);
     });
   });
+
+  /* Sidebar (iPad) */
+  const sidebar=document.getElementById('sidebar');
+  const overlay=document.getElementById('sidebarOverlay');
+  const toggle=document.getElementById('sidebarToggle');
+  const close=document.getElementById('sidebarClose');
+
+  function openSidebar(){sidebar.classList.add('open');overlay.classList.add('show');}
+  function closeSidebar(){sidebar.classList.remove('open');overlay.classList.remove('show');}
+
+  toggle.addEventListener('click',openSidebar);
+  close.addEventListener('click',closeSidebar);
+  overlay.addEventListener('click',closeSidebar);
+
+  document.querySelectorAll('.sidebar-item').forEach(item=>{
+    item.addEventListener('click',()=>{
+      navigateToPage(item.dataset.page);
+      closeSidebar();
+    });
+  });
+}
+
+function navigateToPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  /* Sync both navs */
+  document.querySelectorAll('.nav-btn').forEach(b=>{b.classList.toggle('active',b.dataset.page===page);});
+  document.querySelectorAll('.sidebar-item').forEach(b=>{b.classList.toggle('active',b.dataset.page===page);});
+  if(page==='budget')renderBudgetPage();
+  if(page==='import')loadFormForMonth(selectedMonth);
+  window.scrollTo(0,0);
 }
 
 /* ── Budget Module (CSV-driven) ── */
@@ -3006,6 +3257,312 @@ function renderBudgetBreakdown(c){
   });
 }
 
+/* ── Data Entry Functions ── */
+let customFields = [];
+let _editMode = false;
+
+function setFormReadOnly(ro){
+  _editMode=!ro;
+  document.querySelectorAll('#page-import .num-input').forEach(inp=>{
+    inp.readOnly=ro;
+    inp.style.opacity=ro?'0.6':'1';
+  });
+  const btnEdit=document.getElementById('btnEditMode');
+  const btnSave=document.getElementById('btnSave');
+  const btnCancel=document.getElementById('btnCancel');
+  const editFieldsBtn=document.getElementById('editFieldsBtn');
+  if(btnEdit) btnEdit.style.display=ro?'':'none';
+  if(btnSave) btnSave.style.display=ro?'none':'';
+  if(btnCancel) btnCancel.style.display=ro?'none':'';
+  if(editFieldsBtn) editFieldsBtn.style.display=ro?'none':'';
+  /* Felder-Editor schließen wenn readonly */
+  if(ro){
+    const panel=document.getElementById('fieldEditorPanel');
+    if(panel) panel.style.display='none';
+    if(editFieldsBtn) editFieldsBtn.textContent='Felder bearbeiten';
+  }
+}
+
+function enterEditMode(){
+  setFormReadOnly(false);
+}
+
+function cancelEditMode(){
+  setFormReadOnly(true);
+  loadFormForMonth(selectedMonth);
+}
+
+function formatNumberWithThousands(num){
+  if(!num&&num!==0)return '';
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+}
+
+function parseNumberWithThousands(str){
+  if(!str)return 0;
+  return parseFloat(str.toString().replace(/\./g,'').replace(',','.'))||0;
+}
+
+function parseUnitNumber(str){
+  if(!str)return 0;
+  const clean=str.toString().trim().replace(/[^\d,\.]/g,'');
+  if(clean.includes(',')) return parseFloat(clean.replace(/\./g,'').replace(',','.'))||0;
+  return parseFloat(clean)||0;
+}
+
+function toggleFieldEditor(){
+  const panel=document.getElementById('fieldEditorPanel');
+  const btn=document.getElementById('editFieldsBtn');
+  const isVisible=panel.style.display!=='none';
+  panel.style.display=isVisible?'none':'block';
+  btn.textContent=isVisible?'Felder bearbeiten':'Bearbeiten schließen';
+  if(!isVisible) renderCustomFieldsList();
+}
+
+function addCustomField(){
+  const label=document.getElementById('newFieldLabel').value.trim();
+  const category=document.getElementById('newFieldCategory').value;
+  if(!label) return alert('Bitte einen Feldnamen eingeben');
+  const fieldId='custom-'+Date.now();
+  customFields.push({id:fieldId,label,category});
+  localStorage.setItem('customFields',JSON.stringify(customFields));
+  document.getElementById('newFieldLabel').value='';
+  renderCustomFieldsList();
+  rebuildInputForm();
+  /* Neues Feld sofort editierbar machen wenn im Edit-Mode */
+  if(_editMode){
+    const newInput=document.getElementById('f-'+fieldId);
+    if(newInput){newInput.readOnly=false;newInput.style.opacity='1';}
+  }
+}
+
+function removeCustomField(fieldId){
+  const field=customFields.find(f=>f.id===fieldId);
+  if(!field) return;
+  if(!confirm(`Eingabefeld "${field.label}" wirklich entfernen?\n\nBereits erfasste Werte bleiben in der Historie erhalten.`)) return;
+  customFields=customFields.filter(f=>f.id!==fieldId);
+  localStorage.setItem('customFields',JSON.stringify(customFields));
+  const inputEl=document.getElementById('f-'+fieldId);
+  if(inputEl&&inputEl.parentElement) inputEl.parentElement.remove();
+  renderCustomFieldsList();
+}
+
+function renderCustomFieldsList(){
+  const list=document.getElementById('customFieldsList');
+  if(customFields.length===0){
+    list.innerHTML='<div style="font-size:11px;color:var(--muted);padding:8px">Keine benutzerdefinierten Felder vorhanden</div>';
+    return;
+  }
+  const categoryNames={cash:'Cash',etf:'ETF',other:'Weitere',bav:'BAV',illiquid:'Illiquide'};
+  list.innerHTML=customFields.map(f=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg);border:1px solid var(--border);border-radius:4px">
+      <span style="flex:1;font-size:13px;color:var(--text)">${f.label}</span>
+      <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em">${categoryNames[f.category]}</span>
+      <button onclick="removeCustomField('${f.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;padding:0 4px" aria-label="Feld entfernen">×</button>
+    </div>
+  `).join('');
+}
+
+function rebuildInputForm(){
+  const catMap={
+    cash:'Cash', etf:'ETF', other:'Weitere', bav:'BAV', illiquid:'Illiquide'
+  };
+  const grids=document.querySelectorAll('#page-import .input-grid');
+  /* grids order: 0=Cash, 1=ETF, 2=Weitere, 3=BAV, 4=Illiquide, 5=Kredite */
+  const catToGrid={cash:grids[0],etf:grids[1],other:grids[2],bav:grids[3],illiquid:grids[4]};
+
+  Object.keys(catToGrid).forEach(cat=>{
+    const grid=catToGrid[cat];
+    if(!grid) return;
+    const customInCat=customFields.filter(f=>f.category===cat);
+    customInCat.forEach(cf=>{
+      if(grid.querySelector('#f-'+cf.id)) return;
+      const div=document.createElement('div');
+      div.className='input-group';
+      div.innerHTML=`<label>${cf.label}</label><input class="num-input" type="text" inputmode="decimal" id="f-${cf.id}" placeholder="0">`;
+      grid.appendChild(div);
+      const input=div.querySelector('input');
+      input.addEventListener('blur',function(){
+        const val=parseNumberWithThousands(this.value);
+        this.value=val>0?formatNumberWithThousands(val):'';
+      });
+      input.addEventListener('focus',function(){
+        const val=parseNumberWithThousands(this.value);
+        this.value=val>0?val:'';
+      });
+    });
+  });
+}
+
+function initCustomFields(){
+  try{
+    const stored=localStorage.getItem('customFields');
+    if(stored) customFields=JSON.parse(stored);
+    rebuildInputForm();
+  }catch(e){console.error('Error loading custom fields:',e);}
+}
+
+function saveEntry(){
+  const ym=selectedMonth;
+  if(!ym)return;
+  const d=loadData();
+
+  const inputVals={};
+  ALL_INPUT_FIELDS.forEach(k=>{
+    const el=document.getElementById('f-'+k);
+    if(el) inputVals[k]=parseNumberWithThousands(el.value);
+  });
+  customFields.forEach(cf=>{
+    const el=document.getElementById('f-'+cf.id);
+    if(el) inputVals[cf.id]=parseNumberWithThousands(el.value);
+  });
+
+  const e={};
+  e.cash=INPUT_FIELDS_CASH.reduce((sum,k)=>sum+(inputVals[k]||0),0);
+  e.etf=INPUT_FIELDS_ETF.reduce((sum,k)=>sum+(inputVals[k]||0),0);
+  e.aktien=inputVals['aktien']||0;
+  e.bitcoin=inputVals['bitcoin']||0;
+  e.edelmetalle=(inputVals['gold']||0)+(inputVals['silber']||0);
+  e.bav=INPUT_FIELDS_BAV.reduce((sum,k)=>sum+(inputVals[k]||0),0);
+  e.uhren=inputVals['uhren']||0;
+  e.porsche911=inputVals['porsche911']||0;
+  e.mercedes=inputVals['mercedes']||0;
+  e.sonstiges=inputVals['sonstiges']||0;
+  e.immobilien=inputVals['immobilien']||0;
+  e.kredit1=0;
+  e.kredit2=0;
+  e.immkredit=inputVals['kredit-haus']||0;
+
+  /* Custom Fields zu Kategorien addieren */
+  customFields.forEach(cf=>{
+    const val=inputVals[cf.id]||0;
+    if(cf.category==='cash') e.cash+=val;
+    else if(cf.category==='etf') e.etf+=val;
+    else if(cf.category==='other') e.aktien+=val;
+    else if(cf.category==='bav') e.bav+=val;
+    else if(cf.category==='illiquid') e.sonstiges+=val;
+  });
+
+  e._details=inputVals;
+
+  const unitVals={};
+  UNIT_FIELDS.forEach(k=>{
+    const el=document.getElementById('fu-'+k);
+    if(el) unitVals[k]=parseUnitNumber(el.value)||0;
+  });
+  e._units=unitVals;
+
+  d[ym]=e;
+  saveData(d);
+  setFormReadOnly(true);
+  const m=document.getElementById('saveMsg');
+  m.classList.add('show');
+  setTimeout(()=>m.classList.remove('show'),2500);
+  render();
+}
+
+function clearForm(){
+  ALL_INPUT_FIELDS.forEach(k=>{const el=document.getElementById('f-'+k);if(el)el.value='';});
+  UNIT_FIELDS.forEach(k=>{const el=document.getElementById('fu-'+k);if(el)el.value='';});
+  customFields.forEach(cf=>{const el=document.getElementById('f-'+cf.id);if(el)el.value='';});
+}
+
+function loadFormForMonth(ym){
+  const e=(loadData())[ym]||{};
+
+  if(e._details){
+    ALL_INPUT_FIELDS.forEach(k=>{
+      const el=document.getElementById('f-'+k);
+      if(el){const val=e._details[k]||0;el.value=val>0?formatNumberWithThousands(val):'';}
+    });
+    customFields.forEach(cf=>{
+      const el=document.getElementById('f-'+cf.id);
+      if(el){const val=e._details[cf.id]||0;el.value=val>0?formatNumberWithThousands(val):'';}
+    });
+    const u=e._units||{};
+    UNIT_FIELDS.forEach(k=>{
+      const el=document.getElementById('fu-'+k);
+      if(el){const v=u[k]||0;el.value=v>0?String(v):'';}
+    });
+  } else if(Object.keys(e).length>0){
+    ALL_INPUT_FIELDS.forEach(k=>{const el=document.getElementById('f-'+k);if(el)el.value='';});
+    customFields.forEach(cf=>{const el=document.getElementById('f-'+cf.id);if(el)el.value='';});
+    if(e.cash) document.getElementById('f-tagesgeldkonto').value=formatNumberWithThousands(e.cash);
+    if(e.etf) document.getElementById('f-msci-acwi').value=formatNumberWithThousands(e.etf);
+    if(e.aktien) document.getElementById('f-aktien').value=formatNumberWithThousands(e.aktien);
+    if(e.bitcoin) document.getElementById('f-bitcoin').value=formatNumberWithThousands(e.bitcoin);
+    if(e.edelmetalle) document.getElementById('f-gold').value=formatNumberWithThousands(e.edelmetalle);
+    if(e.bav) document.getElementById('f-bausparvertrag').value=formatNumberWithThousands(e.bav);
+    if(e.uhren) document.getElementById('f-uhren').value=formatNumberWithThousands(e.uhren);
+    if(e.sonstiges) document.getElementById('f-sonstiges').value=formatNumberWithThousands(e.sonstiges);
+    if(e.immobilien) document.getElementById('f-immobilien').value=formatNumberWithThousands(e.immobilien);
+    if(e.immkredit) document.getElementById('f-kredit-haus').value=formatNumberWithThousands(e.immkredit);
+    UNIT_FIELDS.forEach(k=>{const el=document.getElementById('fu-'+k);if(el)el.value='';});
+  } else {
+    ALL_INPUT_FIELDS.forEach(k=>{const el=document.getElementById('f-'+k);if(el)el.value='';});
+    customFields.forEach(cf=>{const el=document.getElementById('f-'+cf.id);if(el)el.value='';});
+    UNIT_FIELDS.forEach(k=>{const el=document.getElementById('fu-'+k);if(el)el.value='';});
+  }
+}
+
+function showCsvMsg(m,t){const el=document.getElementById('csvMsg');el.textContent=m;el.style.display='block';el.style.color=t==='error'?'var(--red)':'var(--green)';setTimeout(()=>el.style.display='none',5000);}
+
+function exportWealthCSV(){
+  const wealthData=loadData();
+  if(!wealthData||Object.keys(wealthData).length===0){
+    alert('Keine Vermögensdaten zum Exportieren vorhanden.');
+    return;
+  }
+  /* Basis-Header */
+  let header='Datum;Tagesgeldkonto;Verrechnungskonto;Autos;Bargeld;Lastschriften;MSCI ACWI - A1JMDF;DAX UCITS - A0REJQ;MSCI ACWI Kind - LYX00C;MSCI ACWI Patenkinder - LYX00C;VWL OSKAR;Aktien;Bitcoin;Gold;Silber;Bausparvertrag;R+V Rente;BAV Allianz KomfortDynamik;Uhren;Auto 2;Auto 1;Sonstiges;Haus (Marktwert);Kredit Haus;Stk MSCI ACWI;Stk DAX UCITS;Stk MSCI ACWI Kind;Stk MSCI ACWI Patenkinder;Stk Bitcoin;oz Gold;oz Silber';
+  /* Custom Fields an Header anhängen */
+  customFields.forEach(cf=>{header+=';'+cf.label;});
+  let csv=header+'\n';
+  const fmtUnit=v=>String(v||0).replace('.',',');
+  Object.keys(wealthData).sort().forEach(ym=>{
+    const e=wealthData[ym];
+    const d=e._details||{};
+    const u=e._units||{};
+    const hausWert=d.immobilien||d.haus||e.immobilien||0;
+    let row=`${ym};${d.tagesgeldkonto||0};${d.verrechnungskonto||0};${d.autos||0};${d.bargeld||0};${d.lastschriften||0};${d['msci-acwi']||0};${d['dax-ucits']||0};${d['msci-acwi-papa']||0};${d['msci-acwi-patenkinder']||0};${d['vwl-lukas-oskar']||0};${d.aktien||0};${d.bitcoin||0};${d.gold||0};${d.silber||0};${d.bausparvertrag||0};${d['rv-miri']||0};${d['bav-miri']||0};${d.uhren||0};${d.porsche911||0};${d.mercedes||0};${d.sonstiges||0};${hausWert};${d['kredit-haus']||e.immkredit||0};${fmtUnit(u['msci-acwi'])};${fmtUnit(u['dax-ucits'])};${fmtUnit(u['msci-acwi-papa'])};${fmtUnit(u['msci-acwi-patenkinder'])};${fmtUnit(u['bitcoin'])};${fmtUnit(u['gold'])};${fmtUnit(u['silber'])}`;
+    customFields.forEach(cf=>{row+=';'+(d[cf.id]||0);});
+    csv+=row+'\n';
+  });
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='vermögensdaten_'+new Date().toISOString().split('T')[0]+'.csv';
+  a.style.display='none';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  showCsvMsg('✓ CSV exportiert.','ok');
+}
+
+function initDataEntryForm(){
+  /* Custom Fields laden und ins Formular einfügen */
+  initCustomFields();
+
+  /* Tausendertrennzeichen für alle Eingabefelder */
+  ALL_INPUT_FIELDS.forEach(k=>{
+    const input=document.getElementById('f-'+k);
+    if(!input)return;
+    input.addEventListener('blur',function(){
+      const val=parseNumberWithThousands(this.value);
+      this.value=val>0?formatNumberWithThousands(val):'';
+    });
+    input.addEventListener('focus',function(){
+      const val=parseNumberWithThousands(this.value);
+      this.value=val>0?val:'';
+    });
+  });
+
+  /* Lade Formular für aktuellen Monat */
+  loadFormForMonth(selectedMonth);
+
+  /* Starte im Readonly-Modus */
+  setFormReadOnly(true);
+}
+
 /* ── Init ── */
 function initApp(){
   console.log('initApp() started');
@@ -3091,6 +3648,9 @@ function initApp(){
     
     /* Bottom Nav */
     setupBottomNav();
+    
+    /* Data Entry Form */
+    initDataEntryForm();
     
     /* Budget Page */
     
