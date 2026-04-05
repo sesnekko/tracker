@@ -1,0 +1,103 @@
+﻿Typ;Monat;Tagesgeld;Girokonto;Bargeld;MSCI World - A0RPWH;S&P 500 - A0YEDG;Bitcoin;Gold;Bausparvertrag;Rente Privat;Wohnung (Marktwert);Kredit Wohnung;Stk MSCI World;Stk S&P 500;Stk Bitcoin;oz Gold
+Vermoegen;2024-01;8000;3200;500;24200;8000;12000;0;1800;2200;280000;235000;122;42;0,25;0
+Vermoegen;2024-02;8000;2800;500;24800;8200;13500;0;1820;2200;280000;234000;124;43;0,26;0
+Vermoegen;2024-03;8300;3500;400;25000;8800;18000;0;1840;2200;280000;233000;126;45;0,28;0
+Vermoegen;2024-04;8250;2900;600;25500;9100;21000;0;1860;2400;280000;232000;128;46;0,29;0
+Vermoegen;2024-05;8000;3100;500;26200;8900;19000;0;1880;2400;280000;231000;130;47;0,3;0
+Vermoegen;2024-06;8600;2700;500;27000;9400;20500;0;1900;2400;280000;230000;132;48;0,31;0
+Vermoegen;2024-07;8600;3400;400;27500;9800;19500;0;1920;2400;280000;229000;134;49;0,32;0
+Vermoegen;2024-08;9000;2600;500;28200;10100;22000;0;1940;2400;280000;228000;136;50;0,33;0
+Vermoegen;2024-09;9000;3000;500;29000;9900;18500;0;1960;2400;280000;227000;138;51;0,34;0
+Vermoegen;2024-10;9000;3300;400;29500;10400;21000;0;1980;2400;280000;226000;140;52;0,35;0
+Vermoegen;2024-11;9000;2500;500;30020;10700;25000;0;2000;2400;280000;225000;142;53;0,36;0
+Vermoegen;2024-12;9500;3800;600;30625;11200;28000;0;2020;2400;285000;224000;144;54;0,37;0
+Vermoegen;2025-01;9500;3000;500;31231;11500;26000;0;2040;2400;285000;223000;146;55;0,38;0
+Vermoegen;2025-02;9500;2700;400;31836;12000;30000;0;2060;2400;285000;222000;148;56;0,39;0
+Vermoegen;2025-03;8500;3200;500;32442;12400;28000;0;2080;2400;285000;221000;150;57;0,4;0
+Vermoegen;2025-04;8500;2900;500;33047;12800;32000;0;2100;2600;285000;220000;152;58;0,41;0
+Vermoegen;2025-05;8500;3500;400;33653;12600;29000;0;2120;2600;285000;219000;154;59;0,42;0
+Vermoegen;2025-06;9000;2800;500;34258;13000;34000;0;2140;2600;285000;218000;156;60;0,43;0
+Vermoegen;2025-07;9000;3100;500;34864;13400;31000;0;2160;2600;285000;217000;158;61;0,44;0
+Vermoegen;2025-08;9000;2600;400;35469;13800;35000;0;2180;2600;285000;216000;160;62;0,45;0
+Vermoegen;2025-09;9350;3400;500;36075;14000;30000;0;2200;2600;290000;215000;162;63;0,46;0
+Vermoegen;2025-10;9350;2900;500;36680;14400;33000;0;2220;2600;290000;214000;164;64;0,47;0
+Vermoegen;2025-11;9350;3200;400;37285;14800;36000;0;2240;2600;290000;213000;166;65;0,48;0
+Vermoegen;2025-12;10000;3600;500;37891;15200;34000;0;2260;2600;290000;212000;168;66;0,49;0
+Vermoegen;2026-01;10000;3000;500;38496;15600;38000;0;2280;2800;290000;211000;170;67;0,5;0
+Vermoegen;2026-02;10000;2800;400;39102;16000;36000;0;2300;2800;290000;210000;172;68;0,51;0
+Vermoegen;2026-03;10000;3300;500;39707;16500;40000;4629;2320;2800;295000;209000;174;69;0,52;2
+Vermoegen;2026-04;10000;3100;500;40313;16800;38000;8104;2340;2800;295000;208000;176;70;0,53;3
+;;;;;;;;;;;;;;;;
+Typ;Spalte;Gruppe;Kategorie;Ticker;;;;;;;;;;;;
+Gruppe;Tagesgeld;Cash;cash;;;;;;;;;;;;;
+Gruppe;Girokonto;Cash;cash;;;;;;;;;;;;;
+Gruppe;Bargeld;Cash;cash;;;;;;;;;;;;;
+Gruppe;MSCI World - A0RPWH;ETF;etf;EUNL.DE;;;;;;;;;;;;
+Gruppe;S&P 500 - A0YEDG;ETF;etf;SXR8.DE;;;;;;;;;;;;
+Gruppe;Bitcoin;Bitcoin;other;BTC;;;;;;;;;;;;
+Gruppe;Gold;Edelmetalle;other;GC=F;;;;;;;;;;;;
+Gruppe;Bausparvertrag;BAV;bav;;;;;;;;;;;;;
+Gruppe;Rente Privat;BAV;bav;;;;;;;;;;;;;
+Gruppe;Wohnung (Marktwert);Immobilien;illiquid;;;;;;;;;;;;;
+Gruppe;Kredit Wohnung;Immobilien;liab;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+Typ;Kategorie;Unterkategorie;Bezeichnung;Jan;Feb;Mar;Apr;Mai;Jun;Jul;Aug;Sep;Okt;Nov;Dez;
+Budget;Einkommen;;;;;;;;;;;;;;;
+Budget;Einkommen;;Nettogehalt Max;3200;3200;3200;3200;3200;3200;3200;3200;3200;3200;3200;3200;
+Budget;Einkommen;;Nettogehalt Anna;1800;1800;1800;1800;1800;1800;1800;1800;1800;1800;1800;1800;
+Budget;Einkommen;;Kindergeld;250;250;250;250;250;250;250;250;250;250;250;250;
+Budget;Fixe Ausgaben;;;;;;;;;;;;;;;
+Budget;Fixe Ausgaben;Wohnen;Tilgung;950;950;950;950;950;950;950;950;950;950;950;950;
+Budget;Fixe Ausgaben;Wohnen;Strom;85;85;85;85;85;85;85;85;85;85;85;85;
+Budget;Fixe Ausgaben;Wohnen;Heizung;70;70;70;70;70;70;70;70;70;70;70;70;
+Budget;Fixe Ausgaben;Wohnen;Internet;30;30;30;30;30;30;30;30;30;30;30;30;
+Budget;Fixe Ausgaben;Wohnen;GEZ;18;18;18;18;18;18;18;18;18;18;18;18;
+Budget;Fixe Ausgaben;Versicherungen;Haftpflicht;8;8;8;8;8;8;8;8;8;8;8;8;
+Budget;Fixe Ausgaben;Versicherungen;Hausrat;15;15;15;15;15;15;15;15;15;15;15;15;
+Budget;Fixe Ausgaben;Versicherungen;BU;65;65;65;65;65;65;65;65;65;65;65;65;
+Budget;Fixe Ausgaben;Verträge;Handy Max;22;22;22;22;22;22;22;22;22;22;22;22;
+Budget;Fixe Ausgaben;Verträge;Handy Anna;18;18;18;18;18;18;18;18;18;18;18;18;
+Budget;Fixe Ausgaben;Verträge;Streaming;25;25;25;25;25;25;25;25;25;25;25;25;
+Budget;Fixe Ausgaben;Verträge;Fitness Max;40;40;40;40;40;40;40;40;40;40;40;40;
+Budget;Fixe Ausgaben;Verträge;Fitness Anna;35;35;35;35;35;35;35;35;35;35;35;35;
+Budget;Fixe Ausgaben;Auto;Versicherung;120;120;120;120;120;120;120;120;120;120;120;120;
+Budget;Fixe Ausgaben;Auto;Tanken;150;150;150;150;150;150;150;150;150;150;150;150;
+Budget;Variable Ausgaben;;;;;;;;;;;;;;;
+Budget;Variable Ausgaben;;Lebensmittel;700;700;700;700;700;700;700;700;700;700;700;700;
+Budget;Variable Ausgaben;;Freizeit;200;200;200;200;200;200;200;200;200;200;200;200;
+Budget;Variable Ausgaben;;Drogerie;60;60;60;60;60;60;60;60;60;60;60;60;
+Budget;Sparen;;;;;;;;;;;;;;;
+Budget;Sparen;;ETF Sparpläne;500;500;500;500;500;500;500;500;500;500;500;500;
+Budget;Sparen;;BTC Sparplan;50;50;50;50;50;50;50;50;50;50;50;50;
+;;;;;;;;;;;;;;;;
+Typ;Funktion;Anbieter;Empfaenger;IBAN;;;;;;;;;;;;
+Konto;Gehaltskonto Max;;;DE12 3456 7890 1234 5678 90;;;;;;;;;;;;
+Konto;Gehaltskonto Anna;;;DE98 7654 3210 9876 5432 10;;;;;;;;;;;;
+Konto;Haushaltskonto;;;DE45 6789 0123 4567 8901 23;;;;;;;;;;;;
+Konto;Gem. Lastschriften;;;DE78 9012 3456 7890 1234 56;;;;;;;;;;;;
+Konto;Depot Verrechnungskonto;;;DE23 4567 8901 2345 6789 01;;;;;;;;;;;;
+Konto;Depot Tagesgeld;;;DE56 7890 1234 5678 9012 34;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+Typ;Von_Konto;An_Verwendungszweck;Betrag;;;;;;;;;;;;;
+Dauerauftrag;Gehaltskonto Max;Haushaltskonto;1200;;;;;;;;;;;;;
+Dauerauftrag;Gehaltskonto Max;Gem. Lastschriften;1100;;;;;;;;;;;;;
+Dauerauftrag;Gehaltskonto Max;Depot Verrechnungskonto;550;;;;;;;;;;;;;
+Dauerauftrag;Gehaltskonto Anna;Haushaltskonto;800;;;;;;;;;;;;;
+Dauerauftrag;Gehaltskonto Anna;Gem. Lastschriften;400;;;;;;;;;;;;;
+Dauerauftrag;Kindergeld;Haushaltskonto;250;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+Typ;Schlüssel;Wert;;;;;;;;;;;;;;
+Prognose;birth-year;1985;;;;;;;;;;;;;;
+Prognose;life-expect;85;;;;;;;;;;;;;;
+Prognose;inflation;2;;;;;;;;;;;;;;
+Prognose;save-until;45;;;;;;;;;;;;;;
+Prognose;withdraw-from;60;;;;;;;;;;;;;;
+Prognose;monthly-withdraw;2500;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+Typ;Asset;Rendite;Volatilität;Sparrate;VolDyn;RetDyn;;;;;;;;;;
+Prognose-Asset;Cash;0;0;0;0;0;;;;;;;;;;
+Prognose-Asset;ETF;7;15;500;0;0;;;;;;;;;;
+Prognose-Asset;Bitcoin;15;55;50;-3;-2;;;;;;;;;;
+Prognose-Asset;Edelmetalle;3;15;0;0;0;;;;;;;;;;
+Prognose-Asset;BAV;0;0;25;0;0;;;;;;;;;;
+Prognose-Asset;Immobilien;2;8;950;0;0;;;;;;;;;;
