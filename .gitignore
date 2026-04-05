@@ -1,0 +1,17 @@
+# Sensible Daten
+*.csv
+!demo_export.csv
+*.mov
+*.mp4
+
+# Cloudflare Worker
+cors-proxy-worker.js
+wrangler.toml
+.wrangler/
+
+# IDE & OS
+.vscode/
+.DS_Store
+
+# Legacy
+AssetTracker/
