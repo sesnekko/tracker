@@ -2303,6 +2303,41 @@ function applyLivePrices(){
   recalcAggregates(e);
   d[ym]=e;saveData(d);
   renderKPIs();renderPieChart();
+  /* Update net chart data for the current month without full re-render */
+  const netChart=charts['net'];
+  if(netChart){
+    const keys=netChart.data._keys||[];
+    const idx=keys.indexOf(ym);
+    if(idx>=0){
+      const c=calc(e);
+      netChart.data.datasets[0].data[idx]=c.net;
+      netChart.data.datasets[1].data[idx]=c.assets;
+      netChart.data.datasets[2].data[idx]=-c.liab;
+      /* Update asset group lines */
+      const details=e._details||{};
+      const displayGroups={};
+      _fc.fields.forEach(f=>{
+        const grp=f.displayGroup||f.category;
+        if(!displayGroups[grp])displayGroups[grp]={addIds:[],subIds:[]};
+        if(f.category==='liab')displayGroups[grp].subIds.push(f.id);
+        else displayGroups[grp].addIds.push(f.id);
+      });
+      const grpArr=Object.values(displayGroups);
+      let gi=0;
+      netChart.data.datasets.forEach(ds=>{
+        if(!ds._isAsset)return;
+        if(gi<grpArr.length){
+          const grp=grpArr[gi];
+          const add=grp.addIds.reduce((s,id)=>s+(details[id]||0),0);
+          const sub=grp.subIds.reduce((s,id)=>s+(details[id]||0),0);
+          ds.data[idx]=Math.max(0,add-sub);
+        }
+        gi++;
+      });
+      netChart.options.animation={duration:400,easing:'easeOutQuart'};
+      netChart.update();
+    }
+  }
   if(document.getElementById('lt-asset-params-table'))buildAssetParamsTable();
 }
 
