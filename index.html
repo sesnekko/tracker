@@ -981,8 +981,9 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   <button class="btn btn-ghost" onclick="exportWealthCSV()">CSV exportieren</button>
   <label class="btn btn-ghost" style="cursor:pointer">CSV importieren<input type="file" accept=".csv" id="csvInput2" style="display:none" onchange="document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
   <button class="btn btn-ghost btn-danger" id="resetBtn">Alle Daten löschen</button>
-  <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:8px;text-align:center">v0.68</div>
 </div>
+
+<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.69</div>
 
 <!-- Spacer for bottom navigation bar -->
 <div style="height:80px"></div>
@@ -5841,7 +5842,7 @@ function initApp(){
 }
 
 /* ── Service Worker ── */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.68').then(reg=>{reg.update();}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.69').then(reg=>{reg.update();}).catch(()=>{});}
 
 /* ── Start ── */
 initApp();
