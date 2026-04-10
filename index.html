@@ -2178,7 +2178,10 @@ function handleCsvUpload(ev){
       }
       if(Object.keys(savingsMap).length>0){
         const ap=JSON.parse(localStorage.getItem('lt-asset-params')||'{}');
-        for(const[key,val]of Object.entries(savingsMap)){
+        for(const[rawKey,val]of Object.entries(savingsMap)){
+          /* Match existing key case-insensitively to avoid duplicates */
+          const existing=Object.keys(ap).find(k=>k.toLowerCase()===rawKey.toLowerCase());
+          const key=existing||rawKey;
           if(!ap[key])ap[key]={};
           ap[key].saving=val;
         }
@@ -4235,10 +4238,24 @@ function exportWealthCSV(){
   csv+=`Prognose;monthly-withdraw;${ls.monthlyWithdraw}`+pad2+'\n';
   const ap=ls.assetParams;
   if(Object.keys(ap).length){
+    /* Deduplicate keys case-insensitively: prefer the capitalized variant */
+    const merged={};
+    Object.entries(ap).forEach(([key,p])=>{
+      const existing=Object.keys(merged).find(k=>k.toLowerCase()===key.toLowerCase());
+      if(existing){
+        /* Merge: keep non-zero values from either entry */
+        const m=merged[existing];
+        ['ret','vol','saving','volDyn','retDyn'].forEach(f=>{
+          if((!m[f]||m[f]===0)&&p[f])m[f]=p[f];
+        });
+      }else{
+        merged[key]={...p};
+      }
+    });
     const pad3=';'.repeat(header.split(';').length - 7);
     csv+=';\n';
     csv+='Typ;Asset;Rendite;Volatilität;Sparrate;VolDyn;RetDyn'+pad3+'\n';
-    Object.entries(ap).forEach(([key,p])=>{
+    Object.entries(merged).forEach(([key,p])=>{
       const fmtP=v=>{const n=v!=null?v:0;return Number.isInteger(n)?n+',0':String(n).replace('.',',');};
       csv+=`Prognose-Asset;${key};${fmtP(p.ret)};${fmtP(p.vol)};${p.saving!=null?p.saving:0};${fmtP(p.volDyn)};${fmtP(p.retDyn)}`+pad3+'\n';
     });
@@ -5734,6 +5751,21 @@ function initApp(){
     ensureNextMonth();
     selectedMonth=nextYM();
     picker.setVal(selectedMonth);
+
+    /* Deduplicate lt-asset-params keys (fix for lowercase/capitalized duplicates) */
+    try{
+      const ap=JSON.parse(localStorage.getItem('lt-asset-params')||'{}');
+      const merged={};let dirty=false;
+      Object.entries(ap).forEach(([key,p])=>{
+        const existing=Object.keys(merged).find(k=>k.toLowerCase()===key.toLowerCase());
+        if(existing){
+          dirty=true;
+          const m=merged[existing];
+          ['ret','vol','saving','volDyn','retDyn'].forEach(f=>{if((!m[f]||m[f]===0)&&p[f])m[f]=p[f];});
+        }else{merged[key]={...p};}
+      });
+      if(dirty)localStorage.setItem('lt-asset-params',JSON.stringify(merged));
+    }catch(e){}
 
     /* Event Handlers */
     document.getElementById('themeToggle').addEventListener('click',toggleTheme);
