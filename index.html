@@ -983,7 +983,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   <button class="btn btn-ghost btn-danger" id="resetBtn">Alle Daten löschen</button>
 </div>
 
-<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.69</div>
+<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.70</div>
 
 <!-- Spacer for bottom navigation bar -->
 <div style="height:80px"></div>
@@ -2288,7 +2288,7 @@ function recalcAggregates(e){
 function applyLivePrices(){
   if(chartInteractionActive)return;
   const ym=selectedMonth;
-  if(!ym||ym<currentYM())return;
+  if(!ym||ym!==nextYM())return;
   const d=loadData(),e=d[ym];if(!e)return;
   if(!e._details)e._details={};
   const units=e._units||{};
@@ -5842,7 +5842,7 @@ function initApp(){
 }
 
 /* ── Service Worker ── */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.69').then(reg=>{reg.update();}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.70').then(reg=>{reg.update();}).catch(()=>{});}
 
 /* ── Start ── */
 initApp();
