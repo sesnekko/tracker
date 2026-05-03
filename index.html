@@ -983,7 +983,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   <button class="btn btn-ghost btn-danger" id="resetBtn">Alle Daten löschen</button>
 </div>
 
-<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.71</div>
+<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.72</div>
 
 <!-- Spacer for bottom navigation bar -->
 <div style="height:80px"></div>
@@ -1183,7 +1183,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
       </div>
 	      <div class="kpi-face-back">
 	        <div class="kpi-back-label">Zielvermögen</div>
-	        <div class="kpi-back-text">Benötigtes Vermögen in heutiger Kaufkraft.</div>
+	        <div class="kpi-back-text">Benötigtes liquides Vermögen in heutiger Kaufkraft.</div>
 	      </div>
 	    </div>
 	  </div>
@@ -4401,7 +4401,7 @@ Prognose-Asset;Immobilien;2;8;0;0;0</pre>`;
   h+=`• <strong>Vol %</strong> — Erwartete jährliche Volatilität in Prozent. Bestimmt die Breite des Konfidenzbands im Chart<br>`;
   h+=`• <strong>Vol Δ</strong> — Jährliche Veränderung der Volatilität. Bei <code>-3</code> sinkt die Volatilität jedes Jahr um 3% (z.B. Bitcoin wird langfristig stabiler)</p>`;
   h+=`<p><strong>KPI-Kacheln:</strong></p>`;
-  h+=`<p>• <strong>Zielvermögen</strong> — Benötigtes Vermögen in heutiger Kaufkraft, um die Entnahmen bis zum Lebensende zu decken<br>`;
+  h+=`<p>• <strong>Zielvermögen</strong> — Benötigtes liquides Vermögen in heutiger Kaufkraft, um die Entnahmen bis zum Lebensende zu decken<br>`;
   h+=`• <strong>Ø Wachstum p.a.</strong> — Gewichtete Jahresrendite deines Portfolios<br>`;
   h+=`• <strong>Rente möglich ab</strong> — Frühestes Alter, ab dem die Entnahmen gedeckt sind<br>`;
   h+=`• <strong>Restvermögen</strong> — Prognostiziertes Vermögen zum Lebensende</p>`;
@@ -4870,6 +4870,7 @@ function renderLifetimePageCalcs(){
 
   const latestKey=sorted[sorted.length-1];
   const latestNet=calc(data[latestKey]).net;
+  const latestLiquid=calc(data[latestKey]).liquid;
   document.getElementById('lt-hero').textContent=fmt(latestNet).replace(' €','');
   document.getElementById('lt-hero').classList.add('kpi-has-eur');
 
@@ -5112,13 +5113,13 @@ function renderLifetimePageCalcs(){
 	  /* Wealth target progress bar */
 	  /* Use the stricter of 4%-rule vs. full PV target as the progress "Ziel" */
 	  const wealthTarget=Math.max(targetRealToday,1);
-	  const targetPct=latestNet/wealthTarget*100;
+	  const targetPct=latestLiquid/wealthTarget*100;
   const targetPctClamped=Math.min(100,targetPct);
 	  document.getElementById('lt-target-bar').style.width=targetPctClamped+'%';
 	  document.getElementById('lt-target-marker').style.left=Math.min(100,targetPct)+'%';
 	  document.getElementById('lt-target-pct-label').textContent=Math.round(targetPct)+'%';
 	  document.getElementById('lt-target-end-label').textContent=fmt(Math.round(wealthTarget)).replace(' €','') + ' €';
-	  const gap=wealthTarget-latestNet;
+	  const gap=wealthTarget-latestLiquid;
 
 	  /* Chart: historical + projection */
   const _ltExisting=charts['lifetime'];
@@ -5296,7 +5297,7 @@ function renderLifetimePageCalcs(){
   });
 
   /* Store computed values for interaction scrub */
-  const ltState={annualGrowth,annualSavings,annualWithdraw,nominalRate,realRate,inflRate,portfolioVol,saveUntilAge,withdrawAge,targetRealToday,projGrowthRate,wealthTarget,projAges,projVals,projPortVols,projHi,projLo,currentAge,retireAge,startAge,assetList,assetTimeSeries,assetRetSeries,assetVolSeries,histAssetMaps};
+  const ltState={annualGrowth,annualSavings,annualWithdraw,nominalRate,realRate,inflRate,portfolioVol,saveUntilAge,withdrawAge,targetRealToday,projGrowthRate,wealthTarget,projAges,projVals,projPortVols,projHi,projLo,currentAge,retireAge,startAge,assetList,assetTimeSeries,assetRetSeries,assetVolSeries,histAssetMaps,liquidIdxs};
 
   /* Interaction: crosshair + KPI scrub */
   setupLifetimeInteraction(allAges,histLine,projLine,ltState,s);
@@ -5399,7 +5400,14 @@ function setupLifetimeInteraction(allAges,histLine,projLine,st,settings){
 	    document.getElementById('lt-age-label').textContent=age+' Jahre';
 
 	    /* Wealth target progress bar */
-	    const tPct=val/Math.max(st.wealthTarget,1)*100;
+	    const liquidVal=st.liquidIdxs.reduce((s,j)=>{
+	      const yi=age-st.startAge;
+	      if(yi>=0&&yi<st.assetTimeSeries[j].length)return s+st.assetTimeSeries[j][yi];
+	      /* Historical: use current asset value */
+	      if(st.histAssetMaps[j].has(age))return s+st.histAssetMaps[j].get(age);
+	      return s+st.assetList[j].val;
+	    },0);
+	    const tPct=liquidVal/Math.max(st.wealthTarget,1)*100;
 	    document.getElementById('lt-target-bar').style.width=Math.min(100,tPct)+'%';
 	    document.getElementById('lt-target-marker').style.left=Math.min(100,tPct)+'%';
 	    document.getElementById('lt-target-pct-label').textContent=Math.round(tPct)+'%';
@@ -5479,11 +5487,12 @@ function setupLifetimeInteraction(allAges,histLine,projLine,st,settings){
 	    document.getElementById('lt-age-label').textContent=Math.floor(st.currentAge)+' Jahre';
 
 	    /* Restore wealth target bar */
-	    const tPct=latestVal/Math.max(st.wealthTarget,1)*100;
+	    const latestLiquidVal=st.liquidIdxs.reduce((s,j)=>s+st.assetList[j].val,0);
+	    const tPct=latestLiquidVal/Math.max(st.wealthTarget,1)*100;
 	    document.getElementById('lt-target-bar').style.width=Math.min(100,tPct)+'%';
 	    document.getElementById('lt-target-marker').style.left=Math.min(100,tPct)+'%';
 	    document.getElementById('lt-target-pct-label').textContent=Math.round(tPct)+'%';
-	    const gap=st.wealthTarget-latestVal;
+	    const gap=st.wealthTarget-latestLiquidVal;
     
     /* Restore asset values in table to current values and re-sort */
     const currentAssetValues=st.assetList.map(a=>({key:a.key,val:a.val}));
@@ -5562,7 +5571,7 @@ function guideWelcome(){
       </label>
       <button class="btn btn-ghost" style="width:100%;max-width:280px" onclick="guideNav(1)">Anleitung öffnen</button>
     </div>
-    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.71</div>
+    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.72</div>
   </div>`;
 }
 
@@ -5843,7 +5852,7 @@ function initApp(){
 }
 
 /* ── Service Worker ── */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.71').then(reg=>{reg.update();}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.72').then(reg=>{reg.update();}).catch(()=>{});}
 
 /* ── Start ── */
 initApp();
