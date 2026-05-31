@@ -983,7 +983,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   <button class="btn btn-ghost btn-danger" id="resetBtn">Alle Daten löschen</button>
 </div>
 
-<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.75</div>
+<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.76</div>
 
 <!-- Spacer for bottom navigation bar -->
 <div style="height:80px"></div>
@@ -1344,7 +1344,7 @@ const SUN='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><
 
 /* ── Helpers ── */
 function currentYM(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
-function nextYM(){const d=new Date();d.setMonth(d.getMonth()+1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function nextYM(){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
 function fmtMonth(ym){const[y,m]=ym.split('-');return MONTH_NAMES[+m-1]+' '+y;}
 function fmt(n){if(n==null||isNaN(n))return'—';return n.toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:0})+' €';}
 function fmtAxis(n){if(n==null||isNaN(n))return'';if(Math.abs(n)>=1e6)return(n/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})+'M';if(Math.abs(n)>=1e3)return(n/1e3).toLocaleString('de-DE',{maximumFractionDigits:0})+'k';return n.toLocaleString('de-DE',{minimumFractionDigits:0});}
@@ -5571,7 +5571,7 @@ function guideWelcome(){
       </label>
       <button class="btn btn-ghost" style="width:100%;max-width:280px" onclick="guideNav(1)">Anleitung öffnen</button>
     </div>
-    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.75</div>
+    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.76</div>
   </div>`;
 }
 
@@ -5852,7 +5852,7 @@ function initApp(){
 }
 
 /* ── Service Worker ── */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.75').then(reg=>{reg.update();}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.76').then(reg=>{reg.update();}).catch(()=>{});}
 
 /* ── Start ── */
 /* Deferred Chart.js scripts finish executing before DOMContentLoaded fires,
