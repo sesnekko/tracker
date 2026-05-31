@@ -1,4 +1,4 @@
-const CACHE='verm-v66';
+const CACHE='verm-v67';
 const ASSETS=[
   './index.html',
   './manifest.json',
@@ -34,13 +34,18 @@ self.addEventListener('fetch',e=>{
       });
     }));
   }
-  // Network-first for index.html (always get latest, cache as offline fallback)
+  // Stale-while-revalidate for index.html: serve cached copy instantly (no blank
+  // screen while waiting for the network), then update the cache in the background
+  // so the next launch gets the latest version.
   else if(url.endsWith('index.html')||url.endsWith('/')){
-    e.respondWith(fetch(e.request).then(resp=>{
-      const clone=resp.clone();
-      caches.open(CACHE).then(c=>c.put(e.request,clone));
-      return resp;
-    }).catch(()=>caches.match(e.request)));
+    e.respondWith(caches.match(e.request).then(cached=>{
+      const network=fetch(e.request).then(resp=>{
+        const clone=resp.clone();
+        caches.open(CACHE).then(c=>c.put(e.request,clone));
+        return resp;
+      }).catch(()=>cached);
+      return cached||network;
+    }));
   }
   // Cache-first for static assets (JS libs, manifest)
   else {
