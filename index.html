@@ -145,14 +145,22 @@ body {
 
 /* ── Hero KPI ── */
 .hero { text-align:center;padding:20px 0 4px;-webkit-user-select:none;user-select:none; }
-.hero-label { font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;font-weight:500; }
+.hero-label { font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;font-weight:500;transition:color .3s; }
 .hero-value {
   font-size:68px;font-weight:300;color:var(--ink);letter-spacing:-0.02em;
-  line-height:1.15;font-variant-numeric:tabular-nums;min-height:78px;
+  line-height:1.15;font-variant-numeric:tabular-nums;min-height:78px;transition:color .3s;
 }
 .hero-value.kpi-has-eur::after { content:' €';font-size:26px;font-weight:300;color:var(--muted);letter-spacing:0; }
 .hero-delta { font-size:14px;font-weight:400;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums; }
 .hero-delta.up{color:var(--green)} .hero-delta.down{color:var(--red)}
+/* Einzel-Asset-Modus: ein Titel mit Punkt-Indikator + abgesetzte Optik */
+body.iso-mode .hero-label::before {
+  content:'';display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--ink);margin-right:7px;vertical-align:middle;
+}
+body.iso-mode .hero-value { color:var(--ink-soft); }
+body.iso-mode .hero-value.kpi-has-eur::after { color:var(--ink-soft);opacity:0.6; }
+body.iso-mode .hero-label { color:var(--ink); }
 
 /* ── Chart ── */
 .chart-section { padding:4px 0; }
@@ -195,10 +203,13 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 .legend-bar { width:3px;border-radius:1.5px;height:16px;flex-shrink:0; }
 .legend-info { flex:1;min-width:0;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:8px; }
 .legend-name { font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.legend-track { height:6px;border-radius:3px;background:color-mix(in srgb,var(--border) 30%,transparent);overflow:hidden; }
+.legend-track { height:6px;border-radius:3px;background:color-mix(in srgb,var(--border) 30%,transparent);cursor:pointer;position:relative; }
+.legend-track::after { content:'';position:absolute;left:-4px;right:-4px;top:-11px;bottom:-11px; }
 .legend-fill { height:100%;border-radius:3px;transition:width .4s ease; }
 .legend-val { font-size:14px;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:400;text-align:right;white-space:nowrap; }
 .legend-pct { font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:28px;text-align:right; }
+.legend-row.iso-active .legend-name { color:var(--ink); }
+.legend-row.iso-active .legend-track { box-shadow:0 0 0 1px var(--ink-soft); }
 
 /* ── KPI Grid ── */
 .kpi-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:4px 0 0; }
@@ -983,7 +994,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   <button class="btn btn-ghost btn-danger" id="resetBtn">Alle Daten löschen</button>
 </div>
 
-<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.76</div>
+<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.77</div>
 
 <!-- Spacer for bottom navigation bar -->
 <div style="height:80px"></div>
@@ -1339,6 +1350,9 @@ const CHART_ANIM_MS=650;
 /* Fix 5: ltRange starts at 0 to match "Alle" button default */
 let ltShowAssets=true, ltUseLog=false, ltRange=0;
 const livePrices={}, netLineHidden={0:false,1:true,2:true};
+/* Asset line isolation: when set, the net chart shows only this asset's line.
+   isolatedAsset = displayGroup key, isolatedAssetLabel = display label for hero tag */
+let isolatedAsset=null, isolatedAssetLabel=null;
 const MOON='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
 const SUN='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
 
@@ -1395,6 +1409,19 @@ function buildNetGroups(details){
     }
   });
   return Object.values(groupMap).filter(p=>p.val>0).sort((a,b)=>b.val-a.val);
+}
+/* Wert einer einzelnen Asset-Gruppe (displayGroup) für einen Monat berechnen
+   – identische Logik wie die Asset-Linien im Netto-Chart (add minus liab). */
+function assetGroupValue(details,groupKey){
+  if(!details)return 0;
+  let add=0,sub=0;
+  _fc.fields.forEach(f=>{
+    const grp=f.displayGroup||f.category;
+    if(grp!==groupKey)return;
+    if(f.category==='liab')sub+=(details[f.id]||0);
+    else add+=(details[f.id]||0);
+  });
+  return Math.max(0,add-sub);
 }
 function calcNet(e){
   const liab_total=FIELDS_LIAB_get().reduce((s,k)=>s+(+e[k]||0),0);
@@ -1662,7 +1689,7 @@ function renderKPIs(){
   if(deltaEl)deltaEl.style.color='';
   
   const c=calc(entry);
-  animateKpiValue('kpi-net',fmt(c.net),c.net);
+  if(!(isolatedAsset&&!chartInteractionActive))animateKpiValue('kpi-net',fmt(c.net),c.net);
   animateKpiValue('kpi-assets',fmt(c.assets),c.assets);
   animateKpiValue('kpi-liquid',fmt(c.liquid),c.liquid);
   animateKpiValue('kpi-illiquid',fmt(c.illiquid),c.illiquid);
@@ -1670,6 +1697,9 @@ function renderKPIs(){
   const idx=sorted.indexOf(selectedMonth);
   if(idx>0){const p=calc(data[sorted[idx-1]]);setDelta('kpi-net-delta',c.net,p.net);setDelta('kpi-assets-delta',c.assets,p.assets);setDelta('kpi-liquid-delta',c.liquid,p.liquid);setDelta('kpi-illiquid-delta',c.illiquid,p.illiquid);setDelta('kpi-liab-delta',c.liab,p.liab,true);}
   else ['kpi-net-delta','kpi-assets-delta','kpi-liquid-delta','kpi-illiquid-delta','kpi-liab-delta'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='';});
+  
+  /* Einzel-Asset-Modus: Hero zeigt den Einzelwert statt des Nettovermögens */
+  if(isolatedAsset&&!chartInteractionActive)_updateHeroForIsolation();
   
   // Update savings rate section
   renderSavingsRate(data,sorted,idx);
@@ -1734,6 +1764,8 @@ function renderNetChart(){
   const entry=data[selectedMonth];
   if(!entry||sorted.length<2){destroyChart('net');return;}
   destroyChart('net');
+  /* Voller Neuaufbau des Charts -> evtl. aktive Isolation zurücksetzen */
+  isolatedAsset=null;
   /* Always load ALL data; range is controlled via x-axis min/max */
   const ns=sorted;
   const nv=ns.map(k=>calc(data[k]).net),av=ns.map(k=>calc(data[k]).assets),lv=ns.map(k=>-calc(data[k]).liab),lb=ns.map(fmtMonth);
@@ -1804,10 +1836,15 @@ function renderPieChart(){
       li.className='legend-row';
       li.dataset.idx=String(j);
       li.dataset.assetKey=item.key;
-      li.innerHTML=`<div class="legend-bar" style="background:${colors[j]}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${colors[j]};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
-      li.addEventListener('click',()=>{
-        if(item.key)showAssetDetail(item.key);
+      li.innerHTML=`<div class="legend-bar" style="background:${colors[j]}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track" data-iso="1"><div class="legend-fill" style="width:${barPct}%;background:${colors[j]};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
+      li.addEventListener('click',(ev)=>{
+        if(ev.target.closest('[data-iso]')){
+          if(item.key)isolateAssetLine(item.key,li);
+        }else{
+          if(item.key)showAssetDetail(item.key);
+        }
       });
+      if(isolatedAsset&&item.key===isolatedAsset)li.classList.add('iso-active');
       container.appendChild(li);
     });
   });
@@ -2641,7 +2678,13 @@ function setupChartInteraction(){
     const visMax=xScale.max||(netData.length-1);
     const visCount=visMax-visMin;
     const px=visCount>0?xScale.left+((idx-visMin)/visCount)*(xScale.right-xScale.left):xScale.left;
-    const py=yScale.getPixelForValue(netData[idx]);
+    /* Im Einzel-Asset-Modus folgt der Crosshair der Asset-Linie statt der Netto-Linie */
+    let yVal=netData[idx];
+    if(isolatedAsset){
+      const e=loadData()[dataKeys[idx]];
+      yVal=assetGroupValue((e&&e._details)?e._details:{},isolatedAsset);
+    }
+    const py=yScale.getPixelForValue(yVal);
     return{x:px,y:py};
   }
 
@@ -2666,21 +2709,37 @@ function setupChartInteraction(){
     if(idx===lastIndex)return;
     lastIndex=idx;
     haptic('light');
-    const val=netData[idx];
     const ym=dataKeys[idx];
     const ymLabel=labels[idx];
-    
+    const data=loadData();
+    const entry=data[ym];
+
+    /* Im Einzel-Asset-Modus zeigt der Hero den Wert des isolierten Assets,
+       sonst das Nettovermögen. */
+    let val;
+    if(isolatedAsset){
+      const det=(entry&&entry._details)?entry._details:{};
+      val=assetGroupValue(det,isolatedAsset);
+    }else{
+      val=netData[idx];
+    }
     animateKpiValue('kpi-net',fmt(val),val);
     const heroLabel=document.querySelector('.hero-label');
     if(heroLabel)heroLabel.textContent=ymLabel;
     const deltaEl=document.getElementById('kpi-net-delta');
     if(deltaEl){
-      if(idx>0){setDelta('kpi-net-delta',netData[idx],netData[idx-1]);}
+      if(idx>0){
+        if(isolatedAsset){
+          const prevEntry=data[dataKeys[idx-1]];
+          const prevDet=(prevEntry&&prevEntry._details)?prevEntry._details:{};
+          setDelta('kpi-net-delta',val,assetGroupValue(prevDet,isolatedAsset));
+        }else{
+          setDelta('kpi-net-delta',netData[idx],netData[idx-1]);
+        }
+      }
       else{deltaEl.textContent='\u00b10 \u20ac';deltaEl.className='hero-delta';}
     }
     
-    const data=loadData();
-    const entry=data[ym];
     if(!entry){showCrosshair(idx);return;}
     
     const cn=calcNet(entry);
@@ -2707,7 +2766,14 @@ function setupChartInteraction(){
           const li=document.createElement('li');
           li.className='legend-row';
           li.dataset.assetKey=item.key;
-          li.innerHTML=`<div class="legend-bar" style="background:${colors[j]}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track"><div class="legend-fill" style="width:${barPct}%;background:${colors[j]};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
+          li.innerHTML=`<div class="legend-bar" style="background:${colors[j]}"></div><div class="legend-info"><span class="legend-name">${item.label}</span><div class="legend-track" data-iso="1"><div class="legend-fill" style="width:${barPct}%;background:${colors[j]};opacity:0.5"></div></div><span class="legend-val">${fmt(item.val)}</span><span class="legend-pct">${pct}%</span></div>`;
+          li.addEventListener('click',(ev)=>{
+            if(ev.target.closest('[data-iso]')){
+              if(item.key)isolateAssetLine(item.key,li);
+            }else{
+              if(item.key)showAssetDetail(item.key);
+            }
+          });
           lA.appendChild(li);
         });
         return;
@@ -2761,9 +2827,17 @@ function setupChartInteraction(){
     lastIndex=-1;
     hideCrosshair();
     const heroLabel=document.querySelector('.hero-label');
-    if(heroLabel)heroLabel.textContent='Nettovermögen';
-    renderKPIs();
-    renderPieChart(); // Restore asset list to current month
+    if(isolatedAsset){
+      /* Im Einzel-Asset-Modus: Hero bleibt auf dem Einzelwert des aktuellen Monats */
+      if(heroLabel)heroLabel.textContent=isolatedAssetLabel||'Einzelwert';
+      renderKPIs();            // KPI-Kacheln zurücksetzen (Gesamtwerte)
+      _updateHeroForIsolation(); // Hero-Hauptwert wieder auf Einzelwert
+      renderPieChart();        // Asset-Liste auf aktuellen Monat zurücksetzen
+    }else{
+      if(heroLabel)heroLabel.textContent='Nettovermögen';
+      renderKPIs();
+      renderPieChart(); // Restore asset list to current month
+    }
   }
 
   const onStart=e=>{
@@ -2909,6 +2983,7 @@ function _toTransparentColor(c){
 }
 
 function toggleAssets(){
+  if(isolatedAsset)_resetIsolationBaseline();
   showAssets=!showAssets;
   const chart=charts['net'];
   if(!chart)return;
@@ -2979,6 +3054,7 @@ function toggleScale(){
 }
 
 function toggleNetLine(i){
+  if(isolatedAsset)_resetIsolationBaseline();
   netLineHidden[i]=!netLineHidden[i];
   const chart=charts['net'];
   if(!chart)return;
@@ -3009,6 +3085,125 @@ function toggleNetLine(i){
       chart.setDatasetVisibility(i,false);
       chart.update('none');
     },TOGGLE_MS+30);
+  }
+}
+
+/* ── Asset Line Isolation ──
+   Klick auf den Balken einer Asset-Zeile: im Netto-Chart wird ausschließlich
+   die Linie dieses Assets angezeigt. Erneuter Klick (oder Klick auf dieselbe
+   Zeile) stellt die normale Ansicht wieder her. */
+function _findAssetDatasetIndex(chart,key){
+  let idx=-1;
+  chart.data.datasets.forEach((ds,i)=>{if(ds._isAsset&&ds.label===key)idx=i;});
+  return idx;
+}
+function isolateAssetLine(key,rowEl){
+  const chart=charts['net'];
+  if(!chart)return;
+  haptic('light');
+  /* Toggle off, wenn dasselbe Asset erneut angeklickt wird */
+  if(isolatedAsset===key){
+    restoreNetLines();
+    return;
+  }
+  const targetIdx=_findAssetDatasetIndex(chart,key);
+  if(targetIdx<0){
+    /* Kein eigener Linien-Datensatz für dieses Asset -> nichts zu isolieren */
+    return;
+  }
+  const wasIsolated=!!isolatedAsset;
+  isolatedAsset=key;
+  /* Label für den Hero-Tag bestimmen */
+  const labelRow=document.querySelector('.legend-row[data-asset-key="'+CSS.escape(key)+'"]');
+  isolatedAssetLabel=(rowEl&&rowEl.querySelector('.legend-name'))?rowEl.querySelector('.legend-name').textContent
+                    :(labelRow&&labelRow.querySelector('.legend-name'))?labelRow.querySelector('.legend-name').textContent:key;
+  const inkColor=getComputedStyle(document.body).getPropertyValue('--ink').trim();
+  /* Beim Wechsel von einer Isolation zur nächsten zuerst altes Styling zurücksetzen */
+  if(wasIsolated)_restoreIsolatedStyling(chart);
+  chart.data.datasets.forEach((ds,i)=>{
+    chart.setDatasetVisibility(i,i===targetIdx);
+  });
+  /* Isolierte Linie hervorheben (sonst nur dünnes Grau) */
+  const tds=chart.data.datasets[targetIdx];
+  if(tds._isoBaseBorderColor==null)tds._isoBaseBorderColor=tds.borderColor;
+  if(tds._isoBaseBorderWidth==null)tds._isoBaseBorderWidth=tds.borderWidth;
+  if(tds._isoBasePointRadius==null)tds._isoBasePointRadius=tds.pointRadius;
+  tds.borderColor=inkColor;
+  tds.borderWidth=1.5;
+  tds.pointRadius=tds.data.length>24?1:2;
+  chart.options.animation={duration:CHART_ANIM_MS,easing:'easeOutQuart'};
+  chart.update();
+  /* Hero-KPI auf den Einzelwert umstellen + visuell markieren */
+  document.body.classList.add('iso-mode');
+  const heroLabel=document.querySelector('.hero-label');
+  if(heroLabel&&!chartInteractionActive)heroLabel.textContent=isolatedAssetLabel;
+  _updateHeroForIsolation();
+  /* Aktive Markierung in der Liste setzen */
+  document.querySelectorAll('.legend-row.iso-active').forEach(r=>r.classList.remove('iso-active'));
+  document.querySelectorAll('.legend-row').forEach(r=>{if(r.dataset.assetKey===key)r.classList.add('iso-active');});
+}
+/* Hero-Wert auf den aktuell selektierten Monatswert des isolierten Assets setzen
+   (außerhalb des Scrubbens: aktueller/ausgewählter Monat) */
+function _updateHeroForIsolation(){
+  if(!isolatedAsset||chartInteractionActive)return;
+  const data=loadData();
+  const entry=data[selectedMonth];
+  const details=entry&&entry._details?entry._details:{};
+  const v=assetGroupValue(details,isolatedAsset);
+  animateKpiValue('kpi-net',fmt(v),v);
+  /* Delta des Einzelwerts ggü. Vormonat */
+  const sorted=Object.keys(data).sort();
+  const idx=sorted.indexOf(selectedMonth);
+  if(idx>0){
+    const prevDetails=(data[sorted[idx-1]]&&data[sorted[idx-1]]._details)?data[sorted[idx-1]]._details:{};
+    setDelta('kpi-net-delta',v,assetGroupValue(prevDetails,isolatedAsset));
+  }else{
+    const d=document.getElementById('kpi-net-delta');if(d){d.textContent='';d.className='hero-delta';}
+  }
+}
+function _restoreIsolatedStyling(chart){
+  chart.data.datasets.forEach(ds=>{
+    if(ds._isoBaseBorderColor!=null){ds.borderColor=ds._isoBaseBorderColor;ds._isoBaseBorderColor=null;}
+    if(ds._isoBaseBorderWidth!=null){ds.borderWidth=ds._isoBaseBorderWidth;ds._isoBaseBorderWidth=null;}
+    if(ds._isoBasePointRadius!=null){ds.pointRadius=ds._isoBasePointRadius;ds._isoBasePointRadius=null;}
+  });
+}
+function restoreNetLines(){
+  const wasIsolated=!!isolatedAsset;
+  isolatedAsset=null;isolatedAssetLabel=null;
+  document.body.classList.remove('iso-mode');
+  document.querySelectorAll('.legend-row.iso-active').forEach(r=>r.classList.remove('iso-active'));
+  const chart=charts['net'];
+  if(!chart)return;
+  _restoreIsolatedStyling(chart);
+  /* Sauberer Neuaufbau des Charts statt Sichtbarkeits-Flip:
+     verhindert das "Herabfallen" + fehlerhafte Neuskalierung beim Reaktivieren. */
+  renderNetChart();
+  /* Hero zurück auf Nettovermögen */
+  if(!chartInteractionActive){
+    const heroLabel=document.querySelector('.hero-label');
+    if(heroLabel)heroLabel.textContent='Nettovermögen';
+    renderKPIs();
+  }
+}
+/* Isolation ohne Animation zurücksetzen (für andere Toggles, die danach selbst animieren) */
+function _resetIsolationBaseline(){
+  if(!isolatedAsset)return;
+  isolatedAsset=null;isolatedAssetLabel=null;
+  document.body.classList.remove('iso-mode');
+  document.querySelectorAll('.legend-row.iso-active').forEach(r=>r.classList.remove('iso-active'));
+  const chart=charts['net'];
+  if(!chart)return;
+  _restoreIsolatedStyling(chart);
+  chart.data.datasets.forEach((ds,i)=>{
+    if(ds._isAsset)chart.setDatasetVisibility(i,showAssets);
+    else chart.setDatasetVisibility(i,!netLineHidden[i]);
+  });
+  chart.update('none');
+  if(!chartInteractionActive){
+    const heroLabel=document.querySelector('.hero-label');
+    if(heroLabel)heroLabel.textContent='Nettovermögen';
+    renderKPIs();
   }
 }
 
@@ -5571,7 +5766,7 @@ function guideWelcome(){
       </label>
       <button class="btn btn-ghost" style="width:100%;max-width:280px" onclick="guideNav(1)">Anleitung öffnen</button>
     </div>
-    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.76</div>
+    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.77</div>
   </div>`;
 }
 
@@ -5852,7 +6047,7 @@ function initApp(){
 }
 
 /* ── Service Worker ── */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.76').then(reg=>{reg.update();}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.77').then(reg=>{reg.update();}).catch(()=>{});}
 
 /* ── Start ── */
 /* Deferred Chart.js scripts finish executing before DOMContentLoaded fires,
