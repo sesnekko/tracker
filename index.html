@@ -183,7 +183,7 @@ body.iso-mode .hero-label { color:var(--ink); }
 .stacked-seg.dimmed { opacity:0.3; }
 
 /* ── Range Buttons ── */
-.range-bar { display:flex;padding:4px 0 20px;align-items:center;justify-content:center;gap:12px; }
+.range-bar { display:flex;padding:16px 0;align-items:center;justify-content:center;gap:12px; }
 .range-pills { display:flex;gap:2px;background:color-mix(in srgb,var(--border) 20%,transparent);border-radius:6px;padding:2px; }
 #assetsToggleBtn { margin-left:0; }
 .range-btn {
@@ -994,7 +994,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   <button class="btn btn-ghost btn-danger" id="resetBtn">Alle Daten löschen</button>
 </div>
 
-<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.79</div>
+<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.80</div>
 
 <!-- Spacer for bottom navigation bar -->
 <div style="height:80px"></div>
@@ -1146,7 +1146,6 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
 </div>
 
 <!-- Settings -->
-<div class="divider"></div>
 <details class="lt-settings-panel">
   <summary class="lt-settings-toggle">Globale Einstellungen</summary>
   <div class="input-panel" style="border:none;padding:0 14px 14px;margin:0">
@@ -5783,7 +5782,7 @@ function guideWelcome(){
       </label>
       <button class="btn btn-ghost" style="width:100%;max-width:280px" onclick="guideNav(1)">Anleitung öffnen</button>
     </div>
-    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.79</div>
+    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.80</div>
   </div>`;
 }
 
@@ -6064,7 +6063,7 @@ function initApp(){
 }
 
 /* ── Service Worker ── */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.79').then(reg=>{reg.update();}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.80').then(reg=>{reg.update();}).catch(()=>{});}
 
 /* ── Start ── */
 /* Deferred Chart.js scripts finish executing before DOMContentLoaded fires,
