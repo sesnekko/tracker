@@ -183,7 +183,7 @@ body.iso-mode .hero-label { color:var(--ink); }
 .stacked-seg.dimmed { opacity:0.3; }
 
 /* ── Range Buttons ── */
-.range-bar { display:flex;padding:16px 0;align-items:center;justify-content:center;gap:12px; }
+.range-bar { display:flex;padding:20px 0;align-items:center;justify-content:center;gap:12px; }
 .range-pills { display:flex;gap:2px;background:color-mix(in srgb,var(--border) 20%,transparent);border-radius:6px;padding:2px; }
 #assetsToggleBtn { margin-left:0; }
 .range-btn {
@@ -329,7 +329,7 @@ body.dark .num-input:focus{box-shadow:0 0 0 2px rgba(232,228,222,0.08)}
 .lt-asset-table td:first-child{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px}
 .lt-asset-table .lt-ap-input{width:100%;min-width:50px;max-width:80px;padding:5px 6px;border:1px solid var(--border);border-radius:3px;background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-variant-numeric:tabular-nums;box-sizing:border-box;-webkit-appearance:none;appearance:none}
 .lt-asset-table .lt-ap-input:focus{border-color:var(--ink-soft);outline:none}
-.lt-settings-panel{background:color-mix(in srgb,var(--ink) 6%,var(--bg));border:none;border-radius:6px;overflow:hidden}
+.lt-settings-panel{background:color-mix(in srgb,var(--ink) 6%,var(--bg));border:none;border-radius:6px;overflow:hidden;margin-bottom:8px}
 .lt-settings-toggle{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);font-weight:500;padding:14px;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;-webkit-user-select:none;user-select:none}
 .lt-settings-toggle::-webkit-details-marker{display:none}
 .lt-settings-toggle::before{content:'';display:inline-block;width:6px;height:6px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(-45deg);transition:transform .2s}
@@ -994,7 +994,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   <button class="btn btn-ghost btn-danger" id="resetBtn">Alle Daten löschen</button>
 </div>
 
-<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.80</div>
+<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.81</div>
 
 <!-- Spacer for bottom navigation bar -->
 <div style="height:80px"></div>
@@ -1178,7 +1178,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   </div>
 </details>
 
-<details class="lt-settings-panel" style="margin-top:8px">
+<details class="lt-settings-panel">
   <summary class="lt-settings-toggle">Asset-Parameter</summary>
   <div style="padding:0 14px 14px;overflow-x:auto" id="lt-asset-params-table"></div>
 </details>
@@ -5782,7 +5782,7 @@ function guideWelcome(){
       </label>
       <button class="btn btn-ghost" style="width:100%;max-width:280px" onclick="guideNav(1)">Anleitung öffnen</button>
     </div>
-    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.80</div>
+    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.81</div>
   </div>`;
 }
 
@@ -6063,7 +6063,7 @@ function initApp(){
 }
 
 /* ── Service Worker ── */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.80').then(reg=>{reg.update();}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.81').then(reg=>{reg.update();}).catch(()=>{});}
 
 /* ── Start ── */
 /* Deferred Chart.js scripts finish executing before DOMContentLoaded fires,
