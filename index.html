@@ -168,7 +168,7 @@ body.iso-mode .hero-label { color:var(--ink); }
 .chart-wrap-net { margin-left:-20px;margin-right:-20px; }
 .chart-wrap.pie { height:260px;display:flex;align-items:center;justify-content:center; }
 .chart-wrap.pie canvas { max-height:240px;max-width:240px; }
-.lt-chart-wrap { height:260px; }
+.lt-chart-wrap { height:262px; }
 .chart-label { font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:10px;text-align:center; }
 
 /* ── Stacked Bar (Budget only) ── */
@@ -336,6 +336,13 @@ body.dark .num-input:focus{box-shadow:0 0 0 2px rgba(232,228,222,0.08)}
 details.lt-settings-panel[open]>.lt-settings-toggle::before{transform:rotate(45deg)}
 
 /* ── Lifetime Progress Bars ── */
+#page-lifetime>.app-content{display:flex;flex-direction:column}
+#page-lifetime .hero{order:1}
+#page-lifetime .chart-section{order:2;flex-shrink:0}
+#page-lifetime .range-bar{order:3}
+#page-lifetime .lt-settings-panel{order:4}
+#page-lifetime .kpi-grid{order:5}
+.lt-progress-bars{order:6;padding-top:8px}
 .lt-progress-head{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:baseline;margin-bottom:6px}
 .lt-ph-pair{display:flex;align-items:baseline;gap:10px;min-width:0;flex-wrap:wrap;row-gap:2px}
 .lt-ph-center{display:flex;justify-content:center;text-align:center;min-width:0}
@@ -525,7 +532,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   
   /* Optimized chart height on iPad - full width */
   .chart-wrap { height: 540px; }
-  .chart-wrap.lt-chart-wrap { height: 480px; }
+  .chart-wrap.lt-chart-wrap { height: 540px; }
   .chart-wrap-net { margin-left: -40px; margin-right: -40px; }
   .chart-wrap.pie { height: 440px; }
   
@@ -681,7 +688,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   
   /* Optimized chart on larger iPads - full width, breaks out of max-width */
   .chart-wrap { height: 560px; }
-  .chart-wrap.lt-chart-wrap { height: 520px; }
+  .chart-wrap.lt-chart-wrap { height: 560px; }
   .chart-wrap-net {
     width: 100vw;
     margin-left: calc(-50vw + 50%);
@@ -921,6 +928,13 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
     max-width: 1200px;
     margin: 0 auto;
   }
+  /* Progress bars back above chart on desktop */
+  .lt-progress-bars { order: 1; padding-top: 0; margin-bottom: 8px; }
+  #page-lifetime .hero { order: 0; }
+  #page-lifetime .chart-section { order: 3; }
+  #page-lifetime .range-bar { order: 4; }
+  #page-lifetime .lt-settings-panel { order: 5; }
+  #page-lifetime .kpi-grid { order: 6; }
   #page-lifetime .hero-value { font-size: 80px; min-height: 92px; }
   #page-lifetime .hero-value.kpi-has-eur::after { font-size: 32px; }
   #page-lifetime .chart-wrap { height: 380px; }
@@ -1241,7 +1255,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   <button class="btn btn-ghost btn-danger" id="resetBtn">Alle Daten löschen</button>
 </div>
 
-<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.86</div>
+<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.89</div>
 
 <!-- Spacer for bottom navigation bar -->
 <div style="height:80px"></div>
@@ -1335,10 +1349,11 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   <div class="hero">
     <div class="hero-label">Prognose</div>
     <div class="hero-value kpi-has-eur" id="lt-hero">—</div>
-	  <div id="lt-vol-display" style="font-size:13px;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums;opacity:0;transition:opacity .3s;min-height:16px;line-height:16px;white-space:nowrap"></div>
+	  <div id="lt-vol-display" style="font-size:13px;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums;opacity:0;transition:opacity .3s;line-height:16px;white-space:nowrap;height:0;overflow:visible"></div>
   </div>
 
-<!-- Lifetime Progress Bar -->
+<!-- Lifetime Progress Bars -->
+<div class="lt-progress-bars" id="lt-progress-collapse">
 <div id="lt-progress-section" style="padding:8px 0 12px">
   <div class="lt-progress-head">
     <div class="lt-ph-pair lt-ph-left">
@@ -1357,7 +1372,6 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   </div>
 </div>
 
-<!-- Wealth Target Progress Bar -->
 <div id="lt-target-section" style="padding:0 0 4px">
   <div class="lt-progress-head">
     <div class="lt-ph-pair lt-ph-left">
@@ -1375,15 +1389,15 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
     <div id="lt-target-marker" style="position:absolute;top:-2px;bottom:-2px;width:3px;border-radius:2px;background:var(--green);transition:left .6s ease;z-index:1"></div>
   </div>
 </div>
+</div>
 
 <!-- Lifetime Chart -->
-<div class="chart-section" style="padding-top:0">
+<div class="chart-section">
   <div class="chart-wrap chart-wrap-net lt-chart-wrap"><canvas id="chartLifetime"></canvas></div>
 </div>
 <div class="range-bar">
   <div class="range-pills">
     <button class="range-btn" id="ltAssetsToggleBtn">Assets</button>
-    <button class="range-btn" data-lt-range="1">1J</button>
     <button class="range-btn" data-lt-range="3">3J</button>
     <button class="range-btn" data-lt-range="5">5J</button>
     <button class="range-btn" data-lt-range="10">10J</button>
@@ -1393,7 +1407,6 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
 </div>
 
 <!-- Settings -->
-<div class="divider"></div>
 <details class="lt-settings-panel">
   <summary class="lt-settings-toggle">Globale Einstellungen</summary>
   <div class="input-panel" style="border:none;padding:0 14px 14px;margin:0">
@@ -5293,6 +5306,8 @@ function renderLifetimePageCalcs(){
   const hasSettings=localStorage.getItem('lt-birth-year')!==null;
   
   /* Hide sections if no data */
+  const ltCollapseEl=document.getElementById('lt-progress-collapse');
+  if(ltCollapseEl)ltCollapseEl.style.display=(hasData||hasSettings)?'':'none';
   document.getElementById('lt-progress-section').style.display=(hasData||hasSettings)?'':'none';
   document.getElementById('lt-target-section').style.display=hasData?'':'none';
   document.getElementById('chartLifetime').parentElement.style.display=hasData?'':'none';
@@ -5746,7 +5761,7 @@ function renderLifetimePageCalcs(){
 	    ]
 	  },options:{
     responsive:true,maintainAspectRatio:false,events:[],
-    layout:{padding:{left:0,right:0}},
+    layout:{padding:{left:0,right:0,top:0,bottom:0}},
     plugins:{legend:{display:false},datalabels:{display:false},tooltip:{enabled:false}},
 	    interaction:{mode:'nearest',intersect:false},
 	    scales:{
@@ -6038,7 +6053,7 @@ function guideWelcome(){
       </label>
       <button class="btn btn-ghost" style="width:100%;max-width:280px" onclick="guideNav(1)">Anleitung öffnen</button>
     </div>
-    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.86</div>
+    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.89</div>
   </div>`;
 }
 
@@ -6319,7 +6334,7 @@ function initApp(){
 }
 
 /* ── Service Worker ── */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.86').then(reg=>{reg.update();}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.89').then(reg=>{reg.update();}).catch(()=>{});}
 
 /* ── Start ── */
 /* Deferred Chart.js scripts finish executing before DOMContentLoaded fires,
