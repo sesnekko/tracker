@@ -164,7 +164,7 @@ body.iso-mode .hero-label { color:var(--ink); }
 
 /* ── Chart ── */
 .chart-section { padding:0; }
-.chart-wrap { position:relative;height:200px;-webkit-user-select:none;user-select:none;cursor:crosshair; }
+.chart-wrap { position:relative;height:240px;-webkit-user-select:none;user-select:none;cursor:crosshair; }
 .chart-wrap-net { margin-left:-20px;margin-right:-20px; }
 .chart-wrap.pie { height:260px;display:flex;align-items:center;justify-content:center; }
 .chart-wrap.pie canvas { max-height:240px;max-width:240px; }
@@ -183,7 +183,7 @@ body.iso-mode .hero-label { color:var(--ink); }
 .stacked-seg.dimmed { opacity:0.3; }
 
 /* ── Range Buttons ── */
-.range-bar { display:flex;padding:4px 0 20px;align-items:center;justify-content:center;gap:12px; }
+.range-bar { display:flex;padding:12px 0;align-items:center;justify-content:center;gap:12px; }
 .range-pills { display:flex;gap:2px;background:color-mix(in srgb,var(--border) 20%,transparent);border-radius:6px;padding:2px; }
 #assetsToggleBtn { margin-left:0; }
 .range-btn {
@@ -763,6 +763,253 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   #page-import .num-input-units { font-size: 11px; padding: 3px 7px; min-height: 24px; }
   #page-import #newFieldLabel, #page-import #newFieldCategory { font-size: 12px; padding: 7px 10px; }
 }
+
+/* ── LAPTOP / DESKTOP LAYOUT (≥1280px) ── */
+@media (min-width: 1280px) {
+  /* Persistent sidebar — always visible */
+  .sidebar {
+    transform: translateX(0) !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 220px;
+    z-index: 201;
+    border-right: 1px solid var(--border);
+    padding: 32px 12px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .sidebar-overlay { display: none !important; }
+  .sidebar-toggle { display: none !important; }
+  .sidebar-header { display: none; }
+  .sidebar-item {
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 5px;
+    gap: 10px;
+  }
+  .sidebar-item svg { width: 18px; height: 18px; }
+
+  /* App title in sidebar */
+  .sidebar::before {
+    content: 'Vermögen';
+    display: block;
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    padding: 0 14px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  /* Main content offset for sidebar */
+  body {
+    margin-left: 220px;
+    max-width: none;
+    padding: 0 48px;
+    padding-top: 24px;
+  }
+
+  /* Header adjustments */
+  .app-header {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+  }
+
+  /* Pages container width */
+  .page > .app-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ── HOME PAGE: Dashboard grid ── */
+  #page-home .app-content {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    grid-template-rows: auto auto auto auto;
+    gap: 0 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Hero spans full width */
+  #page-home .hero {
+    grid-column: 1 / -1;
+    padding: 12px 0 0;
+  }
+  #page-home .hero-value { font-size: 80px; min-height: 92px; }
+  #page-home .hero-value.kpi-has-eur::after { font-size: 32px; }
+
+  /* Chart section spans full width */
+  #page-home .chart-section {
+    grid-column: 1 / -1;
+    padding: 8px 0;
+  }
+  #page-home .chart-wrap { height: 380px; }
+  #page-home .chart-wrap-net {
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+  }
+
+  /* Range bar spans full width */
+  #page-home .range-bar {
+    grid-column: 1 / -1;
+  }
+
+  /* KPI grid on left */
+  #page-home .kpi-and-assets-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    grid-column: 1 / -1;
+  }
+  #page-home .kpi-grid {
+    grid-column: 1;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  #page-home .kpi-item { height: 140px; }
+  #page-home .kpi-label { font-size: 11px; }
+  #page-home .kpi-val { font-size: 30px; }
+  #page-home .kpi-val.kpi-has-eur::after { font-size: 17px; }
+  #page-home .kpi-delta { font-size: 12px; }
+
+  /* Asset list on right */
+  #page-home .structure-section-ipad {
+    display: block;
+    grid-column: 2;
+    max-height: 310px;
+    overflow-y: auto;
+  }
+  #page-home .structure-section-mobile { display: none; }
+
+  /* Savings section hidden on desktop */
+  .savings-rate-section { display: none; }
+
+  /* ── BUDGET PAGE ── */
+  #page-budget .app-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  #page-budget .hero-value { font-size: 80px; min-height: 92px; }
+  #page-budget .hero-value.kpi-has-eur::after { font-size: 32px; }
+
+  #page-budget .kpi-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  #page-budget .kpi-item { height: 140px; }
+  #page-budget .kpi-val { font-size: 30px; }
+  #page-budget .kpi-val.kpi-has-eur::after { font-size: 17px; }
+
+  .sankey-container-html {
+    grid-template-columns: 200px 1fr 200px;
+    min-height: 420px;
+    max-width: 1000px;
+    margin: 0 auto;
+    gap: 0 12px;
+  }
+  .sankey-node-card { height: 108px; }
+
+  /* ── LIFETIME PAGE ── */
+  #page-lifetime .app-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  #page-lifetime .hero-value { font-size: 80px; min-height: 92px; }
+  #page-lifetime .hero-value.kpi-has-eur::after { font-size: 32px; }
+  #page-lifetime .chart-wrap { height: 380px; }
+  #page-lifetime .chart-wrap.lt-chart-wrap { height: 380px; }
+  #page-lifetime .chart-wrap-net {
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+  }
+  #page-lifetime .kpi-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  #page-lifetime .kpi-item { height: 140px; }
+  #page-lifetime .kpi-val { font-size: 30px; }
+  #page-lifetime .kpi-val.kpi-has-eur::after { font-size: 17px; }
+
+  /* Lifetime settings side-by-side */
+  #page-lifetime .lt-settings-panel {
+    margin-top: 6px;
+  }
+
+  /* ── IMPORT PAGE ── */
+  #page-import .app-content {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  #page-import .input-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px 16px;
+  }
+
+  /* ── General desktop polish ── */
+  .bottom-nav { display: none; }
+  .app-content { padding-bottom: 32px; }
+
+  /* Hover states for desktop */
+  .kpi-item { transition: box-shadow .3s, transform .3s; }
+  .kpi-item:hover:not(.flipped) {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+  }
+  .legend-row:hover {
+    background: color-mix(in srgb, var(--border) 15%, transparent);
+    border-radius: 4px;
+  }
+  .sidebar-item:hover {
+    color: var(--ink);
+    background: color-mix(in srgb, var(--border) 20%, transparent);
+  }
+  .range-btn:hover { color: var(--ink); }
+  .icon-btn:hover { color: var(--ink); }
+  .sankey-node-card:hover:not(.flipped) {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+  }
+
+  /* Scrollbar styling */
+  .structure-section-ipad::-webkit-scrollbar { width: 4px; }
+  .structure-section-ipad::-webkit-scrollbar-track { background: transparent; }
+  .structure-section-ipad::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+}
+
+/* Extra-wide screens (≥1600px) — more breathing room */
+@media (min-width: 1600px) {
+  .sidebar { width: 240px; }
+  body { margin-left: 240px; padding: 0 64px; padding-top: 28px; }
+
+  .page > .app-content,
+  #page-home .app-content,
+  #page-budget .app-content,
+  #page-lifetime .app-content {
+    max-width: 1400px;
+  }
+
+  #page-home .hero-value { font-size: 96px; min-height: 108px; }
+  #page-home .hero-value.kpi-has-eur::after { font-size: 38px; }
+  #page-home .chart-wrap { height: 440px; }
+
+  #page-home .kpi-item { height: 155px; }
+  #page-home .kpi-val { font-size: 34px; }
+  #page-home .kpi-val.kpi-has-eur::after { font-size: 19px; }
+
+  #page-budget .hero-value { font-size: 96px; }
+  #page-budget .hero-value.kpi-has-eur::after { font-size: 38px; }
+  #page-lifetime .hero-value { font-size: 96px; }
+  #page-lifetime .hero-value.kpi-has-eur::after { font-size: 38px; }
+  #page-lifetime .chart-wrap { height: 440px; }
+}
 </style>
 
 <!-- Pull to Refresh Indicator -->
@@ -994,7 +1241,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   <button class="btn btn-ghost btn-danger" id="resetBtn">Alle Daten löschen</button>
 </div>
 
-<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.82</div>
+<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.86</div>
 
 <!-- Spacer for bottom navigation bar -->
 <div style="height:80px"></div>
@@ -5791,7 +6038,7 @@ function guideWelcome(){
       </label>
       <button class="btn btn-ghost" style="width:100%;max-width:280px" onclick="guideNav(1)">Anleitung öffnen</button>
     </div>
-    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.82</div>
+    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.86</div>
   </div>`;
 }
 
@@ -6072,7 +6319,7 @@ function initApp(){
 }
 
 /* ── Service Worker ── */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.82').then(reg=>{reg.update();}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.86').then(reg=>{reg.update();}).catch(()=>{});}
 
 /* ── Start ── */
 /* Deferred Chart.js scripts finish executing before DOMContentLoaded fires,
