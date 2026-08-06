@@ -1255,7 +1255,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   <button class="btn btn-ghost btn-danger" id="resetBtn">Alle Daten löschen</button>
 </div>
 
-<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.89</div>
+<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.91</div>
 
 <!-- Spacer for bottom navigation bar -->
 <div style="height:80px"></div>
@@ -1408,6 +1408,11 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
 
 <!-- Settings -->
 <details class="lt-settings-panel">
+  <summary class="lt-settings-toggle">Asset-Parameter</summary>
+  <div style="padding:0 14px 14px;overflow-x:auto" id="lt-asset-params-table"></div>
+</details>
+
+<details class="lt-settings-panel" style="margin-top:8px">
   <summary class="lt-settings-toggle">Globale Einstellungen</summary>
   <div class="input-panel" style="border:none;padding:0 14px 14px;margin:0">
     <div class="input-grid">
@@ -1437,11 +1442,6 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
       </div>
     </div>
   </div>
-</details>
-
-<details class="lt-settings-panel" style="margin-top:8px">
-  <summary class="lt-settings-toggle">Asset-Parameter</summary>
-  <div style="padding:0 14px 14px;overflow-x:auto" id="lt-asset-params-table"></div>
 </details>
 
 <!-- Lifetime KPIs -->
@@ -6053,7 +6053,7 @@ function guideWelcome(){
       </label>
       <button class="btn btn-ghost" style="width:100%;max-width:280px" onclick="guideNav(1)">Anleitung öffnen</button>
     </div>
-    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.89</div>
+    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.91</div>
   </div>`;
 }
 
@@ -6334,7 +6334,7 @@ function initApp(){
 }
 
 /* ── Service Worker ── */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.89').then(reg=>{reg.update();}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.91').then(reg=>{reg.update();}).catch(()=>{});}
 
 /* ── Start ── */
 /* Deferred Chart.js scripts finish executing before DOMContentLoaded fires,
