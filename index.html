@@ -1255,7 +1255,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   <button class="btn btn-ghost btn-danger" id="resetBtn">Alle Daten löschen</button>
 </div>
 
-<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.97</div>
+<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.99</div>
 
 <!-- Spacer for bottom navigation bar -->
 <div style="height:80px"></div>
@@ -3225,6 +3225,51 @@ function setupChartInteraction(){
   canvas.addEventListener('mousemove',onMouseMove);
   canvas.addEventListener('mouseleave',onMouseLeave);
 
+  /* Horizontal scroll wheel: pan the visible x-range (ratcheted, animated) */
+  let _wheelAccum=0;
+  const WHEEL_THRESHOLD=120; /* accumulated delta needed to move 1 data point */
+  const onWheel=e=>{
+    const delta=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;
+    if(Math.abs(delta)<2)return;
+    e.preventDefault();
+    _wheelAccum+=delta;
+    const steps=Math.trunc(_wheelAccum/WHEEL_THRESHOLD);
+    if(steps===0)return;
+    _wheelAccum-=steps*WHEEL_THRESHOLD;
+    const xScale=chart.scales.x;
+    const totalPoints=chart.data.labels.length;
+    const visMin=xScale.min!=null?xScale.min:0;
+    const visMax=xScale.max!=null?xScale.max:(totalPoints-1);
+    let newMin=visMin+steps;
+    let newMax=visMax+steps;
+    if(newMin<0){newMax-=newMin;newMin=0;}
+    if(newMax>=totalPoints){newMin-=(newMax-totalPoints+1);newMax=totalPoints-1;}
+    newMin=Math.max(0,newMin);
+    chart.options.scales.x.min=newMin;
+    chart.options.scales.x.max=newMax;
+    /* Re-scale y-axis to fit visible data */
+    const datasets=chart.data.datasets;
+    let yMax=-Infinity;
+    datasets.forEach((ds,di)=>{
+      if(!chart.isDatasetVisible(di))return;
+      for(let i=newMin;i<=newMax;i++){
+        const v=ds.data[i];
+        if(v!=null&&isFinite(v)){
+          if(v>yMax)yMax=v;
+        }
+      }
+    });
+    if(yMax!==-Infinity){
+      const pad=(yMax)*0.05||1;
+      chart.options.scales.y.max=yMax+pad;
+    }
+    chart.update({duration:250,easing:'easeOutCubic'});
+    /* Show crosshair and update KPI at the rightmost visible point */
+    chartInteractionActive=true;
+    showValueAtIndex(newMax);
+  };
+  canvas.addEventListener('wheel',onWheel,{passive:false});
+
   _chartCleanup=()=>{
     canvas.removeEventListener('touchstart',onStart);
     canvas.removeEventListener('touchmove',onMove);
@@ -3232,6 +3277,7 @@ function setupChartInteraction(){
     canvas.removeEventListener('touchcancel',onEnd);
     canvas.removeEventListener('mousemove',onMouseMove);
     canvas.removeEventListener('mouseleave',onMouseLeave);
+    canvas.removeEventListener('wheel',onWheel);
     crossV.remove();crossH.remove();crossDot.remove();
     _chartCleanup=null;
   };
@@ -3482,6 +3528,8 @@ function isolateAssetLine(key,rowEl){
   tds.borderColor=inkColor;
   tds.borderWidth=1.5;
   tds.pointRadius=tds.data.length>24?1:2;
+  /* Reset explicit y-axis max so Chart.js auto-scales for the isolated line */
+  delete chart.options.scales.y.max;
   chart.options.animation={duration:CHART_ANIM_MS,easing:'easeOutQuart'};
   chart.update();
   /* Hero-KPI auf den Einzelwert umstellen + visuell markieren */
@@ -3550,6 +3598,7 @@ function _resetIsolationBaseline(){
     if(ds._isAsset)chart.setDatasetVisibility(i,showAssets);
     else chart.setDatasetVisibility(i,!netLineHidden[i]);
   });
+  delete chart.options.scales.y.max;
   chart.update('none');
   if(!chartInteractionActive){
     const heroLabel=document.querySelector('.hero-label');
@@ -6134,7 +6183,7 @@ function guideWelcome(){
       </label>
       <button class="btn btn-ghost" style="width:100%;max-width:280px" onclick="guideNav(1)">Anleitung öffnen</button>
     </div>
-    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.97</div>
+    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.99</div>
   </div>`;
 }
 
@@ -6415,7 +6464,7 @@ function initApp(){
 }
 
 /* ── Service Worker ── */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.97').then(reg=>{reg.update();}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.99').then(reg=>{reg.update();}).catch(()=>{});}
 
 /* ── Start ── */
 /* Deferred Chart.js scripts finish executing before DOMContentLoaded fires,
