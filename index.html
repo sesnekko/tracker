@@ -1255,7 +1255,7 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   <button class="btn btn-ghost btn-danger" id="resetBtn">Alle Daten löschen</button>
 </div>
 
-<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.93</div>
+<div style="font-size:10px;color:var(--muted);opacity:0.4;text-align:center;padding:20px 0 4px">v0.95</div>
 
 <!-- Spacer for bottom navigation bar -->
 <div style="height:80px"></div>
@@ -2062,15 +2062,23 @@ function renderNetChart(){
     return{label:grp.label,data:ns.map(ym=>{const det=data[ym]._details||{};const add=grp.addIds.reduce((s,id)=>s+(det[id]||0),0);const sub=grp.subIds.reduce((s,id)=>s+(det[id]||0),0);return Math.max(0,add-sub);}),borderColor:borderColor,backgroundColor:g,borderWidth:0.8,pointRadius:0,pointHoverRadius:3,tension:0.35,fill:true,_isAsset:true,hidden:!showAssets};
   });
   const xMin=netRange>0?Math.max(0,ns.length-netRange):0;
+  /* Calculate y-axis max based on visible datasets to minimize empty space */
+  let yMaxVal=0;
+  ad.forEach(ds=>{if(!ds.hidden)ds.data.forEach(v=>{if(v>yMaxVal)yMaxVal=v;});});
+  if(!showAssets)nv.forEach(v=>{if(v>yMaxVal)yMaxVal=v;});
+  const yMax=yMaxVal>0?Math.ceil(yMaxVal*1.01):undefined; /* 1% headroom */
+
   charts['net']=new Chart(ctx,{type:'line',data:{labels:lb,_keys:ns,datasets:[
-    {label:'Nettovermögen',data:nv,borderColor:ink,backgroundColor:gN,borderWidth:1.5,pointRadius:ns.length>24?1:2,pointHoverRadius:4,pointBackgroundColor:ink,pointBorderColor:!isDark?'#1c1c1a':'#f2efe9',pointBorderWidth:1,tension:0.35,fill:true,hidden:netLineHidden[0]},
+    {label:'Nettovermögen',data:showAssets?nv.map(()=>null):nv,borderColor:ink,backgroundColor:gN,borderWidth:1.5,pointRadius:ns.length>24?1:2,pointHoverRadius:4,pointBackgroundColor:ink,pointBorderColor:!isDark?'#1c1c1a':'#f2efe9',pointBorderWidth:1,tension:0.35,fill:true,hidden:netLineHidden[0]||showAssets,_baseData:nv},
     {label:'Vermögen',data:av,borderColor:grn,backgroundColor:gA,borderWidth:1.2,pointRadius:ns.length>24?0:2,tension:0.35,fill:true,hidden:netLineHidden[1]},
     {label:'Verbindlichkeiten',data:lv,borderColor:red,backgroundColor:gL,borderWidth:1.2,pointRadius:ns.length>24?0:2,tension:0.35,fill:true,hidden:netLineHidden[2]},
     ...ad
   ]},options:{...cd(),layout:{padding:{left:0,right:0,top:0,bottom:0}},plugins:{...cd().plugins,legend:{display:false},tooltip:{mode:'nearest',intersect:false,filter:it=>!showAssets||it.dataset._isAsset||it.datasetIndex<3,titleFont:{family:'IBM Plex Sans'},bodyFont:{family:'IBM Plex Sans'},callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},scales:{
     x:{display:false,min:xMin,max:ns.length-1},
-    y:{type:'linear',display:false}
+    y:{type:'linear',display:false,beginAtZero:true,max:yMax}
   }}});
+  /* Ensure hidden net line doesn't affect scale when assets are shown */
+  if(showAssets){charts['net'].setDatasetVisibility(0,false);charts['net'].update('none');}
   document.getElementById('assetsToggleBtn').classList.toggle('active',showAssets);
   document.getElementById('scaleToggleBtn').classList.toggle('active',useLogScale);
   setupChartInteraction();
@@ -2114,6 +2122,9 @@ function renderPieChart(){
           if(item.key)showAssetDetail(item.key);
         }
       });
+      /* Hover highlight: brighten the matching chart line */
+      li.addEventListener('mouseenter',()=>{_highlightAssetLine(item.key);});
+      li.addEventListener('mouseleave',()=>{_unhighlightAssetLines();});
       if(isolatedAsset&&item.key===isolatedAsset)li.classList.add('iso-active');
       container.appendChild(li);
     });
@@ -2121,6 +2132,47 @@ function renderPieChart(){
 }
 
 function render(){renderKPIs();renderNetChart();renderPieChart();const ltP=document.getElementById('page-lifetime');if(ltP&&ltP.classList.contains('active'))renderLifetimePage();}
+
+/* ── Asset Line Hover Highlight ── */
+let _highlightedKey=null;
+function _highlightAssetLine(key){
+  if(_highlightedKey===key)return;
+  _highlightedKey=key;
+  const chart=charts['net'];
+  if(!chart||!showAssets)return;
+  chart.data.datasets.forEach((ds,i)=>{
+    if(!ds._isAsset)return;
+    if(ds._origBorderColor==null)ds._origBorderColor=ds.borderColor;
+    if(ds._origBackgroundColor==null)ds._origBackgroundColor=ds.backgroundColor;
+    if(ds._origBorderWidth==null)ds._origBorderWidth=ds.borderWidth;
+    if(ds.label===key){
+      ds.borderColor=isDark?'rgba(255,255,255,0.85)':'rgba(40,38,34,0.9)';
+      ds.backgroundColor=isDark?'rgba(255,255,255,0.18)':'rgba(40,38,34,0.15)';
+      ds.borderWidth=2.5;
+    }else{
+      ds.borderColor=isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.08)';
+      ds.backgroundColor=isDark?'rgba(255,255,255,0.03)':'rgba(0,0,0,0.03)';
+      ds.borderWidth=0.5;
+    }
+  });
+  chart.update('none');
+}
+function _unhighlightAssetLines(){
+  if(_highlightedKey===null)return;
+  _highlightedKey=null;
+  const chart=charts['net'];
+  if(!chart||!showAssets)return;
+  chart.data.datasets.forEach((ds)=>{
+    if(!ds._isAsset)return;
+    if(ds._origBorderColor!=null)ds.borderColor=ds._origBorderColor;
+    if(ds._origBackgroundColor!=null)ds.backgroundColor=ds._origBackgroundColor;
+    if(ds._origBorderWidth!=null)ds.borderWidth=ds._origBorderWidth;
+    delete ds._origBorderColor;
+    delete ds._origBackgroundColor;
+    delete ds._origBorderWidth;
+  });
+  chart.update('none');
+}
 
 /* ── CSV Import ── */
 function normalizeColumnName(name){return name.toLowerCase().replace(/\s+/g,' ').trim();}
@@ -2910,7 +2962,8 @@ function setupChartInteraction(){
   if(!canvas||!chart)return;
 
   let lastIndex=-1;
-  const netData=chart.data.datasets[0].data;
+  const ds0=chart.data.datasets[0];
+  const netData=ds0._baseData||ds0.data;
   const labels=chart.data.labels;
   const dataKeys=chart.data._keys||labels;
 
@@ -2953,6 +3006,13 @@ function setupChartInteraction(){
     if(isolatedAsset){
       const e=loadData()[dataKeys[idx]];
       yVal=assetGroupValue((e&&e._details)?e._details:{},isolatedAsset);
+    }else if(showAssets){
+      /* When asset sublines are shown, follow the highest visible asset line */
+      let maxY=0;
+      chart.data.datasets.forEach(ds=>{
+        if(ds._isAsset&&!ds.hidden&&ds.data[idx]!=null)maxY=Math.max(maxY,ds.data[idx]);
+      });
+      yVal=maxY;
     }
     const py=yScale.getPixelForValue(yVal);
     return{x:px,y:py};
@@ -3273,6 +3333,15 @@ function toggleAssets(){
       ds.borderColor=ds._baseBorderColor;
       ds.backgroundColor=ds._baseBackgroundColor;
     });
+    /* Hide Nettovermögen line and null its data so it doesn't affect y-scale */
+    chart.setDatasetVisibility(0,false);
+    const ds0=chart.data.datasets[0];
+    if(!ds0._baseData)ds0._baseData=ds0.data;
+    ds0.data=ds0._baseData.map(()=>null);
+    /* Rescale y-axis to asset lines */
+    let yM=0;
+    assetIdx.forEach(i=>{chart.data.datasets[i].data.forEach(v=>{if(v>yM)yM=v;});});
+    chart.options.scales.y.max=yM>0?Math.ceil(yM*1.01):undefined;
     chart.options.animation={duration:ASSET_TOGGLE_MS,easing:'easeOutQuart'};
     chart.update();
   }else{
@@ -3287,6 +3356,16 @@ function toggleAssets(){
       ds.borderColor=_toTransparentColor(ds._baseBorderColor);
       ds.backgroundColor=_toTransparentColor(ds._baseBackgroundColor);
     });
+    /* Show Nettovermögen line and restore its data */
+    if(!netLineHidden[0]){
+      const ds0=chart.data.datasets[0];
+      if(ds0._baseData)ds0.data=ds0._baseData;
+      chart.setDatasetVisibility(0,true);
+      /* Rescale y-axis to net line */
+      let yM=0;
+      ds0.data.forEach(v=>{if(v>yM)yM=v;});
+      chart.options.scales.y.max=yM>0?Math.ceil(yM*1.01):undefined;
+    }
     chart.options.animation={duration:ASSET_TOGGLE_MS,easing:'easeOutQuart'};
     chart.update();
     _assetsToggleTimer=setTimeout(()=>{
@@ -3467,6 +3546,7 @@ function _resetIsolationBaseline(){
   _restoreIsolatedStyling(chart);
   chart.data.datasets.forEach((ds,i)=>{
     if(ds._isAsset)chart.setDatasetVisibility(i,showAssets);
+    else if(i===0)chart.setDatasetVisibility(i,!netLineHidden[i]&&!showAssets);
     else chart.setDatasetVisibility(i,!netLineHidden[i]);
   });
   chart.update('none');
@@ -6053,7 +6133,7 @@ function guideWelcome(){
       </label>
       <button class="btn btn-ghost" style="width:100%;max-width:280px" onclick="guideNav(1)">Anleitung öffnen</button>
     </div>
-    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.93</div>
+    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.95</div>
   </div>`;
 }
 
@@ -6334,7 +6414,7 @@ function initApp(){
 }
 
 /* ── Service Worker ── */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.93').then(reg=>{reg.update();}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=0.95').then(reg=>{reg.update();}).catch(()=>{});}
 
 /* ── Start ── */
 /* Deferred Chart.js scripts finish executing before DOMContentLoaded fires,
