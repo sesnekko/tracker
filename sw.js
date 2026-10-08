@@ -1,4 +1,4 @@
-const CACHE='verm-v87';
+const CACHE='verm-v88';
 const ASSETS=[
   './index.html',
   './data-store.js?v=8',
@@ -7,6 +7,7 @@ const ASSETS=[
   './asset-model.js?v=3',
   './demo_backup.json',
   './manifest.json',
+  './icon-192.png',
   './demo_export.csv',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',
   'https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js',

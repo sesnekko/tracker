@@ -1615,13 +1615,26 @@ select.ds-in{padding-right:28px;text-align:left;background-image:linear-gradient
 #v2-lt-open{margin-top:12px}
 
 /* Guided setup: short explanations, one clear action per screen. */
-.onboarding-next{grid-column:1 / -1;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin:8px 0 20px}
-.onboarding-next{position:relative}
-.onboarding-next-close{position:absolute;top:8px;right:8px;width:36px;height:36px;border:none;border-radius:50%;background:var(--fill);color:var(--muted);font-size:20px;line-height:1;cursor:pointer}
-.onboarding-next h2{padding-right:36px;font-size:17px;font-weight:500;color:var(--ink);margin:0 0 6px}
-.onboarding-next p{font-size:14px;line-height:1.55;color:var(--muted);margin:0 0 10px}
-.onboarding-next a{display:inline-flex;align-items:center;min-height:44px;color:var(--green);font-size:15px;font-weight:500;text-underline-offset:3px}
-.onboarding-next a:focus-visible{outline:2px solid var(--green);outline-offset:4px;border-radius:4px}
+.ob-notif{position:fixed;z-index:350;top:calc(env(safe-area-inset-top) + 8px);left:8px;right:8px;max-width:440px;margin:0 auto;touch-action:none;-webkit-user-select:none;user-select:none;
+  background:color-mix(in srgb,var(--bg2) 80%,transparent);-webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);
+  border-radius:22px;box-shadow:0 10px 34px rgba(0,0,0,.22),0 0 0 .5px color-mix(in srgb,var(--ink) 10%,transparent);
+  transition:transform .25s cubic-bezier(.3,.7,.3,1),opacity .25s;animation:obNotifIn .55s cubic-bezier(.2,.9,.25,1.15)}
+body.dark .ob-notif{box-shadow:0 10px 34px rgba(0,0,0,.5),0 0 0 .5px color-mix(in srgb,var(--ink) 14%,transparent)}
+.ob-notif[hidden]{display:none}
+@keyframes obNotifIn{from{transform:translateY(calc(-100% - 24px));opacity:.4}to{transform:none;opacity:1}}
+.ob-notif-body{-webkit-user-drag:none;display:flex;align-items:flex-start;gap:11px;padding:12px 14px 13px;color:inherit;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:22px}
+.ob-notif-body:active{background:var(--fill)}
+.ob-notif-body:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.ob-notif-icon{flex:0 0 auto;width:38px;height:38px;border-radius:9px;overflow:hidden;background:var(--card)}
+.ob-notif-icon img{width:100%;height:100%;display:block}
+.ob-notif-text{flex:1;min-width:0;display:flex;flex-direction:column}
+.ob-notif-head{display:flex;align-items:baseline;gap:8px}
+.ob-notif-head b{flex:1;min-width:0;font-size:15px;font-weight:600;color:var(--ink);outline:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ob-notif-head time{font-size:13px;color:var(--muted);flex-shrink:0}
+.ob-notif-msg{font-size:14.5px;line-height:1.35;color:var(--text);margin-top:1px}
+.ob-notif-close{position:absolute;top:-7px;left:-7px;width:24px;height:24px;border-radius:50%;border:.5px solid color-mix(in srgb,var(--ink) 15%,transparent);background:var(--bg2);color:var(--muted);font-size:15px;line-height:1;cursor:pointer;display:none;padding:0;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+@media(hover:hover) and (pointer:fine){.ob-notif:hover .ob-notif-close,.ob-notif:focus-within .ob-notif-close{display:block}}
+@media(min-width:768px){.ob-notif{left:auto;right:16px;top:16px;width:380px;margin:0}}
 body.onboarding-open{overflow:hidden}
 .ob-overlay{overscroll-behavior:contain}
 .ob-tour,.ob-welcome{padding:28px 24px;padding-top:max(28px,env(safe-area-inset-top));padding-bottom:max(28px,env(safe-area-inset-bottom));gap:0}
@@ -1792,11 +1805,15 @@ body.onboarding-open{overflow:hidden}
 <div id="page-home" class="page active">
 <div class="app-content">
 
-<aside id="onboardingNextStep" class="onboarding-next" aria-labelledby="onboardingNextTitle" hidden>
-  <button type="button" class="onboarding-next-close" onclick="dismissOnboardingNext()" aria-label="Hinweis schließen">×</button>
-  <h2 id="onboardingNextTitle" tabindex="-1">Dein nächster Schritt</h2>
-  <p>Ergänze jetzt deine Verbindlichkeiten, Einnahmen &amp; Ausgaben sowie weitere Angaben auf der Daten-Seite. Du kannst alles jederzeit anpassen.</p>
-  <a href="#data" onclick="event.preventDefault();dismissOnboardingNext();navigateToPage('import')">Weitere Angaben ergänzen →</a>
+<aside id="onboardingNextStep" class="ob-notif" role="status" aria-labelledby="onboardingNextTitle" hidden>
+  <a href="#data" class="ob-notif-body" draggable="false" onclick="event.preventDefault();if(!_obNotifDragged){dismissOnboardingNext();navigateToPage('import')}">
+    <span class="ob-notif-icon"><img src="icon-192.png" alt="" draggable="false"></span>
+    <span class="ob-notif-text">
+      <span class="ob-notif-head"><b id="onboardingNextTitle" tabindex="-1">Dein nächster Schritt</b><time>jetzt</time></span>
+      <span class="ob-notif-msg">Ergänze deine Verbindlichkeiten, Einnahmen &amp; Ausgaben und weitere Angaben auf der Daten-Seite.</span>
+    </span>
+  </a>
+  <button type="button" class="ob-notif-close" onclick="dismissOnboardingNext('up')" aria-label="Hinweis schließen">×</button>
 </aside>
 
 <!-- Hero: Nettovermögen -->
@@ -8350,7 +8367,41 @@ function prepareOnboardingDocument(original,rows,month,liveMonth=month){
   return AssetsData.validate(doc);
 }
 /* Der Hinweis nach dem Rundgang gilt nur, bis die Daten-Seite geöffnet oder er geschlossen wird */
-function dismissOnboardingNext(){const el=document.getElementById('onboardingNextStep');if(el)el.hidden=true;}
+/* Wie eine Push-Mitteilung: Antippen öffnet die Daten-Seite, Wischen nach oben oder zur Seite entfernt sie */
+let _obNotifDragged=false;
+function dismissOnboardingNext(direction){
+  const el=document.getElementById('onboardingNextStep');if(!el||el.hidden)return;
+  if(!direction){el.hidden=true;return;}
+  el.style.transform=direction==='up'?'translateY(calc(-100% - 24px))':'translateX('+(direction==='right'?'':'-')+'120%)';
+  el.style.opacity='0';
+  setTimeout(()=>{el.hidden=true;el.style.transform='';el.style.opacity='';},260);
+}
+function _initObNotif(){
+  const el=document.getElementById('onboardingNextStep');if(!el||el._ready)return;el._ready=true;
+  let x0=0,y0=0,dx=0,dy=0,active=false;
+  const move=e=>{
+    dx=e.clientX-x0;dy=e.clientY-y0;
+    if(!_obNotifDragged&&Math.hypot(dx,dy)<6)return;
+    _obNotifDragged=true;
+    el.style.transform=`translate(${dx}px,${dy<0?dy:dy*.2}px)`;
+    el.style.opacity=String(Math.max(.25,1-Math.max(Math.abs(dx)/320,-dy/160)));
+  };
+  const end=()=>{
+    if(!active)return;active=false;
+    window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',end);window.removeEventListener('pointercancel',end);
+    el.style.transition='';
+    if(_obNotifDragged){setTimeout(()=>{_obNotifDragged=false;},350);}
+    if(dy<-35&&-dy>Math.abs(dx))return dismissOnboardingNext('up');
+    if(Math.abs(dx)>80)return dismissOnboardingNext(dx>0?'right':'left');
+    el.style.transform='';el.style.opacity='';
+  };
+  el.addEventListener('dragstart',e=>e.preventDefault());
+  el.addEventListener('pointerdown',e=>{
+    if(e.button>0||e.target.closest('.ob-notif-close'))return;
+    active=true;_obNotifDragged=false;x0=e.clientX;y0=e.clientY;dx=dy=0;el.style.transition='none';
+    window.addEventListener('pointermove',move);window.addEventListener('pointerup',end);window.addEventListener('pointercancel',end);
+  });
+}
 function finishOnboarding(){
   try{
     const doc=prepareOnboardingDocument(appStorage.document(),_guideNew?_guideDraft.positions:[],currentYM(),nextYM());
@@ -8517,6 +8568,7 @@ function initApp(){
     /* Data Entry Form */
     initDataEntryForm();
     _initSheet();
+    _initObNotif();
     _refreshBackupInfo();
     
     /* Lifetime Page */
