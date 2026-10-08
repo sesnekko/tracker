@@ -1269,6 +1269,22 @@ body.iso-mode .hero-label::before{display:none}
 .live-popup-title{text-transform:none;letter-spacing:0;font-size:17px;font-weight:600;color:var(--ink)}
 .live-popup-row{border-bottom:.5px solid var(--sep);padding:8px 0}
 .live-popup-close button{border:none;background:var(--fill);color:var(--ink);border-radius:12px;padding:9px 22px;font-size:15px}
+.live-popup-val{white-space:nowrap}
+.live-popup-name{color:var(--ink)}
+.live-popup-row{min-height:44px;align-items:center}
+.live-popup-row{gap:16px}
+#assetPopup{width:min(380px,calc(100vw - 32px))}
+.v2-pg+.v2-pg{margin-top:16px}
+.v2-pg-t{font-size:13px;color:var(--muted);margin-bottom:2px}
+.v2-pr{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:44px;padding:6px 0}
+.v2-pr+.v2-pr{box-shadow:inset 0 .5px 0 var(--sep)}
+.v2-pr-l{display:flex;flex-direction:column;min-width:0}
+.v2-pr-l>span{color:var(--ink);font-size:15px;line-height:1.3}
+.v2-pr-l>small{color:var(--muted);font-size:12.5px;margin-top:1px;font-variant-numeric:tabular-nums}
+.v2-pr-v{font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;flex-shrink:0}
+.v2-pr-v.up{color:var(--green)} .v2-pr-v.down{color:var(--red)}
+.v2-pr-strong .v2-pr-l>span,.v2-pr-strong .v2-pr-v{font-weight:600}
+.v2-pg+.v2-pg:not(:has(.v2-pg-t)){box-shadow:inset 0 .5px 0 var(--sep);margin-top:0}
 .live-overlay{background:rgba(0,0,0,.35)}
 .picker-popup-title,.sidebar-title{text-transform:none;letter-spacing:0}
 
@@ -1352,10 +1368,22 @@ details.tut-section[open]>.tut-toggle::after{transform:rotate(45deg)}
 .tut-body .tut-section{background:var(--fill)}
 .tut-body .tut-toggle{font-size:14.5px;min-height:44px;padding:11px 14px}
 .csv-msg{text-align:center;margin:8px 0}
+.v2-empty-state{background:var(--card);border-radius:16px;padding:18px 16px;margin-top:12px;text-align:center}
+.v2-empty-state .v2-t2{margin:4px 0 0;line-height:1.45}
+.ob-title{font-weight:400;font-size:28px}
+.ob-actions .btn{min-height:50px}
 
 /* Budget */
 #page-budget .kpi-item{height:112px}
-#geldflussLabel{text-align:left;margin-top:28px;padding-left:16px}
+/* Geldfluss: Überschrift mittig, ein Trennstrich zwischen Überschrift und Einnahmen/Ausgaben */
+.v2-sankey{margin-top:22px;padding-top:22px;border-top:1px solid var(--border)}
+.v2-sankey-head{display:flex;justify-content:center;cursor:pointer;-webkit-user-select:none;user-select:none}
+.v2-sankey-head .chart-label{margin:0;font-size:14px}
+.v2-sankey .sankey-wrap.collapsed{min-height:0}
+/* Kästen: zur Flussseite hin gerade Kante (Rückseite ist gespiegelt) */
+.sankey-left .sankey-node-front,.sankey-right .sankey-node-back{border-radius:12px 0 0 12px}
+.sankey-right .sankey-node-front,.sankey-left .sankey-node-back{border-radius:0 12px 12px 0}
+.v2-sankey .sankey-container-html{padding:16px 0 12px}
 .sankey-section-title{text-transform:none;letter-spacing:0;font-size:13px;font-weight:400}
 .sankey-node-front,.sankey-node-back{border-radius:12px;background:var(--card)}
 .sankey-node-back-label{text-transform:none;letter-spacing:0;font-size:11px}
@@ -1640,8 +1668,6 @@ details.tut-section[open]>.tut-toggle::after{transform:rotate(45deg)}
   </div>
 </details>
 
-<div class="sec-h">Hilfe</div>
-<div id="v2-tut"></div>
 
 <div class="sec-h">Sicherung</div>
 <div class="v2-list">
@@ -1735,8 +1761,10 @@ details.tut-section[open]>.tut-toggle::after{transform:rotate(45deg)}
 </div>
 
 <!-- Sankey Diagram -->
-<div class="chart-label" id="geldflussLabel" style="cursor:pointer;user-select:none;-webkit-user-select:none;margin-bottom:10px;transition:margin-bottom 0.4s ease">Geldfluss</div>
-<div class="sankey-wrap" id="sankeyWrap"></div>
+<div class="v2-sankey">
+  <div class="v2-sankey-head" id="geldflussLabel" role="button" tabindex="0"><span class="chart-label">Geldfluss</span></div>
+  <div class="sankey-wrap" id="sankeyWrap"></div>
+</div>
 
 </div><!-- /app-content -->
 </div>
@@ -3855,57 +3883,41 @@ function showAssetDetail(assetKey){
   const details=entry._details||{};
   const units=entry._units||{};
   
-  let html='';
   let assetTotal=0;
   let liabTotal=0;
-  
+  /* Aufbau in Gruppen: Positionen · Summe · letzte 12 Monate (keine doppelten Linien, Beträge brechen nie um) */
+  const sg=v=>(v>0.5?'+':v<-0.5?'−':'±')+fmt(Math.abs(v));
+  const tone=v=>v>0.5?'up':v<-0.5?'down':'';
+  const row=(label,val,o={})=>`<div class="v2-pr${o.strong?' v2-pr-strong':''}"><span class="v2-pr-l"><span>${label}</span>${o.sub?`<small>${o.sub}</small>`:''}</span><span class="v2-pr-v ${o.cls||''}">${val}</span></div>`;
+  const group=(title,rows)=>rows?`<div class="v2-pg">${title?`<div class="v2-pg-t">${title}</div>`:''}${rows}</div>`:'';
+  let pos='';
   mapping.forEach(item=>{
     const val=details[item.key]!==undefined?details[item.key]:(entry[item.key]||0);
     const unitCount=item.unit?units[item.unit]||0:null;
-    
     if(val!==0||unitCount){
-      const displayVal=item.negative?-val:val;
       if(item.negative){liabTotal+=val;}else{assetTotal+=val;}
-      
-      html+=`<div class="live-popup-row">`;
-      html+=`<span class="live-popup-name">${item.label}</span>`;
-      html+=`<div style="text-align:right">`;
-      if(unitCount){
-        const unitLabel=item.unitLabel;
-        html+=`<div style="font-size:11px;color:var(--muted)">${unitCount.toLocaleString('de-DE',{maximumFractionDigits:4})} ${unitLabel}</div>`;
-      }
-      html+=`<span class="live-popup-val${item.negative?' fail':''}">${fmt(displayVal)}</span>`;
-      html+=`</div>`;
-      html+=`</div>`;
+      const sub=unitCount?unitCount.toLocaleString('de-DE',{maximumFractionDigits:4})+' '+item.unitLabel:'';
+      pos+=row(item.label,item.negative?'−'+fmt(val):fmt(val),{sub,cls:item.negative?'down':''});
     }
   });
-  
-  // Show net value when there are liabilities in this group
+  let sum='';
   if(liabTotal>0){
-    const netValue=assetTotal-liabTotal;
-    html+=`<div class="live-popup-row" style="border-top:2px solid var(--border);margin-top:8px;padding-top:8px;font-weight:500">`;
-    html+=`<span class="live-popup-name">Netto</span>`;
-    html+=`<span class="live-popup-val">${fmt(netValue)}</span>`;
-    html+=`</div>`;
-    if(assetTotal>0){
-      html+=`<div class="live-popup-row"><span class="live-popup-name">Beleihung</span><span class="live-popup-val">${(liabTotal/assetTotal*100).toLocaleString('de-DE',{maximumFractionDigits:1})} %</span></div>`;
-    }
+    sum+=row('Netto',fmt(assetTotal-liabTotal),{strong:true});
+    if(assetTotal>0)sum+=row('Beleihung',(liabTotal/assetTotal*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' %');
   }else if(mapping.length>1){
-    html+=`<div class="live-popup-row" style="border-top:2px solid var(--border);margin-top:8px;padding-top:8px;font-weight:500">`;
-    html+=`<span class="live-popup-name">Gesamt</span>`;
-    html+=`<span class="live-popup-val">${fmt(assetTotal)}</span>`;
-    html+=`</div>`;
+    sum+=row('Gesamt',fmt(assetTotal),{strong:true});
   }
-  
   /* Entwicklung der Gruppe über die letzten 12 Monate */
+  let dev='',devTitle='';
   const keysAll=Object.keys(data).sort(),iSel=keysAll.indexOf(selectedMonth);
   if(iSel>0){
     const fl=calcFlows(keysAll[Math.max(0,iSel-12)],selectedMonth,assetKey);
-    const sign=v=>(v>0?'+':'')+fmt(v);
-    html+=`<div class="live-popup-row" style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px"><span class="live-popup-name">Sparleistung ${fl.months} M</span><span class="live-popup-val">${sign(fl.flow)}</span></div>`;
-    if(Math.abs(fl.market)>=1)html+=`<div class="live-popup-row"><span class="live-popup-name">Kursentwicklung${fl.marketPa!=null?' (≈ '+(fl.marketPa*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' % p.a.)':''}</span><span class="live-popup-val">${sign(fl.market)}</span></div>`;
-    if(Math.abs(fl.other)>=1)html+=`<div class="live-popup-row"><span class="live-popup-name">Sonstige Wertänderung</span><span class="live-popup-val">${sign(fl.other)}</span></div>`;
+    devTitle='Letzte '+fl.months+' Monate';
+    dev+=row('Sparleistung',sg(fl.flow),{cls:tone(fl.flow)});
+    if(Math.abs(fl.market)>=1)dev+=row('Kursentwicklung',sg(fl.market),{cls:tone(fl.market),sub:fl.marketPa!=null?'≈ '+(fl.marketPa<0?'−':'+')+Math.abs(fl.marketPa*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' % pro Jahr':''});
+    if(Math.abs(fl.other)>=1)dev+=row('Sonstige Wertänderung',sg(fl.other),{cls:tone(fl.other)});
   }
+  const html=group('',pos)+group('',sum)+group(devTitle,dev);
   document.getElementById('assetPopupContent').innerHTML=html;
   lockBodyScroll();
   document.getElementById('assetPopup').classList.add('show');
@@ -4847,8 +4859,8 @@ function renderBudgetSankey(c){
   let html='<div class="sankey-container-html">';
   
   // Section labels
-  html+='<div class="sankey-section-header"><span class="sankey-section-title">EINNAHMEN</span></div>';
-  html+='<div class="sankey-section-header sankey-section-right"><span class="sankey-section-title">AUSGABEN</span></div>';
+  html+='<div class="sankey-section-header"><span class="sankey-section-title">Einnahmen</span></div>';
+  html+='<div class="sankey-section-header sankey-section-right"><span class="sankey-section-title">Ausgaben</span></div>';
   
 	  // Left nodes (Einnahmen)
 	  html+='<div class="sankey-column sankey-left">';
@@ -4926,10 +4938,23 @@ function renderBudgetSankey(c){
   setTimeout(()=>renderSankeyFlows(leftNodes,rightNodes,flows),50);
 }
 
+let _sankeyArgs=null,_sankeyRO=null,_sankeyRaf=0;
 function renderSankeyFlows(leftNodes,rightNodes,flows){
   const svg=document.querySelector('.sankey-flows-svg');
   const flowsWrap=document.querySelector('.sankey-flows-wrap');
   if(!svg||!flowsWrap)return;
+  /* Bei jeder Größenänderung (Drehen, Fenster, Auf-/Zuklappen) neu zeichnen */
+  _sankeyArgs=[leftNodes,rightNodes,flows];
+  if(window.ResizeObserver){
+    if(_sankeyRO)_sankeyRO.disconnect();
+    let first=true;
+    _sankeyRO=new ResizeObserver(()=>{
+      if(first){first=false;return;}
+      cancelAnimationFrame(_sankeyRaf);
+      _sankeyRaf=requestAnimationFrame(()=>{if(_sankeyArgs&&document.body.contains(flowsWrap))renderSankeyFlows(..._sankeyArgs);});
+    });
+    _sankeyRO.observe(flowsWrap);
+  }
   
   const wrapRect=flowsWrap.getBoundingClientRect();
   if(wrapRect.width<1||wrapRect.height<1)return;
@@ -5280,7 +5305,7 @@ function renderBudgetBreakdown(c){
   // ── Nicht verplant ──
   if(c.einnahmen>0){
     const neg=c.frei<0;
-    html+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:12px;border-top:1px solid var(--border)">`;
+    html+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:22px">`;
     html+=`<div class="chart-label" style="margin:0">${neg?'Überplant':'Nicht verplant'}</div>`;
     html+=`<div style="font-weight:500;color:${neg?'var(--red)':'var(--ink)'}">${fmt(c.frei)}</div>`;
     html+=`</div>`;
@@ -5947,7 +5972,7 @@ function buildDynamicForm(){
   
   /* ── Empty State: Kein CSV importiert → Tutorial anzeigen ── */
   if(!hasFields){
-    container.innerHTML=buildTutorialHTML(true);
+    container.innerHTML=`<div class="v2-empty-state"><div class="v2-t1">Noch keine Daten</div><div class="v2-t2">Importiere deine CSV-Datei weiter unten oder probiere die App mit Demo-Daten aus.</div><button class="btn btn-ghost v2-wide" onclick="_v2LoadDemo()">Demo-Daten laden</button></div>`;
     return;
   }
   
@@ -6152,7 +6177,6 @@ function buildDynamicForm(){
   }
   
   html+=`</div>`;/* /input-panel */
-  /* Anleitung steht in Design 2 weiter unten (#v2-tut) */
   container.innerHTML=html;
   _v2SyncSwitches();
 
@@ -7303,8 +7327,6 @@ function _v2InitModules(){
     const sw=e.target.closest&&e.target.closest('.v2-switch');
     if(sw&&(e.key===' '||e.key==='Enter')){e.preventDefault();flip(sw);}
   });
-  const tut=document.getElementById('v2-tut');
-  if(tut&&_fc.fields.length)tut.innerHTML=buildTutorialHTML(false);
   document.getElementById('v2-lt-open').addEventListener('click',_v2OpenForecastSettings);
   _v2SyncSwitches();
   _v2ApplyModules();
@@ -7447,18 +7469,32 @@ function hideOnboarding(){document.getElementById('onboardingOverlay').style.dis
 function guideRender(){document.getElementById('onboardingOverlay').innerHTML=guideScreens[_guideStep]();}
 function guideNav(d){_guideStep=Math.max(0,Math.min(GUIDE_TOTAL-1,_guideStep+d));guideRender();}
 
+/* Demo-Daten über den normalen CSV-Import laden */
+async function _v2LoadDemo(){
+  if(Object.keys(loadData()).length&&!confirm('Die Demo-Daten werden zu deinen vorhandenen Daten hinzugefügt. Fortfahren?'))return;
+  try{
+    const r=await fetch('demo_export.csv',{cache:'no-cache'});
+    if(!r.ok)throw new Error(r.status);
+    const f=new File([await r.text()],'demo_export.csv',{type:'text/csv'});
+    const dt=new DataTransfer();dt.items.add(f);
+    const inp=document.getElementById('csvInput');
+    inp.files=dt.files;
+    hideOnboarding();
+    inp.dispatchEvent(new Event('change'));
+  }catch(e){alert('Die Demo-Daten konnten nicht geladen werden. Bitte die Internetverbindung prüfen.');}
+}
 function guideWelcome(){
   return`<div class="ob-screen">
-    <div class="ob-title">Asset Tracker</div>
-    <div class="ob-sub">Verwalte dein Vermögen, Budget und erstelle eine Langzeit-Prognose. Alle Daten bleiben lokal in deinem Browser — nichts wird an einen Server gesendet.</div>
-    <div class="ob-actions" style="flex-direction:column;align-items:center;gap:12px">
-      <label class="btn btn-primary" style="cursor:pointer;width:100%;max-width:280px;text-align:center">
+    <div class="ob-title">Vermögen</div>
+    <div class="ob-sub">Behalte dein Vermögen, dein Budget und deinen Ruhestand im Blick. Alle Daten bleiben auf deinem Gerät, nichts wird an einen Server gesendet.</div>
+    <div class="ob-actions" style="flex-direction:column;align-items:center;gap:10px">
+      <label class="btn btn-primary" style="cursor:pointer;width:100%;max-width:300px;display:flex;align-items:center;justify-content:center">
         CSV importieren
         <input type="file" accept=".csv" style="display:none" onchange="hideOnboarding();document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))">
       </label>
-      <button class="btn btn-ghost" style="width:100%;max-width:280px" onclick="guideNav(1)">Anleitung öffnen</button>
+      <button class="btn btn-ghost" style="width:100%;max-width:300px" onclick="_v2LoadDemo()">Mit Demo-Daten ausprobieren</button>
     </div>
-    <div style="font-size:10px;color:var(--muted);opacity:0.4;margin-top:24px">v0.99</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:22px;max-width:300px;text-align:center;line-height:1.5">Demo-Daten lassen sich jederzeit unter Daten → „Alle Daten löschen“ wieder entfernen.</div>
   </div>`;
 }
 

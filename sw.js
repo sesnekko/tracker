@@ -1,7 +1,8 @@
-const CACHE='verm-v68';
+const CACHE='verm-v69';
 const ASSETS=[
   './index.html',
   './manifest.json',
+  './demo_export.csv',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',
   'https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js',
   'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap'
