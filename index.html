@@ -1729,6 +1729,10 @@ details.tut-section[open]>.tut-toggle::after{transform:rotate(45deg)}
 
 
 <div class="v2-list" style="margin-top:28px">
+  <button class="v2-row" onclick="_v2RestoreDemo()"><span class="v2-t"><span class="v2-t1">Demo-Daten wiederherstellen</span><span class="v2-t2">Ersetzt alle Daten durch die Beispieldaten</span></span><span class="v2-chev"></span></button>
+</div>
+
+<div class="v2-list" style="margin-top:12px">
   <button class="v2-row v2-row-danger" id="resetBtn"><span class="v2-t"><span class="v2-t1">Alle Daten löschen</span></span></button>
 </div>
 
@@ -7630,6 +7634,20 @@ function hideOnboarding(){document.getElementById('onboardingOverlay').style.dis
 function guideRender(){document.getElementById('onboardingOverlay').innerHTML=guideScreens[_guideStep]();}
 function guideNav(d){_guideStep=Math.max(0,Math.min(GUIDE_TOTAL-1,_guideStep+d));guideRender();}
 
+/* Demo-Daten wiederherstellen: ersetzt alle Daten. Demo wird zuerst geladen, damit bei einem
+   Fehler nichts gelöscht wird; Import nach Neustart mit leerem Speicher (siehe initApp). */
+async function _v2RestoreDemo(){
+  if(!confirm('Alle aktuellen Daten (Vermögen, Budget, Prognose) werden gelöscht und durch die Demo-Daten ersetzt.\n\nTipp: vorher per „CSV exportieren“ sichern.\n\nFortfahren?'))return;
+  let txt;
+  try{const r=await fetch('demo_export.csv',{cache:'no-cache'});if(!r.ok)throw new Error(r.status);txt=await r.text();}
+  catch(e){alert('Die Demo-Daten konnten nicht geladen werden. Deine Daten bleiben unverändert.');return;}
+  if(!/^\uFEFF?Typ;/.test(txt)){alert('Die Demo-Datei ist ungültig. Deine Daten bleiben unverändert.');return;}
+  const theme=localStorage.getItem('darkMode');
+  localStorage.clear();
+  if(theme!==null)localStorage.setItem('darkMode',theme);
+  sessionStorage.setItem('v2-demo-pending',txt);
+  location.reload();
+}
 /* Demo-Daten über den normalen CSV-Import laden */
 async function _v2LoadDemo(){
   if(Object.keys(loadData()).length&&!confirm('Die Demo-Daten werden zu deinen vorhandenen Daten hinzugefügt. Fortfahren?'))return;
@@ -7953,6 +7971,15 @@ function initApp(){
     const hasConfig=_fc.fields.length>0;
     if(!hasAnyData&&!hasConfig){
       showOnboarding();
+    }
+    /* Demo-Daten wiederherstellen: nach dem Neustart mit leerem Speicher importieren */
+    const demoPending=sessionStorage.getItem('v2-demo-pending');
+    if(demoPending){
+      sessionStorage.removeItem('v2-demo-pending');
+      const dt=new DataTransfer();dt.items.add(new File([demoPending],'demo_export.csv',{type:'text/csv'}));
+      const ci=document.getElementById('csvInput');ci.files=dt.files;
+      hideOnboarding();
+      ci.dispatchEvent(new Event('change'));
     }
 
     /* Live Prices */
