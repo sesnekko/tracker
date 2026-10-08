@@ -27,6 +27,12 @@ Vermoegen;2026-01;9800;3920;500;10445;4813;1830;0;2280;3400;310000;211000;93,02;
 Vermoegen;2026-02;9875;2050;500;10912;4946;1614;0;2300;3400;310000;210000;96,11;7,93;0,0285;0
 Vermoegen;2026-03;9950;3980;500;10735;4907;1729;8526;2320;3400;310000;209000;99,34;8,18;0,0293;2
 Vermoegen;2026-04;10025;1990;500;11316;5150;1753;12267;2340;3400;310000;208000;102,52;8,42;0,0302;3
+Vermoegen;2026-05;10100;3860;500;12067;5445;1891;12150;2360;3600;310000;207000;105,85;8,67;0,031;3
+Vermoegen;2026-06;10175;2180;500;12829;5843;2051;11940;2380;3600;310000;206000;109,18;8,92;0,0318;3
+Vermoegen;2026-07;6050;3940;500;13051;5878;1972;15560;2400;3600;315000;205000;112,51;9,17;0,0326;4
+Vermoegen;2026-08;6125;2260;500;14017;6453;2254;15360;2420;3600;315000;204000;115,84;9,42;0,0334;4
+Vermoegen;2026-09;6200;3990;500;15015;6943;2456;15040;2440;3800;315000;203000;119,17;9,67;0,0342;4
+Vermoegen;2026-10;6275;2310;500;15986;7400;2576;14840;2460;3800;315000;202000;122,5;9,92;0,035;4
 ;;;;;;;;;;;;;;;;
 Typ;Spalte;Gruppe;Kategorie;Ticker;;;;;;;;;;;;
 Gruppe;Tagesgeld;Cash;cash;;;;;;;;;;;;;
@@ -47,7 +53,7 @@ Budget;Einkommen;;Nettogehalt Max;3200;3200;3200;3200;3200;3200;3200;3200;3200;3
 Budget;Einkommen;;Nettogehalt Anna;1800;1800;1800;1800;1800;1800;1800;1800;1800;1800;1800;1800
 Budget;Einkommen;;Kindergeld;250;250;250;250;250;250;250;250;250;250;250;250
 Budget;Fixe Ausgaben;;;;;;;;;;;;
-Budget;Fixe Ausgaben;Wohnen;Tilgung;950;950;950;950;950;950;950;950;950;950;950;950
+Budget;Fixe Ausgaben;Wohnen;Tilgung;1000;1000;1000;1000;1000;1000;1000;1000;1000;1000;1000;1000
 Budget;Fixe Ausgaben;Wohnen;Strom;85;85;85;85;85;85;85;85;85;85;85;85
 Budget;Fixe Ausgaben;Wohnen;Heizung;70;70;70;70;70;70;70;70;70;70;70;70
 Budget;Fixe Ausgaben;Wohnen;Internet;30;30;30;30;30;30;30;30;30;30;30;30
@@ -90,14 +96,31 @@ Typ;Schlüssel;Wert;;;;;;;;;;;;;;
 Prognose;birth-year;1985;;;;;;;;;;;;;;
 Prognose;life-expect;85;;;;;;;;;;;;;;
 Prognose;inflation;2;;;;;;;;;;;;;;
-Prognose;save-until;45;;;;;;;;;;;;;;
-Prognose;withdraw-from;60;;;;;;;;;;;;;;
-Prognose;monthly-withdraw;2500;;;;;;;;;;;;;;
+Prognose;save-until;60;;;;;;;;;;;;;;
+Prognose;withdraw-from;62;;;;;;;;;;;;;;
+Prognose;monthly-withdraw;2800;;;;;;;;;;;;;;
+Prognose;plan-horizon;95;;;;;;;;;;;;;;
+Prognose;savings-growth;1,5;;;;;;;;;;;;;;
+Prognose;safety-level;85;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;
-Typ;Asset;Rendite;Volatilität;Sparrate;VolDyn;RetDyn;;;;;;;;;;
-Prognose-Asset;Cash;0;0;0;0;0;;;;;;;;;;
-Prognose-Asset;ETF;7;15;500;0;0;;;;;;;;;;
-Prognose-Asset;Bitcoin;15;55;50;-3;-2;;;;;;;;;;
-Prognose-Asset;Edelmetalle;3;15;0;0;0;;;;;;;;;;
-Prognose-Asset;BAV;0;0;25;0;0;;;;;;;;;;
-Prognose-Asset;Immobilien;2;8;950;0;0;;;;;;;;;;
+Typ;Rentenpunkte;Bruttojahresgehalt;Regelalter;Abzug;Rentenwert;Durchschnittsentgelt;Beitragsbemessungsgrenze;;;;;;;;;
+Gesetzliche-Rente;17,4;58000;;20;42,52;51944;101400;;;;;;;;;
+;;;;;;;;;;;;;;;;
+Typ;Feld;Sollzins;Rate;Sondertilgung;ZinsbindungBis;Anschlusszins;;;;;;;;;;
+Kredit;Kredit Wohnung;3,1;1550;2000;2033;3,8;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+Typ;Name;BetragMonat;AbAlter;;;;;;;;;;;;;
+Prognose-Rente;Betriebsrente;180;67;;;;;;;;;;;;;
+Prognose-Rente;Rente Anna;650;67;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+Typ;Name;Jahr;Betrag;Von;Nach;;;;;;;;;;;
+Prognose-Ereignis;Neues Auto;2029;28000;Liquide;;;;;;;;;;;;
+Prognose-Ereignis;Erbschaft;2036;60000;;ETF;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+Typ;Asset;Rendite;Volatilität;Sparrate;VolDyn;RetDyn;VerfuegbarAb;Abzug;;;;;;;;
+Prognose-Asset;Cash;1,5;0;0;0;0;0;0;;;;;;;;
+Prognose-Asset;ETF;6,5;15;500;0;0;0;12;;;;;;;;
+Prognose-Asset;Bitcoin;12;55;50;-3;-2;0;0;;;;;;;;
+Prognose-Asset;Edelmetalle;3;15;0;0;0;0;0;;;;;;;;
+Prognose-Asset;BAV;3;3;70;0;0;63;28;;;;;;;;
+Prognose-Asset;Immobilien;2;8;0;0;0;;;;;;;;;;
