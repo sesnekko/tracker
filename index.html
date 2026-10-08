@@ -1108,6 +1108,8 @@ body{font-size:15px;line-height:1.45}
 
 /* Kopfzeile */
 .app-header{padding:6px 0 0}
+/* Installierte iPhone-App: Kopfzeile unterhalb des Unschärfe-Verlaufs, den iOS unter die Statusleiste legt */
+@media (display-mode: standalone) and (max-width:767px){body{padding-top:calc(env(safe-area-inset-top) + 18px)}}
 .date-btn{font-size:15px;padding:6px 0}
 .icon-btn,.live-status{width:34px;height:34px;border-radius:50%;background:var(--fill);color:var(--ink);display:flex;align-items:center;justify-content:center}
 .icon-btn svg{width:16px;height:16px}
@@ -1119,10 +1121,13 @@ body{font-size:15px;line-height:1.45}
 .hero-label{text-transform:none;letter-spacing:0;font-weight:400;font-size:15px}
 .hero-value.kpi-has-pct::after{content:'\00a0%';font-size:30px;font-weight:300;color:var(--muted);letter-spacing:0}
 .hero-delta{display:inline-flex;align-items:center;gap:4px;padding:3px 11px;border-radius:999px;font-size:14px;font-weight:500;background:var(--fill);margin-top:8px}
-.hero-delta:empty{display:none}
+/* Platz für die Veränderung immer reservieren: Chart springt nicht, Vermögen und Prognose stehen gleich hoch */
+.hero-delta{min-height:26px}
+.hero-delta:empty{display:inline-flex;visibility:hidden}
 .hero-delta.up{background:color-mix(in srgb,var(--green) 15%,transparent)}
 .hero-delta.down{background:color-mix(in srgb,var(--red) 15%,transparent)}
-.hero-sub{min-height:38px}
+.hero-sub{height:34px;display:flex;justify-content:center;align-items:flex-start}
+@media (max-width:767px){.chart-wrap.lt-chart-wrap{height:240px}}
 
 /* Zeitraum als Segment-Schalter, Ansichts-Schalter daneben */
 .range-bar{padding:14px 0 0;gap:8px;justify-content:stretch}
@@ -1323,15 +1328,23 @@ select.num-input{text-align:left;font-size:15px}
 
 /* Daten-Seite */
 .import-page{padding:8px 0}
-#page-import .input-panel{background:none;padding:0;margin:0;border-radius:0}
+#page-import .input-panel{background:none;padding:0;margin:0;border-radius:0;overflow:visible}/* sonst klebt die Bearbeiten-Leiste nicht */
 #page-import .input-panel>.divider{display:none}
-.v2-form-head{display:flex;align-items:center;gap:12px;margin:14px 16px 8px;min-height:28px}
-.v2-form-head>span:first-child{font-size:13px;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Bearbeiten-Leiste: schwebt beim Scrollen durch die Kategorien oben mit */
+.v2-form-head{position:sticky;top:max(8px,env(safe-area-inset-top));z-index:30;display:flex;align-items:center;gap:10px;margin:10px 0 10px;padding:8px 8px 8px 16px;min-height:50px;border-radius:14px;
+  background:color-mix(in srgb,var(--bg2) 82%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 4px 18px rgba(0,0,0,.12)}
+body.dark .v2-form-head{box-shadow:0 4px 18px rgba(0,0,0,.4)}
+.v2-form-head>span:first-child{font-size:14px;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #page-import .v2-form-head .save-msg:not(.show){display:none}
-.v2-form-btns{display:flex;gap:18px}
-.v2-textbtn{border:none;background:none;font:inherit;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;padding:4px 0}
-.v2-textbtn.v2-muted{color:var(--muted);font-weight:400}
-.v2-textbtn.v2-strong{color:var(--green);font-weight:600}
+.v2-form-head:has(.save-msg.show)>span:first-child{display:none}
+#page-import .v2-form-head .save-msg.show{flex:1;font-size:14px}
+.v2-form-btns{display:flex;gap:6px}
+.v2-textbtn{border:none;background:var(--fill);font:inherit;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;padding:7px 16px;border-radius:999px;white-space:nowrap}
+.v2-textbtn:active{opacity:.75}
+.v2-textbtn.v2-muted{background:none;color:var(--muted);font-weight:400;padding:7px 10px}
+.v2-textbtn.v2-strong{background:var(--green);color:var(--bg);font-weight:600}
+/* Im Bearbeiten-Modus: Hinweis statt Monat */
+body.v2-editing .v2-form-head>span:first-child{color:var(--ink)}
 #page-import .save-msg{font-size:13px;color:var(--green)}
 #page-import details.input-collapsible{background:var(--card);border-radius:16px;margin-bottom:10px;overflow:hidden}
 #page-import .input-collapsible-summary{padding:12px 16px;min-height:62px;gap:12px}
@@ -1368,6 +1381,25 @@ details.tut-section[open]>.tut-toggle::after{transform:rotate(45deg)}
 .tut-body .tut-section{background:var(--fill)}
 .tut-body .tut-toggle{font-size:14.5px;min-height:44px;padding:11px 14px}
 .csv-msg{text-align:center;margin:8px 0}
+/* Daten-Seite: jedes Objekt (Kategorie, Kredit, Rente, Budget-Gruppe, Lebensplanung, Asset) als eigene Fläche */
+#page-import .input-collapsible-body .input-grid{background:var(--fill);border-radius:12px;padding:2px 12px;margin:0}
+#page-import .input-collapsible-body .input-grid+.input-grid{margin-top:8px}
+#page-import .cat-label{padding:18px 2px 7px}
+#page-import .lt-block-label{margin:18px 2px 7px}
+#page-import .lt-result{margin:8px 2px 0}
+#page-import .loan-summary{padding:8px 0 10px;box-shadow:inset 0 .5px 0 var(--sep)}
+#page-import .plan-row{padding:2px 12px 2px}
+#page-import .plan-row+.plan-row{margin-top:8px}
+#page-import .plan-rows .plan-row:first-child,#page-import #dpPensions .plan-row:first-child{margin-top:0}
+#page-import .v2-ap-list{margin:0;box-shadow:none;display:flex;flex-direction:column;gap:8px}
+#page-import .v2-ap{background:var(--fill);border-radius:12px;overflow:hidden}
+#page-import .v2-ap+.v2-ap{box-shadow:none}
+#page-import .v2-ap-head{padding:11px 12px}
+#page-import .v2-ap-body{background:transparent;padding:0 12px 6px;box-shadow:inset 0 .5px 0 var(--sep)}
+#page-import .v2-preview{margin-top:0}
+#v2-forecast-sec>.input-collapsible-body{padding-top:16px}
+#page-import .plan-row .pc-from,#page-import .plan-row .pc-to{grid-template-columns:auto minmax(0,1fr)}
+#page-import .plan-row select.num-input{text-align:right;text-align-last:right}
 .v2-empty-state{background:var(--card);border-radius:16px;padding:18px 16px;margin-top:12px;text-align:center}
 .v2-empty-state .v2-t2{margin:4px 0 0;line-height:1.45}
 .ob-title{font-weight:400;font-size:28px}
@@ -1466,7 +1498,12 @@ details.tut-section[open]>.tut-toggle::after{transform:rotate(45deg)}
   #legendAssets-ipad::-webkit-scrollbar{display:none}
 }
 @media (min-width:1280px){
-  #page-lifetime .app-content{max-width:860px}
+  /* Prognose wie Vermögen: gleiche Breite, gleicher Hero- und Chart-Abstand; Inhalte darunter mittig begrenzt */
+  #page-lifetime .hero{padding:12px 0 0}
+  #page-lifetime .chart-section{padding:8px 0}
+  #page-lifetime .v2-ret,#page-lifetime #v2-lt-open,#page-lifetime .sec-h,#page-lifetime .v2-list{max-width:860px;margin-left:auto;margin-right:auto}
+  #page-lifetime .v2-ret{margin-top:18px}
+  #page-lifetime .sec-h{padding:0 16px}
   #page-import .app-content{max-width:760px}
 }
 </style>
@@ -2183,6 +2220,9 @@ const SUN='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><
 
 /* ── Info-Texte: Tippen auf einen Feldnamen mit data-info öffnet die Erklärung ── */
 const INFO={
+  'drvx-name':['Weitere gesetzliche Rente','<p>Zum Beispiel die Rente deiner Partnerin oder deines Partners. Sie fließt ab ihrem Rentenbeginn in die Prognose ein.</p>'],
+  'drvx-by':['Geburtsjahr','<p>Geburtsjahr dieser Person. Bestimmt ihre Regelaltersgrenze und wann ihre Rente beginnt.</p>'],
+  'drvx-until':['Arbeiten bis Alter','<p>Bis zu diesem Alter sammelt diese Person mit ihrem Gehalt weitere Rentenpunkte. Leer = wie „Sparen bis Alter“ in deinen Annahmen.</p>'],
   'v2-at-retire':['Verfügbar bei Rentenbeginn','<p>Median des entnehmbaren Vermögens zum geplanten Ruhestand (ohne Sachwerte, Altersvorsorge erst ab „Verfügbar ab“), in heutiger Kaufkraft.</p><p><strong>Ziel</strong>: Vermögen, das zum Ruhestand nötig ist, um den Bedarf abzüglich Renten bis „Planen bis Alter“ zu decken.</p>'],
   'v2-retire-age':['Rente sicher möglich ab','<p>Frühestes Alter, ab dem die Erfolgschance mindestens das Sicherheitsniveau erreicht.</p>'],
   'flow-in':['Einzahlungen','<p>Geld, das neu ins Vermögen geflossen ist: mehr Cash, Zukäufe von Wertpapieren/Krypto (Stückzahl steigt), Einzahlungen in die Altersvorsorge und Tilgung von Krediten.</p><p>Wird je Monat saldiert – Umschichtungen (z. B. ETF verkauft, Erlös auf dem Tagesgeld) zählen nicht.</p>'],
@@ -3441,6 +3481,18 @@ function handleCsvUpload(ev){
           localStorage.setItem('lt-drv',JSON.stringify(d));
           budgetImported++;
         }
+      }
+
+      /* ── Weitere gesetzliche Renten ── */
+      else if(firstTyp==='gesetzliche-rente-weitere'){
+        const list=[];
+        for(const c of section.rows){
+          if(c[0].trim().toLowerCase()!=='gesetzliche-rente-weitere')continue;
+          const n=i=>{const v=(c[i]||'').trim();return v===''?'':parseCsvNumber(v);};
+          list.push({name:(c[1]||'').trim(),by:n(2),until:n(3),points:n(4)||0,salary:n(5)||0,age:n(6),deduct:n(7)===''?20:n(7)});
+          budgetImported++;
+        }
+        localStorage.setItem('lt-drv-extra',JSON.stringify(list));
       }
 
       /* ── Kredite (Annuitätendarlehen) ── */
@@ -4998,6 +5050,15 @@ function renderSankeyFlows(leftNodes,rightNodes,flows){
   let paths='';
   const leftOffsets=new Map();
   const rightOffsets=new Map();
+  /* Flussbreiten auf die tatsächlich gezeichneten Beträge je Kasten beziehen,
+     damit jeder Kasten bündig gefüllt ist (z. B. Kindergeld ohne eigenen Quell-Kasten) */
+  const drawnOut=new Map(),drawnIn=new Map();
+  flows.forEach(f=>{
+    if(leftNodes.some(n=>n.label===f.from)&&rightNodes.some(n=>n.label===f.to)){
+      drawnOut.set(f.from,(drawnOut.get(f.from)||0)+f.val);
+      drawnIn.set(f.to,(drawnIn.get(f.to)||0)+f.val);
+    }
+  });
   
   flows.forEach(flow=>{
     const fromIdx=leftNodes.findIndex(n=>n.label===flow.from);
@@ -5015,8 +5076,8 @@ function renderSankeyFlows(leftNodes,rightNodes,flows){
     
     const usableH=fromRect.height;
     const usableHR=toRect.height;
-    const flowH_L=(flow.val/fromNode.val)*usableH;
-    const flowH_R=(flow.val/toNode.val)*usableHR;
+    const flowH_L=(flow.val/(drawnOut.get(flow.from)||fromNode.val))*usableH;
+    const flowH_R=(flow.val/(drawnIn.get(flow.to)||toNode.val))*usableHR;
     
     leftOffsets.set(flow.from,leftOff+flowH_L);
     rightOffsets.set(flow.to,rightOff+flowH_R);
@@ -5332,6 +5393,9 @@ let _editMode = false;
 
 function setFormReadOnly(ro){
   _editMode=!ro;
+  document.body.classList.toggle('v2-editing',!ro);
+  const fh=document.querySelector('#page-import .v2-form-head>span:first-child');
+  if(fh&&selectedMonth)fh.textContent=(ro?'Monatswerte · ':'')+fmtMonth(selectedMonth);
   document.querySelectorAll('#page-import .num-input').forEach(inp=>{
     if(inp.closest('.v2-live'))return;
     inp.readOnly=ro;
@@ -5561,6 +5625,8 @@ function saveEntry(){
   if(document.getElementById('dp-drv-points'))localStorage.setItem('lt-drv',JSON.stringify(_drvFromInputs('dp')));
   const dpWrap=document.getElementById('dpPensions');
   if(dpWrap)localStorage.setItem('lt-pensions',JSON.stringify(_collectPlanRows(dpWrap,PENSION_COLS).filter(r=>r.name||r.amount)));
+  const dxWrapS=document.getElementById('dpDrvExtra');
+  if(dxWrapS)localStorage.setItem('lt-drv-extra',JSON.stringify(_collectPlanRows(dxWrapS,DRV_EXTRA_COLS).filter(r=>r.name||r.points||r.salary)));
   updateLifetimeInputs();
 
   setFormReadOnly(true);
@@ -5569,6 +5635,7 @@ function saveEntry(){
   setTimeout(()=>m.classList.remove('show'),2500);
   render();
   if(document.getElementById('lt-asset-params-table'))buildAssetParamsTable();
+  _v2SyncSwitches();/* Untertitel der Bereiche (z. B. Rentensumme) aktualisieren */
   /* Budget-Seite aktualisieren */
   const budgetPage=document.getElementById('page-budget');
   if(budgetPage&&budgetPage.classList.contains('active'))renderBudgetPage();
@@ -5593,7 +5660,7 @@ function _fillFormForMonth(ym){
     unitFields.forEach(f=>{
       const key=f.unitId||f.id;
       const el=document.getElementById('fu-'+key);
-      if(el){const v=u[key]||0;el.value=v>0?String(v):'';}
+      if(el){const v=u[key]||0;el.value=v>0?String(v).replace('.',','):'';}/* deutsches Komma; parseUnitNumber liest es exakt zurück */
     });
   } else {
     allFields.forEach(k=>{const el=document.getElementById('f-'+k);if(el)el.value='';});
@@ -5704,6 +5771,13 @@ function exportWealthCSV(){
   csv+=';\n';
   csv+='Typ;Rentenpunkte;Bruttojahresgehalt;Regelalter;Abzug;Rentenwert;Durchschnittsentgelt;Beitragsbemessungsgrenze'+padTo(8)+'\n';
   csv+=`Gesetzliche-Rente;${csvNum(drv.points)};${csvNum(drv.salary)};${drv.age>0?csvNum(drv.age):''};${csvNum(drv.deduct)};${csvNum(drv.rw)};${csvNum(drv.de)};${csvNum(drv.bbg)}`+padTo(8)+'\n';
+  /* Weitere gesetzliche Renten (Partner/in usw.) */
+  const drvX=getDrvExtra();
+  if(drvX.length){
+    csv+=';\n';
+    csv+='Typ;Name;Geburtsjahr;ArbeitenBis;Rentenpunkte;Bruttojahresgehalt;Regelalter;Abzug'+padTo(8)+'\n';
+    drvX.forEach(x=>{csv+=`Gesetzliche-Rente-Weitere;${csvTxt(x.name)};${+x.by?csvNum(+x.by):''};${+x.until?csvNum(+x.until):''};${csvNum(+x.points||0)};${csvNum(+x.salary||0)};${+x.age?csvNum(+x.age):''};${csvNum(+x.deduct||0)}`+padTo(8)+'\n';});
+  }
   /* Kredite */
   const lpx=getLoanParams();
   const loanFields=_fc.fields.filter(f=>f.category==='liab'&&lpx[f.id]&&Object.keys(lpx[f.id]).length);
@@ -6080,6 +6154,9 @@ function buildDynamicForm(){
   html+=`<div class="divider"></div>`;
   html+=`<details class="input-collapsible" data-mod="pension">${_v2Sum('pension','Altersvorsorge')}<div class="input-collapsible-body">`;
   html+=`<div class="lt-block-label">Gesetzliche Rente</div>`+_drvFieldsHTML(getDrv(),'dp','form');
+  const dx=getDrvExtra();
+  html+=`<div class="lt-block-label${dx.length?'':' edit-only'}">Weitere gesetzliche Renten</div><div id="dpDrvExtra">${_v2DrvExtraRowsHTML(dx)}</div>`;
+  html+=`<button class="btn btn-ghost plan-add edit-only" id="dpDrvExtraAdd">+ Gesetzliche Rente</button>`;
   html+=`<div class="lt-block-label">Weitere Renten & Einkünfte</div><div id="dpPensions">${_planRowsHTML(getLifetimeSettings().pensions,PENSION_COLS,'form')}</div>`;
   html+=`<button class="btn btn-ghost plan-add edit-only" id="dpPensionAdd">+ Rente / Einkommen</button>`;
   html+=`</div></details>`;
@@ -6198,6 +6275,25 @@ function buildDynamicForm(){
       dpWrap.innerHTML=_planRowsHTML(rows,PENSION_COLS,'form');bindDp();setFormReadOnly(!_editMode);
     });
   }
+  /* Weitere gesetzliche Renten: Zeilen hinzufügen/entfernen, Hochrechnung live */
+  const dxWrap=document.getElementById('dpDrvExtra');
+  if(dxWrap){
+    const bindDx=()=>{
+      dxWrap.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
+        b.closest('.plan-row').remove();
+        dxWrap.innerHTML=_v2DrvExtraRowsHTML(_collectPlanRows(dxWrap,DRV_EXTRA_COLS));bindDx();setFormReadOnly(!_editMode);
+      }));
+      dxWrap.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>_v2DrvExtraResults(dxWrap)));
+      _v2DrvExtraResults(dxWrap);
+    };
+    bindDx();
+    /* Gehalt mit Tausenderpunkt anzeigen (_parseDec liest "36.000" korrekt zurück) */
+    dxWrap.querySelectorAll('[data-k="salary"]').forEach(i=>{const n=_parseDec(i.value);if(isFinite(n)&&n>0)i.value=Math.round(n).toLocaleString('de-DE');});
+    document.getElementById('dpDrvExtraAdd').addEventListener('click',()=>{
+      const rows=_collectPlanRows(dxWrap,DRV_EXTRA_COLS);rows.push({name:'',by:'',until:'',points:0,salary:0,age:'',deduct:20});
+      dxWrap.innerHTML=_v2DrvExtraRowsHTML(rows);bindDx();setFormReadOnly(!_editMode);
+    });
+  }
   /* Kredite: Übersicht live aus Restschuld + Darlehensdaten (auch nach dem Befüllen des Formulars) */
   container.querySelectorAll('input[data-loan],input[data-loan-balance]').forEach(inp=>inp.addEventListener('input',()=>_updateLoanSummary(inp.dataset.loan||inp.dataset.loanBalance)));
 
@@ -6227,6 +6323,22 @@ function buildDynamicForm(){
   });
 }
 
+/* Weitere gesetzliche Renten als Karten (leere Werte bleiben leer statt "0") */
+function _v2DrvExtraRowsHTML(rows){
+  const clean=rows.map(r=>Object.assign({},r,{by:+r.by||'',until:+r.until||'',age:+r.age||''}));
+  return _planRowsHTML(clean,DRV_EXTRA_COLS,'form','drvx');
+}
+function _v2DrvExtraResults(wrap){
+  const s=getLifetimeSettings();
+  wrap.querySelectorAll('.plan-row').forEach(row=>{
+    const p={};
+    DRV_EXTRA_COLS.forEach(c=>{const inp=row.querySelector(`[data-k="${c.key}"]`);if(!inp)return;p[c.key]=c.type==='text'?inp.value.trim():(()=>{const n=_parseDec(inp.value);return isFinite(n)?n:'';})();});
+    let el=row.querySelector('.drvx-res');
+    if(!el){el=document.createElement('div');el.className='lt-result drvx-res';row.insertBefore(el,row.querySelector('.plan-del'));}
+    const r=calcDrvExtra(s,p);
+    el.innerHTML=r.epTotal>0?`≈ <strong>${r.epTotal.toLocaleString('de-DE',{maximumFractionDigits:1})} Punkte</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)}`:'Rentenpunkte und/oder Gehalt eintragen.';
+  });
+}
 function toggleBudgetFieldEditor(){
   const panel=document.getElementById('budgetFieldEditorPanel');
   const btn=document.getElementById('budgetEditFieldsBtn');
@@ -6403,6 +6515,28 @@ function getDrv(){
   Object.keys(DRV_DEFAULTS).forEach(k=>{d[k]=isFinite(+d[k])?+d[k]:DRV_DEFAULTS[k];});
   return d;
 }
+/* Weitere gesetzliche Renten (z. B. Partner/in): eigene Person mit Geburtsjahr und "Arbeiten bis Alter".
+   Rentenwert, Durchschnittsentgelt und BBG gelten wie bei der eigenen gesetzlichen Rente. */
+const DRV_EXTRA_COLS=[
+  {key:'name',label:'Name',info:'drvx-name',type:'text',ph:'z. B. Partnerin'},
+  {key:'by',label:'Geburtsjahr',info:'drvx-by',ph:'1987'},
+  {key:'until',label:'Arbeiten bis Alter',info:'drvx-until',ph:'wie eigene'},
+  {key:'points',label:'Rentenpunkte',info:'drv-points',ph:'0'},
+  {key:'salary',label:'Brutto/Jahr €',info:'drv-salary',ph:'0'},
+  {key:'age',label:'Regelalter',info:'drv-age',ph:'automatisch'},
+  {key:'deduct',label:'Abzüge %',info:'drv-deduct',ph:'20'}
+];
+function getDrvExtra(){const l=_lsJSON('lt-drv-extra',[]);return Array.isArray(l)?l:[];}
+function calcDrvExtra(s,p){
+  const base=getDrv();
+  const by=+p.by>1900?+p.by:s.birthYear;
+  const s2=Object.assign({},s,{birthYear:by,saveUntil:+p.until>0?+p.until:s.saveUntil});
+  const d=Object.assign({},base,{points:+p.points||0,salary:+p.salary||0,age:+p.age||0,deduct:isFinite(+p.deduct)&&p.deduct!==''&&p.deduct!=null?+p.deduct:base.deduct});
+  const r=calcDrvPension(s2,d);
+  r.fromMain=r.age+(by-s.birthYear);/* Rentenbeginn auf das eigene Alter umgerechnet */
+  r.name=(p.name||'').trim()||'Weitere Rente';
+  return r;
+}
 function regelaltersgrenze(by){
   if(by>=1964)return 67;
   if(by>=1959)return 66+(by-1958)*2/12;
@@ -6503,7 +6637,9 @@ function buildPlan(){
   /* Gesetzliche Rente aus Rentenpunkten + Gehalt hochgerechnet (Altersvorsorge aus: keine Renten) */
   const drv=penOn?calcDrvPension(s,getDrv()):{age:0,years:0,epYear:0,epTotal:0,brutto:0,netto:0};
   if(drv.netto>0)pensions.push({amount:drv.netto,from:drv.age,drv:true});
-  return{drv,s,data,sorted,latestKey,latestNet:calc(data[latestKey]).net,currentAge,firstAge,horizonAge,nSteps,groups,lnr,vol,events,pensions,depositIdx};
+  const drvExtra=penOn?getDrvExtra().map(p=>calcDrvExtra(s,p)).filter(r=>r.netto>0):[];
+  drvExtra.forEach(r=>pensions.push({amount:r.netto,from:r.fromMain,drv:true}));
+  return{drv,drvExtra,s,data,sorted,latestKey,latestNet:calc(data[latestKey]).net,currentAge,firstAge,horizonAge,nSteps,groups,lnr,vol,events,pensions,depositIdx};
 }
 
 /* Ein Simulationslauf (jährliche Schritte). rnd = Standardnormal-Zufallszahlen (null = Median-/Erwartungspfad). */
@@ -6723,7 +6859,7 @@ const _numStr=v=>v==null||v===''||!isFinite(v)?'':String(Math.round(v*100)/100).
 function updateLifetimeInputs(){
   LT_SET_KEYS.forEach(k=>{
     const el=document.getElementById(k);
-    if(el){const stored=localStorage.getItem(k);el.value=stored!==null?stored:'';}
+    if(el){const stored=localStorage.getItem(k);el.value=stored!==null?(el.type==='text'?stored.replace('.',','):stored):'';}/* Textfelder mit deutschem Komma, _parseDec liest beides */
   });
   renderDrvEditor();
   renderPensionEditor();
@@ -7069,6 +7205,7 @@ function renderLifetimePageCalcs(){
   more.push(['Restvermögen mit '+plan.horizonAge,fmt(mc.p50[endIdx]/defl(plan.horizonAge)),'Median']);
   more.push(['Ø Rendite p.a.',pc(pr),'real '+pc((1+pr)/(1+infl)-1)]);
   if(plan.drv&&plan.drv.netto>0)more.push(['Gesetzliche Rente ab '+fmtAge(plan.drv.age),fmt(plan.drv.netto),'netto/Monat']);
+  (plan.drvExtra||[]).forEach(r=>more.push(['Gesetzliche Rente '+r.name,fmt(r.netto),'netto/Monat ab '+fmtAge(r.age)]));
   const otherPens=plan.pensions.filter(p=>!p.drv).reduce((a,p)=>a+p.amount,0);
   if(otherPens>0)more.push(['Weitere Renten',fmt(otherPens),'netto/Monat']);
   /* Kreditfrei: erstes Alter, ab dem im Erwartungspfad keine Kreditrate mehr anfällt */
@@ -7269,7 +7406,7 @@ function _v2SubText(mod){
     const data=loadData(),e=data[selectedMonth]||data[Object.keys(data).sort().pop()];
     if(mod==='assets'){if(!e)return'';const n=_fc.fields.filter(f=>f.category!=='liab'&&(+((e._details||{})[f.id])||0)>0).length;return n+' Positionen · '+fmt(calc(e).assets);}
     if(mod==='liab'){if(!e)return'';const b=_fc.fields.filter(f=>f.category==='liab').reduce((a,f)=>a+(+((e._details||{})[f.id])||0),0);return 'Restschuld '+fmt(b);}
-    if(mod==='pension'){const r=calcDrvPension(getLifetimeSettings(),getDrv());const n=getLifetimeSettings().pensions.length;return (r.netto>0?'Gesetzlich ≈ '+fmt(r.netto)+'/Mon.':'Gesetzliche Rente')+(n?' · '+n+' weitere':'');}
+    if(mod==='pension'){const s=getLifetimeSettings();const r=calcDrvPension(s,getDrv());const x=getDrvExtra().map(p=>calcDrvExtra(s,p)).reduce((a,q)=>a+q.netto,0);const n=s.pensions.length;return (r.netto+x>0?'Gesetzlich ≈ '+fmt(r.netto+x)+'/Mon.':'Gesetzliche Rente')+(n?' · '+n+' weitere':'');}
     if(mod==='budget'){const bd=loadBudgetData();return bd?'Ø Einnahmen '+fmt(calcAvgHaushaltsnetto(bd)):'';}
     if(mod==='forecast'){const pv=document.getElementById('v2-prev-pct');return pv&&pv.textContent!=='—'?'Erfolgschance '+pv.textContent:'Annahmen, Ereignisse, Renditen';}
   }catch(err){}
