@@ -15,3 +15,6 @@ wrangler.toml
 
 # Legacy
 AssetTracker/
+
+# Backup der klassischen Ansicht (lokal, nicht im Repo)
+index-classic.html
