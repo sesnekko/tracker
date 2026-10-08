@@ -111,6 +111,18 @@ Umbenennungen, archivierte Daten, ungültige Importe, Speicherfehler und die
 tatsächlichen Export-/Importfunktionen. `demo_backup.json` ist die neue Demo für
 die App; `demo_export.csv` bleibt eine Test- und Kompatibilitätsvorlage.
 
+Die JSON-Demo zeigt einen fiktiven Haushalt mit 34 Monatsständen von Januar 2024
+bis Oktober 2026: Konten, zwei ETFs, eine Beispielaktie, getrennte Bitcoin- und
+Ethereum-Positionen, physisches Gold, Altersvorsorge, Wohnung und Familienauto.
+Immobilien- und Autokredit sind mit ihren Assets verknüpft. Restschulden stammen
+aus vollständigen Annuitätenverträgen einschließlich datierter Sondertilgungen.
+Budget, Daueraufträge, Rentenangaben und Prognoseereignisse sind enthalten; die
+automatischen Kreditraten werden nicht zusätzlich als manuelle Budgetposten gezählt.
+Alle Bestände, Kurse und Annahmen sind erfundene Beispiele. Die Bewertung bleibt
+manuell, damit die Demo offline funktioniert und Live-Kurse keine Beispielwerte
+ersetzen. Kursquellen für ETFs, Bitcoin und Ethereum sind als Asset-Angaben
+hinterlegt. Konten tragen den Zusatz „Demo“ und enthalten keine IBAN.
+
 ## Darlehen und Asset-Verknüpfung
 
 Ein Darlehen verweist mit `positionId` auf seine Verbindlichkeit und optional mit
