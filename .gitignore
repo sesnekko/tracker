@@ -1,6 +1,7 @@
 # Sensible Daten
 *.csv
 !demo_export.csv
+vermoegen_*.json
 *.mov
 *.mp4
 

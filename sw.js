@@ -1,6 +1,11 @@
-const CACHE='verm-v70';
+const CACHE='verm-v85';
 const ASSETS=[
   './index.html',
+  './data-store.js?v=8',
+  './loan-model.js?v=2',
+  './loan-history.js?v=1',
+  './asset-model.js?v=3',
+  './demo_backup.json',
   './manifest.json',
   './demo_export.csv',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',
