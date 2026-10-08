@@ -1454,23 +1454,20 @@ details.tut-section[open]>.tut-toggle::after{transform:rotate(45deg)}
 .ob-actions .btn{min-height:50px}
 
 /* Daten-Seite: Abschnitte mit Icons, Schalter gesammelt unter „Bereiche“ */
-#page-import details.v2-off{display:none}
+#page-import details.v2-off .ds-sec-ico{opacity:.45}
 #page-import details.input-collapsible{margin-bottom:8px}
 #page-import .input-collapsible-summary{min-height:60px;padding:10px 14px 10px 12px}
 .ds-sec-ico{width:34px;height:34px;border-radius:10px}
 .ds-sec-ico svg{width:19px;height:19px}
 #page-import .sec-h{margin:24px 4px 8px}
 #page-import .ds-month+.sec-h{margin-top:22px}
-.ds-modules .v2-row{cursor:pointer;min-height:50px;padding-top:6px;padding-bottom:6px}
-.ds-foot{font-size:12.5px;color:var(--muted);line-height:1.45;margin:8px 4px 0}
 .ds-row-danger .v2-t1,.ds-row-danger .ds-sec-ico{color:var(--red)}
 #page-import .v2-list .v2-row{gap:12px;padding-left:12px;min-height:60px}
 #page-import .v2-row-action .v2-t1{font-weight:400}
 #page-import .v2-list .v2-t2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #page-import .v2-list .v2-row+.v2-row{box-shadow:none}
 #page-import .v2-list .v2-row+.v2-row::before{content:'';position:absolute;top:0;left:58px;right:0;height:.5px;background:var(--sep)}
-.ds-modules .v2-row{padding-left:16px}
-#page-import .ds-modules .v2-row+.v2-row::before{left:16px}
+
 
 /* Daten-Seite: Positionen als Liste, Bearbeiten je Position im Sheet */
 body:not(.v2-editing) #page-import .v2-form-head{display:none}
@@ -1954,7 +1951,7 @@ body.onboarding-open{overflow:hidden}
 
 <!-- Prognose-Annahmen: werden sofort gespeichert (kein Bearbeiten-Modus) -->
 <details class="input-collapsible v2-live" data-mod="forecast" id="v2-forecast-sec">
-  <summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg></span><span class="v2-sum-t"><span class="section-title">Prognose &amp; Annahmen</span><span class="v2-sum-sub" data-sub="forecast"></span></span></summary>
+  <summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg></span><span class="v2-sum-t"><span class="section-title">Prognose &amp; Annahmen</span><span class="v2-sum-sub" data-sub="forecast"></span></span><span class="v2-switch" data-mod="forecast" role="switch" tabindex="0" aria-label="Prognose ein/aus"><i></i></span></summary>
   <div class="input-collapsible-body">
     <div class="v2-preview"><b id="v2-prev-pct">—</b><span><span id="v2-prev-txt">Erfolgschance</span><br>Änderungen werden sofort übernommen</span></div>
     <span class="cat-label">Lebensplanung &amp; Bedarf</span>
@@ -1984,16 +1981,6 @@ body.onboarding-open{overflow:hidden}
   <button class="v2-row v2-row-action" onclick="exportBackup()"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V4.5"/><path d="m8 8 4-4 4 4"/><path d="M5 13.5v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg></span><span class="v2-t"><span class="v2-t1">Sicherung exportieren</span><span class="v2-t2" id="backupSub">Eine Datei mit allen Daten und Einstellungen</span></span><span class="v2-chev"></span></button>
   <label class="v2-row v2-row-action" style="cursor:pointer"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4.5V15"/><path d="m8 11 4 4 4-4"/><path d="M5 13.5v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg></span><span class="v2-t"><span class="v2-t1">Sicherung wiederherstellen</span><span class="v2-t2">JSON-Sicherung oder alte CSV-Datei</span></span><span class="v2-chev"></span><input type="file" accept=".json,.csv,application/json,text/csv" id="csvInput2" style="display:none" onchange="document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
 </div>
-
-<div class="sec-h">Bereiche</div>
-<div class="v2-list ds-modules">
-  <div class="v2-row v2-row-static"><span class="v2-t"><span class="v2-t1">Vermögenswerte</span></span><span class="v2-switch" data-mod="assets" role="switch" tabindex="0" aria-label="Vermögenswerte ein/aus"><i></i></span></div>
-  <div class="v2-row v2-row-static"><span class="v2-t"><span class="v2-t1">Verbindlichkeiten</span></span><span class="v2-switch" data-mod="liab" role="switch" tabindex="0" aria-label="Verbindlichkeiten ein/aus"><i></i></span></div>
-  <div class="v2-row v2-row-static"><span class="v2-t"><span class="v2-t1">Altersvorsorge</span></span><span class="v2-switch" data-mod="pension" role="switch" tabindex="0" aria-label="Altersvorsorge ein/aus"><i></i></span></div>
-  <div class="v2-row v2-row-static"><span class="v2-t"><span class="v2-t1">Einnahmen &amp; Ausgaben</span></span><span class="v2-switch" data-mod="budget" role="switch" tabindex="0" aria-label="Einnahmen und Ausgaben ein/aus"><i></i></span></div>
-  <div class="v2-row v2-row-static"><span class="v2-t"><span class="v2-t1">Prognose</span></span><span class="v2-switch" data-mod="forecast" role="switch" tabindex="0" aria-label="Prognose ein/aus"><i></i></span></div>
-</div>
-<p class="ds-foot">Ausgeschaltete Bereiche werden nicht angezeigt und nicht berechnet. Die Daten bleiben erhalten.</p>
 
 <div class="sec-h">Hilfe</div>
 <div class="v2-list">
@@ -8175,7 +8162,7 @@ function renderLifetimePage(){
 }
 /* ── Design 2: Bereiche-Schalter, Daten-Seite, Sprung zu den Annahmen ── */
 function _v2Sum(mod,title){
-  return `<summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${V2_ICONS[DATA_SECTION_ICONS[mod]]}</svg></span><span class="v2-sum-t"><span class="section-title">${title}</span><span class="v2-sum-sub" data-sub="${mod}"></span></span></summary>`;
+  return `<summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${V2_ICONS[DATA_SECTION_ICONS[mod]]}</svg></span><span class="v2-sum-t"><span class="section-title">${title}</span><span class="v2-sum-sub" data-sub="${mod}"></span></span><span class="v2-switch" data-mod="${mod}" role="switch" tabindex="0" aria-label="${title} ein/aus"><i></i></span></summary>`;
 }
 function _v2SubText(mod){
   try{
@@ -8194,7 +8181,7 @@ function _v2SyncSwitches(){
     const k=d.dataset.mod,on=m[k];
     d.classList.toggle('v2-off',!on);
     if(!on&&d.open)d.open=false;
-    const sub=d.querySelector('.v2-sum-sub');if(sub&&on)sub.textContent=_v2SubText(k);
+    const sub=d.querySelector('.v2-sum-sub');if(sub)sub.textContent=on?_v2SubText(k):'Ausgeschaltet';
   });
   document.querySelectorAll('#page-import .v2-switch[data-mod]').forEach(sw=>sw.setAttribute('aria-checked',m[sw.dataset.mod]?'true':'false'));
 }
@@ -8233,8 +8220,6 @@ function _v2InitModules(){
   pg.addEventListener('click',e=>{
     const sw=e.target.closest('.v2-switch');
     if(sw){e.preventDefault();e.stopPropagation();flip(sw);return;}
-    const modRow=e.target.closest('.ds-modules .v2-row');
-    if(modRow){flip(modRow.querySelector('.v2-switch'));return;}
     const sum=e.target.closest('summary');
     if(sum&&sum.parentElement.classList.contains('v2-off'))e.preventDefault();
   });
