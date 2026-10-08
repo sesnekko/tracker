@@ -198,12 +198,32 @@ test('saved budget targets survive names and explicit unassigned rows stay unass
   assert.equal(a.json('deriveSavingsFromBudget(buildPlan()).byGroup.ETF ?? null'), null);
   assert.ok(a.json('deriveSavingsFromBudget(buildPlan()).unmatched').includes(saving.name));
 });
-test('bundled JSON demo contains the same financial model as the legacy demo', () => {
+test('bundled JSON demo restores a complete household without double counting loan payments', () => {
   const doc = JSON.parse(fs.readFileSync(path.join(root, 'demo_backup.json'), 'utf8'));
   Data.validate(doc);
   const a = app(html); a.context.demo = doc;
-  a.run('appStorage.importBackup(demo);_fc=loadFieldConfig();ensureNextMonth();');
-  assert.deepEqual(totals(a), totals(legacyApp));
+  a.run("appStorage.importBackup(demo);_fc=loadFieldConfig();selectedMonth='2026-10';ensureNextMonth();");
+  assert.equal(doc.schemaVersion, 2);
+  assert.equal(doc.snapshots.length, 34);
+  assert.equal(doc.positions.length, 15);
+  assert.ok(['bitcoin', 'crypto', 'stock', 'vehicle', 'realEstate'].every(category => doc.positions.some(p => p.category === category)));
+  assert.ok(doc.positions.every(p => p.valuation === 'manual'));
+  assert.ok(doc.accounts.every(p => p.iban === ''));
+  assert.equal(a.json("loadData()['2024-01']._details['kredit-wohnung']"), 239500);
+  assert.equal(a.json("loadData()['2024-12']._details['kredit-auto']"), 0);
+  assert.equal(a.json("loadData()['2025-01']._details['kredit-auto']"), 19700);
+  const jan = a.json('calcBudgetMonth(loadBudgetData(),0)');
+  const aug = a.json('calcBudgetMonth(loadBudgetData(),7)');
+  assert.equal(jan.einnahmen, 5250);
+  assert.equal(jan.sparplaene, 745);
+  // Ordinary spending (1,661) + both contract rates (1,600) + savings (745).
+  assert.equal(Math.round(jan.frei), 1244);
+  assert.equal(Math.round(aug.frei), -1256);
+  assert.equal(jan.fixItems.filter(p => p.automatic).length, 2);
+  const target = app(html); target.context.demo = a.json('appStorage.exportBackup()');
+  target.run('appStorage.importBackup(demo);_fc=loadFieldConfig();');
+  assert.deepEqual(totals(target), totals(a));
+  assert.deepEqual(target.json('appStorage.document().loans'), doc.loans);
 });
 test('archived empty entities, accounts and legacy loan parameters retain identity', () => {
   const store = Data.createStore(new MemoryStorage(legacyValues));

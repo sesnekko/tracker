@@ -1,6 +1,6 @@
 {
   "format": "vermoegen-backup",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "currency": "EUR",
   "groups": [
     {
@@ -61,7 +61,7 @@
     },
     {
       "id": "group-5",
-      "name": "BAV",
+      "name": "Altersvorsorge",
       "defaultProfile": "pension",
       "assumptions": {
         "returnPercent": 3,
@@ -69,7 +69,7 @@
         "monthlySaving": 70,
         "volatilityTrendPercent": 0,
         "returnTrendPercent": 0,
-        "availableFromAge": 63,
+        "availableFromAge": 67,
         "withdrawalDeductionPercent": 28
       }
     },
@@ -84,6 +84,36 @@
         "volatilityTrendPercent": 0,
         "returnTrendPercent": 0
       }
+    },
+    {
+      "id": "group-stock",
+      "name": "Aktien",
+      "defaultProfile": "stocks",
+      "assumptions": {
+        "returnPercent": 5,
+        "volatilityPercent": 20,
+        "monthlySaving": 100
+      }
+    },
+    {
+      "id": "group-crypto",
+      "name": "Krypto",
+      "defaultProfile": "crypto",
+      "assumptions": {
+        "returnPercent": 6,
+        "volatilityPercent": 55,
+        "monthlySaving": 25
+      }
+    },
+    {
+      "id": "group-car",
+      "name": "Auto",
+      "defaultProfile": "misc",
+      "assumptions": {
+        "returnPercent": -10,
+        "volatilityPercent": 0,
+        "monthlySaving": 0
+      }
     }
   ],
   "positions": [
@@ -95,7 +125,9 @@
       "archived": false,
       "custom": false,
       "ticker": null,
-      "unit": null
+      "unit": null,
+      "liquidity": "liquid",
+      "valuation": "manual"
     },
     {
       "id": "girokonto",
@@ -105,7 +137,9 @@
       "archived": false,
       "custom": false,
       "ticker": null,
-      "unit": null
+      "unit": null,
+      "liquidity": "liquid",
+      "valuation": "manual"
     },
     {
       "id": "bargeld",
@@ -115,7 +149,9 @@
       "archived": false,
       "custom": false,
       "ticker": null,
-      "unit": null
+      "unit": null,
+      "liquidity": "liquid",
+      "valuation": "manual"
     },
     {
       "id": "msci-world-a0rpwh",
@@ -128,6 +164,15 @@
       "unit": {
         "name": "Stk",
         "key": "msci-world-a0rpwh"
+      },
+      "liquidity": "liquid",
+      "valuation": "manual",
+      "instrument": {
+        "provider": "yahoo",
+        "symbol": "EUNL.DE",
+        "exchange": "XETRA",
+        "currency": "EUR",
+        "name": "MSCI World - A0RPWH"
       }
     },
     {
@@ -141,43 +186,65 @@
       "unit": {
         "name": "Stk",
         "key": "s-p-500-a0yedg"
+      },
+      "liquidity": "liquid",
+      "valuation": "manual",
+      "instrument": {
+        "provider": "yahoo",
+        "symbol": "SXR8.DE",
+        "exchange": "XETRA",
+        "currency": "EUR",
+        "name": "S&P 500 - A0YEDG"
       }
     },
     {
       "id": "bitcoin",
       "name": "Bitcoin",
-      "category": "other",
+      "category": "bitcoin",
       "groupId": "group-3",
       "archived": false,
       "custom": false,
-      "ticker": "BTC",
+      "ticker": "XBTEUR",
       "unit": {
-        "name": "Stk",
+        "name": "BTC",
         "key": "bitcoin"
+      },
+      "liquidity": "liquid",
+      "valuation": "manual",
+      "instrument": {
+        "provider": "bitcoin",
+        "symbol": "XBTEUR",
+        "exchange": "Kraken",
+        "currency": "EUR",
+        "name": "Bitcoin / EUR"
       }
     },
     {
       "id": "gold",
-      "name": "Gold",
-      "category": "other",
+      "name": "Gold (physisch)",
+      "category": "metal",
       "groupId": "group-4",
       "archived": false,
       "custom": false,
-      "ticker": "GC=F",
+      "ticker": null,
       "unit": {
         "name": "oz",
         "key": "gold"
-      }
+      },
+      "liquidity": "liquid",
+      "valuation": "manual"
     },
     {
       "id": "bausparvertrag",
-      "name": "Bausparvertrag",
+      "name": "Betriebliche Altersvorsorge",
       "category": "bav",
       "groupId": "group-5",
       "archived": false,
       "custom": false,
       "ticker": null,
-      "unit": null
+      "unit": null,
+      "liquidity": "illiquid",
+      "valuation": "manual"
     },
     {
       "id": "rente-privat",
@@ -187,27 +254,94 @@
       "archived": false,
       "custom": false,
       "ticker": null,
-      "unit": null
+      "unit": null,
+      "liquidity": "illiquid",
+      "valuation": "manual"
     },
     {
       "id": "wohnung-marktwert",
       "name": "Wohnung (Marktwert)",
-      "category": "illiquid",
+      "category": "realEstate",
       "groupId": "group-6",
       "archived": false,
       "custom": false,
       "ticker": null,
-      "unit": null
+      "unit": null,
+      "liquidity": "illiquid",
+      "valuation": "manual"
     },
     {
       "id": "kredit-wohnung",
-      "name": "Kredit Wohnung",
+      "name": "Immobilienkredit",
       "category": "liab",
       "groupId": "group-6",
       "archived": false,
       "custom": false,
       "ticker": null,
-      "unit": null
+      "unit": null,
+      "liquidity": "illiquid",
+      "valuation": "manual"
+    },
+    {
+      "id": "demo-aktie",
+      "name": "Beispielaktie",
+      "category": "stock",
+      "groupId": "group-stock",
+      "archived": false,
+      "custom": true,
+      "ticker": null,
+      "unit": {
+        "name": "Stück",
+        "key": "demo-aktie"
+      },
+      "liquidity": "liquid",
+      "valuation": "manual"
+    },
+    {
+      "id": "ethereum",
+      "name": "Ethereum",
+      "category": "crypto",
+      "groupId": "group-crypto",
+      "archived": false,
+      "custom": true,
+      "ticker": "ETHEUR",
+      "unit": {
+        "name": "ETH",
+        "key": "ethereum"
+      },
+      "liquidity": "liquid",
+      "valuation": "manual",
+      "instrument": {
+        "provider": "kraken",
+        "symbol": "ETHEUR",
+        "exchange": "Kraken",
+        "currency": "EUR",
+        "name": "Ethereum / EUR"
+      }
+    },
+    {
+      "id": "familienauto",
+      "name": "Familienauto",
+      "category": "vehicle",
+      "groupId": "group-car",
+      "archived": false,
+      "custom": true,
+      "ticker": null,
+      "unit": null,
+      "liquidity": "illiquid",
+      "valuation": "manual"
+    },
+    {
+      "id": "kredit-auto",
+      "name": "Autokredit",
+      "category": "liab",
+      "groupId": "group-car",
+      "archived": false,
+      "custom": true,
+      "ticker": null,
+      "unit": null,
+      "liquidity": "illiquid",
+      "valuation": "manual"
     }
   ],
   "snapshots": [
@@ -255,7 +389,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 235000
+          "value": 239500
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 20,
+          "value": 900
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.4,
+          "value": 720
+        },
+        {
+          "positionId": "familienauto",
+          "value": 0
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 0
         }
       ]
     },
@@ -303,7 +455,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 234000
+          "value": 238998.54
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 22,
+          "value": 1025.39
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.41,
+          "value": 805.17
+        },
+        {
+          "positionId": "familienauto",
+          "value": 0
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 0
         }
       ]
     },
@@ -351,7 +521,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 233000
+          "value": 238495.62
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 24,
+          "value": 1153.76
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.42,
+          "value": 878.83
+        },
+        {
+          "positionId": "familienauto",
+          "value": 0
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 0
         }
       ]
     },
@@ -399,7 +587,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 232000
+          "value": 237991.23
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 26,
+          "value": 1280.91
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.43,
+          "value": 928.48
+        },
+        {
+          "positionId": "familienauto",
+          "value": 0
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 0
         }
       ]
     },
@@ -447,7 +653,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 231000
+          "value": 237485.37
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 28,
+          "value": 1402.46
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.44,
+          "value": 947.23
+        },
+        {
+          "positionId": "familienauto",
+          "value": 0
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 0
         }
       ]
     },
@@ -495,7 +719,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 230000
+          "value": 236978.04
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 30,
+          "value": 1514.45
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.45,
+          "value": 935.79
+        },
+        {
+          "positionId": "familienauto",
+          "value": 0
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 0
         }
       ]
     },
@@ -543,7 +785,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 229000
+          "value": 236469.23
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 32,
+          "value": 1613.99
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.46,
+          "value": 902.67
+        },
+        {
+          "positionId": "familienauto",
+          "value": 0
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 0
         }
       ]
     },
@@ -591,7 +851,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 228000
+          "value": 235958.93
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 34,
+          "value": 1699.74
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.47,
+          "value": 862.34
+        },
+        {
+          "positionId": "familienauto",
+          "value": 0
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 0
         }
       ]
     },
@@ -639,7 +917,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 227000
+          "value": 235447.14
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 36,
+          "value": 1772.25
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.48,
+          "value": 831.82
+        },
+        {
+          "positionId": "familienauto",
+          "value": 0
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 0
         }
       ]
     },
@@ -687,7 +983,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 226000
+          "value": 234933.86
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 38,
+          "value": 1834.05
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.49,
+          "value": 826.5
+        },
+        {
+          "positionId": "familienauto",
+          "value": 0
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 0
         }
       ]
     },
@@ -735,7 +1049,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 225000
+          "value": 234419.08
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 40,
+          "value": 1889.51
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.5,
+          "value": 856.16
+        },
+        {
+          "positionId": "familienauto",
+          "value": 0
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 0
         }
       ]
     },
@@ -783,7 +1115,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 224000
+          "value": 231402.8
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 42,
+          "value": 1944.39
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.51,
+          "value": 922.25
+        },
+        {
+          "positionId": "familienauto",
+          "value": 0
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 0
         }
       ]
     },
@@ -831,7 +1181,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 223000
+          "value": 230877.72
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 44,
+          "value": 2005.2
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.52,
+          "value": 1017.21
+        },
+        {
+          "positionId": "familienauto",
+          "value": 28000
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 19700
         }
       ]
     },
@@ -879,7 +1247,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 222000
+          "value": 230351.11
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 46,
+          "value": 2078.46
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.53,
+          "value": 1126
+        },
+        {
+          "positionId": "familienauto",
+          "value": 27720
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 19398.5
         }
       ]
     },
@@ -927,7 +1313,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 221000
+          "value": 229822.97
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 48,
+          "value": 2169.8
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.54,
+          "value": 1229.63
+        },
+        {
+          "positionId": "familienauto",
+          "value": 27442.8
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 19095.49
         }
       ]
     },
@@ -975,7 +1379,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 220000
+          "value": 229293.29
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 50,
+          "value": 2283.22
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.55,
+          "value": 1309.77
+        },
+        {
+          "positionId": "familienauto",
+          "value": 27168.37
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 18790.97
         }
       ]
     },
@@ -1023,7 +1445,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 219000
+          "value": 228762.06
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 52,
+          "value": 2420.43
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.56,
+          "value": 1353.41
+        },
+        {
+          "positionId": "familienauto",
+          "value": 26896.69
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 18484.92
         }
       ]
     },
@@ -1071,7 +1511,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 218000
+          "value": 228229.28
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 54,
+          "value": 2580.51
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.57,
+          "value": 1356.34
+        },
+        {
+          "positionId": "familienauto",
+          "value": 26627.72
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 18177.34
         }
       ]
     },
@@ -1119,7 +1577,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 217000
+          "value": 227694.95
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 56,
+          "value": 2759.81
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.58,
+          "value": 1324.51
+        },
+        {
+          "positionId": "familienauto",
+          "value": 26361.44
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 17868.23
         }
       ]
     },
@@ -1167,7 +1643,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 216000
+          "value": 227159.06
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 58,
+          "value": 2952.23
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.59,
+          "value": 1272.9
+        },
+        {
+          "positionId": "familienauto",
+          "value": 26097.83
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 17557.57
         }
       ]
     },
@@ -1215,7 +1709,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 215000
+          "value": 226621.61
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 60,
+          "value": 3149.8
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.6,
+          "value": 1222.08
+        },
+        {
+          "positionId": "familienauto",
+          "value": 25836.85
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 17245.36
         }
       ]
     },
@@ -1263,7 +1775,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 214000
+          "value": 226082.59
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 62,
+          "value": 3343.53
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.61,
+          "value": 1193.22
+        },
+        {
+          "positionId": "familienauto",
+          "value": 25578.48
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 16931.59
         }
       ]
     },
@@ -1311,7 +1841,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 213000
+          "value": 225542
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 64,
+          "value": 3524.48
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.62,
+          "value": 1202.8
+        },
+        {
+          "positionId": "familienauto",
+          "value": 25322.7
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 16616.25
         }
       ]
     },
@@ -1359,7 +1907,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 212000
+          "value": 221999.83
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 66,
+          "value": 3684.78
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.63,
+          "value": 1258.34
+        },
+        {
+          "positionId": "familienauto",
+          "value": 25069.47
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 16299.33
         }
       ]
     },
@@ -1407,7 +1973,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 211000
+          "value": 221447.33
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 68,
+          "value": 3818.71
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.64,
+          "value": 1356.18
+        },
+        {
+          "positionId": "familienauto",
+          "value": 24818.78
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 15980.83
         }
       ]
     },
@@ -1455,7 +2039,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 210000
+          "value": 220893.22
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 70,
+          "value": 3923.44
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.65,
+          "value": 1482.07
+        },
+        {
+          "positionId": "familienauto",
+          "value": 24570.59
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 15660.73
         }
       ]
     },
@@ -1508,7 +2110,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 209000
+          "value": 220337.49
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 72,
+          "value": 3999.61
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.66,
+          "value": 1614.39
+        },
+        {
+          "positionId": "familienauto",
+          "value": 24324.88
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 14339.03
         }
       ]
     },
@@ -1561,7 +2181,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 208000
+          "value": 219780.14
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 74,
+          "value": 4051.39
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.67,
+          "value": 1729.36
+        },
+        {
+          "positionId": "familienauto",
+          "value": 24081.63
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 14010.73
         }
       ]
     },
@@ -1614,7 +2252,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 207000
+          "value": 219221.17
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 76,
+          "value": 4086.16
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.68,
+          "value": 1806.88
+        },
+        {
+          "positionId": "familienauto",
+          "value": 23840.82
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 13680.78
         }
       ]
     },
@@ -1667,7 +2323,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 206000
+          "value": 218660.57
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 78,
+          "value": 4113.86
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.69,
+          "value": 1835.72
+        },
+        {
+          "positionId": "familienauto",
+          "value": 23602.41
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 13349.18
         }
       ]
     },
@@ -1720,7 +2394,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 205000
+          "value": 218098.33
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 80,
+          "value": 4145.91
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.7,
+          "value": 1816.56
+        },
+        {
+          "positionId": "familienauto",
+          "value": 23366.39
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 13015.93
         }
       ]
     },
@@ -1773,7 +2465,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 204000
+          "value": 215034.45
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 82,
+          "value": 4193.93
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.71,
+          "value": 1762.18
+        },
+        {
+          "positionId": "familienauto",
+          "value": 23132.72
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 12681.01
         }
       ]
     },
@@ -1826,7 +2536,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 203000
+          "value": 214461.63
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 84,
+          "value": 4268.41
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.72,
+          "value": 1694.61
+        },
+        {
+          "positionId": "familienauto",
+          "value": 22901.39
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 12344.42
         }
       ]
     },
@@ -1879,7 +2607,25 @@
         },
         {
           "positionId": "kredit-wohnung",
-          "value": 202000
+          "value": 213887.14
+        },
+        {
+          "positionId": "demo-aktie",
+          "quantity": 86,
+          "value": 4377.4
+        },
+        {
+          "positionId": "ethereum",
+          "quantity": 0.73,
+          "value": 1639.92
+        },
+        {
+          "positionId": "familienauto",
+          "value": 22672.38
+        },
+        {
+          "positionId": "kredit-auto",
+          "value": 12006.14
         }
       ]
     }
@@ -1887,33 +2633,33 @@
   "accounts": [
     {
       "id": "account-1",
-      "name": "Gehaltskonto Max",
-      "iban": "DE12 3456 7890 1234 5678 90"
+      "name": "Gehaltskonto Max (Demo)",
+      "iban": ""
     },
     {
       "id": "account-2",
-      "name": "Gehaltskonto Anna",
-      "iban": "DE98 7654 3210 9876 5432 10"
+      "name": "Gehaltskonto Anna (Demo)",
+      "iban": ""
     },
     {
       "id": "account-3",
-      "name": "Haushaltskonto",
-      "iban": "DE45 6789 0123 4567 8901 23"
+      "name": "Haushaltskonto (Demo)",
+      "iban": ""
     },
     {
       "id": "account-4",
-      "name": "Gem. Lastschriften",
-      "iban": "DE78 9012 3456 7890 1234 56"
+      "name": "Gem. Lastschriften (Demo)",
+      "iban": ""
     },
     {
       "id": "account-5",
-      "name": "Depot Verrechnungskonto",
-      "iban": "DE23 4567 8901 2345 6789 01"
+      "name": "Depot Verrechnungskonto (Demo)",
+      "iban": ""
     },
     {
       "id": "account-6",
-      "name": "Depot Tagesgeld",
-      "iban": "DE56 7890 1234 5678 9012 34"
+      "name": "Depot Tagesgeld (Demo)",
+      "iban": ""
     }
   ],
   "budget": {
@@ -1982,28 +2728,6 @@
           250,
           250,
           250
-        ]
-      },
-      {
-        "id": "budget-4",
-        "name": "Tilgung",
-        "category": "fixe",
-        "subcategory": "Wohnen",
-        "kind": "principal",
-        "targetGroupId": "group-6",
-        "monthlyAmounts": [
-          1000,
-          1000,
-          1000,
-          1000,
-          1000,
-          1000,
-          1000,
-          1000,
-          1000,
-          1000,
-          1000,
-          1000
         ]
       },
       {
@@ -2423,6 +3147,72 @@
           50,
           50
         ]
+      },
+      {
+        "id": "budget-stock",
+        "name": "Aktien-Sparplan",
+        "category": "sparen",
+        "subcategory": "",
+        "kind": "saving",
+        "targetGroupId": "group-stock",
+        "monthlyAmounts": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ]
+      },
+      {
+        "id": "budget-crypto",
+        "name": "Krypto-Sparplan",
+        "category": "sparen",
+        "subcategory": "",
+        "kind": "saving",
+        "targetGroupId": "group-crypto",
+        "monthlyAmounts": [
+          25,
+          25,
+          25,
+          25,
+          25,
+          25,
+          25,
+          25,
+          25,
+          25,
+          25,
+          25
+        ]
+      },
+      {
+        "id": "budget-pension",
+        "name": "Altersvorsorge-Beiträge",
+        "category": "sparen",
+        "subcategory": "",
+        "kind": "saving",
+        "targetGroupId": "group-5",
+        "monthlyAmounts": [
+          70,
+          70,
+          70,
+          70,
+          70,
+          70,
+          70,
+          70,
+          70,
+          70,
+          70,
+          70
+        ]
       }
     ],
     "standingOrders": [
@@ -2503,21 +3293,58 @@
   "loans": [
     {
       "positionId": "kredit-wohnung",
-      "interestPercent": 3.1,
-      "monthlyPayment": 1550,
-      "annualExtraPayment": 2000,
-      "fixedUntilYear": 2033,
-      "followUpInterestPercent": 3.8
+      "linkedAssetId": "wohnung-marktwert",
+      "principalAmount": 240000,
+      "interestPercent": 3.5,
+      "initialRepaymentPercent": 2.5,
+      "monthlyPayment": 1200,
+      "firstPaymentMonth": "2024-01",
+      "fixedInterestYears": 10,
+      "followUpInterestPercent": 4,
+      "extraPayments": [
+        {
+          "id": "extra-home-2024",
+          "month": "2024-12",
+          "amount": 2500
+        },
+        {
+          "id": "extra-home-2025",
+          "month": "2025-12",
+          "amount": 3000
+        },
+        {
+          "id": "extra-home-2026",
+          "month": "2026-08",
+          "amount": 2500
+        }
+      ]
+    },
+    {
+      "positionId": "kredit-auto",
+      "linkedAssetId": "familienauto",
+      "principalAmount": 20000,
+      "interestPercent": 6,
+      "initialRepaymentPercent": 18,
+      "monthlyPayment": 400,
+      "firstPaymentMonth": "2025-01",
+      "fixedInterestYears": 5,
+      "extraPayments": [
+        {
+          "id": "extra-car-2026",
+          "month": "2026-03",
+          "amount": 1000
+        }
+      ]
     }
   ],
   "retirement": {
     "primary": {
       "id": "person-main",
-      "name": "Eigene Person",
+      "name": "Max (Demo)",
       "statutoryPension": {
         "points": 17.4,
         "annualSalary": 58000,
-        "retirementAge": 0,
+        "retirementAge": 67,
         "deductionPercent": 20,
         "pensionPointValue": 42.52,
         "averageSalary": 51944,
@@ -2528,14 +3355,14 @@
     "people": [
       {
         "id": "person-1",
-        "name": "Anna",
+        "name": "Anna (Demo)",
         "statutoryPension": {
           "points": 12.8,
           "annualSalary": 36000,
           "deductionPercent": 20
         },
         "birthYear": 1987,
-        "workUntilAge": 62
+        "workUntilAge": 67
       }
     ],
     "incomes": [
@@ -2552,9 +3379,9 @@
       "lifeExpectancyAge": 85,
       "planningHorizonAge": 95,
       "inflationPercent": 2,
-      "saveUntilAge": 60,
+      "saveUntilAge": 67,
       "savingsGrowthPercent": 1.5,
-      "retirementAge": 62,
+      "retirementAge": 67,
       "monthlySpending": 2800,
       "safetyPercent": 85
     },
@@ -2573,15 +3400,14 @@
       },
       {
         "id": "event-2",
-        "name": "Erbschaft",
-        "year": 2036,
-        "amount": 60000,
+        "name": "Renovierung",
+        "year": 2030,
+        "amount": 15000,
         "from": {
-          "type": "external"
+          "type": "liquid"
         },
         "to": {
-          "type": "group",
-          "groupId": "group-2"
+          "type": "external"
         }
       }
     ]
@@ -2595,6 +3421,7 @@
       "budget": true,
       "forecast": true
     },
-    "expandedSections": {}
+    "expandedSections": {},
+    "onboardingCompleted": true
   }
 }
