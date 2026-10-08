@@ -1455,6 +1455,95 @@ details.tut-section[open]>.tut-toggle::after{transform:rotate(45deg)}
 .ob-title{font-weight:400;font-size:28px}
 .ob-actions .btn{min-height:50px}
 
+/* Daten-Seite: Positionen als Liste, Bearbeiten je Position im Sheet */
+body:not(.v2-editing) #page-import .v2-form-head{display:none}
+.ds-month{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;padding:14px 12px 14px 16px;margin:10px 0}
+.ds-month-l{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start}
+.ds-month-t{border:none;background:none;padding:0;font:inherit;font-size:17px;font-weight:500;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.ds-month-t::after{content:'';width:6px;height:6px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:rotate(45deg) translateY(-2px);opacity:.7}
+.ds-month-s{font-size:13px;color:var(--muted);margin-top:2px;line-height:1.35}
+.ds-month .v2-textbtn{flex-shrink:0}
+.ds-list-t{font-size:13px;color:var(--muted);padding:16px 2px 6px}
+.ds-list{background:var(--fill);border-radius:12px;overflow:hidden}
+.ds-item{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:8px 12px;background:none;border:none;font:inherit;color:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ds-item+.ds-item{box-shadow:inset 0 .5px 0 var(--sep)}
+.ds-item:active{background:var(--fill)}
+.ds-item-l{flex:1;min-width:0;display:flex;flex-direction:column}
+.ds-item-l>span{color:var(--ink);font-size:15px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ds-item-l>small{color:var(--muted);font-size:12.5px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ds-item-v{font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ds-item.is-zero .ds-item-v{color:var(--muted)}
+.ds-zero{margin-top:10px}
+.ds-zero>summary{cursor:pointer;list-style:none;font-size:13px;color:var(--muted);padding:10px 2px;display:flex;align-items:center;gap:8px}
+.ds-zero>summary::-webkit-details-marker{display:none}
+.ds-zero>summary::after{content:'';width:6px;height:6px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(-45deg);transition:transform .2s}
+.ds-zero[open]>summary::after{transform:rotate(45deg)}
+.ds-add{display:block;width:100%;margin-top:10px;min-height:46px;border:1.5px dashed color-mix(in srgb,var(--muted) 45%,transparent);border-radius:12px;background:none;color:var(--ink);font:inherit;font-size:15px;cursor:pointer}
+.ds-add:active{background:var(--fill)}
+.ds-empty{font-size:13.5px;color:var(--muted);line-height:1.5;margin:14px 2px 0}
+.ds-sec-actions{display:flex;justify-content:flex-end;padding:12px 0 0}
+body.v2-editing .ds-sec-actions{display:none}
+
+/* Bottom-Sheet (Mobil) bzw. Dialog (ab Tablet) */
+.ds-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.38);opacity:0;pointer-events:none;transition:opacity .25s}
+.ds-overlay.show{opacity:1;pointer-events:auto}
+.ds-sheet{position:fixed;left:0;right:0;bottom:0;z-index:401;display:flex;flex-direction:column;max-height:calc(100dvh - max(28px,env(safe-area-inset-top)) - 10px);background:var(--bg);border-radius:18px 18px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.25);transform:translateY(105%);visibility:hidden;transition:transform .32s cubic-bezier(.3,.7,.3,1),visibility 0s .32s}
+.ds-sheet.show{transform:none;visibility:visible;transition:transform .32s cubic-bezier(.3,.7,.3,1)}
+.ds-sheet::before{content:'';position:absolute;top:6px;left:50%;width:36px;height:5px;margin-left:-18px;border-radius:3px;background:color-mix(in srgb,var(--muted) 45%,transparent)}
+@media(min-width:768px){
+  .ds-sheet{left:50%;right:auto;bottom:auto;top:50%;width:min(540px,calc(100vw - 48px));max-height:min(86vh,860px);border-radius:18px;transform:translate(-50%,-47%);opacity:0;transition:opacity .2s,transform .25s,visibility 0s .25s}
+  .ds-sheet.show{transform:translate(-50%,-50%);opacity:1;transition:opacity .2s,transform .25s}
+  .ds-sheet::before{display:none}
+}
+body.ds-lock{overflow:hidden}
+.ds-head{display:flex;align-items:center;gap:8px;padding:16px 10px 10px;border-bottom:.5px solid var(--sep)}
+.ds-head h2{flex:1;min-width:0;text-align:center;font-size:16px;font-weight:600;margin:0;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-head .v2-textbtn{min-width:92px}
+.ds-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:6px 16px calc(28px + env(safe-area-inset-bottom))}
+.ds-error{background:color-mix(in srgb,var(--red) 14%,transparent);color:var(--red);border-radius:12px;padding:11px 14px;font-size:14px;line-height:1.45;margin:12px 0 0}
+.ds-error[hidden]{display:none}
+.ds-note{font-size:13px;color:var(--muted);line-height:1.5;margin:12px 4px 0}
+.ds-group-t{font-size:13px;color:var(--muted);margin:20px 4px 6px}
+.ds-group{background:var(--card);border-radius:14px;overflow:hidden;margin-top:12px}
+.ds-group-t+.ds-group{margin-top:0}
+.ds-group[hidden]{display:none}
+.ds-row{display:flex;align-items:center;gap:12px;min-height:50px;padding:6px 14px}
+.ds-row+.ds-row,.ds-row+.ds-sub,.ds-sub+.ds-row{box-shadow:inset 0 .5px 0 var(--sep)}
+.ds-row[hidden]{display:none}
+.ds-l{flex:1;min-width:0;color:var(--ink);font-size:15px;line-height:1.3}
+.ds-l small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px;font-variant-numeric:tabular-nums}
+.ds-in{flex:0 0 auto;width:148px;min-width:0;min-height:38px;border:none;border-radius:9px;background:var(--fill);padding:8px 11px;font:inherit;font-size:16px;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;-webkit-appearance:none;appearance:none;outline:none}
+.ds-in:focus{box-shadow:0 0 0 2px color-mix(in srgb,var(--ink) 22%,transparent)}
+.ds-in.ds-wide{flex:1;width:auto;max-width:62%;text-align:left}
+select.ds-in{padding-right:28px;text-align:left;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat;background-color:var(--fill)}
+.ds-in[readonly]{background:none;color:var(--muted);box-shadow:none}
+.ds-static{font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ds-sub{padding:10px 14px 12px}
+.ds-sub .btn{min-height:42px}
+.ds-sub .asset-quote-result{margin:8px 0 0}
+.ds-help{font-size:12.5px;color:var(--muted);line-height:1.5;margin:8px 4px 0}
+.ds-more{margin-top:12px}
+.ds-more>summary{cursor:pointer;list-style:none;font-size:14.5px;color:var(--ink);padding:12px 4px;display:flex;align-items:center;gap:8px}
+.ds-more>summary::-webkit-details-marker{display:none}
+.ds-more>summary::after{content:'';width:7px;height:7px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:rotate(-45deg);transition:transform .2s;margin-left:2px}
+.ds-more[open]>summary::after{transform:rotate(45deg)}
+.ds-more>.ds-group:first-of-type{margin-top:0}
+.ds-summary{font-size:13px;color:var(--muted);line-height:1.55;margin:12px 4px 0;font-variant-numeric:tabular-nums}
+.ds-summary strong{color:var(--ink);font-weight:500}
+.ds-summary:empty{display:none}
+.ds-sheet .loan-extra-row{padding:8px 14px}
+.ds-sheet .loan-extra-row+.loan-extra-row{box-shadow:inset 0 .5px 0 var(--sep)}
+.ds-sheet .loan-extra-row .num-input{font-size:16px;background:var(--fill);border:none;border-radius:9px;min-height:38px}
+.ds-sheet .loan-plan{margin:12px 4px 0}
+.ds-danger{display:block;width:100%;margin-top:26px;min-height:48px;border:none;border-radius:12px;background:var(--card);color:var(--red);font:inherit;font-size:15px;cursor:pointer}
+.ds-danger:active{opacity:.75}
+.ds-delta.up{color:var(--green)} .ds-delta.down{color:var(--red)}
+.v2-t2.ds-warn{color:var(--red)}
+.ds-toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));z-index:450;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:999px;padding:9px 18px;font-size:14px;font-weight:500;transition:opacity .2s,transform .25s;white-space:nowrap}
+.ds-toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:768px){.ds-toast{bottom:32px}}
+@media(max-width:380px){.ds-in{width:124px}}
+
 /* Budget */
 #page-budget .kpi-item{height:112px}
 /* Geldfluss: Überschrift mittig, ein Trennstrich zwischen Überschrift und Einnahmen/Ausgaben */
@@ -1527,7 +1616,9 @@ details.tut-section[open]>.tut-toggle::after{transform:rotate(45deg)}
 
 /* Guided setup: short explanations, one clear action per screen. */
 .onboarding-next{grid-column:1 / -1;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin:8px 0 20px}
-.onboarding-next h2{font-size:17px;font-weight:500;color:var(--ink);margin:0 0 6px}
+.onboarding-next{position:relative}
+.onboarding-next-close{position:absolute;top:8px;right:8px;width:36px;height:36px;border:none;border-radius:50%;background:var(--fill);color:var(--muted);font-size:20px;line-height:1;cursor:pointer}
+.onboarding-next h2{padding-right:36px;font-size:17px;font-weight:500;color:var(--ink);margin:0 0 6px}
 .onboarding-next p{font-size:14px;line-height:1.55;color:var(--muted);margin:0 0 10px}
 .onboarding-next a{display:inline-flex;align-items:center;min-height:44px;color:var(--green);font-size:15px;font-weight:500;text-underline-offset:3px}
 .onboarding-next a:focus-visible{outline:2px solid var(--green);outline-offset:4px;border-radius:4px}
@@ -1702,9 +1793,10 @@ body.onboarding-open{overflow:hidden}
 <div class="app-content">
 
 <aside id="onboardingNextStep" class="onboarding-next" aria-labelledby="onboardingNextTitle" hidden>
+  <button type="button" class="onboarding-next-close" onclick="dismissOnboardingNext()" aria-label="Hinweis schließen">×</button>
   <h2 id="onboardingNextTitle" tabindex="-1">Dein nächster Schritt</h2>
   <p>Ergänze jetzt deine Verbindlichkeiten, Einnahmen &amp; Ausgaben sowie weitere Angaben auf der Daten-Seite. Du kannst alles jederzeit anpassen.</p>
-  <a href="#data" onclick="event.preventDefault();navigateToPage('import')">Weitere Angaben ergänzen →</a>
+  <a href="#data" onclick="event.preventDefault();dismissOnboardingNext();navigateToPage('import')">Weitere Angaben ergänzen →</a>
 </aside>
 
 <!-- Hero: Nettovermögen -->
@@ -1851,8 +1943,8 @@ body.onboarding-open{overflow:hidden}
 
 <div class="sec-h">Sicherung</div>
 <div class="v2-list">
-  <button class="v2-row v2-row-action" onclick="exportBackup()"><span class="v2-t"><span class="v2-t1">Sicherung exportieren</span><span class="v2-t2">Eine JSON-Datei mit allen Daten und Einstellungen</span></span><span class="v2-chev"></span></button>
-  <label class="v2-row v2-row-action" style="cursor:pointer"><span class="v2-t"><span class="v2-t1">Datei importieren</span><span class="v2-t2">JSON-Sicherung oder bisherige CSV-Datei</span></span><span class="v2-chev"></span><input type="file" accept=".json,.csv,application/json,text/csv" id="csvInput2" style="display:none" onchange="document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
+  <button class="v2-row v2-row-action" onclick="exportBackup()"><span class="v2-t"><span class="v2-t1">Sicherung exportieren</span><span class="v2-t2" id="backupSub">Eine Datei mit allen Daten und Einstellungen</span></span><span class="v2-chev"></span></button>
+  <label class="v2-row v2-row-action" style="cursor:pointer"><span class="v2-t"><span class="v2-t1">Sicherung wiederherstellen</span><span class="v2-t2">Sicherungsdatei laden · alte CSV-Dateien werden ergänzt</span></span><span class="v2-chev"></span><input type="file" accept=".json,.csv,application/json,text/csv" id="csvInput2" style="display:none" onchange="document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
 </div>
 
 
@@ -2132,6 +2224,14 @@ body.onboarding-open{overflow:hidden}
 
 <!-- Onboarding Overlay -->
 <div class="ob-overlay" id="onboardingOverlay" role="dialog" aria-modal="true" aria-label="Willkommen und geführter Einstieg" style="display:none"></div>
+
+<!-- Daten-Sheet: eine Position, ein Kredit oder ein Monatsstand, jeweils mit eigenem Sichern -->
+<div class="ds-overlay" id="dsOverlay"></div>
+<div class="ds-sheet" id="dsSheet" role="dialog" aria-modal="true" aria-labelledby="dsTitle">
+  <div class="ds-head"><button type="button" class="v2-textbtn v2-muted" id="dsCancel">Abbrechen</button><h2 id="dsTitle"></h2><button type="button" class="v2-textbtn v2-strong" id="dsSave">Sichern</button></div>
+  <div class="ds-body" id="dsBody"></div>
+</div>
+<div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
 <script src="data-store.js?v=8"></script>
 <script src="loan-model.js?v=2"></script>
@@ -3806,7 +3906,7 @@ function showImportError(message){
   if(!document.getElementById('page-import').classList.contains('active'))navigateToPage('import');
   showCsvMsg(message,'error');
 }
-function showCsvMsg(m,t){const el=document.getElementById('csvMsg');el.textContent=m;el.style.display='block';el.style.color=t==='error'?'var(--red)':'var(--green)';setTimeout(()=>el.style.display='none',5000);}
+function showCsvMsg(m,t){if(_sheetOpen&&t==='error'){_sheetError(m);return;}const el=document.getElementById('csvMsg');el.textContent=m;el.style.display='block';el.style.color=t==='error'?'var(--red)':'var(--green)';setTimeout(()=>el.style.display='none',5000);}
 
 function resetApp(){
   if(!confirm('Alle Daten (Vermögen, Budget, Prognose-Einstellungen, Theme) werden unwiderruflich gelöscht.\nTipp: vorher per „Sicherung exportieren“ sichern.\n\nFortfahren?'))return;
@@ -3901,7 +4001,7 @@ function recalcAggregates(e){
 }
 
 function applyLivePrices(){
-  if(chartInteractionActive||_editMode)return;
+  if(chartInteractionActive||_isEditing())return;
   const ym=selectedMonth;
   if(!ym||ym!==nextYM())return;
   const d=loadData(),e=d[ym];if(!e)return;
@@ -3956,19 +4056,19 @@ async function _refreshAssetQuotes(fields){
   await Promise.all([...byKey.values()].map(async ({instrument,ids})=>{
     try{
       const result=await fetchInstrumentQuote(instrument);
-      ids.forEach(id=>{const f=_fc.fields.find(f=>f.id===id);if(_editMode||!f||AssetModel.key(AssetModel.instrument(f))!==AssetModel.key(instrument)||AssetModel.valuation(f)!=='market')return;f.instrument=result.instrument;f.lastQuote=result.quote;livePrices[f.unitId||f.id]=result.quote.priceEUR;_quoteErrors.delete(id);changed=true;ok=true;});
+      ids.forEach(id=>{const f=_fc.fields.find(f=>f.id===id);if(_isEditing()||!f||AssetModel.key(AssetModel.instrument(f))!==AssetModel.key(instrument)||AssetModel.valuation(f)!=='market')return;f.instrument=result.instrument;f.lastQuote=result.quote;livePrices[f.unitId||f.id]=result.quote.priceEUR;_quoteErrors.delete(id);changed=true;ok=true;});
     }catch(error){ids.forEach(id=>_quoteErrors.add(id));}
   }));
   // A draft on the Data page must never be overwritten by background quotes.
-  if(changed&&!_editMode){try{saveFieldConfig(_fc);}catch(error){console.warn('Kurs konnte nicht gespeichert werden:',error.message);}}
+  if(changed&&!_isEditing()){try{saveFieldConfig(_fc);}catch(error){console.warn('Kurs konnte nicht gespeichert werden:',error.message);}}
   updateLiveDot(ok);applyLivePrices();
 }
 async function livePriceTick(){
-  if(document.hidden||_editMode)return;
+  if(document.hidden||_isEditing())return;
   return _refreshAssetQuotes(_fc.fields.filter(f=>['bitcoin','kraken'].includes(AssetModel.instrument(f)?.provider)));
 }
 async function etfPriceTick(){
-  if(document.hidden||_editMode)return;
+  if(document.hidden||_isEditing())return;
   return _refreshAssetQuotes(_fc.fields.filter(f=>AssetModel.instrument(f)?.provider==='yahoo'));
 }
 
@@ -4874,7 +4974,7 @@ function navigateToPage(page){
   document.querySelectorAll('.sidebar-item').forEach(b=>{b.classList.toggle('active',b.dataset.page===page);});
   if(page==='budget')renderBudgetPage();
   if(page==='home')requestAnimationFrame(_adjustHomeGap);
-  if(page==='import'){loadFormForMonth(selectedMonth);setFormReadOnly(true);buildAssetParamsTable();if(_mod('forecast'))_ltScheduleRender(350);}
+  if(page==='import'){dismissOnboardingNext();_refreshBackupInfo();loadFormForMonth(selectedMonth);setFormReadOnly(true);buildAssetParamsTable();if(_mod('forecast'))_ltScheduleRender(350);}
   if(page==='lifetime')renderLifetimePage();
   window.scrollTo(0,0);
 }
@@ -5584,7 +5684,7 @@ function setFormReadOnly(ro){
   _editMode=!ro;
   document.body.classList.toggle('v2-editing',!ro);
   const fh=document.querySelector('#page-import .v2-form-head>span:first-child');
-  if(fh&&selectedMonth)fh.textContent=(ro?'Monatswerte · ':'')+fmtMonth(selectedMonth);
+  if(fh)fh.textContent='Bearbeiten';
   document.querySelectorAll('#page-import .num-input').forEach(inp=>{
     if(inp.closest('.v2-live'))return;
     inp.readOnly=ro||inp.dataset.loanDerived==='1';
@@ -5623,6 +5723,7 @@ function setFormReadOnly(ro){
 
 /* Ungespeicherte Eingaben der Data-Seite nicht still verwerfen (Export, Import, Seiten- oder Monatswechsel) */
 function _resolvePendingEdits(){
+  if(_sheetOpen&&!_closeSheet())return false;
   if(!_editMode)return true;
   if(confirm('Auf der Data-Seite gibt es ungespeicherte Änderungen.\n\nOK = jetzt speichern\nAbbrechen = verwerfen'))return saveEntry();
   setFormReadOnly(true);return true;
@@ -5744,7 +5845,7 @@ function _assetMetadataChanged(prefix,key){
     _assetEl(prefix,'symbol').value=cat==='bitcoin'?'XBTEUR':'';
   }
   if(key==='provider'&&_assetEl(prefix,'provider').value==='bitcoin')_assetEl(prefix,'symbol').value='XBTEUR';
-  const symbol=_assetEl(prefix,'symbol');if(symbol){const fixed=_assetEl(prefix,'provider')?.value==='bitcoin';symbol.dataset.loanDerived=fixed?'1':'0';symbol.readOnly=fixed||!_editMode;if(fixed)symbol.value='XBTEUR';}
+  const symbol=_assetEl(prefix,'symbol');if(symbol){const fixed=_assetEl(prefix,'provider')?.value==='bitcoin';symbol.dataset.loanDerived=fixed?'1':'0';symbol.readOnly=fixed||!_isEditing();if(fixed)symbol.value='XBTEUR';}
   const block=document.getElementById(prefix+'-quoteFields');if(block)block.hidden=_assetEl(prefix,'valuation').value!=='market';
   _updateAssetDraftValue(prefix);
   if(['symbol','provider','category'].includes(key)){
@@ -5775,7 +5876,7 @@ function _updateAssetDraftValue(prefix){
   const quantity=document.getElementById(prefix==='newAsset'?'newAsset-quantity':'fu-'+(f?.unitId||f?.id));
   if(!value)return;
   const automatic=market&&(prefix==='newAsset'||selectedMonth===nextYM());
-  value.readOnly=automatic||!_editMode;value.dataset.loanDerived=automatic?'1':'0';
+  value.readOnly=automatic||!_isEditing();value.dataset.loanDerived=automatic?'1':'0';
   value.style.pointerEvents=value.readOnly?'none':'';
   if(!automatic)return;
   const checked=_assetChecks.get(prefix),request=_assetRequest(prefix);
@@ -5813,11 +5914,11 @@ function addCustomField(section='assets'){
   const liability=section==='liab';
   const labelEl=document.getElementById(liability?'newLiabLabel':'newFieldLabel');
   const catEl=liability?null:document.getElementById('newFieldCategory');
-  if(!labelEl||(!liability&&!catEl))return;
+  if(!labelEl||(!liability&&!catEl))return false;
   const label=labelEl.value.trim().replace(/[;\r\n]/g,',');
   const category=liability?'liab':catEl.value;
-  if(!label)return alert('Bitte eine Bezeichnung eingeben');
-  if(!liability&&!AssetModel.categories[category])return;
+  if(!label){showCsvMsg('Bitte eine Bezeichnung eingeben.','error');return false;}
+  if(!liability&&!AssetModel.categories[category])return false;
   let metadata={},quantity=null,value=null;
   try{
     if(!liability){
@@ -5828,7 +5929,7 @@ function addCustomField(section='assets'){
         value=AssetModel.money(metadata.lastQuote.priceEUR*quantity);
       }
     }
-  }catch(error){showCsvMsg(error.message,'error');return;}
+  }catch(error){showCsvMsg(error.message,'error');return false;}
   let id='custom-'+Date.now();while(_fc.fields.some(f=>f.id===id))id+='-1';
   let group=label,n=2;while(_fc.fields.some(f=>(f.displayGroup||f.category)===group))group=label+' ('+(n++)+')';
   _fc.fields.push({id,label,category,displayGroup:group,...metadata,hasUnits:!liability,...(!liability?{unitId:id}:{})});
@@ -5837,21 +5938,22 @@ function addCustomField(section='assets'){
     saveFieldConfig(_fc);
     if(liability){const lp=getLoanParams();lp[id]={assetId:document.getElementById('newLiabAsset')?.value||null,extras:[]};appStorage.setItem('loanParams',JSON.stringify(lp));}
     else {const ap=JSON.parse(appStorage.getItem('lt-asset-params')||'{}');ap[group]={...(ap[group]||{}),saving:0};appStorage.setItem('lt-asset-params',JSON.stringify(ap));}
-    if(!liability&&(value!==null||quantity!==null)){const data=loadData(),e=data[selectedMonth]||{_details:{},_units:{}};if(e._loanHistory)e._loanHistory.generated=false;e._details={...e._details,[id]:value||0};e._units={...e._units,...(quantity!==null?{[id]:quantity}:{})};recalcAggregates(e);data[selectedMonth]=e;saveData(data);}
+    if(!liability&&(value!==null||quantity!==null)){const data=loadData(),e=_monthEntryForEdit(data,selectedMonth);e._details={...e._details,[id]:value||0};e._units={...e._units,...(quantity!==null?{[id]:quantity}:{})};recalcAggregates(e);data[selectedMonth]=e;saveData(data);}
     appStorage.commitTransaction();
-  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();showCsvMsg('Anlegen fehlgeschlagen: '+error.message,'error');return;}
+  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();showCsvMsg('Anlegen fehlgeschlagen: '+error.message,'error');return false;}
   labelEl.value='';
   if(!liability){_assetChecks.delete('newAsset');
     ['value','quantity','symbol'].forEach(k=>{const el=_assetEl('newAsset',k);if(el)el.value=k==='symbol'&&_assetEl('newAsset','provider')?.value==='bitcoin'?'XBTEUR':'';});
   }
   _rebuildFormKeepingEdits();
   if(!liability){const valueEl=document.getElementById('f-'+id),qtyEl=document.getElementById('fu-'+id);if(valueEl&&value!==null)valueEl.value=value.toLocaleString('de-DE',{maximumFractionDigits:2});if(qtyEl&&quantity!==null)qtyEl.value=String(quantity).replace('.',',');}
+  return true;
 }
 
 function removeCustomField(fieldId){
   const field=_fc.fields.find(f=>f.id===fieldId);
-  if(!field)return;
-  if(!confirm(`Position "${field.label}" wirklich entfernen?\n\nBereits erfasste Werte bleiben gespeichert, zählen aber nicht mehr zu den Summen.`))return;
+  if(!field)return false;
+  if(!confirm(`„${field.label}“ entfernen?\n\nDie Position zählt dann in keinem Monat mehr mit, auch nicht im bisherigen Verlauf. Die erfassten Werte bleiben in der Sicherung erhalten.\n\nKonto aufgelöst oder verkauft? Trage stattdessen 0 € ein, dann bleibt der Verlauf unverändert.`))return false;
   _fc.fields=_fc.fields.filter(f=>f.id!==fieldId);
   saveFieldConfig(_fc);
   const d=loadData();
@@ -5862,6 +5964,7 @@ function removeCustomField(fieldId){
   saveData(d);
   _rebuildFormKeepingEdits();
   render();
+  return true;
 }
 
 function _positionRemoveHTML(f){
@@ -5906,9 +6009,11 @@ function saveEntry(){
   const ym=selectedMonth;
   if(!ym){appStorage.rollbackTransaction();return;}
   const d=loadData();
-
+  /* Monatswerte werden in Sheets erfasst; nur ein Formular mit Monatsfeldern schreibt hier finData */
+  const pageEl=id=>{const el=document.getElementById(id);return el&&el.closest('#page-import')?el:null;};
+  if(_fc.fields.some(f=>pageEl('f-'+f.id))){
   _fc.fields.filter(f=>f.category!=='liab').forEach(f=>{
-    const prefix='asset-'+f.id;if(!document.querySelector('[id="'+_assetId(prefix,'name')+'"]'))return;
+    const prefix='asset-'+f.id;if(!pageEl(_assetId(prefix,'name')))return;
     Object.assign(f,_readAssetMetadata(prefix,f));
     const raw=document.getElementById('fu-'+(f.unitId||f.id))?.value;
     const quantity=_assetNumber(raw,true);
@@ -5919,7 +6024,7 @@ function saveEntry(){
   const inputVals={};
   const allFields=getAllInputFieldIds();
   allFields.forEach(k=>{
-    const el=document.getElementById('f-'+k);
+    const el=pageEl('f-'+k);
     if(el){const f=_fc.fields.find(f=>f.id===k);let value=+parseNumberWithThousands(el.value)||0;if(f.category!=='liab')value=_assetNumber(el.value)||0;if(f.category!=='liab'&&AssetModel.valuation(f)==='market'&&ym===nextYM()&&f.lastQuote)value=AssetModel.money(f.lastQuote.priceEUR*(_assetNumber(document.getElementById('fu-'+(f.unitId||f.id))?.value,true)||0));inputVals[k]=value;}
   });
 
@@ -5936,13 +6041,14 @@ function saveEntry(){
   const unitVals={};
   getUnitFields().forEach(f=>{
     const key=f.unitId||f.id;
-    const el=document.getElementById('fu-'+key);
+    const el=pageEl('fu-'+key);
     if(el){const q=_assetNumber(el.value,true);if(q!==null)unitVals[key]=q;else if(Object.prototype.hasOwnProperty.call((d[ym]||{})._units||{},key))unitVals[key]=0;}
   });
   e._units={...((d[ym]||{})._units||{}),...unitVals};
 
   d[ym]=e;
   saveData(d);
+  }
   
   /* Budget-Daten speichern (Änderungen ab diesem Monat für Folgemonate) */
   const bd=loadBudgetData();
@@ -5989,9 +6095,7 @@ function saveEntry(){
   _fc.fields.forEach(f=>{const key=f.unitId||f.id;if(AssetModel.valuation(f)==='market'&&f.lastQuote)livePrices[key]=f.lastQuote.priceEUR;else delete livePrices[key];});
   _assetChecks.clear();_assetCheckRuns.clear();_rebuildFormKeepingEdits();_fillFormForMonth(ym);
   setFormReadOnly(true);
-  const m=document.getElementById('saveMsg');
-  m.classList.add('show');
-  setTimeout(()=>m.classList.remove('show'),2500);
+  _toast('Gespeichert');
   render();
   if(document.getElementById('lt-asset-params-table'))buildAssetParamsTable();
   _v2SyncSwitches();/* Untertitel der Bereiche (z. B. Rentensumme) aktualisieren */
@@ -6034,12 +6138,29 @@ function downloadJSON(value,name){
   const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
+/* Zeitpunkt der letzten Sicherung je Gerät (kein Teil der Daten, daher nicht in der Sicherung) */
+const BACKUP_KEY='vermoegen-last-backup';
+function _lastBackup(){try{const t=localStorage.getItem(BACKUP_KEY);return t&&isFinite(Date.parse(t))?new Date(t):null;}catch(error){return null;}}
+function _refreshBackupInfo(){
+  const el=document.getElementById('backupSub');if(!el)return;
+  const t=_lastBackup(),days=t?Math.floor((Date.now()-t.getTime())/864e5):null;
+  el.textContent=!t?'Noch keine Sicherung von diesem Gerät · empfohlen':'Zuletzt '+(days<1?'heute':days===1?'gestern':'vor '+days+' Tagen')+' · eine Datei mit allem';
+  el.classList.toggle('ds-warn',!t||days>30);
+}
+function _backupDone(){try{localStorage.setItem(BACKUP_KEY,new Date().toISOString());}catch(error){}_refreshBackupInfo();_toast('Sicherung erstellt');}
 function exportBackup(){
   try{
     if(!_resolvePendingEdits())return;
     const now=new Date(),day=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
-    downloadJSON(appStorage.exportBackup(now),'vermoegen_'+day+'.json');
-    showCsvMsg('✓ Alle Daten und Einstellungen in einer Datei gesichert.','ok');
+    const doc=appStorage.exportBackup(now),name='vermoegen_'+day+'.json';
+    /* iPhone/iPad: Teilen-Menü (z. B. „In Dateien sichern“), sonst Download */
+    const touch=!!(window.matchMedia&&window.matchMedia('(pointer:coarse)').matches);
+    const file=touch&&typeof File==='function'?new File([JSON.stringify(doc,null,2)],name,{type:'application/json'}):null;
+    if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:'Vermögen – Sicherung'}).then(_backupDone).catch(error=>{if(error&&error.name==='AbortError')return;downloadJSON(doc,name);_backupDone();});
+      return;
+    }
+    downloadJSON(doc,name);_backupDone();
   }catch(error){showCsvMsg('Sicherung fehlgeschlagen: '+error.message,'error');}
 }
 async function handleDataUpload(ev){
@@ -6064,7 +6185,7 @@ function buildTutorialHTML(){
 
 function _loanAssetOptions(selected,legacy=false){
   const assets=appStorage.document().positions.filter(p=>p.category!=='liab'&&(!p.archived||p.id===selected));
-  return (legacy?'<option value="__legacy__">Bisherige Gruppenzuordnung</option>':'')+'<option value="">Ohne Verknüpfung</option>'+assets.map(p=>`<option value="${escHTML(p.id)}"${p.id===selected?' selected':''}>${escHTML(p.name)}${p.archived?' (archiviert)':''}</option>`).join('');
+  return (legacy?'<option value="__legacy__">Automatisch</option>':'')+'<option value="">Ohne Verknüpfung</option>'+assets.map(p=>`<option value="${escHTML(p.id)}"${p.id===selected?' selected':''}>${escHTML(p.name)}${p.archived?' (archiviert)':''}</option>`).join('');
 }
 function _loanMonthLabel(ym){const m=LoanModel.normalizeMonth(ym);return m?m.slice(5)+'/'+(+m.slice(0,4)>=2000&&+m.slice(0,4)<2100?m.slice(2,4):m.slice(0,4)):ym||'';}
 function _loanExtraRows(id){
@@ -6076,7 +6197,7 @@ function _loanExtraHTML(id,e){
 }
 function _loanFromInputs(fieldId,strict=false){
   const p={};
-  document.querySelectorAll(`#page-import input[data-loan="${CSS.escape(fieldId)}"]`).forEach(inp=>{
+  document.querySelectorAll(`input[data-loan="${CSS.escape(fieldId)}"]`).forEach(inp=>{
     const raw=inp.value.trim(),key=inp.dataset.k;if(!raw)return;
     if(key==='firstDue'){
       const month=LoanModel.normalizeMonth(raw);if(!month)throw new Error('Erste Fälligkeit: Bitte MM/JJ eingeben, z. B. 11/26.');p.firstDue=month;return;
@@ -6086,7 +6207,7 @@ function _loanFromInputs(fieldId,strict=false){
     if(!/^(?:\d+(?:[.,]\d+)?|\d{1,3}(?:\.\d{3})+(?:,\d+)?)$/.test(clean)||!Number.isFinite(n)||n<0)throw new Error('Bitte einen gültigen Betrag oder Prozentsatz ab null eingeben.');
     p[key]=n;
   });
-  const asset=document.querySelector(`#page-import select[data-loan-asset="${CSS.escape(fieldId)}"]`);
+  const asset=document.querySelector(`select[data-loan-asset="${CSS.escape(fieldId)}"]`);
   if(asset&&asset.value!=='__legacy__')p.assetId=asset.value||null;
   const wrap=document.getElementById('loanExtras-'+fieldId);
   if(wrap){
@@ -6106,7 +6227,7 @@ function _loanFromInputs(fieldId,strict=false){
   return p;
 }
 function _syncLoanPayment(id,key){
-  const find=k=>document.querySelector(`#page-import input[data-loan="${CSS.escape(id)}"][data-k="${k}"]`);
+  const find=k=>document.querySelector(`input[data-loan="${CSS.escape(id)}"][data-k="${k}"]`);
   const principal=find('principal'),rate=find('rate'),repayment=find('repayment'),pay=find('pay');
   if(!principal||!rate||!repayment||!pay)return;
   const P=_parseDec(principal.value),R=_parseDec(rate.value),T=_parseDec(repayment.value),A=_parseDec(pay.value);
@@ -6117,11 +6238,11 @@ function _syncLoanPayment(id,key){
   }
 }
 function _updateLoanSummary(id){
-  const el=document.querySelector(`#page-import [data-loan-summary="${CSS.escape(id)}"]`),bal=document.getElementById('f-'+id);
+  const el=document.querySelector(`[data-loan-summary="${CSS.escape(id)}"]`),bal=document.getElementById('f-'+id);
   const plan=document.getElementById('loanPlan-'+id);
   try{
     const p=_loanFromInputs(id),modern=LoanModel.configured(p);
-    if(bal){bal.dataset.loanDerived=modern?'1':'0';bal.readOnly=modern||!_editMode;bal.style.pointerEvents=bal.readOnly?'none':'';if(modern)bal.value=LoanModel.at(p,selectedMonth).balance.toLocaleString('de-DE',{maximumFractionDigits:2});}
+    if(bal){bal.dataset.loanDerived=modern?'1':'0';bal.readOnly=modern||!_isEditing();bal.style.pointerEvents=bal.readOnly?'none':'';if(modern)bal.value=LoanModel.at(p,selectedMonth).balance.toLocaleString('de-DE',{maximumFractionDigits:2});}
     if(el)el.innerHTML=_loanSummaryText(bal?(_parseDec(bal.value)||0):0,p);
     if(plan)plan.innerHTML=modern?_loanPlanHTML(p):'';
   }catch(error){if(el)el.innerHTML=`<span class="ob-error">${escHTML(error.message)}</span>`;if(plan)plan.innerHTML='';}
@@ -6171,95 +6292,475 @@ function _loanCardHTML(f,p){
     <div class="loan-summary" data-loan-summary="${f.id}" aria-live="polite"></div><div id="loanPlan-${f.id}"></div></section>`;
 }
 
+/* ══ Daten-Sheets ══
+   Eine Position, ein Kredit oder der Monatsstand wird in einem eigenen Sheet bearbeitet und für sich
+   gesichert. Solange ein Sheet offen ist, schreiben Hintergrund-Kurse nichts (_isEditing). */
+let _sheetOpen=false,_sheetDirty=false,_sheetSave=null,_sheetCtx={};
+function _isEditing(){return _editMode||_sheetOpen;}
+function _toast(text){
+  const t=document.getElementById('dsToast');if(!t)return;
+  t.textContent=text;t.classList.add('show');clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+function _sheetError(message){
+  const el=document.getElementById('dsError');if(!el)return;
+  el.textContent=message||'';el.hidden=!message;
+  if(message){const b=document.getElementById('dsBody');if(b&&b.scrollTo)b.scrollTo({top:0,behavior:'smooth'});}
+}
+function _openSheet(title,body,save,saveLabel='Sichern'){
+  if(_sheetOpen&&!_closeSheet())return false;
+  if(_editMode&&!_resolvePendingEdits())return false;
+  const b=document.getElementById('dsBody');
+  document.getElementById('dsTitle').textContent=title;
+  document.getElementById('dsSave').textContent=saveLabel;
+  b.innerHTML='<div class="ds-error" id="dsError" role="alert" hidden></div>'+body;
+  b.scrollTop=0;
+  _sheetSave=save;_sheetOpen=true;_sheetDirty=false;
+  document.getElementById('dsOverlay').classList.add('show');
+  document.getElementById('dsSheet').classList.add('show');
+  document.body.classList.add('ds-lock');
+  return true;
+}
+function _closeSheet(force=false){
+  if(!_sheetOpen)return true;
+  if(!force&&_sheetDirty&&!confirm('Änderungen verwerfen?'))return false;
+  _sheetOpen=false;_sheetSave=null;_sheetDirty=false;_sheetCtx={};
+  _assetChecks.clear();_assetCheckRuns.clear();
+  document.getElementById('dsOverlay').classList.remove('show');
+  document.getElementById('dsSheet').classList.remove('show');
+  document.body.classList.remove('ds-lock');
+  const b=document.getElementById('dsBody');
+  setTimeout(()=>{if(!_sheetOpen)b.innerHTML='';},350);
+  return true;
+}
+function _submitSheet(){
+  if(!_sheetSave)return;
+  _sheetError('');
+  const active=document.activeElement;if(active&&active.blur&&active.closest&&active.closest('#dsBody'))active.blur();
+  let ok=false;
+  try{ok=_sheetSave()!==false;}catch(error){_sheetError(error.message);return;}
+  if(ok){_closeSheet(true);_toast('Gespeichert');}
+}
+function _initSheet(){
+  const b=document.getElementById('dsBody');if(!b||b._ready)return;b._ready=true;
+  document.getElementById('dsCancel').addEventListener('click',()=>_closeSheet());
+  document.getElementById('dsSave').addEventListener('click',_submitSheet);
+  document.getElementById('dsOverlay').addEventListener('click',()=>_closeSheet());
+  document.addEventListener('keydown',e=>{if(_sheetOpen&&e.key==='Escape')_closeSheet();});
+  b.addEventListener('input',e=>{_sheetDirty=true;_dataInput(e);_monthSheetInput(e);_unitHint(e);});
+  b.addEventListener('click',_dataClick);
+  /* Beträge beim Tippen ohne Tausenderpunkte, danach lesbar formatiert */
+  b.addEventListener('focusin',e=>{const i=e.target;if(!i.classList||!i.classList.contains('ds-money')||i.readOnly)return;const n=_parseDec(i.value);if(isFinite(n))i.value=String(n).replace('.',',');});
+  b.addEventListener('focusout',e=>{const i=e.target;if(!i.classList||!i.classList.contains('ds-money')||i.readOnly)return;const n=_parseDec(i.value);if(isFinite(n)&&n>=0)i.value=_moneyInput(n);});
+}
+function _moneyInput(n){return (+n).toLocaleString('de-DE',{maximumFractionDigits:2});}
+function _qtyInput(q){return q?String(q).replace('.',','):'';}
+function _sheetMoney(raw,label){
+  const text=String(raw??'').trim();if(!text)return null;
+  const n=_parseDec(text);
+  if(!Number.isFinite(n)||n<0)throw new Error((label?label+': ':'')+'Bitte einen gültigen Betrag eingeben, z. B. 1.250,50.');
+  return AssetModel.money(n);
+}
+function _prevKey(data,ym){return Object.keys(data).filter(k=>k<ym).sort().pop()||null;}
+/* Arbeitskopie eines Monats; ohne Stand dient der Vormonat als Grundlage */
+function _monthEntryForEdit(data,ym){
+  const e=data[ym];
+  if(e){const c={...e,_details:{...(e._details||{})},_units:{...(e._units||{})}};if(c._loanHistory)c._loanHistory={...c._loanHistory,generated:false};return c;}
+  const prev=data[_prevKey(data,ym)]||{};
+  return {_details:{...(prev._details||{})},_units:{...(prev._units||{})}};
+}
+/* Ein bestätigter Wert ist keine Schätzung mehr */
+function _confirmObserved(e,id,unitKey){
+  const m=e._loanHistory;if(!m)return;
+  e._loanHistory={...m,estimatedAssetIds:(m.estimatedAssetIds||[]).filter(x=>x!==id),estimatedUnitKeys:(m.estimatedUnitKeys||[]).filter(x=>x!==unitKey)};
+}
+function _afterDataChange(){
+  _fc=loadFieldConfig();
+  _fc.fields.forEach(f=>{const key=f.unitId||f.id;if(AssetModel.valuation(f)==='market'&&f.lastQuote)livePrices[key]=f.lastQuote.priceEUR;else delete livePrices[key];});
+  _rebuildFormKeepingEdits();
+  render();
+  if(document.getElementById('lt-asset-params-table'))buildAssetParamsTable();
+  _v2SyncSwitches();
+  const budgetPage=document.getElementById('page-budget');
+  if(budgetPage&&budgetPage.classList.contains('active'))renderBudgetPage();
+}
+function _monthTitle(ym){return ym===nextYM()?'Aktueller Stand':'Stand '+fmtMonth(ym);}
+
+/* ── Listen auf der Daten-Seite ── */
+function _monthCardHTML(data){
+  const ym=selectedMonth,e=data[ym],live=ym===nextYM(),generated=!!(e&&e._loanHistory&&e._loanHistory.generated);
+  const sub=!e?'Für '+fmtMonth(ym)+' ist noch nichts erfasst.':generated?'Aus dem Tilgungsplan ergänzt, noch nicht bestätigt.':live?fmtMonth(ym)+' · Kurse laufen automatisch mit':'Werte zum Monatsende';
+  return `<div class="ds-month"><div class="ds-month-l"><button type="button" class="ds-month-t" onclick="document.getElementById('dateBtn').click()" aria-label="Anderen Monat wählen">${_monthTitle(ym)}</button><span class="ds-month-s">${escHTML(sub)}</span></div><button type="button" class="v2-textbtn v2-strong" data-ds-open="month">${!e||generated?'Erfassen':'Aktualisieren'}</button></div>`;
+}
+function _dsItem(kind,id,label,sub,value,zero){
+  return `<button type="button" class="ds-item${zero?' is-zero':''}" data-ds-open="${kind}" data-id="${escHTML(id)}"><span class="ds-item-l"><span>${escHTML(label)}</span>${sub?`<small>${escHTML(sub)}</small>`:''}</span><span class="ds-item-v">${value}</span><span class="v2-chev"></span></button>`;
+}
+function _assetSub(f,e){
+  const parts=[],key=f.unitId||f.id,q=+((e&&e._units||{})[key])||0;
+  if(q>0)parts.push(q.toLocaleString('de-DE',{maximumFractionDigits:8})+' '+(f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück'));
+  if(AssetModel.valuation(f)==='market')parts.push(_quoteErrors.has(f.id)?'Kursabruf fehlgeschlagen':'Kurs automatisch');
+  if(e&&e._loanHistory&&(e._loanHistory.estimatedAssetIds||[]).includes(f.id))parts.push('geschätzt');
+  const liq=AssetModel.liquidity(f);if(liq!==(AssetModel.categories[f.category]?.liquidity||'illiquid'))parts.push(liq==='liquid'?'liquide':'gebunden');
+  return parts.join(' · ');
+}
+function _assetListHTML(e){
+  const fields=_fc.fields.filter(f=>f.category!=='liab');
+  const add=`<button type="button" class="ds-add" data-ds-open="add-asset">+ Vermögenswert hinzufügen</button>`;
+  if(!fields.length)return `<p class="ds-empty">Noch keine Vermögenswerte. Lege Konten, Depots, Immobilien oder andere Werte an.</p>`+add;
+  const value=f=>+((e&&e._details||{})[f.id])||0;
+  const item=f=>_dsItem('asset',f.id,f.label,_assetSub(f,e),e?fmt(value(f)):'—',!value(f));
+  const shown=fields.filter(f=>value(f)!==0),zero=fields.filter(f=>value(f)===0);
+  const cats=[...Object.keys(AssetModel.categories),...new Set(shown.map(f=>f.category).filter(c=>!AssetModel.categories[c]))];
+  let html='';
+  cats.forEach(cat=>{const rows=shown.filter(f=>f.category===cat);if(rows.length)html+=`<div class="ds-list-t">${escHTML(CAT_NAMES[cat]||cat)}</div><div class="ds-list">${rows.map(item).join('')}</div>`;});
+  if(zero.length)html+=`<details class="ds-zero"${shown.length?'':' open'}><summary>Ohne Wert in ${fmtMonth(selectedMonth)} (${zero.length})</summary><div class="ds-list">${zero.map(item).join('')}</div></details>`;
+  return html+add;
+}
+function _liabSub(f,p){
+  const parts=[];
+  const asset=p&&p.assetId?_fc.fields.find(a=>a.id===p.assetId&&a.category!=='liab'):null;
+  if(asset)parts.push('für '+asset.label);
+  if(LoanModel.configured(p)){const s=LoanModel.schedule(p),r=LoanModel.at(p,selectedMonth);parts.push('Rate '+fmt(r.payment||s.payment));if(s.payoff)parts.push('frei ab '+fmtMonth(s.payoff));}
+  else if(p&&(+p.pay||0)>0)parts.push('Rate '+fmt(+p.pay));
+  else if(!asset)parts.push('Restschuld selbst eingetragen');
+  return parts.join(' · ');
+}
+function _liabListHTML(e){
+  const fields=_fc.fields.filter(f=>f.category==='liab'),lp=getLoanParams();
+  const add=`<button type="button" class="ds-add" data-ds-open="add-liab">+ Kredit oder Schuld hinzufügen</button>`;
+  if(!fields.length)return `<p class="ds-empty">Noch keine Verbindlichkeiten. Kredite und andere Schulden werden vom Vermögen abgezogen.</p>`+add;
+  const value=f=>+((e&&e._details||{})[f.id])||0;
+  const item=f=>_dsItem('liab',f.id,f.label,_liabSub(f,lp[f.id]||{}),e?fmt(value(f)):'—',!value(f));
+  const open=fields.filter(f=>value(f)!==0),done=fields.filter(f=>value(f)===0);
+  let html=open.length?`<div class="ds-list" style="margin-top:14px">${open.map(item).join('')}</div>`:'';
+  if(done.length)html+=`<details class="ds-zero"${open.length?'':' open'}><summary>Ohne Restschuld in ${fmtMonth(selectedMonth)} (${done.length})</summary><div class="ds-list">${done.map(item).join('')}</div></details>`;
+  return html+add;
+}
+
+/* ── Monatsstand: alle Werte eines Monats in einer Liste ── */
+function _msQtySub(q,price){return fmt(q*price)+' · Kurs '+price.toLocaleString('de-DE',{maximumFractionDigits:2})+' €';}
+function _msValSub(v,input){
+  const parts=[];
+  if(input.dataset.est==='1')parts.push('geschätzt');
+  if(input.dataset.prev!==undefined){
+    const pv=+input.dataset.prev,d=AssetModel.money(v-pv);
+    parts.push(escHTML(input.dataset.prevLabel)+': '+fmt(pv)+(Math.abs(d)>=0.5?` · <span class="ds-delta ${d>0?'up':'down'}">${d>0?'+':'−'}${fmt(Math.abs(d))}</span>`:''));
+  }
+  return parts.join(' · ');
+}
+function openMonthSheet(){
+  const ym=selectedMonth,data=loadData(),e=data[ym],pk=_prevKey(data,ym),prev=pk?data[pk]:null,src=e||prev||{};
+  const live=ym===nextYM(),lp=getLoanParams(),det=src._details||{},units=src._units||{},pdet=(prev&&prev._details)||{};
+  const est=new Set((e&&e._loanHistory&&e._loanHistory.estimatedAssetIds)||[]);
+  const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+  const assets=_mod('assets')?_fc.fields.filter(f=>f.category!=='liab'):[];
+  const liabs=_mod('liab')?_fc.fields.filter(f=>f.category==='liab'):[];
+  const valueRow=(f,kind)=>{
+    const v=+det[f.id]||0,prevAttrs=pk&&own(pdet,f.id)?` data-prev="${+pdet[f.id]||0}" data-prev-label="${escHTML(fmtMonth(pk))}"`:'';
+    return `<label class="ds-row"><span class="ds-l">${escHTML(f.label)}<small id="ms-s-${escHTML(f.id)}"></small></span><input class="ds-in ds-money" type="text" inputmode="decimal" data-ms-val="${escHTML(f.id)}" data-kind="${kind}"${est.has(f.id)?' data-est="1"':''}${prevAttrs} value="${v?_moneyInput(v):''}" placeholder="0" aria-label="${escHTML(f.label)} in Euro"></label>`;
+  };
+  const assetRow=f=>{
+    const key=f.unitId||f.id,price=AssetModel.valuation(f)==='market'&&live?(livePrices[key]||(f.lastQuote&&f.lastQuote.priceEUR)):0;
+    if(!price)return valueRow(f,'a');
+    const q=+units[key]||0,unit=f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück';
+    return `<label class="ds-row"><span class="ds-l">${escHTML(f.label)} <span style="color:var(--muted)">(${escHTML(unit)})</span><small id="ms-s-${escHTML(f.id)}">${_msQtySub(q,price)}</small></span><input class="ds-in" type="text" inputmode="decimal" data-ms-qty="${escHTML(f.id)}" data-price="${price}" value="${_qtyInput(q)}" placeholder="Stückzahl" aria-label="${escHTML(f.label)}: Stückzahl in ${escHTML(unit)}"></label>`;
+  };
+  const liabRow=f=>{
+    const p=lp[f.id]||{};
+    if(!LoanModel.configured(p))return valueRow(f,'l');
+    const b=LoanModel.at(p,ym).balance;
+    return `<div class="ds-row" data-ms-fixed="${b}"><span class="ds-l">${escHTML(f.label)}<small>automatisch aus dem Tilgungsplan</small></span><span class="ds-static">${fmt(b)}</span></div>`;
+  };
+  const isZero=f=>!(+det[f.id])&&!(+pdet[f.id])&&!(+units[f.unitId||f.id]);
+  let body=`<p class="ds-note">${live?'Trage deine aktuellen Stände ein. Bei Positionen mit Kurs genügt die Stückzahl.':'Werte zum Ende von '+fmtMonth(ym)+'.'}${!e&&pk?' Vorausgefüllt mit den Werten aus '+fmtMonth(pk)+'.':''}${e&&e._loanHistory&&e._loanHistory.generated?' Dieser Monat wurde aus dem Tilgungsplan ergänzt. Mit „Sichern“ bestätigst du die Werte.':''}</p>`;
+  body+=`<div class="ds-group"><div class="ds-row"><span class="ds-l">Nettovermögen</span><strong class="ds-static" id="msTotal"></strong></div></div>`;
+  const cats=[...Object.keys(AssetModel.categories),...new Set(assets.map(f=>f.category).filter(c=>!AssetModel.categories[c]))];
+  cats.forEach(cat=>{const rows=assets.filter(f=>f.category===cat&&!isZero(f));if(rows.length)body+=`<div class="ds-group-t">${escHTML(CAT_NAMES[cat]||cat)}</div><div class="ds-group">${rows.map(assetRow).join('')}</div>`;});
+  const openLiabs=liabs.filter(f=>!isZero(f)||LoanModel.configured(lp[f.id]||{}));
+  if(openLiabs.length)body+=`<div class="ds-group-t">Verbindlichkeiten</div><div class="ds-group">${openLiabs.map(liabRow).join('')}</div>`;
+  const rest=[...assets.filter(isZero),...liabs.filter(f=>isZero(f)&&!LoanModel.configured(lp[f.id]||{}))];
+  if(rest.length)body+=`<details class="ds-more"><summary>Positionen ohne Wert (${rest.length})</summary><div class="ds-group">${rest.map(f=>f.category==='liab'?liabRow(f):assetRow(f)).join('')}</div></details>`;
+  if(!assets.length&&!liabs.length)body+=`<p class="ds-note">Lege zuerst unter Vermögenswerte oder Verbindlichkeiten eine Position an.</p>`;
+  if(!_openSheet(_monthTitle(ym),body,_saveMonthSheet))return;
+  document.querySelectorAll('#dsBody [data-ms-val]').forEach(i=>{const s=document.getElementById('ms-s-'+i.dataset.msVal);if(s)s.innerHTML=_msValSub(_parseDec(i.value)||0,i);});
+  _msUpdateTotal();
+}
+function _msUpdateTotal(){
+  const el=document.getElementById('msTotal');if(!el)return;
+  let total=0;
+  document.querySelectorAll('#dsBody [data-ms-val]').forEach(i=>{const n=_parseDec(i.value);if(isFinite(n))total+=i.dataset.kind==='l'?-n:n;});
+  document.querySelectorAll('#dsBody [data-ms-qty]').forEach(i=>{let q=0;try{q=_assetNumber(i.value,true)||0;}catch(error){}total+=q*(+i.dataset.price);});
+  document.querySelectorAll('#dsBody [data-ms-fixed]').forEach(r=>{total-=+r.dataset.msFixed;});
+  el.textContent=fmt(total);
+}
+function _monthSheetInput(event){
+  const i=event.target;if(!i.dataset)return;
+  if(i.dataset.msQty){const s=document.getElementById('ms-s-'+i.dataset.msQty);let q=null;try{q=_assetNumber(i.value,true)||0;}catch(error){}if(s)s.innerHTML=q===null?'Bitte eine gültige Stückzahl eingeben':_msQtySub(q,+i.dataset.price);}
+  if(i.dataset.msVal){const s=document.getElementById('ms-s-'+i.dataset.msVal),n=_parseDec(i.value);if(s)s.innerHTML=_msValSub(isFinite(n)?n:0,i);}
+  if(i.dataset.msVal||i.dataset.msQty)_msUpdateTotal();
+}
+function _saveMonthSheet(){
+  const ym=selectedMonth;
+  appStorage.beginTransaction();
+  try{
+    const data=loadData(),e=_monthEntryForEdit(data,ym);
+    delete e._loanHistory;/* Mit dem Sichern bestätigt: alle Werte gelten als erfasst */
+    document.querySelectorAll('#dsBody [data-ms-val]').forEach(i=>{const f=_fc.fields.find(x=>x.id===i.dataset.msVal);if(f)e._details[f.id]=_sheetMoney(i.value,f.label)??0;});
+    document.querySelectorAll('#dsBody [data-ms-qty]').forEach(i=>{
+      const f=_fc.fields.find(x=>x.id===i.dataset.msQty);if(!f)return;
+      let q;try{q=_assetNumber(i.value,true);}catch(error){throw new Error(f.label+': Bitte eine gültige Stückzahl eingeben.');}
+      e._units[f.unitId||f.id]=q??0;e._details[f.id]=AssetModel.money((+i.dataset.price)*(q??0));
+    });
+    recalcAggregates(e);data[ym]=e;saveData(data);
+    appStorage.commitTransaction();
+  }catch(error){appStorage.rollbackTransaction();_sheetError(error.message);return false;}
+  _afterDataChange();return true;
+}
+
+/* ── Vermögenswert: Angaben und Stand eines Monats ── */
+function _unitHint(event){
+  const i=event.target;if(!i.dataset||!i.dataset.assetPrefix||!['unit','category','valuation'].includes(i.dataset.assetKey))return;
+  const hint=document.getElementById(i.dataset.assetPrefix+'-unitHint'),unit=_assetEl(i.dataset.assetPrefix,'unit');
+  if(hint&&unit)hint.textContent='in '+(unit.value.trim()||'Stück');
+  _assetSheetRows(i.dataset.assetPrefix);
+}
+/* Stückzahl und Kursbewertung nur dort zeigen, wo sie üblich sind oder schon genutzt werden */
+const UNIT_CATEGORIES=['etf','stock','bitcoin','crypto','metal','other'];
+function _assetSheetRows(prefix){
+  const cat=_assetEl(prefix,'category')?.value,market=_assetEl(prefix,'valuation')?.value==='market';
+  const qty=document.getElementById(prefix==='newAsset'?'newAsset-quantity':'fu-'+((_fc.fields.find(f=>'asset-'+f.id===prefix)||{}).unitId||prefix.slice(6)));
+  const show=UNIT_CATEGORIES.includes(cat)||market||!!(qty&&qty.value.trim());
+  const q=document.getElementById(prefix+'-qtyRow'),v=document.getElementById(prefix+'-valuationRow');
+  if(q)q.hidden=!show;if(v)v.hidden=!(UNIT_CATEGORIES.includes(cat)||market);
+}
+function _assetSheetHTML(prefix,f,o){
+  const cat=f.category||'cash',valuation=AssetModel.valuation(f),i=AssetModel.instrument(f),liq=AssetModel.liquidity(f);
+  const provider=i?.provider||(cat==='bitcoin'?'bitcoin':cat==='crypto'?'kraken':'yahoo');
+  const a=k=>`id="${_assetId(prefix,k)}" data-asset-prefix="${prefix}" data-asset-key="${k}"`;
+  const opt=(v,label,cur)=>`<option value="${v}"${v===cur?' selected':''}>${label}</option>`;
+  const unit=f.unitLabel||AssetModel.categories[cat]?.unit||'Stück';
+  const quote=i?escHTML(i.name)+' · '+escHTML(i.symbol)+(i.exchange?' · '+escHTML(i.exchange):'')+(f.lastQuote?'<br>'+f.lastQuote.priceEUR.toLocaleString('de-DE',{maximumFractionDigits:8})+' € je Einheit · '+escHTML(_quoteStatus(f)):''):'';
+  return `<div class="ds-group">
+    <label class="ds-row"><span class="ds-l">Bezeichnung</span><input class="ds-in ds-wide" type="text" ${a('name')} value="${escHTML(f.label||'')}" placeholder="z. B. Tagesgeld" autocomplete="off"></label>
+    <label class="ds-row"><span class="ds-l">Art</span><select class="ds-in ds-wide" ${a('category')}>${_assetOptions(cat)}</select></label>
+  </div>
+  <div class="ds-group-t">${o.valueTitle}</div>
+  <div class="ds-group">
+    <label class="ds-row"><span class="ds-l">Wert in €<small id="${prefix}-valueHint">${escHTML(o.valueHint||'')}</small></span><input class="ds-in ds-money" type="text" inputmode="decimal" id="${o.valueId}" value="${o.value}" placeholder="0"></label>
+    <label class="ds-row" id="${prefix}-qtyRow"><span class="ds-l"><span id="${prefix}-quantityLabel">${valuation==='market'?'Stückzahl':'Stückzahl (optional)'}</span><small id="${prefix}-unitHint">in ${escHTML(unit)}</small></span><input class="ds-in" type="text" inputmode="decimal" id="${o.qtyId}" value="${o.qty}" placeholder="0"></label>
+    <label class="ds-row" id="${prefix}-valuationRow"><span class="ds-l">Wert ermitteln</span><select class="ds-in ds-wide" ${a('valuation')}>${opt('manual','Selbst eintragen',valuation)}${opt('market','Per Kurs',valuation)}</select></label>
+  </div>
+  <div class="ds-group" id="${prefix}-quoteFields"${valuation==='market'?'':' hidden'}>
+    <label class="ds-row"><span class="ds-l">Kursquelle</span><select class="ds-in ds-wide" ${a('provider')}>${opt('yahoo','Yahoo (Wertpapiere)',provider)}${opt('bitcoin','Kraken (Bitcoin)',provider)}${opt('kraken','Kraken (Krypto)',provider)}</select></label>
+    <label class="ds-row"><span class="ds-l">Ticker</span><input class="ds-in ds-wide" type="text" ${a('symbol')} value="${escHTML(i?.symbol||(provider==='bitcoin'?'XBTEUR':''))}" placeholder="z. B. IUSQ.DE" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
+    <div class="ds-sub"><button type="button" class="btn btn-ghost" onclick="checkAssetQuote('${prefix}')">Kurs prüfen</button><div id="${prefix}-quoteResult" class="asset-quote-result" aria-live="polite">${quote}</div><p class="ds-help">Wertpapiere: Yahoo-Ticker mit Börsenkürzel, z. B. IUSQ.DE. WKN und ISIN funktionieren nicht. Krypto: EUR-Handelspaar, z. B. ETHEUR.</p></div>
+  </div>
+  <details class="ds-more"><summary>Weitere Angaben</summary><div class="ds-group">
+    <label class="ds-row"><span class="ds-l">Verfügbarkeit<small>Liquide Werte zählen zum frei verfügbaren Vermögen</small></span><select class="ds-in" ${a('liquidity')}>${opt('liquid','Liquide',liq)}${opt('illiquid','Gebunden',liq)}</select></label>
+    <label class="ds-row"><span class="ds-l">Einheit</span><input class="ds-in" type="text" ${a('unit')} value="${escHTML(unit)}" placeholder="Stück"></label>
+  </div></details>`;
+}
+function openAssetSheet(id){
+  const f=_fc.fields.find(x=>x.id===id);if(!f)return;
+  const ym=selectedMonth,data=loadData(),e=data[ym],pk=_prevKey(data,ym),prev=pk?data[pk]:null,src=e||prev||{};
+  const key=f.unitId||f.id,v=+((src._details||{})[id])||0,q=+((src._units||{})[key])||0;
+  const prevDet=(prev&&prev._details)||{};
+  const hint=pk&&Object.prototype.hasOwnProperty.call(prevDet,id)?fmtMonth(pk)+': '+fmt(+prevDet[id]||0):'';
+  const estimated=!!(e&&e._loanHistory&&(e._loanHistory.estimatedAssetIds||[]).includes(id));
+  const note=!e?`Für ${fmtMonth(ym)} gibt es noch keinen Stand.`+(pk?` Die übrigen Werte werden beim Sichern aus ${fmtMonth(pk)} übernommen.`:''):estimated?'Dieser Wert ist geschätzt (aus dem letzten erfassten Monat fortgeschrieben). Mit „Sichern“ bestätigst du ihn.':'';
+  _sheetCtx={value:AssetModel.money(v),qty:q,estimated};
+  const body=(note?`<p class="ds-note">${escHTML(note)}</p>`:'')+_assetSheetHTML('asset-'+id,f,{valueTitle:_monthTitle(ym),valueId:'f-'+id,qtyId:'fu-'+key,value:v?_moneyInput(v):'',qty:_qtyInput(q),valueHint:hint})
+    +`<button type="button" class="ds-danger" data-ds-remove="${escHTML(id)}">Position entfernen</button>`;
+  if(!_openSheet(f.label,body,()=>_saveAssetSheet(id)))return;
+  _assetMetadataChanged('asset-'+id,'valuation');_assetSheetRows('asset-'+id);
+}
+function _saveAssetSheet(id){
+  const f=_fc.fields.find(x=>x.id===id);if(!f)return false;
+  const ym=selectedMonth,key=f.unitId||f.id;
+  appStorage.beginTransaction();
+  try{
+    const meta=_readAssetMetadata('asset-'+id,f);
+    const qty=_assetNumber(document.getElementById('fu-'+key)?.value,true);
+    if(meta.valuation==='market'&&qty===null)throw new Error('Für die automatische Bewertung bitte eine Stückzahl eingeben.');
+    let value=_sheetMoney(document.getElementById('f-'+id)?.value,'Wert')??0;
+    if(meta.valuation==='market'&&ym===nextYM()){
+      if(!meta.lastQuote)throw new Error('Bitte zuerst den Kurs prüfen.');
+      value=AssetModel.money(meta.lastQuote.priceEUR*qty);
+    }
+    Object.assign(f,meta,{hasUnits:true,unitId:key});
+    saveFieldConfig(_fc);
+    /* Nur geänderte (oder bestätigte geschätzte) Werte schreiben einen Monatsstand */
+    if(value!==_sheetCtx.value||(qty??0)!==_sheetCtx.qty||_sheetCtx.estimated){
+      const data=loadData(),e=_monthEntryForEdit(data,ym);
+      e._details[id]=value;
+      if(qty!==null)e._units[key]=qty;else if(Object.prototype.hasOwnProperty.call(e._units,key))e._units[key]=0;
+      _confirmObserved(e,id,key);recalcAggregates(e);data[ym]=e;saveData(data);
+    }
+    appStorage.commitTransaction();
+  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();_sheetError(error.message);return false;}
+  _afterDataChange();return true;
+}
+function openAddAssetSheet(){
+  const ym=selectedMonth;
+  const body=_assetSheetHTML('newAsset',{category:'cash',label:''},{valueTitle:_monthTitle(ym),valueId:'newAsset-value',qtyId:'newAsset-quantity',value:'',qty:'',valueHint:''})
+    +`<p class="ds-help">Neue Werte bekommen keine Sparrate. Die kannst du später unter Prognose & Annahmen ergänzen.</p>`;
+  if(!_openSheet('Vermögenswert',body,_saveNewAsset,'Anlegen'))return;
+  _assetMetadataChanged('newAsset','valuation');_assetSheetRows('newAsset');
+}
+function _saveNewAsset(){
+  const v=document.getElementById('newAsset-value');
+  try{const n=_sheetMoney(v.value,'Wert');v.value=n===null?'':String(n).replace('.',',');}catch(error){_sheetError(error.message);return false;}
+  if(!addCustomField('assets'))return false;
+  _afterDataChange();return true;
+}
+function _removeFromSheet(id){
+  if(!removeCustomField(id))return;
+  _closeSheet(true);_afterDataChange();_toast('Entfernt');
+}
+
+/* ── Verbindlichkeit: Restschuld und optionaler Darlehensvertrag ── */
+const NEW_LIAB_ID='neu-kredit';
+function _loanSheetHTML(id,f,p,o){
+  const L=k=>`loan-${id}-${k}`;
+  const num=n=>n===undefined?'':String(n).replace('.',',');
+  const money=n=>n===undefined||n===''?'':_moneyInput(n);
+  const row=(k,label,val,{ph='0',cls='',mode='decimal',hint=''}={})=>`<label class="ds-row" for="${L(k)}"><span class="ds-l">${label}${hint?`<small>${hint}</small>`:''}</span><input class="ds-in${cls}" id="${L(k)}" type="text" inputmode="${mode}" data-loan="${escHTML(id)}" data-k="${k}" value="${escHTML(String(val??''))}" placeholder="${ph}" autocomplete="off"></label>`;
+  const legacy=!o.isNew&&!Object.prototype.hasOwnProperty.call(p,'assetId');
+  const more=p.fixedYears!==undefined||p.follow!==undefined||(p.extras||[]).length>0||p.extra!==undefined||p.fixed!==undefined;
+  const pay=p.pay!==undefined?p.pay:(p.principal&&p.repayment!==undefined?LoanModel.payment(p):undefined);
+  return `<div class="ds-group">
+    <label class="ds-row" for="loan-name-${id}"><span class="ds-l">Bezeichnung</span><input class="ds-in ds-wide" id="loan-name-${id}" data-loan-name="${escHTML(id)}" type="text" value="${escHTML(f.label||'')}" placeholder="z. B. Immobilienkredit" autocomplete="off"></label>
+    <label class="ds-row" for="loan-asset-${id}"><span class="ds-l">Gehört zu</span><select class="ds-in ds-wide" id="loan-asset-${id}" data-loan-asset="${escHTML(id)}">${_loanAssetOptions(p.assetId??'',legacy)}</select></label>
+  </div>
+  <p class="ds-help">Verknüpft mit einem Vermögenswert (z. B. der Wohnung) zeigt die App dort den Wert abzüglich Kredit.</p>
+  <div class="ds-group-t">${o.balanceTitle}</div>
+  <div class="ds-group"><label class="ds-row" for="f-${id}"><span class="ds-l">Restschuld €<small>Wird berechnet, sobald die Vertragsdaten vollständig sind</small></span><input class="ds-in ds-money" type="text" inputmode="decimal" id="f-${id}" data-loan-balance="${escHTML(id)}" value="${o.balance}" placeholder="0"></label></div>
+  <div class="ds-group-t">Darlehensvertrag (optional)</div>
+  <div class="ds-group">
+    ${row('principal','Darlehensbetrag €',money(p.principal),{cls:' ds-money'})}
+    ${row('rate','Sollzins % p. a.',num(p.rate))}
+    ${row('repayment','Anfängliche Tilgung % p. a.',num(p.repayment))}
+    ${row('pay','Monatsrate €',money(pay),{cls:' ds-money',hint:'aus Betrag, Zins und Tilgung'})}
+    ${row('firstDue','Erste Rate',_loanMonthLabel(p.firstDue),{ph:'MM/JJ',mode:'text'})}
+  </div>
+  <div class="ds-summary" data-loan-summary="${escHTML(id)}" aria-live="polite"></div>
+  <div id="loanPlan-${id}"></div>
+  <details class="ds-more"${more?' open':''}><summary>Zinsbindung &amp; Sondertilgungen</summary>
+    <div class="ds-group">
+      ${row('fixedYears','Zinsbindung in Jahren',num(p.fixedYears))}
+      ${row('follow','Anschlusszins % p. a.',num(p.follow),{ph:'wie Sollzins'})}
+      ${p.extra!==undefined?row('extra','Jährliche Sondertilgung € (bisher)',money(p.extra),{cls:' ds-money'}):''}
+      ${p.fixed!==undefined?row('fixed','Zinsbindung bis Jahr (bisher)',p.fixed,{ph:'Jahr',mode:'numeric'}):''}
+    </div>
+    <div class="ds-group-t">Sondertilgungen</div>
+    <div class="ds-group"><div id="loanExtras-${id}">${(p.extras||[]).map(e=>_loanExtraHTML(id,e)).join('')}</div><div class="ds-sub"><button type="button" class="btn btn-ghost" data-extra-add="${escHTML(id)}">+ Sondertilgung</button></div></div>
+  </details>`;
+}
+function openLoanSheet(id){
+  const f=_fc.fields.find(x=>x.id===id);if(!f)return;
+  const ym=selectedMonth,p=getLoanParams()[id]||{},data=loadData(),e=data[ym],pk=_prevKey(data,ym),src=e||(pk?data[pk]:{})||{};
+  const bal=+((src._details||{})[id])||0;
+  _sheetCtx={balance:AssetModel.money(bal),hadEntry:!!e};
+  const note=e?'':`<p class="ds-note">Für ${fmtMonth(ym)} gibt es noch keinen Stand.${pk?' Eine geänderte Restschuld übernimmt die übrigen Werte aus '+fmtMonth(pk)+'.':''}</p>`;
+  const body=note+_loanSheetHTML(id,f,p,{balanceTitle:_monthTitle(ym),balance:bal?_moneyInput(bal):''})
+    +`<button type="button" class="ds-danger" data-ds-remove="${escHTML(id)}">Verbindlichkeit entfernen</button>`;
+  if(!_openSheet(f.label,body,()=>_saveLoanSheet(id)))return;
+  _updateLoanSummary(id);
+}
+function _saveLoanSheet(id){
+  const f=_fc.fields.find(x=>x.id===id);if(!f)return false;
+  appStorage.beginTransaction();
+  try{
+    const name=(document.querySelector(`[data-loan-name="${CSS.escape(id)}"]`)?.value||'').trim().replace(/[;\r\n]/g,',');
+    if(!name)throw new Error('Bitte eine Bezeichnung eingeben.');
+    const p=_loanFromInputs(id,true);
+    const lp=getLoanParams();lp[id]=p;appStorage.setItem('loanParams',JSON.stringify(lp));
+    f.label=name;saveFieldConfig(_fc);
+    if(!LoanModel.configured(p)){
+      const bal=_sheetMoney(document.getElementById('f-'+id)?.value,'Restschuld')??0;
+      if(bal!==_sheetCtx.balance){const data=loadData(),e=_monthEntryForEdit(data,selectedMonth);e._details[id]=bal;recalcAggregates(e);data[selectedMonth]=e;saveData(data);}
+    }
+    appStorage.commitTransaction();
+  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();_sheetError(error.message);return false;}
+  _afterDataChange();return true;
+}
+function openAddLiabSheet(){
+  _sheetCtx={balance:0};
+  const body=_loanSheetHTML(NEW_LIAB_ID,{label:''},{},{isNew:true,balanceTitle:_monthTitle(selectedMonth),balance:''})
+    +`<p class="ds-help">Für einen Kredit genügen Darlehensbetrag, Sollzins, Tilgung und erste Rate. Die Restschuld wird dann jeden Monat automatisch berechnet. Für andere Schulden reicht die Restschuld.</p>`;
+  if(!_openSheet('Verbindlichkeit',body,_saveNewLiab,'Anlegen'))return;
+  _updateLoanSummary(NEW_LIAB_ID);
+}
+function _saveNewLiab(){
+  const tmp=NEW_LIAB_ID;
+  const label=(document.querySelector(`[data-loan-name="${tmp}"]`)?.value||'').trim().replace(/[;\r\n]/g,',');
+  if(!label){_sheetError('Bitte eine Bezeichnung eingeben.');return false;}
+  appStorage.beginTransaction();
+  try{
+    const p=_loanFromInputs(tmp,true);
+    const bal=LoanModel.configured(p)?null:_sheetMoney(document.getElementById('f-'+tmp)?.value,'Restschuld');
+    let id='custom-'+Date.now();while(_fc.fields.some(f=>f.id===id))id+='-1';
+    let group=label,n=2;while(_fc.fields.some(f=>(f.displayGroup||f.category)===group))group=label+' ('+(n++)+')';
+    _fc.fields.push({id,label,category:'liab',displayGroup:group,hasUnits:false});
+    saveFieldConfig(_fc);
+    const lp=getLoanParams();lp[id]=p;appStorage.setItem('loanParams',JSON.stringify(lp));
+    if(bal){const data=loadData(),e=_monthEntryForEdit(data,selectedMonth);e._details[id]=bal;recalcAggregates(e);data[selectedMonth]=e;saveData(data);}
+    appStorage.commitTransaction();
+  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();_sheetError(error.message);return false;}
+  _afterDataChange();return true;
+}
+
+/* Gemeinsame Eingabe-Logik für Asset-Angaben, Kursprüfung und Darlehen (Seite und Sheets) */
+function _dataInput(event){
+  const input=event.target;
+  if(input.dataset.assetPrefix)_assetMetadataChanged(input.dataset.assetPrefix,input.dataset.assetKey);
+  if(input.id==='newAsset-quantity')_updateAssetDraftValue('newAsset');
+  if(input.id?.startsWith('fu-')){const f=_fc.fields.find(f=>(f.unitId||f.id)===input.id.slice(3));if(f)_updateAssetDraftValue('asset-'+f.id);}
+  const id=input.dataset.loan||input.dataset.loanBalance||input.closest('.loan-extra-row')?.dataset.extraLoan;
+  if(id){if(input.dataset.loan)_syncLoanPayment(id,input.dataset.k);_updateLoanSummary(id);}
+}
+function _dataClick(event){
+  const open=event.target.closest('[data-ds-open]');
+  if(open){
+    const kind=open.dataset.dsOpen,id=open.dataset.id;
+    if(kind==='asset')openAssetSheet(id);else if(kind==='liab')openLoanSheet(id);
+    else if(kind==='add-asset')openAddAssetSheet();else if(kind==='add-liab')openAddLiabSheet();else if(kind==='month')openMonthSheet();
+    return;
+  }
+  const removeField=event.target.closest('[data-ds-remove]');
+  if(removeField){_removeFromSheet(removeField.dataset.dsRemove);return;}
+  const add=event.target.closest('[data-extra-add]'),remove=event.target.closest('[data-extra-remove]');
+  if(add){
+    const id=add.dataset.extraAdd,wrap=document.getElementById('loanExtras-'+id);
+    wrap.insertAdjacentHTML('beforeend',_loanExtraHTML(id,{id:'extra-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),month:'',amount:''}));
+    wrap.querySelector('.loan-extra-row:last-child input').focus();
+  }
+  if(remove){const row=remove.closest('.loan-extra-row'),id=row.dataset.extraLoan;row.remove();_updateLoanSummary(id);}
+}
+
 /* ── Dynamic Form Builder ── */
 function buildDynamicForm(){
   const container=document.getElementById('dataPageContent');
   if(!container)return;
   
-  /* ── Nur Felder mit Wert > 0 anzeigen. Fallback auf letzten verfügbaren Monat ── */
   const allData=loadData();
-  let refDetails={};
   const entry=allData[selectedMonth];
-  if(entry&&entry._details){
-    refDetails=entry._details;
-  }else{
-    /* Kein Eintrag für diesen Monat: letzten verfügbaren Monat nehmen */
-    const sorted=Object.keys(allData).sort();
-    if(sorted.length>0){
-      const lastKey=sorted[sorted.length-1];
-      refDetails=(allData[lastKey]||{})._details||{};
-    }
-  }
-  const activeFieldIds=new Set();
-  const hasHistoricData=Object.keys(allData).length>1||Object.values(refDetails).some(v=>v>1);
-  _fc.fields.forEach(f=>{
-    if(hasHistoricData){
-      if((refDetails[f.id]||0)>0||String(f.id).startsWith('custom-'))activeFieldIds.add(f.id);
-    }else{
-      activeFieldIds.add(f.id);
-    }
-  });
-  
-  /* ── Formular aufbauen ── */
-  const catOrder=Object.keys(AssetModel.categories);
-  const catNames=CAT_NAMES;
-  
+
   let html='<div class="input-panel">';
-  html+=`<div class="v2-form-head"><span>Monatswerte · ${fmtMonth(selectedMonth)}</span><span class="save-msg" id="saveMsg">Gespeichert</span><span class="v2-form-btns">`;
-  html+=`<button class="v2-textbtn" id="btnEditMode" onclick="enterEditMode()">Bearbeiten</button>`;
+  /* Sticky-Leiste nur im Bearbeiten-Modus (Altersvorsorge, Budget) */
+  html+=`<div class="v2-form-head"><span>Bearbeiten</span><span class="save-msg" id="saveMsg">Gespeichert</span><span class="v2-form-btns">`;
   html+=`<button class="v2-textbtn v2-muted" id="btnCancel" onclick="cancelEditMode()" style="display:none">Abbrechen</button>`;
   html+=`<button class="v2-textbtn v2-strong" id="btnSave" onclick="saveEntry()" style="display:none">Sichern</button></span></div>`;
-  
-  if(entry?._loanHistory)html+='<p class="loan-history-note">Dieser Monatsstand wurde aus dem Tilgungsplan ergänzt.'+(entry._loanHistory.estimatedAssetIds.length?' Fehlende Asset-Werte sind geschätzt.':'')+' Du kannst die Werte bearbeiten und mit „Sichern“ einen eigenen Monatsstand erfassen.</p>';
-  /* Vermögenswerte */
-  html+=`<details class="input-collapsible" data-mod="assets">${_v2Sum('assets','Vermögenswerte')}<div class="input-collapsible-body">`;
-  html+=_positionEditorHTML('assets');
-  if(!_fc.fields.some(f=>f.category!=='liab'))html+='<p class="position-empty">Noch keine Vermögenswerte. Im Bearbeiten-Modus kannst du deine erste Position hinzufügen.</p>';
+  html+=_monthCardHTML(allData);
 
-  html+=`<div id="dynamicAssetForm">`;
-  html+=`<div class="cat-grid">`;
-  
-  let firstCat=true;
-  catOrder.forEach((cat,ci)=>{
-    const fields=getFieldsByCategory(cat).filter(f=>activeFieldIds.has(f.id));
-    if(!fields.length)return;
-    const isFirst=firstCat;
-    firstCat=false;
-    const labelMt=isFirst?'18px':'38px';
-    const gridMt=isFirst?'0':'20px';
-    html+=`<span class="cat-label" style="margin-top:${labelMt}">${catNames[cat]||cat}</span>`;
-    html+=`<div class="input-grid" style="margin-bottom:0;margin-top:${gridMt}">`;
-    fields.forEach(f=>{
-      html+=`<div class="input-group"><label><span class="position-label">${escHTML(f.label)}${_positionRemoveHTML(f)}</span></label>`;
-      html+=`<span class="input-units-label">Gesamtwert in €</span><input class="num-input" type="text" inputmode="decimal" id="f-${f.id}" placeholder="0"${AssetModel.valuation(f)==='market'&&selectedMonth===nextYM()?' data-loan-derived="1"':''}>`;
-      const unitLabel=f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück';
-      html+=`<span class="input-units-label">${escHTML(unitLabel)} · ${AssetModel.valuation(f)==='market'?'Stückzahl':'Stückzahl (optional)'}</span><input class="num-input num-input-units" type="text" inputmode="decimal" id="fu-${f.unitId||f.id}" placeholder="0">`;
-      html+=`<span class="asset-help">${AssetModel.liquidity(f)==='liquid'?'Liquide':'Illiquide'} · ${AssetModel.valuation(f)==='market'?'Automatischer Kurs im Live-Monat · '+escHTML(_quoteStatus(f)):'Manueller Gesamtwert'}</span>`;
-      html+=`<details class="asset-settings edit-only"><summary>Asset-Angaben bearbeiten</summary>${_assetMetadataHTML('asset-'+f.id,f)}</details>`;
-      html+=`</div>`;
-    });
-    html+=`</div>`;
-  });
-  html+=`</div></div>`;
-  html+=`</div></details>`;
-  
-  /* Verbindlichkeiten: je Kredit Restschuld (monatlich) + Darlehensdaten (Annuität) + Kurzübersicht */
-  const liabFields=getFieldsByCategory('liab').filter(f=>activeFieldIds.has(f.id));
-  {
-    const lp=getLoanParams();
-    html+=`<div class="divider"></div>`;
-    html+=`<details class="input-collapsible" data-mod="liab">${_v2Sum('liab','Verbindlichkeiten')}<div class="input-collapsible-body">`;
-    html+=_positionEditorHTML('liab');
-    if(!liabFields.length)html+='<p class="position-empty">Noch keine Verbindlichkeiten. Im Bearbeiten-Modus kannst du Kredite oder andere Schulden hinzufügen.</p>';
-    html+=`<div id="dynamicLiabForm">`;
-    liabFields.forEach(f=>{html+=_loanCardHTML(f,lp[f.id]||{});});
-    html+=`</div>`;
-    html+=`</div></details>`;
-  }
+  /* Vermögenswerte und Verbindlichkeiten: Liste, Tippen öffnet das Sheet der Position */
+  html+=`<details class="input-collapsible" data-mod="assets">${_v2Sum('assets','Vermögenswerte')}<div class="input-collapsible-body">${_assetListHTML(entry)}</div></details>`;
+  html+=`<div class="divider"></div>`;
+  html+=`<details class="input-collapsible" data-mod="liab">${_v2Sum('liab','Verbindlichkeiten')}<div class="input-collapsible-body">${_liabListHTML(entry)}</div></details>`;
 
   /* Altersvorsorge: gesetzliche Rente + weitere Renten (gleiche Daten wie auf der Prognose-Seite) */
   html+=`<div class="divider"></div>`;
   html+=`<details class="input-collapsible" data-mod="pension">${_v2Sum('pension','Altersvorsorge')}<div class="input-collapsible-body">`;
+  html+=`<div class="ds-sec-actions"><button type="button" class="v2-textbtn" onclick="enterEditMode()">Bearbeiten</button></div>`;
   html+=`<div class="lt-block-label">Gesetzliche Rente</div>`+_drvFieldsHTML(getDrv(),'dp','form');
   const dx=getDrvExtra();
   html+=`<div class="lt-block-label${dx.length?'':' edit-only'}">Weitere gesetzliche Renten</div><div id="dpDrvExtra">${_v2DrvExtraRowsHTML(dx)}</div>`;
@@ -6280,6 +6781,7 @@ function buildDynamicForm(){
     const monthIdx=parseInt(selectedMonth.split('-')[1])-1;
       html+=`<div class="divider"></div>`;
       html+=`<details class="input-collapsible" data-mod="budget">${_v2Sum('budget','Einnahmen & Ausgaben')}<div class="input-collapsible-body">`;
+      html+=`<div class="ds-sec-actions"><button type="button" class="v2-textbtn" onclick="enterEditMode()">Bearbeiten · ${fmtMonth(selectedMonth)}</button></div>`;
       html+=_loanBudgetHTML(selectedMonth);
       
       /* Budget field editor */
@@ -6397,23 +6899,8 @@ function buildDynamicForm(){
     });
   }
   /* Darlehensparameter, Asset-Verknüpfung und einzelne Sondertilgungen. */
-  container.oninput=event=>{
-    const input=event.target;
-    if(input.dataset.assetPrefix)_assetMetadataChanged(input.dataset.assetPrefix,input.dataset.assetKey);
-    if(input.id==='newAsset-quantity')_updateAssetDraftValue('newAsset');
-    if(input.id?.startsWith('fu-')){const f=_fc.fields.find(f=>(f.unitId||f.id)===input.id.slice(3));if(f)_updateAssetDraftValue('asset-'+f.id);}
-    const id=input.dataset.loan||input.dataset.loanBalance||input.closest('.loan-extra-row')?.dataset.extraLoan;
-    if(id){if(input.dataset.loan)_syncLoanPayment(id,input.dataset.k);_updateLoanSummary(id);}
-  };
-  container.onclick=event=>{
-    const add=event.target.closest('[data-extra-add]'),remove=event.target.closest('[data-extra-remove]');
-    if(add){
-      const id=add.dataset.extraAdd,wrap=document.getElementById('loanExtras-'+id);
-      wrap.insertAdjacentHTML('beforeend',_loanExtraHTML(id,{id:'extra-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),month:'',amount:''}));
-      wrap.querySelector('.loan-extra-row:last-child input').focus();
-    }
-    if(remove){const row=remove.closest('.loan-extra-row'),id=row.dataset.extraLoan;row.remove();_updateLoanSummary(id);}
-  };
+  container.oninput=_dataInput;
+  container.onclick=_dataClick;
 
   /* Attach blur/focus handlers for thousand separators */
   getAllInputFieldIds().forEach(k=>{
@@ -6425,7 +6912,7 @@ function buildDynamicForm(){
     });
     input.addEventListener('focus',function(){
       const val=parseNumberWithThousands(this.value);
-      this.value=val>0?val:'';
+      this.value=val>0?String(val).replace('.',','):'';/* Komma behalten, sonst wird 12.5 beim Verlassen zu 125 */
     });
   });
   /* Budget inputs */
@@ -6436,7 +6923,7 @@ function buildDynamicForm(){
     });
     input.addEventListener('focus',function(){
       const val=parseNumberWithThousands(this.value);
-      this.value=val>0?val:'';
+      this.value=val>0?String(val).replace('.',','):'';/* Komma behalten, sonst wird 12.5 beim Verlassen zu 125 */
     });
   });
 }
@@ -7862,6 +8349,8 @@ function prepareOnboardingDocument(original,rows,month,liveMonth=month){
   doc.preferences.onboardingCompleted=true;
   return AssetsData.validate(doc);
 }
+/* Der Hinweis nach dem Rundgang gilt nur, bis die Daten-Seite geöffnet oder er geschlossen wird */
+function dismissOnboardingNext(){const el=document.getElementById('onboardingNextStep');if(el)el.hidden=true;}
 function finishOnboarding(){
   try{
     const doc=prepareOnboardingDocument(appStorage.document(),_guideNew?_guideDraft.positions:[],currentYM(),nextYM());
@@ -8027,6 +8516,8 @@ function initApp(){
     
     /* Data Entry Form */
     initDataEntryForm();
+    _initSheet();
+    _refreshBackupInfo();
     
     /* Lifetime Page */
     initLifetimePage();

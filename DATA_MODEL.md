@@ -195,7 +195,13 @@ später unter Daten aktiviert werden. Ein leeres Budget lässt sich dort einrich
 Vermögenswerte und Verbindlichkeiten sind feste, eigenständig schaltbare Bereiche
 auf der Daten-Seite. Neue Verbindlichkeiten werden direkt in ihrem eigenen
 Bereich angelegt; die Auswahl für Vermögenswerte enthält ausschließlich Anlagen.
-Bestehende Positionen lassen sich im Bearbeiten-Modus direkt an ihrer Zeile entfernen.
+Auf der Daten-Seite stehen Positionen als Liste; Tippen öffnet ein Sheet nur für
+diese Position (Wert, Stückzahl, Angaben, Entfernen) mit eigenem „Sichern“.
+„Aktualisieren“ erfasst alle Werte eines Monats in einer Liste. Ein Sheet schreibt
+einen Monatsstand nur, wenn sich ein Wert ändert; fehlt der Monat, werden die übrigen
+Werte aus dem Vormonat übernommen. Während ein Sheet offen ist, speichern
+Hintergrund-Kurse nichts. Der Zeitpunkt der letzten Sicherung liegt je Gerät unter
+`vermoegen-last-backup` und ist kein Teil der Sicherung.
 `preferences.onboardingCompleted` verhindert einen erneuten automatischen
 Startbildschirm nach bewusstem Überspringen. Das optionale Feld bleibt mit
 bisherigen JSON-Sicherungen kompatibel.
