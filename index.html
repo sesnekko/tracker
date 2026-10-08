@@ -1506,7 +1506,7 @@ details.tut-section[open]>.tut-toggle::after{transform:rotate(45deg)}
   #page-home .structure-section-mobile{display:none}
   .structure-section-ipad .sec-h{display:none}
   /* Kacheln und Liste gleich hoch: die Liste übernimmt die Höhe des Kachelblocks und scrollt darin */
-  #page-home .kpi-and-assets-wrapper{align-items:stretch}
+  #page-home .kpi-and-assets-wrapper{align-items:stretch;padding-top:16px}
   #page-home .kpi-grid{padding-top:0;align-content:start}
   #page-home .structure-section-ipad{position:relative;max-height:none;overflow:visible;padding:0;min-height:0}
   #legendAssets-ipad{position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -2997,20 +2997,11 @@ function _v2FlowColumns(buckets){
   return `<div class="v2-fc-cols">${cols}</div><div class="v2-fc-axis"><span>${buckets[0]?buckets[0].label:''}</span><span>${mid}</span><span>${buckets.length>1?buckets[buckets.length-1].label:''}</span></div>`;
 }
 let _flowSel=null;
-/* iPad/Mac: Abstand unter den Chart-Buttons. Würde die Vermögensentwicklung am unteren Fensterrand
-   nur angeschnitten erscheinen, wächst der Abstand, bis sie komplett unterhalb des sichtbaren Bereichs beginnt. */
-const HOME_GAP_BASE=8;
+/* Früher: Abstand unter den Chart-Buttons wuchs auf iPad/Mac, damit die Vermögensentwicklung nicht
+   angeschnitten erscheint. Im neuen Layout stehen Kacheln und Liste dazwischen – der Abstand bleibt fest. */
 function _adjustHomeGap(){
-  const page=document.getElementById('page-home');
-  const rb=document.querySelector('#page-home .range-bar'),tg=document.getElementById('flowToggle');
-  if(!page||!rb)return;
-  if(!window.matchMedia('(min-width:768px)').matches){rb.style.marginBottom='';return;}
-  rb.style.marginBottom=HOME_GAP_BASE+'px';
-  if(!tg||!page.classList.contains('active'))return;
-  const top=tg.getBoundingClientRect().top+window.scrollY;
-  const visible=window.innerHeight-top;
-  /* nur so viel Platz wie nötig, damit sie knapp unter dem Fensterrand beginnt */
-  if(visible>0&&visible<tg.offsetHeight+8)rb.style.marginBottom=(HOME_GAP_BASE+visible+2)+'px';
+  const rb=document.querySelector('#page-home .range-bar');
+  if(rb)rb.style.marginBottom='';
 }
 let _homeGapTimer=null;
 window.addEventListener('resize',()=>{clearTimeout(_homeGapTimer);_homeGapTimer=setTimeout(_adjustHomeGap,150);});
