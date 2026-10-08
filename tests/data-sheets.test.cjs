@@ -132,3 +132,59 @@ test('background quotes pause while a sheet is open',()=>{
   a.run('_closeSheet(true)');
   assert.equal(a.run('_isEditing()'),false);
 });
+
+test('loan history explanation appears once per loan as a notification, not as chart text',()=>{
+  assert.doesNotMatch(html,/id="loanHistoryNote"/);
+  const a=context();a.run("document.getElementById('onboardingNextStep').hidden=true");
+  const notif=a.el('loanHistoryNotif');notif.hidden=true;
+  a.run("appStorage.setItem('loanParams',JSON.stringify({kredit:{principal:3000,rate:3,repayment:5,firstDue:'2026-01'}}));_loanHistoryNotif()");
+  assert.equal(notif.hidden,false);
+  notif.hidden=true;a.run('_loanHistoryNotif()');
+  assert.equal(notif.hidden,true,'already seen on this device');
+  assert.deepEqual(JSON.parse(a.storage.getItem('vermoegen-loan-history-seen')),['kredit']);
+});
+
+test('pension is no longer offered as an asset type, but existing pension assets keep their category',()=>{
+  const a=context();
+  assert.doesNotMatch(a.run("_assetOptions('cash')"),/value="bav"/);
+  assert.match(a.run("_assetOptions('bav')"),/value="bav" selected/);
+  assert.ok(!a.json('ONBOARDING_CATEGORIES').some(c=>c[0]==='bav'));
+});
+
+function addNew(a,values){
+  const base={name:'Festgeld',category:'cash',valuation:'manual',liquidity:'liquid',unit:'Stück',value:'',quantity:'',since:''};
+  for(const [k,v] of Object.entries({...base,...values})){a.context.k=k;a.el(a.run("_assetId('newAsset',k)")).value=v;}
+  return a.run("addCustomField('assets')");
+}
+test('"owned since" fills the history from that month, so a single new asset already draws a chart',()=>{
+  const storage=new MemoryStorage();const a=app(html,storage);a.context.CSS={escape:String};a.run("selectedMonth='2026-11'");
+  assert.equal(addNew(a,{value:'10000',since:'08/26'}),true);
+  const doc=a.json('appStorage.document()'),id=doc.positions[0].id;
+  assert.deepEqual(doc.snapshots.map(s=>s.month),['2026-08','2026-09','2026-10','2026-11']);
+  assert.ok(doc.snapshots.every(s=>value(s,id)===10000));
+});
+test('"owned since" adds the asset to existing months without changing other values; before the first month nothing else is invented',()=>{
+  const a=context(fixture(),'2026-11');
+  assert.equal(addNew(a,{value:'500',since:'07/26'}),true);
+  const doc=a.json('appStorage.document()'),id=doc.positions.at(-1).id,s=m=>doc.snapshots.find(x=>x.month===m);
+  assert.deepEqual(s('2026-07').positions.map(p=>p.positionId),[id]);
+  assert.equal(value(s('2026-08'),'konto'),1000);assert.equal(value(s('2026-08'),id),500);
+  assert.equal(value(s('2026-09'),'konto'),1000);assert.equal(value(s('2026-09'),id),500);
+  assert.equal(value(s('2026-10'),'konto'),1200);assert.equal(value(s('2026-10'),'depot'),5100);assert.equal(value(s('2026-10'),id),500);
+});
+test('an invalid or future "owned since" month stores nothing',()=>{
+  for(const since of ['13/26','12/26','abc']){
+    const a=context(fixture(),'2026-11');const before=a.storage.getItem(Data.KEY);
+    assert.equal(addNew(a,{value:'500',since}),false);
+    assert.equal(a.storage.getItem(Data.KEY),before);
+  }
+});
+
+test('dates are chosen in the month/year picker, never typed as MM/JJ text',()=>{
+  assert.doesNotMatch(html,/placeholder="MM\/JJ"|placeholder="12\/26"|Termin \(MM\/JJ\)/);
+  const a=context();
+  const field=a.run("_dateFieldHTML({id:'x',value:'2025-03',title:'Erste Rate',attrs:'data-k=\"firstDue\"'})");
+  assert.match(field,/<button[^>]*data-date-for="x"[^>]*>Mär 2025<\/button><input type="hidden" id="x" value="2025-03" data-k="firstDue">/);
+  assert.match(a.run("_dateFieldHTML({id:'y',mode:'year',value:1987})"),/>1987<\/button>/);
+  assert.match(a.run("_planRowsHTML([{name:'Erbe',year:2031,amount:5000,from:'',to:''}],EVENT_COLS,'live')"),/data-date-mode="year"[^>]*>2031<\/button><input type="hidden"[^>]*value="2031" data-k="year"/);
+});

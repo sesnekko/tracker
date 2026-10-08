@@ -1349,8 +1349,6 @@ select.num-input{text-align:left;font-size:15px}
 .position-add-bar{display:flex;justify-content:flex-end;padding:12px 0 4px}
 .position-add-bar .btn{font-size:14px;min-height:44px}
 .position-editor{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;margin:8px 0 16px}
-.loan-history-note{font-size:12px;line-height:1.55;color:var(--muted);margin:12px 0 0;grid-column:1/-1}
-.loan-history-note[hidden]{display:none}
 .asset-settings{margin-top:12px;width:100%;grid-column:1/-1;border-top:1px solid var(--border);padding-top:10px}
 .asset-settings summary{cursor:pointer;min-height:44px;padding:10px 0;color:var(--ink);font-size:13px}
 .position-editor-fields.asset-meta-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end;width:100%}
@@ -1455,6 +1453,25 @@ details.tut-section[open]>.tut-toggle::after{transform:rotate(45deg)}
 .ob-title{font-weight:400;font-size:28px}
 .ob-actions .btn{min-height:50px}
 
+/* Daten-Seite: Abschnitte mit Icons, Schalter gesammelt unter „Bereiche“ */
+#page-import details.v2-off{display:none}
+#page-import details.input-collapsible{margin-bottom:8px}
+#page-import .input-collapsible-summary{min-height:60px;padding:10px 14px 10px 12px}
+.ds-sec-ico{width:34px;height:34px;border-radius:10px}
+.ds-sec-ico svg{width:19px;height:19px}
+#page-import .sec-h{margin:24px 4px 8px}
+#page-import .ds-month+.sec-h{margin-top:22px}
+.ds-modules .v2-row{cursor:pointer;min-height:50px;padding-top:6px;padding-bottom:6px}
+.ds-foot{font-size:12.5px;color:var(--muted);line-height:1.45;margin:8px 4px 0}
+.ds-row-danger .v2-t1,.ds-row-danger .ds-sec-ico{color:var(--red)}
+#page-import .v2-list .v2-row{gap:12px;padding-left:12px;min-height:60px}
+#page-import .v2-row-action .v2-t1{font-weight:400}
+#page-import .v2-list .v2-t2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#page-import .v2-list .v2-row+.v2-row{box-shadow:none}
+#page-import .v2-list .v2-row+.v2-row::before{content:'';position:absolute;top:0;left:58px;right:0;height:.5px;background:var(--sep)}
+.ds-modules .v2-row{padding-left:16px}
+#page-import .ds-modules .v2-row+.v2-row::before{left:16px}
+
 /* Daten-Seite: Positionen als Liste, Bearbeiten je Position im Sheet */
 body:not(.v2-editing) #page-import .v2-form-head{display:none}
 .ds-month{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;padding:14px 12px 14px 16px;margin:10px 0}
@@ -1539,6 +1556,14 @@ select.ds-in{padding-right:28px;text-align:left;background-image:linear-gradient
 .ds-danger:active{opacity:.75}
 .ds-delta.up{color:var(--green)} .ds-delta.down{color:var(--red)}
 .v2-t2.ds-warn{color:var(--red)}
+.picker-overlay{z-index:500}.picker-popup{z-index:501}
+.picker-popup .picker-popup-title{text-align:center;font-size:15px;font-weight:600;color:var(--ink);margin:0 0 10px}
+.picker-popup .picker-popup-title[hidden],.picker-actions[hidden]{display:none}
+.picker-actions{display:flex;justify-content:center}
+.ds-date-btn{cursor:pointer;text-align:right;white-space:nowrap}
+.ds-date-btn.is-empty{color:var(--muted)}
+button.num-input.ds-date-btn{font:inherit;color:var(--text)}
+button.num-input.ds-date-btn.is-empty{color:var(--muted)}
 .ds-toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));z-index:450;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:999px;padding:9px 18px;font-size:14px;font-weight:500;transition:opacity .2s,transform .25s;white-space:nowrap}
 .ds-toast.show{opacity:1;transform:translate(-50%,0)}
 @media(min-width:768px){.ds-toast{bottom:32px}}
@@ -1793,13 +1818,15 @@ body.onboarding-open{overflow:hidden}
 
 <!-- Month Picker Popup -->
 <div class="picker-overlay" id="pickerOverlay"></div>
-<div class="picker-popup" id="pickerPopup">
+<div class="picker-popup" id="pickerPopup" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
+  <div class="picker-popup-title" id="pickerTitle" hidden></div>
   <div class="picker-year-row">
     <button class="picker-year-btn" id="pickerYearPrev">‹</button>
     <span class="picker-year-label" id="pickerYearLabel">2026</span>
     <button class="picker-year-btn" id="pickerYearNext">›</button>
   </div>
   <div class="picker-grid" id="pickerMonthGrid"></div>
+  <div class="picker-actions" id="pickerActions" hidden><button type="button" class="v2-textbtn v2-muted" id="pickerClear">Entfernen</button></div>
 </div>
 
 <div id="page-home" class="page active">
@@ -1826,7 +1853,6 @@ body.onboarding-open{overflow:hidden}
 <!-- Chart: Nettovermögen Verlauf -->
 <div class="chart-section">
   <div class="chart-wrap chart-wrap-net"><canvas id="chartNet"></canvas></div>
-  <p id="loanHistoryNote" class="loan-history-note" hidden></p>
 </div>
 
 <div class="range-bar">
@@ -1928,13 +1954,13 @@ body.onboarding-open{overflow:hidden}
 
 <!-- Prognose-Annahmen: werden sofort gespeichert (kein Bearbeiten-Modus) -->
 <details class="input-collapsible v2-live" data-mod="forecast" id="v2-forecast-sec">
-  <summary class="input-collapsible-summary"><span class="v2-sum-t"><span class="section-title">Prognose &amp; Annahmen</span><span class="v2-sum-sub" data-sub="forecast"></span></span><span class="v2-switch" data-mod="forecast" role="switch" tabindex="0" aria-label="Prognose ein/aus"><i></i></span></summary>
+  <summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg></span><span class="v2-sum-t"><span class="section-title">Prognose &amp; Annahmen</span><span class="v2-sum-sub" data-sub="forecast"></span></span></summary>
   <div class="input-collapsible-body">
     <div class="v2-preview"><b id="v2-prev-pct">—</b><span><span id="v2-prev-txt">Erfolgschance</span><br>Änderungen werden sofort übernommen</span></div>
     <span class="cat-label">Lebensplanung &amp; Bedarf</span>
     <div class="lt-panel">
     <div class="input-grid">
-      <div class="input-group"><label data-info="lt-birth-year">Geburtsjahr</label><input class="num-input lt-set" type="number" id="lt-birth-year" min="1940" max="2015"></div>
+      <div class="input-group"><label data-info="lt-birth-year">Geburtsjahr</label><button type="button" class="num-input ds-date-btn is-empty" data-date-for="lt-birth-year" data-date-mode="year" data-date-title="Geburtsjahr" data-date-ph="Auswählen" data-date-optional="1" data-date-min="1920" data-date-max="2015">Auswählen</button><input type="hidden" id="lt-birth-year"></div>
       <div class="input-group"><label data-info="lt-life-expect">Lebenserwartung</label><input class="num-input lt-set" type="number" id="lt-life-expect" min="50" max="120"></div>
       <div class="input-group"><label data-info="lt-plan-horizon">Planen bis Alter</label><input class="num-input lt-set" type="number" id="lt-plan-horizon" min="60" max="120" placeholder="95"></div>
       <div class="input-group"><label data-info="lt-inflation">Inflation %</label><input class="num-input lt-set" type="text" inputmode="decimal" id="lt-inflation"></div>
@@ -1953,27 +1979,30 @@ body.onboarding-open{overflow:hidden}
 </details>
 
 
-<div class="sec-h">Einrichtung &amp; Hilfe</div>
-<div class="v2-list">
-  <button class="v2-row v2-row-action" onclick="startOnboarding('data')"><span class="v2-t"><span class="v2-t1">App kennenlernen</span><span class="v2-t2">Geführter Einstieg in Vermögen, Budget und Prognose</span></span><span class="v2-chev"></span></button>
-</div>
-
 <div class="sec-h">Sicherung</div>
 <div class="v2-list">
-  <button class="v2-row v2-row-action" onclick="exportBackup()"><span class="v2-t"><span class="v2-t1">Sicherung exportieren</span><span class="v2-t2" id="backupSub">Eine Datei mit allen Daten und Einstellungen</span></span><span class="v2-chev"></span></button>
-  <label class="v2-row v2-row-action" style="cursor:pointer"><span class="v2-t"><span class="v2-t1">Sicherung wiederherstellen</span><span class="v2-t2">Sicherungsdatei laden · alte CSV-Dateien werden ergänzt</span></span><span class="v2-chev"></span><input type="file" accept=".json,.csv,application/json,text/csv" id="csvInput2" style="display:none" onchange="document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
+  <button class="v2-row v2-row-action" onclick="exportBackup()"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V4.5"/><path d="m8 8 4-4 4 4"/><path d="M5 13.5v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg></span><span class="v2-t"><span class="v2-t1">Sicherung exportieren</span><span class="v2-t2" id="backupSub">Eine Datei mit allen Daten und Einstellungen</span></span><span class="v2-chev"></span></button>
+  <label class="v2-row v2-row-action" style="cursor:pointer"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4.5V15"/><path d="m8 11 4 4 4-4"/><path d="M5 13.5v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg></span><span class="v2-t"><span class="v2-t1">Sicherung wiederherstellen</span><span class="v2-t2">JSON-Sicherung oder alte CSV-Datei</span></span><span class="v2-chev"></span><input type="file" accept=".json,.csv,application/json,text/csv" id="csvInput2" style="display:none" onchange="document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
 </div>
 
+<div class="sec-h">Bereiche</div>
+<div class="v2-list ds-modules">
+  <div class="v2-row v2-row-static"><span class="v2-t"><span class="v2-t1">Vermögenswerte</span></span><span class="v2-switch" data-mod="assets" role="switch" tabindex="0" aria-label="Vermögenswerte ein/aus"><i></i></span></div>
+  <div class="v2-row v2-row-static"><span class="v2-t"><span class="v2-t1">Verbindlichkeiten</span></span><span class="v2-switch" data-mod="liab" role="switch" tabindex="0" aria-label="Verbindlichkeiten ein/aus"><i></i></span></div>
+  <div class="v2-row v2-row-static"><span class="v2-t"><span class="v2-t1">Altersvorsorge</span></span><span class="v2-switch" data-mod="pension" role="switch" tabindex="0" aria-label="Altersvorsorge ein/aus"><i></i></span></div>
+  <div class="v2-row v2-row-static"><span class="v2-t"><span class="v2-t1">Einnahmen &amp; Ausgaben</span></span><span class="v2-switch" data-mod="budget" role="switch" tabindex="0" aria-label="Einnahmen und Ausgaben ein/aus"><i></i></span></div>
+  <div class="v2-row v2-row-static"><span class="v2-t"><span class="v2-t1">Prognose</span></span><span class="v2-switch" data-mod="forecast" role="switch" tabindex="0" aria-label="Prognose ein/aus"><i></i></span></div>
+</div>
+<p class="ds-foot">Ausgeschaltete Bereiche werden nicht angezeigt und nicht berechnet. Die Daten bleiben erhalten.</p>
 
-<div class="v2-list" style="margin-top:28px">
-  <button class="v2-row" onclick="_v2RestoreDemo()"><span class="v2-t"><span class="v2-t1">Demo-Daten wiederherstellen</span><span class="v2-t2">Ersetzt alle Daten durch die Beispieldaten</span></span><span class="v2-chev"></span></button>
+<div class="sec-h">Hilfe</div>
+<div class="v2-list">
+  <button class="v2-row v2-row-action" onclick="startOnboarding('data')"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.8 9.6a2.3 2.3 0 1 1 3.2 2.1c-.6.3-1 .8-1 1.5v.3"/><path d="M12 16.6v.1"/></svg></span><span class="v2-t"><span class="v2-t1">App kennenlernen</span><span class="v2-t2">Geführter Einstieg in wenigen Schritten</span></span><span class="v2-chev"></span></button>
+  <button class="v2-row" onclick="_v2RestoreDemo()"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8 12 4l8 4v8l-8 4-8-4z"/><path d="m4 8 8 4 8-4M12 12v8"/></svg></span><span class="v2-t"><span class="v2-t1">Demo-Daten laden</span><span class="v2-t2">Ersetzt alle Daten durch Beispieldaten</span></span><span class="v2-chev"></span></button>
+  <button class="v2-row ds-row-danger" id="resetBtn"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5h9l1-12.5"/></svg></span><span class="v2-t"><span class="v2-t1">Alle Daten löschen</span></span></button>
 </div>
 
-<div class="v2-list" style="margin-top:12px">
-  <button class="v2-row v2-row-danger" id="resetBtn"><span class="v2-t"><span class="v2-t1">Alle Daten löschen</span></span></button>
-</div>
-
-<div style="font-size:12px;color:var(--muted);text-align:center;padding:18px 0 4px">Version 1.1</div>
+<div style="font-size:12px;color:var(--muted);text-align:center;padding:22px 0 4px">Version 1.1</div>
 
 <!-- Spacer for bottom navigation bar -->
 <div style="height:80px"></div>
@@ -2241,6 +2270,18 @@ body.onboarding-open{overflow:hidden}
 
 <!-- Onboarding Overlay -->
 <div class="ob-overlay" id="onboardingOverlay" role="dialog" aria-modal="true" aria-label="Willkommen und geführter Einstieg" style="display:none"></div>
+
+<!-- Einmalige Mitteilung, sobald ein Kredit einen berechneten Verlauf ergänzt -->
+<aside id="loanHistoryNotif" class="ob-notif" role="status" aria-labelledby="loanHistoryNotifTitle" hidden>
+  <a href="#" class="ob-notif-body" draggable="false" onclick="event.preventDefault();if(!_obNotifDragged)_notifOut(this.parentNode,'up')">
+    <span class="ob-notif-icon"><img src="icon-192.png" alt="" draggable="false"></span>
+    <span class="ob-notif-text">
+      <span class="ob-notif-head"><b id="loanHistoryNotifTitle">Kreditverlauf berechnet</b><time>jetzt</time></span>
+      <span class="ob-notif-msg">Fehlende Monate stammen aus dem Tilgungsplan. Asset-Werte ohne eigenen Eintrag sind mit dem zuletzt bekannten Wert geschätzt.</span>
+    </span>
+  </a>
+  <button type="button" class="ob-notif-close" onclick="_notifOut(this.parentNode,'up')" aria-label="Mitteilung schließen">×</button>
+</aside>
 
 <!-- Daten-Sheet: eine Position, ein Kredit oder ein Monatsstand, jeweils mit eigenem Sichern -->
 <div class="ds-overlay" id="dsOverlay"></div>
@@ -2665,11 +2706,28 @@ function buildPicker(){
     btn.classList.toggle('is-current',selectedMonth===nextYM());
   }
   
-  /* Der Picker dient auch anderen Auswahlen (z. B. Vergleichsmonate): target = {value, onPick, isEnabled} */
+  /* Der Picker dient auch als Datumsfeld: target = {mode:'month'|'year', value, onPick, isEnabled, title, onClear} */
   let target=null;
+  const title=document.getElementById('pickerTitle'),actions=document.getElementById('pickerActions');
+  const yearMode=()=>!!target&&target.mode==='year';
+  function renderYears(){
+    const start=Math.floor(_pickerYear/12)*12;
+    yearLabel.textContent=start+' – '+(start+11);
+    for(let y=start;y<start+12;y++){
+      const cell=document.createElement('div');
+      cell.className='picker-cell';cell.textContent=y;
+      if(String(y)===String(target.value))cell.classList.add('active');
+      if(target.isEnabled&&!target.isEnabled(y))cell.classList.add('disabled');
+      cell.addEventListener('click',()=>{if(cell.classList.contains('disabled'))return;const t=target;closePickerPopup();t.onPick(y);});
+      grid.appendChild(cell);
+    }
+  }
   function renderGrid(){
     grid.innerHTML='';
-    const cur=target?target.value:selectedMonth;
+    title.hidden=!(target&&target.title);title.textContent=target&&target.title||'';
+    actions.hidden=!(target&&target.onClear);
+    if(yearMode())return renderYears();
+    const cur=target?(target.value||'0000-00'):selectedMonth;
     const[,selM]=cur.split('-');
     const selY=parseInt(cur.split('-')[0]);
     MONTH_NAMES.forEach((name,i)=>{
@@ -2725,16 +2783,17 @@ function buildPicker(){
   
   btn.addEventListener('click',()=>openPickerPopup());
   overlay.addEventListener('click',closePickerPopup);
-  document.getElementById('pickerYearPrev').addEventListener('click',()=>{_pickerYear--;renderGrid();});
-  document.getElementById('pickerYearNext').addEventListener('click',()=>{_pickerYear++;renderGrid();});
+  document.getElementById('pickerYearPrev').addEventListener('click',()=>{_pickerYear-=yearMode()?12:1;renderGrid();});
+  document.getElementById('pickerYearNext').addEventListener('click',()=>{_pickerYear+=yearMode()?12:1;renderGrid();});
+  document.getElementById('pickerClear').addEventListener('click',()=>{const t=target;closePickerPopup();if(t&&t.onClear)t.onClear();});
   
   return{
     getVal:()=>selectedMonth,
     setVal:ym=>{selectedMonth=ym;updateBtn();},
-    /* Monat für eine andere Auswahl wählen */
-    pick:(value,onPick,isEnabled)=>{
-      target={value,onPick,isEnabled};
-      _pickerYear=parseInt(value.split('-')[0]);
+    /* Monat oder Jahr für ein Datumsfeld wählen */
+    pick:opts=>{
+      target={mode:'month',...opts};
+      _pickerYear=parseInt(String(opts.value||opts.start||selectedMonth).split('-')[0]);
       renderGrid();
       overlay.classList.add('show');
       popup.classList.add('show');
@@ -2944,8 +3003,7 @@ function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];
 
 function renderNetChart(){
   const data=loadData(),sorted=Object.keys(data).sort();
-  const note=document.getElementById('loanHistoryNote'),hasDerived=Object.values(data).some(e=>e._loanHistory);
-  if(note){note.hidden=!hasDerived;note.textContent='Berechneter Kreditverlauf: Fehlende Monate werden aus dem Tilgungsplan ergänzt. Asset-Werte ohne erfassten Monatsstand werden mit dem zuletzt bekannten Wert fortgeschrieben; vor dem ersten erfassten Wert gilt dieser rückwirkend. Diese Werte sind Schätzungen. Erfasste Asset-Werte bleiben erhalten.';}
+  if(Object.values(data).some(e=>e._loanHistory))_loanHistoryNotif();
   const entry=data[selectedMonth];
   if(!entry||sorted.length<2){destroyChart('net');return;}
   destroyChart('net');
@@ -3030,8 +3088,12 @@ const V2_ICONS={
   btc:'<path d="M8 5.5h5.5a3 3 0 0 1 0 6H8z"/><path d="M8 11.5h6.5a3 3 0 0 1 0 6H8z"/><path d="M8 4v16M11 4v1.5M11 18.5V20"/>',
   car:'<path d="M4 16.5h16"/><path d="M5 16.5 7 11h10l2 5.5"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/>',
   watch:'<circle cx="12" cy="12" r="5"/><path d="M12 10v2l1.5 1"/><path d="m9 7.5.8-3.5h4.4l.8 3.5M9 16.5l.8 3.5h4.4l.8-3.5"/>',
-  box:'<path d="M4 8 12 4l8 4v8l-8 4-8-4z"/><path d="m4 8 8 4 8-4M12 12v8"/>'
+  box:'<path d="M4 8 12 4l8 4v8l-8 4-8-4z"/><path d="m4 8 8 4 8-4M12 12v8"/>',
+  bank:'<path d="M3.5 9 12 4.5 20.5 9"/><path d="M5 9.5v8M9.5 9.5v8M14.5 9.5v8M19 9.5v8"/><path d="M3.5 19.5h17"/>',
+  flow:'<path d="M4 8h13"/><path d="m14 5 3 3-3 3"/><path d="M20 16H7"/><path d="m10 13-3 3 3 3"/>',
+  clock:'<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>'
 };
+const DATA_SECTION_ICONS={assets:'chart',liab:'bank',pension:'umbrella',budget:'flow',forecast:'clock'};
 function _v2GroupFields(key){return _vf().filter(f=>(f.category==='liab'?_liabTargetGroup(f):(f.displayGroup||f.category))===key);}
 function _v2Icon(key){
   const k=String(key||'').toLowerCase(),cats=_v2GroupFields(key).map(f=>f.category);
@@ -5819,7 +5881,8 @@ const _assetChecks=new Map();
 const _assetCheckRuns=new Map();
 function _assetId(prefix,key){return prefix==='newAsset'?(key==='name'?'newFieldLabel':key==='category'?'newFieldCategory':prefix+'-'+key):prefix+'-'+key;}
 function _assetEl(prefix,key){return document.getElementById(_assetId(prefix,key));}
-function _assetOptions(category){return Object.entries(AssetModel.categories).map(([k,c])=>`<option value="${k}"${k===category?' selected':''}>${c.name}</option>`).join('');}
+/* Altersvorsorge hat einen eigenen Bereich; als Art nur für bestehende Positionen sichtbar, damit deren Kategorie erhalten bleibt */
+function _assetOptions(category){return Object.entries(AssetModel.categories).filter(([k])=>k!=='bav'||k===category).map(([k,c])=>`<option value="${k}"${k===category?' selected':''}>${c.name}</option>`).join('');}
 function _quoteStatus(f){
   if(!f.lastQuote)return 'Noch kein Kurs gespeichert';
   const time=new Date(f.lastQuote.asOf).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short'});
@@ -5936,9 +5999,16 @@ function addCustomField(section='assets'){
   const category=liability?'liab':catEl.value;
   if(!label){showCsvMsg('Bitte eine Bezeichnung eingeben.','error');return false;}
   if(!liability&&!AssetModel.categories[category])return false;
-  let metadata={},quantity=null,value=null;
+  let metadata={},quantity=null,value=null,since=null;
   try{
     if(!liability){
+      const sinceRaw=(document.getElementById('newAsset-since')?.value||'').trim();
+      if(sinceRaw){
+        since=LoanModel.normalizeMonth(sinceRaw);
+        if(!since)throw new Error('Im Besitz seit: Bitte einen Monat auswählen.');
+        if(since>selectedMonth)throw new Error('Im Besitz seit: Der Monat liegt nach '+fmtMonth(selectedMonth)+'.');
+        if(since<LoanModel.addMonths(selectedMonth,-600))throw new Error('Im Besitz seit: Bitte einen Monat innerhalb der letzten 50 Jahre angeben.');
+      }
       metadata=_readAssetMetadata('newAsset');quantity=_assetNumber(document.getElementById('newAsset-quantity')?.value,true);value=_assetNumber(document.getElementById('newAsset-value')?.value);
       if(metadata.valuation==='market'){
         if(quantity===null)throw new Error('Für die automatische Bewertung bitte eine Stückzahl eingeben.');
@@ -5956,11 +6026,21 @@ function addCustomField(section='assets'){
     if(liability){const lp=getLoanParams();lp[id]={assetId:document.getElementById('newLiabAsset')?.value||null,extras:[]};appStorage.setItem('loanParams',JSON.stringify(lp));}
     else {const ap=JSON.parse(appStorage.getItem('lt-asset-params')||'{}');ap[group]={...(ap[group]||{}),saving:0};appStorage.setItem('lt-asset-params',JSON.stringify(ap));}
     if(!liability&&(value!==null||quantity!==null)){const data=loadData(),e=_monthEntryForEdit(data,selectedMonth);e._details={...e._details,[id]:value||0};e._units={...e._units,...(quantity!==null?{[id]:quantity}:{})};recalcAggregates(e);data[selectedMonth]=e;saveData(data);}
+    /* Optional "Im Besitz seit": derselbe Wert ab diesem Monat, ohne bestehende Werte anderer Positionen zu ändern */
+    if(!liability&&since&&since<selectedMonth&&(value!==null||quantity!==null)){
+      const data=loadData();
+      for(let m=since;m<selectedMonth;m=LoanModel.addMonths(m,1)){
+        const e=_monthEntryForEdit(data,m);
+        if(!Object.prototype.hasOwnProperty.call(e._details,id)){e._details[id]=value||0;if(quantity!==null)e._units[id]=quantity;}
+        recalcAggregates(e);data[m]=e;
+      }
+      saveData(data);
+    }
     appStorage.commitTransaction();
   }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();showCsvMsg('Anlegen fehlgeschlagen: '+error.message,'error');return false;}
   labelEl.value='';
   if(!liability){_assetChecks.delete('newAsset');
-    ['value','quantity','symbol'].forEach(k=>{const el=_assetEl('newAsset',k);if(el)el.value=k==='symbol'&&_assetEl('newAsset','provider')?.value==='bitcoin'?'XBTEUR':'';});
+    ['value','quantity','symbol','since'].forEach(k=>{const el=_assetEl('newAsset',k);if(el)el.value=k==='symbol'&&_assetEl('newAsset','provider')?.value==='bitcoin'?'XBTEUR':'';});
   }
   _rebuildFormKeepingEdits();
   if(!liability){const valueEl=document.getElementById('f-'+id),qtyEl=document.getElementById('fu-'+id);if(valueEl&&value!==null)valueEl.value=value.toLocaleString('de-DE',{maximumFractionDigits:2});if(qtyEl&&quantity!==null)qtyEl.value=String(quantity).replace('.',',');}
@@ -6161,7 +6241,7 @@ function _lastBackup(){try{const t=localStorage.getItem(BACKUP_KEY);return t&&is
 function _refreshBackupInfo(){
   const el=document.getElementById('backupSub');if(!el)return;
   const t=_lastBackup(),days=t?Math.floor((Date.now()-t.getTime())/864e5):null;
-  el.textContent=!t?'Noch keine Sicherung von diesem Gerät · empfohlen':'Zuletzt '+(days<1?'heute':days===1?'gestern':'vor '+days+' Tagen')+' · eine Datei mit allem';
+  el.textContent=!t?'Noch nie gesichert · empfohlen':'Zuletzt '+(days<1?'heute':days===1?'gestern':'vor '+days+' Tagen');
   el.classList.toggle('ds-warn',!t||days>30);
 }
 function _backupDone(){try{localStorage.setItem(BACKUP_KEY,new Date().toISOString());}catch(error){}_refreshBackupInfo();_toast('Sicherung erstellt');}
@@ -6210,14 +6290,14 @@ function _loanExtraRows(id){
   return [...wrap.querySelectorAll('.loan-extra-row')].map(row=>({id:row.dataset.extraId,month:row.querySelector('[data-extra-month]').value,amount:row.querySelector('[data-extra-amount]').value}));
 }
 function _loanExtraHTML(id,e){
-  return `<div class="loan-extra-row" data-extra-id="${escHTML(e.id)}" data-extra-loan="${escHTML(id)}"><label>Termin (MM/JJ)<input class="num-input" type="text" data-extra-month value="${escHTML(_loanMonthLabel(e.month))}" placeholder="12/26" inputmode="text"></label><label>Betrag €<input class="num-input" type="text" data-extra-amount value="${escHTML(typeof e.amount==='number'?e.amount.toLocaleString('de-DE',{maximumFractionDigits:2}):String(e.amount??''))}" placeholder="0" inputmode="decimal"></label><button type="button" class="position-remove edit-only" data-extra-remove aria-label="Sondertilgung entfernen">Entfernen</button></div>`;
+  return `<div class="loan-extra-row" data-extra-id="${escHTML(e.id)}" data-extra-loan="${escHTML(id)}"><label>Termin${_dateFieldHTML({id:'extra-'+id+'-'+e.id,value:e.month||'',cls:'ds-in',title:'Sondertilgung',placeholder:'Monat wählen',attrs:'data-extra-month'})}</label><label>Betrag €<input class="num-input" type="text" data-extra-amount value="${escHTML(typeof e.amount==='number'?e.amount.toLocaleString('de-DE',{maximumFractionDigits:2}):String(e.amount??''))}" placeholder="0" inputmode="decimal"></label><button type="button" class="position-remove edit-only" data-extra-remove aria-label="Sondertilgung entfernen">Entfernen</button></div>`;
 }
 function _loanFromInputs(fieldId,strict=false){
   const p={};
   document.querySelectorAll(`input[data-loan="${CSS.escape(fieldId)}"]`).forEach(inp=>{
     const raw=inp.value.trim(),key=inp.dataset.k;if(!raw)return;
     if(key==='firstDue'){
-      const month=LoanModel.normalizeMonth(raw);if(!month)throw new Error('Erste Fälligkeit: Bitte MM/JJ eingeben, z. B. 11/26.');p.firstDue=month;return;
+      const month=LoanModel.normalizeMonth(raw);if(!month)throw new Error('Erste Fälligkeit: Bitte einen Monat auswählen.');p.firstDue=month;return;
     }
     const clean=raw.replace(/[€\s\u00a0]/g,'');
     const n=_parseDec(clean);
@@ -6232,7 +6312,7 @@ function _loanFromInputs(fieldId,strict=false){
     for(const e of _loanExtraRows(fieldId)){
       if(!e.month.trim()&&!String(e.amount).trim())continue;
       const month=LoanModel.normalizeMonth(e.month),amount=_parseDec(String(e.amount));
-      if(!month||!String(e.amount).trim()||!Number.isFinite(amount)||amount<=0)throw new Error('Sondertilgung: Bitte Termin (MM/JJ) und einen positiven Betrag eingeben.');
+      if(!month||!String(e.amount).trim()||!Number.isFinite(amount)||amount<=0)throw new Error('Sondertilgung: Bitte Termin und einen positiven Betrag eingeben.');
       if(p.firstDue&&month<p.firstDue)throw new Error('Sondertilgungen dürfen nicht vor der ersten Fälligkeit liegen.');
       p.extras.push({id:e.id,month,amount});
     }
@@ -6359,6 +6439,7 @@ function _submitSheet(){
 }
 function _initSheet(){
   const b=document.getElementById('dsBody');if(!b||b._ready)return;b._ready=true;
+  document.addEventListener('click',e=>{const d=e.target.closest&&e.target.closest('[data-date-for]');if(d){e.preventDefault();_openDatePicker(d);}});
   document.getElementById('dsCancel').addEventListener('click',()=>_closeSheet());
   document.getElementById('dsSave').addEventListener('click',_submitSheet);
   document.getElementById('dsOverlay').addEventListener('click',()=>_closeSheet());
@@ -6402,10 +6483,47 @@ function _afterDataChange(){
 }
 function _monthTitle(ym){return ym===nextYM()?'Aktueller Stand':'Stand '+fmtMonth(ym);}
 
+/* ── Datumsfelder: Auswahl im Monats-/Jahresfenster statt Texteingabe ──
+   Der Wert steht in einem versteckten Feld (YYYY-MM bzw. Jahr), damit die bisherige Leselogik gleich bleibt. */
+let _dateFieldSeq=0;
+function _dateLabel(value,mode){
+  if(value===''||value==null)return '';
+  if(mode==='year')return String(value);
+  const m=LoanModel.normalizeMonth(value);return m?fmtMonth(m):String(value);
+}
+function _dateFieldHTML({id,value='',mode='month',attrs='',cls='ds-in',title='',placeholder='Auswählen',optional=false,min='',max=''}){
+  id=id||'dt-'+(++_dateFieldSeq);
+  const v=value==null?'':(mode==='month'?(LoanModel.normalizeMonth(value)||''):String(value));
+  return `<button type="button" class="${cls} ds-date-btn${v?'':' is-empty'}" data-date-for="${escHTML(id)}" data-date-mode="${mode}" data-date-title="${escHTML(title)}" data-date-ph="${escHTML(placeholder)}"${optional?' data-date-optional="1"':''}${min!==''?` data-date-min="${escHTML(String(min))}"`:''}${max!==''?` data-date-max="${escHTML(String(max))}"`:''}>${escHTML(_dateLabel(v,mode)||placeholder)}</button><input type="hidden" id="${escHTML(id)}" value="${escHTML(v)}" ${attrs}>`;
+}
+function _setDateValue(btn,value){
+  const input=document.getElementById(btn.dataset.dateFor);if(!input)return;
+  input.value=value===''||value==null?'':String(value);
+  btn.textContent=_dateLabel(input.value,btn.dataset.dateMode)||btn.dataset.datePh;
+  btn.classList.toggle('is-empty',!input.value);
+  input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));
+}
+function _openDatePicker(btn){
+  const input=document.getElementById(btn.dataset.dateFor);if(!input||btn.readOnly)return;
+  const mode=btn.dataset.dateMode,year=mode==='year',min=btn.dataset.dateMin,max=btn.dataset.dateMax;
+  const cmp=v=>year?+v:String(v);
+  picker.pick({mode,value:input.value,start:max&&!input.value?max:undefined,title:btn.dataset.dateTitle,
+    isEnabled:v=>(min===undefined||cmp(v)>=cmp(min))&&(max===undefined||cmp(v)<=cmp(max)),
+    onPick:v=>_setDateValue(btn,v),
+    onClear:btn.dataset.dateOptional?()=>_setDateValue(btn,''):null});
+}
+/* Programmatisch gesetzte Werte (z. B. nach dem Laden) in die Beschriftung übernehmen */
+function _syncDateButtons(root=document){
+  root.querySelectorAll('[data-date-for]').forEach(btn=>{
+    const input=document.getElementById(btn.dataset.dateFor);if(!input)return;
+    btn.textContent=_dateLabel(input.value,btn.dataset.dateMode)||btn.dataset.datePh;btn.classList.toggle('is-empty',!input.value);
+  });
+}
+
 /* ── Listen auf der Daten-Seite ── */
 function _monthCardHTML(data){
   const ym=selectedMonth,e=data[ym],live=ym===nextYM(),generated=!!(e&&e._loanHistory&&e._loanHistory.generated);
-  const sub=!e?'Für '+fmtMonth(ym)+' ist noch nichts erfasst.':generated?'Aus dem Tilgungsplan ergänzt, noch nicht bestätigt.':live?fmtMonth(ym)+' · Kurse laufen automatisch mit':'Werte zum Monatsende';
+  const sub=!e?'Für '+fmtMonth(ym)+' ist noch nichts erfasst.':generated?'Aus dem Tilgungsplan ergänzt, noch nicht bestätigt.':live?fmtMonth(ym)+' · Kurse live':'Werte zum Monatsende';
   return `<div class="ds-month"><div class="ds-month-l"><button type="button" class="ds-month-t" onclick="document.getElementById('dateBtn').click()" aria-label="Anderen Monat wählen">${_monthTitle(ym)}</button><span class="ds-month-s">${escHTML(sub)}</span></div><button type="button" class="v2-textbtn v2-strong" data-ds-open="month">${!e||generated?'Erfassen':'Aktualisieren'}</button></div>`;
 }
 function _dsItem(kind,id,label,sub,value,zero){
@@ -6547,6 +6665,7 @@ function _assetSheetRows(prefix){
   const qty=document.getElementById(prefix==='newAsset'?'newAsset-quantity':'fu-'+((_fc.fields.find(f=>'asset-'+f.id===prefix)||{}).unitId||prefix.slice(6)));
   const show=UNIT_CATEGORIES.includes(cat)||market||!!(qty&&qty.value.trim());
   const q=document.getElementById(prefix+'-qtyRow'),v=document.getElementById(prefix+'-valuationRow');
+  const u=document.getElementById(prefix+'-unitRow');if(u)u.hidden=!show;
   if(q)q.hidden=!show;if(v)v.hidden=!(UNIT_CATEGORIES.includes(cat)||market);
 }
 function _assetSheetHTML(prefix,f,o){
@@ -6563,6 +6682,7 @@ function _assetSheetHTML(prefix,f,o){
   <div class="ds-group-t">${o.valueTitle}</div>
   <div class="ds-group">
     <label class="ds-row"><span class="ds-l">Wert in €<small id="${prefix}-valueHint">${escHTML(o.valueHint||'')}</small></span><input class="ds-in ds-money" type="text" inputmode="decimal" id="${o.valueId}" value="${o.value}" placeholder="0"></label>
+    ${prefix==='newAsset'?`<label class="ds-row"><span class="ds-l">Im Besitz seit<small>optional · ergänzt den Verlauf</small></span>${_dateFieldHTML({id:'newAsset-since',title:'Im Besitz seit',placeholder:'Optional',optional:true,max:selectedMonth})}</label>`:''}
     <label class="ds-row" id="${prefix}-qtyRow"><span class="ds-l"><span id="${prefix}-quantityLabel">${valuation==='market'?'Stückzahl':'Stückzahl (optional)'}</span><small id="${prefix}-unitHint">in ${escHTML(unit)}</small></span><input class="ds-in" type="text" inputmode="decimal" id="${o.qtyId}" value="${o.qty}" placeholder="0"></label>
     <label class="ds-row" id="${prefix}-valuationRow"><span class="ds-l">Wert ermitteln</span><select class="ds-in ds-wide" ${a('valuation')}>${opt('manual','Selbst eintragen',valuation)}${opt('market','Per Kurs',valuation)}</select></label>
   </div>
@@ -6573,7 +6693,7 @@ function _assetSheetHTML(prefix,f,o){
   </div>
   <details class="ds-more"><summary>Weitere Angaben</summary><div class="ds-group">
     <label class="ds-row"><span class="ds-l">Verfügbarkeit<small>Liquide Werte zählen zum frei verfügbaren Vermögen</small></span><select class="ds-in" ${a('liquidity')}>${opt('liquid','Liquide',liq)}${opt('illiquid','Gebunden',liq)}</select></label>
-    <label class="ds-row"><span class="ds-l">Einheit</span><input class="ds-in" type="text" ${a('unit')} value="${escHTML(unit)}" placeholder="Stück"></label>
+    <label class="ds-row" id="${prefix}-unitRow"><span class="ds-l">Einheit</span><input class="ds-in" type="text" ${a('unit')} value="${escHTML(unit)}" placeholder="Stück"></label>
   </div></details>`;
 }
 function openAssetSheet(id){
@@ -6619,7 +6739,7 @@ function _saveAssetSheet(id){
 function openAddAssetSheet(){
   const ym=selectedMonth;
   const body=_assetSheetHTML('newAsset',{category:'cash',label:''},{valueTitle:_monthTitle(ym),valueId:'newAsset-value',qtyId:'newAsset-quantity',value:'',qty:'',valueHint:''})
-    +`<p class="ds-help">Neue Werte bekommen keine Sparrate. Die kannst du später unter Prognose & Annahmen ergänzen.</p>`;
+    +`<p class="ds-help">Mit „Im Besitz seit“ wird der Wert ab diesem Monat in den Verlauf übernommen, damit der Chart die Entwicklung zeigt. Einzelne Monate kannst du später über „Aktualisieren“ anpassen. Neue Werte bekommen keine Sparrate; die kannst du unter Prognose &amp; Annahmen ergänzen.</p>`;
   if(!_openSheet('Vermögenswert',body,_saveNewAsset,'Anlegen'))return;
   _assetMetadataChanged('newAsset','valuation');_assetSheetRows('newAsset');
 }
@@ -6657,7 +6777,7 @@ function _loanSheetHTML(id,f,p,o){
     ${row('rate','Sollzins % p. a.',num(p.rate))}
     ${row('repayment','Anfängliche Tilgung % p. a.',num(p.repayment))}
     ${row('pay','Monatsrate €',money(pay),{cls:' ds-money',hint:'aus Betrag, Zins und Tilgung'})}
-    ${row('firstDue','Erste Rate',_loanMonthLabel(p.firstDue),{ph:'MM/JJ',mode:'text'})}
+    <label class="ds-row"><span class="ds-l">Erste Rate</span>${_dateFieldHTML({id:L('firstDue'),value:p.firstDue||'',title:'Erste Rate',optional:true,attrs:`data-loan="${escHTML(id)}" data-k="firstDue"`})}</label>
   </div>
   <div class="ds-summary" data-loan-summary="${escHTML(id)}" aria-live="polite"></div>
   <div id="loanPlan-${id}"></div>
@@ -6666,7 +6786,7 @@ function _loanSheetHTML(id,f,p,o){
       ${row('fixedYears','Zinsbindung in Jahren',num(p.fixedYears))}
       ${row('follow','Anschlusszins % p. a.',num(p.follow),{ph:'wie Sollzins'})}
       ${p.extra!==undefined?row('extra','Jährliche Sondertilgung € (bisher)',money(p.extra),{cls:' ds-money'}):''}
-      ${p.fixed!==undefined?row('fixed','Zinsbindung bis Jahr (bisher)',p.fixed,{ph:'Jahr',mode:'numeric'}):''}
+      ${p.fixed!==undefined?`<label class="ds-row"><span class="ds-l">Zinsbindung bis Jahr (bisher)</span>${_dateFieldHTML({id:L('fixed'),value:p.fixed,mode:'year',title:'Zinsbindung bis',optional:true,attrs:`data-loan="${escHTML(id)}" data-k="fixed"`})}</label>`:''}
     </div>
     <div class="ds-group-t">Sondertilgungen</div>
     <div class="ds-group"><div id="loanExtras-${id}">${(p.extras||[]).map(e=>_loanExtraHTML(id,e)).join('')}</div><div class="ds-sub"><button type="button" class="btn btn-ghost" data-extra-add="${escHTML(id)}">+ Sondertilgung</button></div></div>
@@ -6749,7 +6869,7 @@ function _dataClick(event){
   if(add){
     const id=add.dataset.extraAdd,wrap=document.getElementById('loanExtras-'+id);
     wrap.insertAdjacentHTML('beforeend',_loanExtraHTML(id,{id:'extra-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),month:'',amount:''}));
-    wrap.querySelector('.loan-extra-row:last-child input').focus();
+    const date=wrap.querySelector('.loan-extra-row:last-child [data-date-for]');if(date)_openDatePicker(date);
   }
   if(remove){const row=remove.closest('.loan-extra-row'),id=row.dataset.extraLoan;row.remove();_updateLoanSummary(id);}
 }
@@ -6768,6 +6888,7 @@ function buildDynamicForm(){
   html+=`<button class="v2-textbtn v2-muted" id="btnCancel" onclick="cancelEditMode()" style="display:none">Abbrechen</button>`;
   html+=`<button class="v2-textbtn v2-strong" id="btnSave" onclick="saveEntry()" style="display:none">Sichern</button></span></div>`;
   html+=_monthCardHTML(allData);
+  html+=`<div class="sec-h">Daten</div>`;
 
   /* Vermögenswerte und Verbindlichkeiten: Liste, Tippen öffnet das Sheet der Position */
   html+=`<details class="input-collapsible" data-mod="assets">${_v2Sum('assets','Vermögenswerte')}<div class="input-collapsible-body">${_assetListHTML(entry)}</div></details>`;
@@ -7144,7 +7265,7 @@ function getDrv(){
    Rentenwert, Durchschnittsentgelt und BBG gelten wie bei der eigenen gesetzlichen Rente. */
 const DRV_EXTRA_COLS=[
   {key:'name',label:'Name',info:'drvx-name',type:'text',ph:'z. B. Partnerin'},
-  {key:'by',label:'Geburtsjahr',info:'drvx-by',ph:'1987'},
+  {key:'by',label:'Geburtsjahr',info:'drvx-by',type:'year',ph:'Auswählen',min:1920,max:2015},
   {key:'until',label:'Arbeiten bis Alter',info:'drvx-until',ph:'wie eigene'},
   {key:'points',label:'Rentenpunkte',info:'drv-points',ph:'0'},
   {key:'salary',label:'Brutto/Jahr €',info:'drv-salary',ph:'0'},
@@ -7497,6 +7618,7 @@ function updateLifetimeInputs(){
     const el=document.getElementById(k);
     if(el){const stored=appStorage.getItem(k);el.value=stored!==null?(el.type==='text'?stored.replace('.',','):stored):'';}/* Textfelder mit deutschem Komma, _parseDec liest beides */
   });
+  _syncDateButtons();
   renderDrvEditor();
   renderPensionEditor();
   renderEventEditor();
@@ -7587,7 +7709,7 @@ const PENSION_COLS=[{key:'name',label:'Name',info:'pen-name',type:'text',ph:'z. 
 function _assetGroupKeys(){return[...new Set(_fc.fields.filter(f=>f.category!=='liab').map(f=>f.displayGroup||f.category))];}
 const EVENT_COLS=[
   {key:'name',label:'Name',info:'ev-name',type:'text',ph:'z. B. Erbschaft'},
-  {key:'year',label:'Jahr',info:'ev-year',ph:String(new Date().getFullYear()+5)},
+  {key:'year',label:'Jahr',info:'ev-year',type:'year',ph:'Auswählen',min:new Date().getFullYear(),max:new Date().getFullYear()+80},
   {key:'amount',label:'Betrag €',info:'ev-amount',ph:'0'},
   {key:'from',label:'Von',info:'ev-from',type:'select',options:()=>[['','Extern (Zufluss)'],['*','Liquide (anteilig)'],..._assetGroupKeys().map(k=>[k,k])]},
   {key:'to',label:'Nach',info:'ev-to',type:'select',options:()=>[['','Extern (Ausgabe)'],..._assetGroupKeys().map(k=>[k,k])]}
@@ -7609,6 +7731,10 @@ function _planRowsHTML(rows,cols,mode,rowCls){
     if(c.type==='select'){
       const opts=c.options().map(([val,lab])=>`<option value="${esc(val)}"${String(v??'')===val?' selected':''}>${esc(lab)}</option>`).join('');
       return `<div class="input-group pc-${c.key}"><label data-info="${c.info}">${c.label}</label><select class="num-input${mode==='form'?' form-store':''}" data-k="${c.key}">${opts}</select></div>`;
+    }
+    if(c.type==='year'){
+      const y=v==null||v===''||!(+v)?'':String(Math.round(+v));
+      return `<div class="input-group pc-${c.key}"><label data-info="${c.info}">${c.label}</label>${_dateFieldHTML({value:y,mode:'year',cls:'num-input'+(mode==='form'?' form-store':''),title:c.label,placeholder:c.ph,optional:true,min:c.min??'',max:c.max??'',attrs:`data-k="${c.key}"`})}</div>`;
     }
     v=v==null?'':(c.type==='text'?String(v):(c.key==='year'||c.key==='from'?String(v):_numStr(v)));
     return `<div class="input-group pc-${c.key}"><label data-info="${c.info}">${c.label}</label><input class="num-input${mode==='form'?' form-store':''}" type="text" ${c.type==='text'?'':'inputmode="decimal"'} data-k="${c.key}" value="${esc(v)}" placeholder="${c.ph}"></div>`;
@@ -8049,7 +8175,7 @@ function renderLifetimePage(){
 }
 /* ── Design 2: Bereiche-Schalter, Daten-Seite, Sprung zu den Annahmen ── */
 function _v2Sum(mod,title){
-  return `<summary class="input-collapsible-summary"><span class="v2-sum-t"><span class="section-title">${title}</span><span class="v2-sum-sub" data-sub="${mod}"></span></span><span class="v2-switch" data-mod="${mod}" role="switch" tabindex="0" aria-label="${title} ein/aus"><i></i></span></summary>`;
+  return `<summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${V2_ICONS[DATA_SECTION_ICONS[mod]]}</svg></span><span class="v2-sum-t"><span class="section-title">${title}</span><span class="v2-sum-sub" data-sub="${mod}"></span></span></summary>`;
 }
 function _v2SubText(mod){
   try{
@@ -8068,9 +8194,9 @@ function _v2SyncSwitches(){
     const k=d.dataset.mod,on=m[k];
     d.classList.toggle('v2-off',!on);
     if(!on&&d.open)d.open=false;
-    const sw=d.querySelector('.v2-switch');if(sw)sw.setAttribute('aria-checked',on?'true':'false');
-    const sub=d.querySelector('.v2-sum-sub');if(sub)sub.textContent=on?_v2SubText(k):'Aus · wird nicht angezeigt und nicht berechnet';
+    const sub=d.querySelector('.v2-sum-sub');if(sub&&on)sub.textContent=_v2SubText(k);
   });
+  document.querySelectorAll('#page-import .v2-switch[data-mod]').forEach(sw=>sw.setAttribute('aria-checked',m[sw.dataset.mod]?'true':'false'));
 }
 function _v2ApplyModules(){
   const m=_mods();
@@ -8107,6 +8233,8 @@ function _v2InitModules(){
   pg.addEventListener('click',e=>{
     const sw=e.target.closest('.v2-switch');
     if(sw){e.preventDefault();e.stopPropagation();flip(sw);return;}
+    const modRow=e.target.closest('.ds-modules .v2-row');
+    if(modRow){flip(modRow.querySelector('.v2-switch'));return;}
     const sum=e.target.closest('summary');
     if(sum&&sum.parentElement.classList.contains('v2-off'))e.preventDefault();
   });
@@ -8250,7 +8378,6 @@ const ONBOARDING_CATEGORIES=[
   ['cash','Konten & Bargeld','Cash'],['etf','ETF & Fonds','ETF'],
   ['stock','Aktie','Aktien'],['bitcoin','Bitcoin','Bitcoin'],['crypto','Krypto','Krypto'],['metal','Edelmetall','Edelmetalle'],
   ['realEstate','Immobilie','Immobilien'],['vehicle','Fahrzeug','Fahrzeuge'],['other','Sonstige Anlage','Weitere Anlagen'],
-  ['bav','Gebundene Altersvorsorge','Altersvorsorge'],
   ['illiquid','Immobilien & Sachwerte','Sachwerte'],['liab','Kredite & Schulden','Verbindlichkeiten']
 ];
 function hasOnboardingData(doc){
@@ -8366,38 +8493,54 @@ function prepareOnboardingDocument(original,rows,month,liveMonth=month){
   doc.preferences.onboardingCompleted=true;
   return AssetsData.validate(doc);
 }
-/* Der Hinweis nach dem Rundgang gilt nur, bis die Daten-Seite geöffnet oder er geschlossen wird */
-/* Wie eine Push-Mitteilung: Antippen öffnet die Daten-Seite, Wischen nach oben oder zur Seite entfernt sie */
+/* Mitteilungen wie Push-Banner: Antippen löst die Aktion aus, Wischen nach oben entfernt sie.
+   Zur Seite wischen nur ab Tablet-Breite (wie unter macOS), am iPhone nur nach oben. */
 let _obNotifDragged=false;
-function dismissOnboardingNext(direction){
-  const el=document.getElementById('onboardingNextStep');if(!el||el.hidden)return;
+function _notifOut(el,direction){
+  if(!el||el.hidden)return;
   if(!direction){el.hidden=true;return;}
   el.style.transform=direction==='up'?'translateY(calc(-100% - 24px))':'translateX('+(direction==='right'?'':'-')+'120%)';
   el.style.opacity='0';
   setTimeout(()=>{el.hidden=true;el.style.transform='';el.style.opacity='';},260);
 }
-function _initObNotif(){
-  const el=document.getElementById('onboardingNextStep');if(!el||el._ready)return;el._ready=true;
-  let x0=0,y0=0,dx=0,dy=0,active=false;
+/* Der Hinweis nach dem Rundgang gilt nur, bis die Daten-Seite geöffnet oder er geschlossen wird */
+function dismissOnboardingNext(direction){_notifOut(document.getElementById('onboardingNextStep'),direction);}
+/* Einmal je Kredit und Gerät: Hinweis, dass Monate aus dem Tilgungsplan ergänzt und Asset-Werte geschätzt sind */
+const LOAN_NOTIF_KEY='vermoegen-loan-history-seen';
+function _loanHistoryNotif(){
+  const el=document.getElementById('loanHistoryNotif');if(!el)return;
+  const params=getLoanParams(),ids=_fc.fields.filter(f=>f.category==='liab'&&LoanModel.configured(params[f.id])).map(f=>f.id);
+  let seen=[];try{seen=JSON.parse(localStorage.getItem(LOAN_NOTIF_KEY)||'[]');}catch(error){}
+  if(!Array.isArray(seen)||!ids.some(id=>!seen.includes(id)))return;
+  const onboarding=document.getElementById('onboardingNextStep');if(onboarding&&!onboarding.hidden)return;/* nie zwei Mitteilungen übereinander */
+  try{localStorage.setItem(LOAN_NOTIF_KEY,JSON.stringify([...new Set([...seen,...ids])]));}catch(error){}
+  el.hidden=false;
+}
+function _initObNotif(){document.querySelectorAll('.ob-notif').forEach(_initNotifSwipe);}
+function _initNotifSwipe(el){
+  if(!el||el._ready)return;el._ready=true;
+  let x0=0,y0=0,dx=0,dy=0,active=false,sideways=false;
   const move=e=>{
     dx=e.clientX-x0;dy=e.clientY-y0;
     if(!_obNotifDragged&&Math.hypot(dx,dy)<6)return;
     _obNotifDragged=true;
-    el.style.transform=`translate(${dx}px,${dy<0?dy:dy*.2}px)`;
-    el.style.opacity=String(Math.max(.25,1-Math.max(Math.abs(dx)/320,-dy/160)));
+    const x=sideways?dx:0,y=dy<0?dy:dy*.2;
+    el.style.transform=`translate(${x}px,${y}px)`;
+    el.style.opacity=String(Math.max(.25,1-Math.max(Math.abs(x)/320,-dy/160)));
   };
   const end=()=>{
     if(!active)return;active=false;
     window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',end);window.removeEventListener('pointercancel',end);
     el.style.transition='';
     if(_obNotifDragged){setTimeout(()=>{_obNotifDragged=false;},350);}
-    if(dy<-35&&-dy>Math.abs(dx))return dismissOnboardingNext('up');
-    if(Math.abs(dx)>80)return dismissOnboardingNext(dx>0?'right':'left');
+    if(dy<-35&&(!sideways||-dy>Math.abs(dx)))return _notifOut(el,'up');
+    if(sideways&&Math.abs(dx)>80)return _notifOut(el,dx>0?'right':'left');
     el.style.transform='';el.style.opacity='';
   };
   el.addEventListener('dragstart',e=>e.preventDefault());
   el.addEventListener('pointerdown',e=>{
     if(e.button>0||e.target.closest('.ob-notif-close'))return;
+    sideways=!!(window.matchMedia&&window.matchMedia('(min-width:768px)').matches);
     active=true;_obNotifDragged=false;x0=e.clientX;y0=e.clientY;dx=dy=0;el.style.transition='none';
     window.addEventListener('pointermove',move);window.addEventListener('pointerup',end);window.addEventListener('pointercancel',end);
   });
