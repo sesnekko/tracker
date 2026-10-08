@@ -123,5 +123,6 @@ test('completion lands on Assets with a next-step link to Data, including skippe
     a.context.event={preventDefault(){}};
     a.run(notice.match(/<a[^>]*onclick="([^"]+)"/)[1]);
     assert.equal(a.json('landedPage'),'import');
+    assert.equal(a.el('onboardingNextStep').hidden,true,'hint disappears once Data is opened');
   }
 });

@@ -11,15 +11,20 @@ test('Data always renders separate assets and liabilities, even without any posi
   const form=a.el('dataPageContent').innerHTML;
   assert.match(form,/data-mod="assets"/);assert.match(form,/data-mod="liab"/);
   assert.match(form,/Noch keine Verbindlichkeiten/);
-  assert.match(form,/id="newLiabLabel"/);
-  assert.doesNotMatch(form,/<option value="liab">/);
+  assert.match(form,/data-ds-open="add-asset"/);assert.match(form,/data-ds-open="add-liab"/);
+  assert.match(form,/data-ds-open="month"/);
+  assert.doesNotMatch(a.run("_assetSheetHTML('newAsset',{category:'cash',label:''},{valueTitle:'',valueId:'v',qtyId:'q',value:'',qty:''})"),/<option value="liab">/);
 });
 
-test('adding editor contains only the new entry, with deletion remaining on existing rows',()=>{
+test('positions are list rows; editing and removal happen in the position sheet',()=>{
   const a=context();
   a.run("_fc={fields:[{id:'custom-bank',label:'Mein Konto',category:'cash',displayGroup:'Cash',custom:true}]};buildDynamicFormForTest()");
   const form=a.el('dataPageContent').innerHTML;
-  assert.match(form,/Mein Konto/);assert.match(form,/data-remove-field="custom-bank"/);
+  assert.match(form,/Mein Konto/);assert.match(form,/data-ds-open="asset" data-id="custom-bank"/);
+  assert.doesNotMatch(form,/id="f-custom-bank"/);
+  a.run("openAssetSheet('custom-bank')");
+  const sheet=a.el('dsBody').innerHTML;
+  assert.match(sheet,/id="f-custom-bank"/);assert.match(sheet,/data-ds-remove="custom-bank"/);
   const editor=a.run("_positionEditorHTML('assets')");
   assert.doesNotMatch(editor,/Mein Konto|customFieldsList|Verbindlichkeiten/);
   assert.doesNotMatch(a.run("_positionEditorHTML('liab')"),/id="newFieldCategory"/);
