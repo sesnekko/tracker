@@ -1,0 +1,2600 @@
+{
+  "format": "vermoegen-backup",
+  "schemaVersion": 1,
+  "currency": "EUR",
+  "groups": [
+    {
+      "id": "group-1",
+      "name": "Cash",
+      "defaultProfile": "cash",
+      "assumptions": {
+        "returnPercent": 1.5,
+        "volatilityPercent": 0,
+        "monthlySaving": 0,
+        "volatilityTrendPercent": 0,
+        "returnTrendPercent": 0,
+        "availableFromAge": 0,
+        "withdrawalDeductionPercent": 0
+      }
+    },
+    {
+      "id": "group-2",
+      "name": "ETF",
+      "defaultProfile": "etf",
+      "assumptions": {
+        "returnPercent": 6.5,
+        "volatilityPercent": 15,
+        "monthlySaving": 500,
+        "volatilityTrendPercent": 0,
+        "returnTrendPercent": 0,
+        "availableFromAge": 0,
+        "withdrawalDeductionPercent": 12
+      }
+    },
+    {
+      "id": "group-3",
+      "name": "Bitcoin",
+      "defaultProfile": "bitcoin",
+      "assumptions": {
+        "returnPercent": 12,
+        "volatilityPercent": 55,
+        "monthlySaving": 50,
+        "volatilityTrendPercent": -3,
+        "returnTrendPercent": -2,
+        "availableFromAge": 0,
+        "withdrawalDeductionPercent": 0
+      }
+    },
+    {
+      "id": "group-4",
+      "name": "Edelmetalle",
+      "defaultProfile": "metals",
+      "assumptions": {
+        "returnPercent": 3,
+        "volatilityPercent": 15,
+        "monthlySaving": 0,
+        "volatilityTrendPercent": 0,
+        "returnTrendPercent": 0,
+        "availableFromAge": 0,
+        "withdrawalDeductionPercent": 0
+      }
+    },
+    {
+      "id": "group-5",
+      "name": "BAV",
+      "defaultProfile": "pension",
+      "assumptions": {
+        "returnPercent": 3,
+        "volatilityPercent": 3,
+        "monthlySaving": 70,
+        "volatilityTrendPercent": 0,
+        "returnTrendPercent": 0,
+        "availableFromAge": 63,
+        "withdrawalDeductionPercent": 28
+      }
+    },
+    {
+      "id": "group-6",
+      "name": "Immobilien",
+      "defaultProfile": "realEstate",
+      "assumptions": {
+        "returnPercent": 2,
+        "volatilityPercent": 8,
+        "monthlySaving": 0,
+        "volatilityTrendPercent": 0,
+        "returnTrendPercent": 0
+      }
+    }
+  ],
+  "positions": [
+    {
+      "id": "tagesgeld",
+      "name": "Tagesgeld",
+      "category": "cash",
+      "groupId": "group-1",
+      "archived": false,
+      "custom": false,
+      "ticker": null,
+      "unit": null
+    },
+    {
+      "id": "girokonto",
+      "name": "Girokonto",
+      "category": "cash",
+      "groupId": "group-1",
+      "archived": false,
+      "custom": false,
+      "ticker": null,
+      "unit": null
+    },
+    {
+      "id": "bargeld",
+      "name": "Bargeld",
+      "category": "cash",
+      "groupId": "group-1",
+      "archived": false,
+      "custom": false,
+      "ticker": null,
+      "unit": null
+    },
+    {
+      "id": "msci-world-a0rpwh",
+      "name": "MSCI World - A0RPWH",
+      "category": "etf",
+      "groupId": "group-2",
+      "archived": false,
+      "custom": false,
+      "ticker": "EUNL.DE",
+      "unit": {
+        "name": "Stk",
+        "key": "msci-world-a0rpwh"
+      }
+    },
+    {
+      "id": "s-p-500-a0yedg",
+      "name": "S&P 500 - A0YEDG",
+      "category": "etf",
+      "groupId": "group-2",
+      "archived": false,
+      "custom": false,
+      "ticker": "SXR8.DE",
+      "unit": {
+        "name": "Stk",
+        "key": "s-p-500-a0yedg"
+      }
+    },
+    {
+      "id": "bitcoin",
+      "name": "Bitcoin",
+      "category": "other",
+      "groupId": "group-3",
+      "archived": false,
+      "custom": false,
+      "ticker": "BTC",
+      "unit": {
+        "name": "Stk",
+        "key": "bitcoin"
+      }
+    },
+    {
+      "id": "gold",
+      "name": "Gold",
+      "category": "other",
+      "groupId": "group-4",
+      "archived": false,
+      "custom": false,
+      "ticker": "GC=F",
+      "unit": {
+        "name": "oz",
+        "key": "gold"
+      }
+    },
+    {
+      "id": "bausparvertrag",
+      "name": "Bausparvertrag",
+      "category": "bav",
+      "groupId": "group-5",
+      "archived": false,
+      "custom": false,
+      "ticker": null,
+      "unit": null
+    },
+    {
+      "id": "rente-privat",
+      "name": "Rente Privat",
+      "category": "bav",
+      "groupId": "group-5",
+      "archived": false,
+      "custom": false,
+      "ticker": null,
+      "unit": null
+    },
+    {
+      "id": "wohnung-marktwert",
+      "name": "Wohnung (Marktwert)",
+      "category": "illiquid",
+      "groupId": "group-6",
+      "archived": false,
+      "custom": false,
+      "ticker": null,
+      "unit": null
+    },
+    {
+      "id": "kredit-wohnung",
+      "name": "Kredit Wohnung",
+      "category": "liab",
+      "groupId": "group-6",
+      "archived": false,
+      "custom": false,
+      "ticker": null,
+      "unit": null
+    }
+  ],
+  "snapshots": [
+    {
+      "month": "2024-01",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 8000
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3200
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 775,
+          "quantity": 9.12
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 623,
+          "quantity": 1.32
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 444,
+          "quantity": 0.0113
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 1800
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2200
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 280000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 235000
+        }
+      ]
+    },
+    {
+      "month": "2024-02",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 8075
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2770
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 1154,
+          "quantity": 13.08
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 800,
+          "quantity": 1.62
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 688,
+          "quantity": 0.0122
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 1820
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2200
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 280000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 234000
+        }
+      ]
+    },
+    {
+      "month": "2024-03",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 8150
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3260
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 1547,
+          "quantity": 16.91
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 979,
+          "quantity": 1.91
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 853,
+          "quantity": 0.0129
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 1840
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2200
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 280000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 233000
+        }
+      ]
+    },
+    {
+      "month": "2024-04",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 8225
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2710
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 1865,
+          "quantity": 20.82
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 1108,
+          "quantity": 2.21
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 784,
+          "quantity": 0.0138
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 1860
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2200
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 280000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 232000
+        }
+      ]
+    },
+    {
+      "month": "2024-05",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 8300
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3320
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 2239,
+          "quantity": 24.68
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 1271,
+          "quantity": 2.51
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 907,
+          "quantity": 0.0146
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 1880
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2400
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 280000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 231000
+        }
+      ]
+    },
+    {
+      "month": "2024-06",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 8375
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2650
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 2699,
+          "quantity": 28.35
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 1510,
+          "quantity": 2.79
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 902,
+          "quantity": 0.0154
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 1900
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2400
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 280000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 230000
+        }
+      ]
+    },
+    {
+      "month": "2024-07",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 8450
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3380
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 3054,
+          "quantity": 32.02
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 1653,
+          "quantity": 3.07
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 972,
+          "quantity": 0.0163
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 1920
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2400
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 285000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 229000
+        }
+      ]
+    },
+    {
+      "month": "2024-08",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 8525
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2590
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 3396,
+          "quantity": 35.7
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 1790,
+          "quantity": 3.35
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 918,
+          "quantity": 0.0172
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 1940
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2400
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 285000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 228000
+        }
+      ]
+    },
+    {
+      "month": "2024-09",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 8600
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3440
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 3792,
+          "quantity": 39.33
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 1971,
+          "quantity": 3.62
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 1029,
+          "quantity": 0.0181
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 1960
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2600
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 285000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 227000
+        }
+      ]
+    },
+    {
+      "month": "2024-10",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 8675
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2530
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 4188,
+          "quantity": 42.92
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 2173,
+          "quantity": 3.89
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 1218,
+          "quantity": 0.0189
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 1980
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2600
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 285000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 226000
+        }
+      ]
+    },
+    {
+      "month": "2024-11",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 8750
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3500
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 4848,
+          "quantity": 46.26
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 2507,
+          "quantity": 4.14
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 1771,
+          "quantity": 0.0194
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2000
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2600
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 285000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 225000
+        }
+      ]
+    },
+    {
+      "month": "2024-12",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 8825
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2470
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 5142,
+          "quantity": 49.64
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 2636,
+          "quantity": 4.39
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 1804,
+          "quantity": 0.02
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2020
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2600
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 285000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 224000
+        }
+      ]
+    },
+    {
+      "month": "2025-01",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 8900
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3560
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 5720,
+          "quantity": 52.87
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 2887,
+          "quantity": 4.63
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 2025,
+          "quantity": 0.0205
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2040
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2800
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 295000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 223000
+        }
+      ]
+    },
+    {
+      "month": "2025-02",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 8975
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2410
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 5930,
+          "quantity": 56.19
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 2932,
+          "quantity": 4.88
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 1715,
+          "quantity": 0.0211
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2060
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2800
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 295000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 222000
+        }
+      ]
+    },
+    {
+      "month": "2025-03",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 9050
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3620
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 5811,
+          "quantity": 59.79
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 2818,
+          "quantity": 5.15
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 1660,
+          "quantity": 0.0218
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2080
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2800
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 295000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 221000
+        }
+      ]
+    },
+    {
+      "month": "2025-04",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 9125
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2350
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 5932,
+          "quantity": 63.54
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 2817,
+          "quantity": 5.44
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 1860,
+          "quantity": 0.0224
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2100
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 2800
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 295000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 220000
+        }
+      ]
+    },
+    {
+      "month": "2025-05",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 9200
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3680
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 6660,
+          "quantity": 67.06
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 3161,
+          "quantity": 5.71
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 2112,
+          "quantity": 0.0229
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2120
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3000
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 295000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 219000
+        }
+      ]
+    },
+    {
+      "month": "2025-06",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 9275
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2290
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 7067,
+          "quantity": 70.56
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 3358,
+          "quantity": 5.98
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 2131,
+          "quantity": 0.0234
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2140
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3000
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 295000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 218000
+        }
+      ]
+    },
+    {
+      "month": "2025-07",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 9350
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3740
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 7758,
+          "quantity": 73.89
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 3713,
+          "quantity": 6.23
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 2427,
+          "quantity": 0.0239
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2160
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3000
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 300000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 217000
+        }
+      ]
+    },
+    {
+      "month": "2025-08",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 9425
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2230
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 8078,
+          "quantity": 77.24
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 3822,
+          "quantity": 6.49
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 2267,
+          "quantity": 0.0245
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2180
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3000
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 300000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 216000
+        }
+      ]
+    },
+    {
+      "month": "2025-09",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 9500
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3800
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 8629,
+          "quantity": 80.5
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 4079,
+          "quantity": 6.73
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 2430,
+          "quantity": 0.025
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2200
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3200
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 300000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 215000
+        }
+      ]
+    },
+    {
+      "month": "2025-10",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 9575
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2170
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 9353,
+          "quantity": 83.63
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 4423,
+          "quantity": 6.97
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 2411,
+          "quantity": 0.0255
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2220
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3200
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 300000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 214000
+        }
+      ]
+    },
+    {
+      "month": "2025-11",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 9650
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3860
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 9672,
+          "quantity": 86.77
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 4551,
+          "quantity": 7.21
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 2039,
+          "quantity": 0.0262
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2240
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3200
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 300000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 213000
+        }
+      ]
+    },
+    {
+      "month": "2025-12",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 9725
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2110
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 10050,
+          "quantity": 89.91
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 4685,
+          "quantity": 7.45
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 2002,
+          "quantity": 0.0268
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2260
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3200
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 300000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 212000
+        }
+      ]
+    },
+    {
+      "month": "2026-01",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 9800
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3920
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 10445,
+          "quantity": 93.02
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 4813,
+          "quantity": 7.69
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 1830,
+          "quantity": 0.0276
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2280
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3400
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 310000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 211000
+        }
+      ]
+    },
+    {
+      "month": "2026-02",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 9875
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2050
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 10912,
+          "quantity": 96.11
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 4946,
+          "quantity": 7.93
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 1614,
+          "quantity": 0.0285
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2300
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3400
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 310000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 210000
+        }
+      ]
+    },
+    {
+      "month": "2026-03",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 9950
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3980
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 10735,
+          "quantity": 99.34
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 4907,
+          "quantity": 8.18
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 1729,
+          "quantity": 0.0293
+        },
+        {
+          "positionId": "gold",
+          "value": 8526,
+          "quantity": 2
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2320
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3400
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 310000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 209000
+        }
+      ]
+    },
+    {
+      "month": "2026-04",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 10025
+        },
+        {
+          "positionId": "girokonto",
+          "value": 1990
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 11316,
+          "quantity": 102.52
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 5150,
+          "quantity": 8.42
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 1753,
+          "quantity": 0.0302
+        },
+        {
+          "positionId": "gold",
+          "value": 12267,
+          "quantity": 3
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2340
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3400
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 310000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 208000
+        }
+      ]
+    },
+    {
+      "month": "2026-05",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 10100
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3860
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 12067,
+          "quantity": 105.85
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 5445,
+          "quantity": 8.67
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 1891,
+          "quantity": 0.031
+        },
+        {
+          "positionId": "gold",
+          "value": 12150,
+          "quantity": 3
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2360
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3600
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 310000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 207000
+        }
+      ]
+    },
+    {
+      "month": "2026-06",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 10175
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2180
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 12829,
+          "quantity": 109.18
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 5843,
+          "quantity": 8.92
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 2051,
+          "quantity": 0.0318
+        },
+        {
+          "positionId": "gold",
+          "value": 11940,
+          "quantity": 3
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2380
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3600
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 310000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 206000
+        }
+      ]
+    },
+    {
+      "month": "2026-07",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 6050
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3940
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 13051,
+          "quantity": 112.51
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 5878,
+          "quantity": 9.17
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 1972,
+          "quantity": 0.0326
+        },
+        {
+          "positionId": "gold",
+          "value": 15560,
+          "quantity": 4
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2400
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3600
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 315000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 205000
+        }
+      ]
+    },
+    {
+      "month": "2026-08",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 6125
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2260
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 14017,
+          "quantity": 115.84
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 6453,
+          "quantity": 9.42
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 2254,
+          "quantity": 0.0334
+        },
+        {
+          "positionId": "gold",
+          "value": 15360,
+          "quantity": 4
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2420
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3600
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 315000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 204000
+        }
+      ]
+    },
+    {
+      "month": "2026-09",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 6200
+        },
+        {
+          "positionId": "girokonto",
+          "value": 3990
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 15015,
+          "quantity": 119.17
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 6943,
+          "quantity": 9.67
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 2456,
+          "quantity": 0.0342
+        },
+        {
+          "positionId": "gold",
+          "value": 15040,
+          "quantity": 4
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2440
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3800
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 315000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 203000
+        }
+      ]
+    },
+    {
+      "month": "2026-10",
+      "positions": [
+        {
+          "positionId": "tagesgeld",
+          "value": 6275
+        },
+        {
+          "positionId": "girokonto",
+          "value": 2310
+        },
+        {
+          "positionId": "bargeld",
+          "value": 500
+        },
+        {
+          "positionId": "msci-world-a0rpwh",
+          "value": 15986,
+          "quantity": 122.5
+        },
+        {
+          "positionId": "s-p-500-a0yedg",
+          "value": 7400,
+          "quantity": 9.92
+        },
+        {
+          "positionId": "bitcoin",
+          "value": 2576,
+          "quantity": 0.035
+        },
+        {
+          "positionId": "gold",
+          "value": 14840,
+          "quantity": 4
+        },
+        {
+          "positionId": "bausparvertrag",
+          "value": 2460
+        },
+        {
+          "positionId": "rente-privat",
+          "value": 3800
+        },
+        {
+          "positionId": "wohnung-marktwert",
+          "value": 315000
+        },
+        {
+          "positionId": "kredit-wohnung",
+          "value": 202000
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "id": "account-1",
+      "name": "Gehaltskonto Max",
+      "iban": "DE12 3456 7890 1234 5678 90"
+    },
+    {
+      "id": "account-2",
+      "name": "Gehaltskonto Anna",
+      "iban": "DE98 7654 3210 9876 5432 10"
+    },
+    {
+      "id": "account-3",
+      "name": "Haushaltskonto",
+      "iban": "DE45 6789 0123 4567 8901 23"
+    },
+    {
+      "id": "account-4",
+      "name": "Gem. Lastschriften",
+      "iban": "DE78 9012 3456 7890 1234 56"
+    },
+    {
+      "id": "account-5",
+      "name": "Depot Verrechnungskonto",
+      "iban": "DE23 4567 8901 2345 6789 01"
+    },
+    {
+      "id": "account-6",
+      "name": "Depot Tagesgeld",
+      "iban": "DE56 7890 1234 5678 9012 34"
+    }
+  ],
+  "budget": {
+    "items": [
+      {
+        "id": "budget-1",
+        "name": "Nettogehalt Max",
+        "category": "einkommen",
+        "subcategory": "",
+        "kind": "income",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          3200,
+          3200,
+          3200,
+          3200,
+          3200,
+          3200,
+          3200,
+          3200,
+          3200,
+          3200,
+          3200,
+          3200
+        ]
+      },
+      {
+        "id": "budget-2",
+        "name": "Nettogehalt Anna",
+        "category": "einkommen",
+        "subcategory": "",
+        "kind": "income",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          1800,
+          1800,
+          1800,
+          1800,
+          1800,
+          1800,
+          1800,
+          1800,
+          1800,
+          1800,
+          1800,
+          1800
+        ]
+      },
+      {
+        "id": "budget-3",
+        "name": "Kindergeld",
+        "category": "einkommen",
+        "subcategory": "",
+        "kind": "income",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          250,
+          250,
+          250,
+          250,
+          250,
+          250,
+          250,
+          250,
+          250,
+          250,
+          250,
+          250
+        ]
+      },
+      {
+        "id": "budget-4",
+        "name": "Tilgung",
+        "category": "fixe",
+        "subcategory": "Wohnen",
+        "kind": "principal",
+        "targetGroupId": "group-6",
+        "monthlyAmounts": [
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000
+        ]
+      },
+      {
+        "id": "budget-5",
+        "name": "Strom",
+        "category": "fixe",
+        "subcategory": "Wohnen",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85
+        ]
+      },
+      {
+        "id": "budget-6",
+        "name": "Heizung",
+        "category": "fixe",
+        "subcategory": "Wohnen",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          70,
+          70,
+          70,
+          70,
+          70,
+          70,
+          70,
+          70,
+          70,
+          70,
+          70,
+          70
+        ]
+      },
+      {
+        "id": "budget-7",
+        "name": "Internet",
+        "category": "fixe",
+        "subcategory": "Wohnen",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30
+        ]
+      },
+      {
+        "id": "budget-8",
+        "name": "GEZ",
+        "category": "fixe",
+        "subcategory": "Wohnen",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          18,
+          18,
+          18,
+          18,
+          18,
+          18,
+          18,
+          18,
+          18,
+          18,
+          18,
+          18
+        ]
+      },
+      {
+        "id": "budget-9",
+        "name": "Haftpflicht",
+        "category": "fixe",
+        "subcategory": "Versicherungen",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          8,
+          8,
+          8,
+          8,
+          8,
+          8,
+          8,
+          8,
+          8,
+          8,
+          8,
+          8
+        ]
+      },
+      {
+        "id": "budget-10",
+        "name": "Hausrat",
+        "category": "fixe",
+        "subcategory": "Versicherungen",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15
+        ]
+      },
+      {
+        "id": "budget-11",
+        "name": "BU",
+        "category": "fixe",
+        "subcategory": "Versicherungen",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65
+        ]
+      },
+      {
+        "id": "budget-12",
+        "name": "Handy Max",
+        "category": "fixe",
+        "subcategory": "Verträge",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          22,
+          22,
+          22,
+          22,
+          22,
+          22,
+          22,
+          22,
+          22,
+          22,
+          22,
+          22
+        ]
+      },
+      {
+        "id": "budget-13",
+        "name": "Handy Anna",
+        "category": "fixe",
+        "subcategory": "Verträge",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          18,
+          18,
+          18,
+          18,
+          18,
+          18,
+          18,
+          18,
+          18,
+          18,
+          18,
+          18
+        ]
+      },
+      {
+        "id": "budget-14",
+        "name": "Streaming",
+        "category": "fixe",
+        "subcategory": "Verträge",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          25,
+          25,
+          25,
+          25,
+          25,
+          25,
+          25,
+          25,
+          25,
+          25,
+          25,
+          25
+        ]
+      },
+      {
+        "id": "budget-15",
+        "name": "Fitness Max",
+        "category": "fixe",
+        "subcategory": "Verträge",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          40,
+          40,
+          40,
+          40,
+          40,
+          40,
+          40,
+          40,
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      {
+        "id": "budget-16",
+        "name": "Fitness Anna",
+        "category": "fixe",
+        "subcategory": "Verträge",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          35,
+          35,
+          35,
+          35,
+          35,
+          35,
+          35,
+          35,
+          35,
+          35,
+          35,
+          35
+        ]
+      },
+      {
+        "id": "budget-17",
+        "name": "Versicherung",
+        "category": "fixe",
+        "subcategory": "Auto",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          120,
+          120,
+          120,
+          120,
+          120,
+          120,
+          120,
+          120,
+          120,
+          120,
+          120,
+          120
+        ]
+      },
+      {
+        "id": "budget-18",
+        "name": "Tanken",
+        "category": "fixe",
+        "subcategory": "Auto",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          150,
+          150,
+          150,
+          150,
+          150,
+          150,
+          150,
+          150,
+          150,
+          150,
+          150,
+          150
+        ]
+      },
+      {
+        "id": "budget-19",
+        "name": "Lebensmittel",
+        "category": "variable",
+        "subcategory": "",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          700,
+          700,
+          700,
+          700,
+          700,
+          700,
+          700,
+          700,
+          700,
+          700,
+          700,
+          700
+        ]
+      },
+      {
+        "id": "budget-20",
+        "name": "Freizeit",
+        "category": "variable",
+        "subcategory": "",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ]
+      },
+      {
+        "id": "budget-21",
+        "name": "Drogerie",
+        "category": "variable",
+        "subcategory": "",
+        "kind": "expense",
+        "targetGroupId": null,
+        "monthlyAmounts": [
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60
+        ]
+      },
+      {
+        "id": "budget-22",
+        "name": "ETF Sparpläne",
+        "category": "sparen",
+        "subcategory": "",
+        "kind": "saving",
+        "targetGroupId": "group-2",
+        "monthlyAmounts": [
+          500,
+          500,
+          500,
+          500,
+          500,
+          500,
+          500,
+          500,
+          500,
+          500,
+          500,
+          500
+        ]
+      },
+      {
+        "id": "budget-23",
+        "name": "BTC Sparplan",
+        "category": "sparen",
+        "subcategory": "",
+        "kind": "saving",
+        "targetGroupId": "group-3",
+        "monthlyAmounts": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ]
+      }
+    ],
+    "standingOrders": [
+      {
+        "id": "order-1",
+        "from": {
+          "type": "account",
+          "accountId": "account-1"
+        },
+        "to": {
+          "type": "account",
+          "accountId": "account-3"
+        },
+        "amount": 1200
+      },
+      {
+        "id": "order-2",
+        "from": {
+          "type": "account",
+          "accountId": "account-1"
+        },
+        "to": {
+          "type": "account",
+          "accountId": "account-4"
+        },
+        "amount": 1100
+      },
+      {
+        "id": "order-3",
+        "from": {
+          "type": "account",
+          "accountId": "account-1"
+        },
+        "to": {
+          "type": "account",
+          "accountId": "account-5"
+        },
+        "amount": 550
+      },
+      {
+        "id": "order-4",
+        "from": {
+          "type": "account",
+          "accountId": "account-2"
+        },
+        "to": {
+          "type": "account",
+          "accountId": "account-3"
+        },
+        "amount": 800
+      },
+      {
+        "id": "order-5",
+        "from": {
+          "type": "account",
+          "accountId": "account-2"
+        },
+        "to": {
+          "type": "account",
+          "accountId": "account-4"
+        },
+        "amount": 400
+      },
+      {
+        "id": "order-6",
+        "from": {
+          "type": "label",
+          "name": "Kindergeld"
+        },
+        "to": {
+          "type": "account",
+          "accountId": "account-3"
+        },
+        "amount": 250
+      }
+    ]
+  },
+  "loans": [
+    {
+      "positionId": "kredit-wohnung",
+      "interestPercent": 3.1,
+      "monthlyPayment": 1550,
+      "annualExtraPayment": 2000,
+      "fixedUntilYear": 2033,
+      "followUpInterestPercent": 3.8
+    }
+  ],
+  "retirement": {
+    "primary": {
+      "id": "person-main",
+      "name": "Eigene Person",
+      "statutoryPension": {
+        "points": 17.4,
+        "annualSalary": 58000,
+        "retirementAge": 0,
+        "deductionPercent": 20,
+        "pensionPointValue": 42.52,
+        "averageSalary": 51944,
+        "contributionCeiling": 101400
+      },
+      "birthYear": 1985
+    },
+    "people": [
+      {
+        "id": "person-1",
+        "name": "Anna",
+        "statutoryPension": {
+          "points": 12.8,
+          "annualSalary": 36000,
+          "deductionPercent": 20
+        },
+        "birthYear": 1987,
+        "workUntilAge": 62
+      }
+    ],
+    "incomes": [
+      {
+        "id": "income-1",
+        "name": "Betriebsrente",
+        "monthlyAmount": 180,
+        "fromAge": 67
+      }
+    ]
+  },
+  "forecast": {
+    "settings": {
+      "lifeExpectancyAge": 85,
+      "planningHorizonAge": 95,
+      "inflationPercent": 2,
+      "saveUntilAge": 60,
+      "savingsGrowthPercent": 1.5,
+      "retirementAge": 62,
+      "monthlySpending": 2800,
+      "safetyPercent": 85
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "name": "Neues Auto",
+        "year": 2029,
+        "amount": 28000,
+        "from": {
+          "type": "liquid"
+        },
+        "to": {
+          "type": "external"
+        }
+      },
+      {
+        "id": "event-2",
+        "name": "Erbschaft",
+        "year": 2036,
+        "amount": 60000,
+        "from": {
+          "type": "external"
+        },
+        "to": {
+          "type": "group",
+          "groupId": "group-2"
+        }
+      }
+    ]
+  },
+  "preferences": {
+    "theme": null,
+    "modules": {
+      "assets": true,
+      "liab": true,
+      "pension": true,
+      "budget": true,
+      "forecast": true
+    },
+    "expandedSections": {}
+  }
+}
