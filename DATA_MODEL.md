@@ -200,7 +200,11 @@ diese Position (Wert, Stückzahl, Angaben, Entfernen) mit eigenem „Sichern“.
 „Aktualisieren“ erfasst alle Werte eines Monats in einer Liste. Ein Sheet schreibt
 einen Monatsstand nur, wenn sich ein Wert ändert; fehlt der Monat, werden die übrigen
 Werte aus dem Vormonat übernommen. Während ein Sheet offen ist, speichern
-Hintergrund-Kurse nichts. Der Zeitpunkt der letzten Sicherung liegt je Gerät unter
+Hintergrund-Kurse nichts. Beim Anlegen kann optional „Im Besitz seit“ (MM/JJ)
+angegeben werden: Der Wert wird dann für jeden Monat ab diesem Zeitpunkt
+gespeichert. Vorhandene Monate erhalten nur die neue Position, Lücken übernehmen
+den Vormonat, vor dem ersten erfassten Monat wird nichts anderes ergänzt.
+Der Zeitpunkt der letzten Sicherung liegt je Gerät unter
 `vermoegen-last-backup` und ist kein Teil der Sicherung.
 `preferences.onboardingCompleted` verhindert einen erneuten automatischen
 Startbildschirm nach bewusstem Überspringen. Das optionale Feld bleibt mit
