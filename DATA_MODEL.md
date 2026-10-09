@@ -5,15 +5,15 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `vermoegen_YYYY-MM-DD.json`. Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 4
+## Struktur, Version 5
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `4`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `5`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
-| `snapshots` | Monatsstände (`YYYY-MM`) mit Positions-ID, Wert und optionaler Stückzahl |
+| `snapshots` | Monatsstände (`YYYY-MM`) mit Positions-ID, Wert und optionaler Stückzahl; `estimated: true` kennzeichnet berechnete Monate |
 | `accounts` | Konten mit ID, Name und IBAN |
 | `budget` | Zwölfmonatiger Plan ohne Jahresbezug, Budgetposten, Daueraufträge und einmalige Zahlungen (`oneTime`); `null`, wenn nicht eingerichtet |
 | `loans` | Darlehensparameter, über `positionId` einer Verbindlichkeit zugeordnet |
@@ -180,18 +180,61 @@ bleiben importierbar.
 ## Geführter Einstieg
 
 Der Startbildschirm bietet „Geführt einrichten“, „Bestehende Daten laden“ und
-„Mit Demo-Daten ausprobieren“. Unter Daten → Hilfe lässt sich der Rundgang erneut
-starten. Er zeigt fünf kurze Screens zu Vermögen, Budget, Prognose, Datenpflege und
-Sicherung. Auf schmalen Bildschirmen (iPhone) läuft er wie Stories ab: Segmente
-oben laufen ab und blättern weiter, Tippen rechts/links blättert, Halten pausiert,
-nach unten wischen schließt. Ab Tablet-Breite gibt es Knöpfe.
+„Mit Demo-Daten ausprobieren“. „Geführt einrichten“ startet die Einrichtung: eine
+Frage je Screen, Schätzwerte genügen, jeder Schritt lässt sich überspringen.
 
-Im Rundgang werden keine Werte erfasst. Neue Nutzer wählen am Ende „Erstes Asset
-anlegen“ und landen direkt auf der Daten-Seite im Anlegen-Fenster; „Später“ und
-der erneute Rundgang führen zur Vermögensseite mit einem Hinweis zur Daten-Seite.
-Bei einem neuen Bestand sind zunächst nur Vermögenswerte und Verbindlichkeiten
-eingeschaltet; Budget, Altersvorsorge und Prognose lassen sich unter Daten
-aktivieren. Ein leeres Budget lässt sich dort einrichten.
+1. Schwerpunkte: Vermögen (immer), optional Monatsbudget und Zukunft & Ruhestand.
+   Nicht gewählte Bereiche bleiben ausgeschaltet.
+2. Vermögenswerte: Antippen einer Art (Girokonto, Depot, Immobilie …) legt eine
+   Zeile mit Name und Wert an.
+2a. Bisheriger Verlauf (nur bei ETF, Aktie, Bitcoin, Krypto und Gold, optional):
+   Wertpapier per Name oder ISIN suchen (Yahoo-Suche, deutscher Handelsplatz
+   bevorzugt, höchstens drei Treffer; Bitcoin und Gold ohne Suche), „Seit“ Monat
+   und Jahr, „Einmal“ oder „Mit Sparplan“ samt Monatsbetrag. Eine gewählte
+   Kursquelle stellt die Position auf automatische Bewertung (Stückzahl = Wert ÷
+   aktueller Kurs). Mit „Seit“ lädt die App Monatsschlusskurse (Yahoo, Fremdwährung
+   mit dem Monatskurs in EUR) und rechnet den Stückzahl-Verlauf zurück: einmal
+   gekauft = gleiche Stückzahl; Sparplan = jeden Monat Betrag ÷ Kurs, der Rest bis
+   zum heutigen Bestand als Einmalkauf am Anfang, ein zu hoher Sparplan wird auf den
+   heutigen Bestand verkleinert. Vor dem Kauf ist die Position nicht im Bestand.
+   Alle übrigen Positionen (Konten, Sachwerte, Schulden) stehen in diesen Monaten
+   mit ihrem heutigen Wert. Die Monate tragen `estimated: true`, die Daten-Seite
+   zeigt „Aus Kursverlauf berechnet“; „Sichern“ im Monat bestätigt die Werte und
+   entfernt die Kennzeichnung. Scheitert ein Kursabruf, beginnt der Verlauf dieser
+   Position heute. Sparpläne werden im Budget als „Sparen & Anlegen“ vorgeschlagen.
+3. Schulden: Nein/Ja; je Schuld Restschuld, optional Monatsrate und Zins.
+   Immobilien- bzw. Autokredit werden mit der einzigen Immobilie bzw. dem einzigen
+   Auto verknüpft, sonst ausdrücklich ohne Verknüpfung (`linkedAssetId: null`).
+4. Budget (falls gewählt): Einnahmen, Fixkosten, Lebenshaltung, Sparen und die
+   Zielanlage des Gesparten. Kreditraten kommen aus Schritt 3 als Posten der Art
+   `loanPayment` und werden in Zins und Tilgung aufgeteilt. Die Sparrate wird
+   zugleich als `monthlySaving` der Zielgruppe gespeichert.
+5. Zukunft (falls gewählt): Geburtsjahr, Ruhestandsalter (zugleich „Sparen bis“)
+   und Bedarf; der Bedarf wird aus Fixkosten und Lebenshaltung vorgeschlagen.
+6. Rente: Betrag laut Renteninformation (brutto/Monat), gespeichert als
+   Rentenpunkte (Betrag / Rentenwert). „Weiß ich nicht“ lässt die Altersvorsorge aus.
+
+Alles wird am Ende als ein Dokument geprüft und gespeichert
+(`buildSetupDocument`); bei einem Fehler bleibt der Speicher unverändert. Jede
+Position und Schuld erhält eine eigene Gruppe. Der aktuelle Monat und der
+Live-Monat bekommen denselben Stand, damit der Chart sofort eine Linie zeigt.
+Die Einrichtung ersetzt nie vorhandene Daten.
+
+Danach zeigt die Daten-Seite „Nach und nach ergänzen“: höchstens drei passende
+Vorschläge (z. B. Budget einrichten, Zukunft planen, Rente ergänzen, Live-Kurs
+verbinden, Budget aufteilen, Kredit genauer erfassen, erste Sicherung). Budget,
+Zukunft und Rente öffnen dieselben Schritte als kurze Einzel-Assistenten, die nur
+diesen Bereich ergänzen; „Abbrechen“ speichert nichts. Erledigte Vorschläge
+verschwinden, ausgeblendete werden je Gerät unter `vermoegen-tips-dismissed`
+gemerkt (nicht Teil der Sicherung). Beim Verbinden eines Live-Kurses schlägt die
+App nach der Kursprüfung die Stückzahl aus dem bisherigen Wert vor.
+
+Unter Daten → Hilfe lässt sich der Rundgang „App kennenlernen“ starten. Er zeigt
+fünf kurze Screens zu Vermögen, Budget, Prognose, Datenpflege und Sicherung. Auf
+schmalen Bildschirmen (iPhone) läuft er wie Stories ab: Segmente oben laufen ab
+und blättern weiter, Tippen rechts/links blättert, Halten pausiert, nach unten
+wischen schließt. Ab Tablet-Breite gibt es Knöpfe. Im Rundgang werden keine Werte
+erfasst; bei leerem Bestand bietet sein letzter Screen „Jetzt einrichten“.
 Vermögenswerte und Verbindlichkeiten sind feste, eigenständig schaltbare Bereiche
 auf der Daten-Seite. Neue Verbindlichkeiten werden direkt in ihrem eigenen
 Bereich angelegt; die Auswahl für Vermögenswerte enthält ausschließlich Anlagen.
@@ -338,6 +381,14 @@ damit der Verlauf erhalten bleibt.
 Version 1- und 2-Dateien werden weiterhin gelesen und beim Speichern als Version 3
 geschrieben. Ältere App-Versionen lehnen Version-3-Dateien ab, statt die
 Abschreibung stillschweigend zu verwerfen.
+
+## Berechnete Monate (Version 5)
+
+Ein Monatsstand kann `"estimated": true` tragen. Das betrifft Monate, die bei der
+Einrichtung aus Kursverläufen und den Angaben des Nutzers berechnet wurden. Das
+Feld fehlt bei erfassten Monaten. Ältere Dateien (Version 1–4) bleiben gültig;
+ältere App-Versionen lehnen Version-5-Dateien ab, statt die Kennzeichnung zu
+verwerfen.
 
 ## Einnahmen und Ausgaben (Version 4)
 

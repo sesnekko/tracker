@@ -30,7 +30,7 @@ test('one-time payments travel in the backup and malformed entries are rejected'
   const store=Data.createStore(new MemoryStorage());store.importBackup(fixture());
   const copy=Data.createStore(new MemoryStorage());copy.importBackup(store.exportBackup());
   assert.deepEqual(copy.document().budget.oneTime,fixture().budget.oneTime);
-  assert.equal(copy.document().schemaVersion,4);
+  assert.equal(copy.document().schemaVersion,Data.VERSION);
   for(const bad of [{month:'11/26'},{kind:'principal'},{category:'other'},{amount:-1},{name:''},{targetGroupId:'missing'},{extra:1}]){
     const d=fixture();Object.assign(d.budget.oneTime[0],bad);assert.throws(()=>Data.validate(d));
   }

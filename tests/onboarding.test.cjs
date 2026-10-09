@@ -80,14 +80,14 @@ test('cancel keeps storage untouched and returns to start',()=>{
   assert.equal(a.storage.getItem(Data.KEY),before);
   assert.match(a.el('onboardingOverlay').innerHTML,/Geführt einrichten/);
 });
-test('the last screen offers the first asset to new users and a plain finish on replay',()=>{
+test('the last tour screen offers the setup to new users and a plain finish on replay',()=>{
   const a=context();a.run("startOnboarding('welcome');_guideStep=4;guideRender();");
   const last=a.el('onboardingOverlay').innerHTML;
-  assert.match(last,/finishOnboarding\('asset'\)">Erstes Asset anlegen/);assert.match(last,/>Später</);
+  assert.match(last,/startSetup\(\)">Jetzt einrichten/);assert.match(last,/>Später</);
   a.run('guideNav(-1)');assert.equal(a.json('_guideStep'),3);
   const b=context();b.context.existing=fixture;b.run("appStorage.importBackup(existing);startOnboarding('data');_guideStep=4;guideRender();");
   assert.match(b.el('onboardingOverlay').innerHTML,/finishOnboarding\(\)">Fertig/);
-  assert.doesNotMatch(b.el('onboardingOverlay').innerHTML,/Erstes Asset/);
+  assert.doesNotMatch(b.el('onboardingOverlay').innerHTML,/Jetzt einrichten/);
 });
 test('completion prepares current and live months in one document; quota failure keeps storage',()=>{
   const a=context();a.context.rows=[{name:'Konto',category:'cash',amount:'100'}];
@@ -100,27 +100,20 @@ test('completion prepares current and live months in one document; quota failure
   assert.equal(a.storage.getItem(Data.KEY),before);
   assert.match(a.el('onboardingError').textContent,/Quota/);
 });
-test('"first asset" lands on Data with the add sheet open; "later" and replay land on Assets with a next-step hint',()=>{
-  for(const mode of ['asset','later','replay']){
+test('"later" and replay land on Assets with a next-step hint that leads to Data',()=>{
+  for(const mode of ['later','replay']){
     const a=context();a.context.existing=fixture;a.context.CSS={escape:String};
     if(mode==='replay')a.run('appStorage.importBackup(existing)');
     a.run("_v2ApplyModules=()=>{};navigateToPage=page=>{landedPage=page};startOnboarding('data');");
     a.el('onboardingNextStep').hidden=true;
-    a.run(mode==='asset'?"finishOnboarding('asset')":'finishOnboarding()');
+    a.run('finishOnboarding()');
     assert.equal(a.json('_guideActive'),false);
     assert.equal(a.json('appStorage.document().preferences.onboardingCompleted'),true);
     assert.equal(a.el('onboardingOverlay').style.display,'none');
-    if(mode==='asset'){
-      assert.equal(a.json('landedPage'),'import');
-      assert.equal(a.json('_sheetOpen'),true);assert.equal(a.el('dsTitle').textContent,'Vermögenswert');
-      assert.equal(a.el('onboardingNextStep').hidden,true);
-      assert.deepEqual(a.json('appStorage.document().preferences.modules'),{assets:true,liab:true,pension:false,budget:false,forecast:false});
-      continue;
-    }
     assert.equal(a.json('landedPage'),'home');
     assert.equal(a.el('onboardingNextStep').hidden,false);
     const notice=html.match(/<aside id="onboardingNextStep"[\s\S]*?<\/aside>/)[0];
-    assert.match(notice,/Verbindlichkeiten, Einnahmen &amp; Ausgaben/);
+    assert.match(notice,/Vorschläge/);
     a.context.event={preventDefault(){}};
     a.run(notice.match(/<a[^>]*onclick="([^"]+)"/)[1]);
     assert.equal(a.json('landedPage'),'import');

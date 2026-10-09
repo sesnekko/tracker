@@ -1757,7 +1757,114 @@ body.onboarding-open{overflow:hidden}
 .ob-welcome-actions .btn{width:100%;text-align:center;font-size:16px;min-height:52px;border-radius:12px;display:flex;justify-content:center;align-items:center}
 .ob-welcome-actions .ob-skip{margin:0;padding:10px 0}
 .ob-welcome .ob-tip{max-width:340px;text-align:center;margin-top:24px}
-@media(max-width:380px){.ob-tour,.ob-welcome{padding-left:20px;padding-right:20px}.ob-tour .ob-title{font-size:26px}.ob-position-pair{grid-template-columns:1fr}.ob-example-row{font-size:14px}}
+.ob-setup{justify-content:flex-start;align-items:stretch;padding:0 20px;padding-top:max(14px,env(safe-area-inset-top))}
+.ob-setup>*{width:100%;max-width:480px;margin-left:auto;margin-right:auto}
+.ob-setup .ob-progress{height:3px;gap:4px;margin:6px auto 4px}
+.ob-setup .ob-tour-top{min-height:44px;margin-bottom:14px}
+.ob-setup .ob-title{font-size:28px;line-height:1.2;font-weight:400;text-align:left;margin:0 auto 10px;outline:none}
+.ob-setup .ob-sub{text-align:left;font-size:16px;line-height:1.5;margin:0 auto 22px;max-width:480px}
+.ob-setup-body{flex:1 0 auto}
+.ob-setup-foot{position:sticky;bottom:0;z-index:1;display:flex;flex-direction:column;align-items:stretch;padding:24px 0 max(14px,env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 20px)}
+.ob-setup-foot .btn{width:100%;min-height:52px;border-radius:12px;font-size:16px}
+.ob-setup-foot .ob-skip{margin:2px 0 0}
+.ob-foot-note{font-size:13px;color:var(--muted);text-align:center;margin:10px 0 0}
+.ob-back{border:0;background:none;font:inherit;font-size:16px;color:var(--muted);padding:10px 10px 10px 0;min-height:44px;cursor:pointer}
+.ob-choice{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:1.5px solid transparent;border-radius:16px;padding:16px;margin-bottom:10px;font:inherit;color:var(--text);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ob-choice:active{transform:scale(.99)}
+.ob-choice[aria-checked="true"],.ob-choice.is-on{border-color:var(--green)}
+.ob-choice[aria-disabled="true"]{cursor:default}
+.ob-choice b{display:block;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.ob-choice span span{display:block;font-size:14px;line-height:1.45;color:var(--muted)}
+.ob-check{flex:0 0 24px;height:24px;border-radius:50%;border:1.5px solid var(--border);margin-top:1px;position:relative}
+.ob-choice[aria-checked="true"] .ob-check{background:var(--green);border-color:var(--green)}
+.ob-choice[aria-checked="true"] .ob-check::after{content:'';position:absolute;left:7px;top:3px;width:6px;height:11px;border:solid var(--bg);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.ob-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.ob-chip{border:0;border-radius:999px;background:var(--fill);color:var(--ink);font:inherit;font-size:15px;padding:8px 14px;min-height:40px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ob-chip::before{content:'+';margin-right:6px;color:var(--muted)}
+.ob-chip:active{background:color-mix(in srgb,var(--ink) 14%,transparent)}
+.ob-entries{display:flex;flex-direction:column;gap:8px}
+.ob-entry{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:14px;padding:6px 4px 6px 14px}
+.ob-entry-l{flex:1;min-width:0;display:flex;flex-direction:column}
+.ob-entry-l small{font-size:12px;color:var(--muted);margin-top:-2px}
+.ob-entry-name{width:100%;min-width:0;border:0;background:none;font:inherit;font-size:16px;color:var(--ink);padding:6px 0;outline:none}
+.ob-money{position:relative;display:inline-flex;align-items:center;flex-shrink:0}
+.ob-money i{position:absolute;right:10px;font-style:normal;font-size:15px;color:var(--muted);pointer-events:none}
+.ob-in{width:132px;min-height:42px;border:0;border-radius:10px;background:var(--fill);padding:8px 28px 8px 10px;font:inherit;font-size:16px;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;-webkit-appearance:none;appearance:none;outline:none}
+.ob-in:focus{box-shadow:0 0 0 2px var(--green)}
+.ob-form-row>.ob-in:not(.ob-select){padding-right:10px}
+.ob-form-row .ob-money:has(input[data-fu="retireAge"]) .ob-in{width:132px;padding-right:62px}
+.ob-select{width:150px;padding-right:28px;text-align:left;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+.ob-x{flex:0 0 40px;height:40px;border:0;background:none;color:var(--muted);font-size:22px;line-height:1;cursor:pointer;border-radius:50%}
+.ob-total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 4px 0;font-size:15px;color:var(--muted)}
+.ob-total b{font-size:17px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}
+.ob-hint{font-size:14px;line-height:1.5;color:var(--muted);margin:16px 0 0}
+.ob-debt{background:var(--card);border-radius:14px;padding:6px 4px 12px 14px}
+.ob-debt-head{display:flex;align-items:center;gap:8px}
+.ob-debt-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding-right:10px}
+.ob-mini{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted)}
+.ob-mini .ob-money,.ob-mini .ob-in{width:100%}
+.ob-mini .ob-in{font-size:15px;padding:8px 20px 8px 6px;min-height:40px}
+.ob-mini .ob-money i{right:7px;font-size:13px}
+.ob-form{background:var(--card);border-radius:14px;overflow:hidden}
+.ob-form-row{display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 14px}
+.ob-form-row+.ob-form-row{box-shadow:inset 0 .5px 0 var(--sep)}
+.ob-l{flex:1;min-width:0;font-size:16px;color:var(--ink)}
+.ob-l small{display:block;font-size:13px;line-height:1.35;color:var(--muted);margin-top:2px}
+.ob-fixed{font-weight:400;font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums;padding-right:10px}
+.ob-result{display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:14px;padding:18px 16px;border-radius:14px;background:var(--fill)}
+.ob-result span{font-size:14px;color:var(--muted)}
+.ob-result b{font-size:34px;font-weight:300;color:var(--green);font-variant-numeric:tabular-nums;line-height:1.3}
+.ob-result b.is-neg{color:var(--red)}
+.ob-result b.is-empty{color:var(--muted)}
+.ob-result small{font-size:13px;color:var(--muted)}
+.ob-summary{margin-bottom:14px}
+.ob-later{background:var(--card);border-radius:16px;padding:16px 18px}
+.ob-later b{display:block;font-size:15px;font-weight:500;color:var(--ink);margin-bottom:8px}
+.ob-later ul{margin:0 0 10px;padding-left:20px;font-size:15px;line-height:1.7;color:var(--text)}
+.ob-later span{font-size:13px;color:var(--muted)}
+.ob-hist{background:var(--card);border-radius:14px;padding:12px 14px 14px}
+.ob-hist-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
+.ob-hist-head b{font-size:16px;font-weight:500;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ob-hist-head span{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0}
+.ob-hist-l{flex:0 0 76px;font-size:14px;color:var(--muted)}
+.ob-hist-row{display:flex;align-items:center;gap:8px;margin-top:10px}
+.ob-hist-row .ob-select{flex:1;width:auto;min-width:0}
+.ob-hist-row .ob-money{flex:1}.ob-hist-row .ob-money .ob-in{width:100%}
+.ob-hist-search{display:flex;flex-direction:column;gap:6px}
+.ob-hist-search .ob-hist-l{flex:none}
+.ob-hist-search .ob-in{width:100%;text-align:left;padding-right:10px}
+.ob-hist-results{display:flex;flex-direction:column;margin:4px 0 0}
+.ob-hist-results:empty{display:none}
+.ob-hist-hit{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;border:0;background:none;font:inherit;padding:9px 4px;border-radius:8px;cursor:pointer;color:inherit}
+.ob-hist-hit+.ob-hist-hit{box-shadow:inset 0 .5px 0 var(--sep)}
+.ob-hist-hit:active{background:var(--fill)}
+.ob-hist-hit span{font-size:15px;color:var(--ink);line-height:1.3}
+.ob-hist-hit small,.ob-hist-note{font-size:13px;color:var(--muted)}
+.ob-hist-note{margin:6px 0 2px}
+.ob-hist-inst{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:42px;padding:6px 10px;border-radius:10px;background:var(--fill);font-size:15px;color:var(--text)}
+.ob-hist-inst b{display:block;font-weight:500;color:var(--ink);font-size:15px;line-height:1.3}
+.ob-hist-inst small{font-size:13px;color:var(--muted)}
+.ob-hist-inst.is-picked::before{content:'✓';color:var(--green);margin-right:2px}
+.ob-hist-inst>span{flex:1;min-width:0}
+.ob-link{border:0;background:none;font:inherit;font-size:14px;color:var(--green);cursor:pointer;padding:8px 0 8px 6px}
+.ob-hist-modes{flex:1;display:flex;gap:2px;padding:2px;border-radius:10px;background:var(--fill)}
+.ob-hist-mode{flex:1;min-height:38px;border:0;border-radius:8px;background:none;font:inherit;font-size:15px;color:var(--muted);cursor:pointer}
+.ob-hist-mode.on{background:var(--bg2);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.ob-spark-note{display:block;font-size:12px;color:var(--muted);margin:-12px 0 6px}
+.ob-hint-warn{color:var(--text)}
+.ns-card{background:var(--card);border-radius:14px;margin:14px 0 4px;overflow:hidden}
+.ns-head{padding:14px 16px 6px}
+.ns-head b{display:block;font-size:16px;font-weight:500;color:var(--ink)}
+.ns-head span{font-size:13px;color:var(--muted)}
+.ns-item{display:flex;align-items:stretch;box-shadow:inset 0 .5px 0 var(--sep)}
+.ns-item:first-of-type{box-shadow:none}
+.ns-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left;border:0;background:none;font:inherit;padding:11px 0 12px 16px;cursor:pointer;color:inherit}
+.ns-main:active{background:var(--fill)}
+.ns-t{font-size:15px;color:var(--ink)}
+.ns-t::after{content:' ›';color:var(--muted)}
+.ns-s{font-size:13px;line-height:1.4;color:var(--muted)}
+.ns-x{flex:0 0 44px;border:0;background:none;color:var(--muted);font-size:20px;cursor:pointer}
+@media(max-width:380px){.ob-in{width:116px}.ob-tour,.ob-welcome{padding-left:20px;padding-right:20px}.ob-tour .ob-title{font-size:26px}.ob-position-pair{grid-template-columns:1fr}.ob-example-row{font-size:14px}}
 
 /* Asset-Parameter als aufklappbare Liste (in der Annahmen-Karte, randlos) */
 .v2-ap-list{margin:6px -16px 0;box-shadow:inset 0 .5px 0 var(--sep)}
@@ -1876,7 +1983,7 @@ body.onboarding-open{overflow:hidden}
     <span class="ob-notif-icon"><img src="icon-192.png" alt="" draggable="false"></span>
     <span class="ob-notif-text">
       <span class="ob-notif-head"><b id="onboardingNextTitle" tabindex="-1">Dein nächster Schritt</b><time>jetzt</time></span>
-      <span class="ob-notif-msg">Ergänze deine Verbindlichkeiten, Einnahmen &amp; Ausgaben und weitere Angaben auf der Daten-Seite.</span>
+      <span class="ob-notif-msg">Auf der Daten-Seite warten ein paar Vorschläge, mit denen du nach und nach genauer wirst.</span>
     </span>
   </a>
   <button type="button" class="ob-notif-close" onclick="dismissOnboardingNext('up')" aria-label="Hinweis schließen">×</button>
@@ -2320,7 +2427,7 @@ body.onboarding-open{overflow:hidden}
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="data-store.js?v=10"></script>
+<script src="data-store.js?v=11"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
 <script src="asset-model.js?v=4"></script>
@@ -5799,10 +5906,10 @@ function renderBudgetBreakdown(c){
   
   // ── Nicht verplant ──
   if(c.einnahmen>0){
-    const neg=c.frei<0;
+    const frei=Math.round(c.frei),neg=frei<0;/* Zins/Tilgung-Aufteilung erzeugt Cent-Reste */
     html+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:22px">`;
     html+=`<div class="chart-label" style="margin:0">${neg?'Überplant':'Nicht verplant'}</div>`;
-    html+=`<div style="font-weight:500;color:${neg?'var(--red)':'var(--ink)'}">${fmt(c.frei)}</div>`;
+    html+=`<div style="font-weight:500;color:${neg?'var(--red)':'var(--ink)'}">${fmt(frei)}</div>`;
     html+=`</div>`;
   }
   
@@ -6011,8 +6118,22 @@ async function checkAssetQuote(prefix){
     const result=await fetchInstrumentQuote(request);
     if(_assetCheckRuns.get(prefix)!==token||AssetModel.key(request)!==AssetModel.key(_assetRequest(prefix)))return;
     _assetChecks.set(prefix,{requestKey:AssetModel.key(request),...result});
-    box.innerHTML=_verifiedQuoteHTML(prefix,result);_updateAssetDraftValue(prefix);
+    box.innerHTML=_verifiedQuoteHTML(prefix,result);
+    _suggestQuantity(prefix,result.quote,box);
+    _updateAssetDraftValue(prefix);
   }catch(error){if(_assetCheckRuns.get(prefix)===token)box.textContent=error.message+' Du kannst den Gesamtwert weiterhin selbst eingeben.';}
+}
+/* Stückzahl unbekannt: aus dem bisherigen Wert und dem geprüften Kurs vorschlagen */
+function _suggestQuantity(prefix,quote,box){
+  const f=prefix==='newAsset'?null:_fc.fields.find(f=>'asset-'+f.id===prefix);
+  const quantity=document.getElementById(prefix==='newAsset'?'newAsset-quantity':'fu-'+(f?.unitId||f?.id));
+  const value=document.getElementById(prefix==='newAsset'?'newAsset-value':'f-'+f?.id);
+  if(!quantity||quantity.value.trim()&&_parseDec(quantity.value)>0||!quote||!(quote.priceEUR>0))return;
+  const base=_parseDec(value?.dataset.manualValue??value?.value??'');
+  if(!(base>0))return;
+  quantity.value=(Math.round(base/quote.priceEUR*10000)/10000).toLocaleString('de-DE',{maximumFractionDigits:4});
+  if(_sheetOpen)_sheetDirty=true;
+  box.insertAdjacentHTML('beforeend',`<p class="ds-help">Stückzahl aus deinem bisherigen Wert (${fmt(base)}) berechnet. Gleiche sie bei Gelegenheit mit deinem Depot ab.</p>`);
 }
 function _updateAssetDraftValue(prefix){
   const market=_assetEl(prefix,'valuation')?.value==='market';
@@ -6024,7 +6145,9 @@ function _updateAssetDraftValue(prefix){
   const automatic=market&&(prefix==='newAsset'||selectedMonth===nextYM());
   value.readOnly=automatic||!_isEditing();value.dataset.loanDerived=automatic?'1':'0';
   value.style.pointerEvents=value.readOnly?'none':'';
-  if(!automatic)return;
+  /* Den selbst eingetragenen Wert merken: Grundlage für die vorgeschlagene Stückzahl, zurück bei „Selbst eintragen“ */
+  if(!automatic){if(!value.value&&value.dataset.manualValue)value.value=value.dataset.manualValue;return;}
+  if(value.dataset.manualValue===undefined)value.dataset.manualValue=value.value;
   const checked=_assetChecks.get(prefix),request=_assetRequest(prefix);
   const quote=checked?.requestKey===AssetModel.key(request)?checked.quote:(AssetModel.key(AssetModel.instrument(f||{}))===AssetModel.key(request)?f?.lastQuote:null);
   try{const q=_assetNumber(quantity?.value,true);value.value=quote&&q!==null?AssetModel.money(quote.priceEUR*q).toLocaleString('de-DE',{maximumFractionDigits:2}):'';}catch(error){value.value='';}
@@ -6313,7 +6436,7 @@ function _refreshBackupInfo(){
   el.textContent=!t?'Noch nie gesichert · empfohlen':'Zuletzt '+(days<1?'heute':days===1?'gestern':'vor '+days+' Tagen');
   el.classList.toggle('ds-warn',!t||days>30);
 }
-function _backupDone(){try{localStorage.setItem(BACKUP_KEY,new Date().toISOString());}catch(error){}_refreshBackupInfo();_toast('Sicherung erstellt');}
+function _backupDone(){try{localStorage.setItem(BACKUP_KEY,new Date().toISOString());}catch(error){}_refreshBackupInfo();_nsRefresh();_toast('Sicherung erstellt');}
 function exportBackup(){
   try{
     if(!_resolvePendingEdits())return;
@@ -6600,7 +6723,7 @@ function _syncDateButtons(root=document){
 /* ── Listen auf der Daten-Seite ── */
 function _monthCardHTML(data){
   const ym=selectedMonth,e=data[ym],live=ym===nextYM(),generated=!!(e&&e._loanHistory&&e._loanHistory.generated);
-  const sub=!e?'Für '+fmtMonth(ym)+' ist noch nichts erfasst.':generated?'Aus dem Tilgungsplan ergänzt, noch nicht bestätigt.':live?fmtMonth(ym)+' · Kurse live':'Werte zum Monatsende';
+  const sub=!e?'Für '+fmtMonth(ym)+' ist noch nichts erfasst.':generated?'Aus dem Tilgungsplan ergänzt, noch nicht bestätigt.':e._estimated?'Aus Kursverlauf berechnet, noch nicht bestätigt.':live?fmtMonth(ym)+' · Kurse live':'Werte zum Monatsende';
   return `<div class="ds-month"><div class="ds-month-l"><button type="button" class="ds-month-t" onclick="document.getElementById('dateBtn').click()" aria-label="Anderen Monat wählen">${_monthTitle(ym)}</button><span class="ds-month-s">${escHTML(sub)}</span></div><button type="button" class="v2-textbtn v2-strong" data-ds-open="month">${!e||generated?'Erfassen':'Aktualisieren'}</button></div>`;
 }
 function _dsItem(kind,id,label,sub,value,zero){
@@ -6688,7 +6811,7 @@ function openMonthSheet(){
     return `<div class="ds-row" data-ms-fixed="${b}"><span class="ds-l">${escHTML(f.label)}<small>automatisch aus dem Tilgungsplan</small></span><span class="ds-static">${fmt(b)}</span></div>`;
   };
   const isZero=f=>!(+det[f.id])&&!(+pdet[f.id])&&!(+units[f.unitId||f.id]);
-  let body=`<p class="ds-note">${live?'Trage deine aktuellen Stände ein. Bei Positionen mit Kurs genügt die Stückzahl.':'Werte zum Ende von '+fmtMonth(ym)+'.'}${!e&&pk?' Vorausgefüllt mit den Werten aus '+fmtMonth(pk)+'.':''}${e&&e._loanHistory&&e._loanHistory.generated?' Dieser Monat wurde aus dem Tilgungsplan ergänzt. Mit „Sichern“ bestätigst du die Werte.':''}</p>`;
+  let body=`<p class="ds-note">${live?'Trage deine aktuellen Stände ein. Bei Positionen mit Kurs genügt die Stückzahl.':'Werte zum Ende von '+fmtMonth(ym)+'.'}${!e&&pk?' Vorausgefüllt mit den Werten aus '+fmtMonth(pk)+'.':''}${e&&e._loanHistory&&e._loanHistory.generated?' Dieser Monat wurde aus dem Tilgungsplan ergänzt. Mit „Sichern“ bestätigst du die Werte.':''}${e&&e._estimated?' Dieser Monat wurde aus Kursverläufen und deinen Angaben bei der Einrichtung berechnet. Mit „Sichern“ bestätigst du die Werte.':''}</p>`;
   body+=`<div class="ds-group"><div class="ds-row"><span class="ds-l">Nettovermögen</span><strong class="ds-static" id="msTotal"></strong></div></div>`;
   const cats=[...Object.keys(AssetModel.categories),...new Set(assets.map(f=>f.category).filter(c=>!AssetModel.categories[c]))];
   cats.forEach(cat=>{const rows=assets.filter(f=>f.category===cat&&!isZero(f));if(rows.length)body+=`<div class="ds-group-t">${escHTML(CAT_NAMES[cat]||cat)}</div><div class="ds-group">${rows.map(assetRow).join('')}</div>`;});
@@ -6721,7 +6844,7 @@ function _saveMonthSheet(){
   appStorage.beginTransaction();
   try{
     const data=loadData(),e=_monthEntryForEdit(data,ym);
-    delete e._loanHistory;/* Mit dem Sichern bestätigt: alle Werte gelten als erfasst */
+    delete e._loanHistory;delete e._estimated;/* Mit dem Sichern bestätigt: alle Werte gelten als erfasst */
     document.querySelectorAll('#dsBody [data-ms-val]').forEach(i=>{const f=_fc.fields.find(x=>x.id===i.dataset.msVal);if(f)e._details[f.id]=_sheetMoney(i.value,f.label)??0;});
     document.querySelectorAll('#dsBody [data-ms-qty]').forEach(i=>{
       const f=_fc.fields.find(x=>x.id===i.dataset.msQty);if(!f)return;
@@ -7345,6 +7468,7 @@ function buildDynamicForm(){
   html+=`<button class="v2-textbtn v2-muted" id="btnCancel" onclick="cancelEditMode()" style="display:none">Abbrechen</button>`;
   html+=`<button class="v2-textbtn v2-strong" id="btnSave" onclick="saveEntry()" style="display:none">Sichern</button></span></div>`;
   html+=_monthCardHTML(allData);
+  html+=_nextStepsHTML();
   html+=`<div class="sec-h">Daten</div>`;
 
   /* Vermögenswerte und Verbindlichkeiten: Liste, Tippen öffnet das Sheet der Position */
@@ -8779,7 +8903,7 @@ function startOnboarding(origin='data'){
   guideRender();
 }
 function hideOnboarding(){
-  _guideActive=false;
+  _guideActive=false;_setup=null;
   document.getElementById('onboardingOverlay').style.display='none';
   document.body.classList.remove('onboarding-open');
   for(const el of document.body.children)if(el.dataset.onboardingInert==='1'){el.inert=false;delete el.dataset.onboardingInert;}
@@ -8807,7 +8931,7 @@ function _guideContent(key){
     content:'<div class="ob-data-steps"><div><b>1</b><span>Monat wählen</span><small>Kalender oben</small></div><div><b>2</b><span>Werte eintragen</span><small>Aktualisieren</small></div><div><b>3</b><span>Übernehmen</span><small>Sichern</small></div></div>',
     tip:'Tippe auf eine Position, um nur sie zu ändern. Prognose-Annahmen werden direkt übernommen.'};
   return {section:'Sicherung',title:'Eine Datei für deinen Stand',text:'Unter Daten → Sicherung exportieren sicherst du alle Werte und Einstellungen. Importiere diese Datei auf einem anderen Gerät, um dort weiterzumachen.',
-    content:'<div class="ob-backup-preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 14h8M8 18h5"/></svg><b>Deine Sicherung</b><span>Alle Daten · eine Datei</span></div>'+(_guideNew?'<div class="ob-setup-summary">Als Nächstes legst du dein erstes Asset an.<br>Budget, Altersvorsorge und Prognose schaltest du später unter Daten ein.</div>':'<div class="ob-setup-summary">Du kannst den Rundgang jederzeit auf der Daten-Seite erneut starten.</div>'),
+    content:'<div class="ob-backup-preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 14h8M8 18h5"/></svg><b>Deine Sicherung</b><span>Alle Daten · eine Datei</span></div>'+(_guideNew?'<div class="ob-setup-summary">Als Nächstes richtest du in wenigen Schritten deinen Start ein. Schätzwerte reichen.</div>':'<div class="ob-setup-summary">Du kannst den Rundgang jederzeit auf der Daten-Seite erneut starten.</div>'),
     tip:'Deine Daten bleiben auf diesem Gerät. Exportiere regelmäßig eine Sicherung.'};
 }
 function validateOnboardingPositions(rows){
@@ -8904,8 +9028,7 @@ function _initNotifSwipe(el){
     window.addEventListener('pointermove',move);window.addEventListener('pointerup',end);window.addEventListener('pointercancel',end);
   });
 }
-/* target 'asset': direkt auf die Daten-Seite ins Anlegen des ersten Vermögenswerts */
-function finishOnboarding(target){
+function finishOnboarding(){
   try{
     const doc=prepareOnboardingDocument(appStorage.document(),[],currentYM(),nextYM());
     appStorage.importBackup(doc);
@@ -8913,7 +9036,6 @@ function finishOnboarding(target){
     selectedMonth=nextYM();picker.setVal(selectedMonth);
     buildDynamicForm();updateLifetimeInputs();_v2ApplyModules();_v2SyncSwitches();render();
     hideOnboarding();
-    if(target==='asset'){navigateToPage('import');openAddAssetSheet();return;}
     document.getElementById('onboardingNextStep').hidden=false;
     navigateToPage('home');
     document.getElementById('onboardingNextTitle').focus({preventScroll:true});
@@ -8921,9 +9043,10 @@ function finishOnboarding(target){
 }
 function guideRender(){
   const overlay=document.getElementById('onboardingOverlay');
+  overlay.onclick=overlay.oninput=overlay.onchange=overlay.onkeydown=null;
   if(!_guideActive){overlay.innerHTML=guideWelcome();overlay.scrollTop=0;return;}
   const keys=_guideKeys(),key=keys[_guideStep],step=_guideContent(key),last=_guideStep===keys.length-1;
-  const primary=last?(_guideNew?'<button class="btn btn-primary" onclick="finishOnboarding(\'asset\')">Erstes Asset anlegen</button>':'<button class="btn btn-primary" onclick="finishOnboarding()">Fertig</button>'):'<button class="btn btn-primary ob-nav" onclick="guideNav(1)">Weiter</button>';
+  const primary=last?(_guideNew?'<button class="btn btn-primary" onclick="startSetup()">Jetzt einrichten</button>':'<button class="btn btn-primary" onclick="finishOnboarding()">Fertig</button>'):'<button class="btn btn-primary ob-nav" onclick="guideNav(1)">Weiter</button>';
   overlay.innerHTML=`<div class="ob-screen ob-tour${last?' ob-last':''}"><div class="ob-progress" role="progressbar" aria-label="Fortschritt im Rundgang" aria-valuemin="1" aria-valuemax="${keys.length}" aria-valuenow="${_guideStep+1}">${keys.map((_,i)=>`<i class="${i<_guideStep?'filled':i===_guideStep?'current':''}"><b></b></i>`).join('')}</div><div class="ob-tour-top"><span class="ob-story-who"><img src="icon-192.png" alt="" draggable="false"><span class="ob-step">${_guideStep+1} von ${keys.length} · ${step.section}</span></span><button class="ob-close" onclick="cancelOnboarding()" aria-label="Rundgang schließen">×</button></div><h1 class="ob-title" tabindex="-1">${step.title}</h1><p class="ob-sub">${step.text}</p><div class="ob-tour-content">${step.content}</div><p class="ob-tip">${step.tip}</p>${_guideStep===0?'<p class="ob-story-hint">Tippe rechts für weiter, links für zurück</p>':''}<p id="onboardingError" class="ob-error" role="alert" tabindex="-1" hidden></p><div class="ob-actions"><button class="btn btn-ghost ob-nav" onclick="${_guideStep?'guideNav(-1)':'cancelOnboarding()'}">${_guideStep?'Zurück':_guideOrigin==='welcome'?'Zum Start':'Schließen'}</button>${primary}</div>${last&&_guideNew?'<button class="ob-skip" onclick="finishOnboarding()">Später</button>':''}</div>`;
   overlay.scrollTop=0;overlay.querySelector('h1')?.focus({preventScroll:true});
   _bindGuideStory(overlay.querySelector('.ob-tour'),last);
@@ -8960,8 +9083,624 @@ function _bindGuideStory(screen,last){
   screen.addEventListener('pointercancel',()=>{active=false;clearTimeout(hold);screen.style.transform='';screen.style.opacity='';pause(false);});
 }
 function guideWelcome(){
-  return `<div class="ob-screen ob-welcome"><span class="ob-welcome-mark" aria-hidden="true">V</span><h1 class="ob-title">Vermögen</h1><p class="ob-sub">Dein Vermögen, dein Monat, deine Zukunft.<br>Starte mit deinen eigenen Daten oder lade einen vorhandenen Stand.</p><div class="ob-welcome-actions"><button class="btn btn-primary" onclick="startOnboarding('welcome')">Geführt einrichten</button><label class="btn btn-ghost ob-import" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">Bestehende Daten laden<input type="file" accept=".json,.csv,application/json,text/csv" style="display:none" onchange="hideOnboarding();document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label><button class="ob-skip" onclick="_v2LoadDemo()">Mit Demo-Daten ausprobieren</button></div><p class="ob-tip">Du brauchst keine vorbereitete Datei. Der Rundgang dauert nur wenige Minuten.</p></div>`;
+  return `<div class="ob-screen ob-welcome"><span class="ob-welcome-mark" aria-hidden="true">V</span><h1 class="ob-title">Vermögen</h1><p class="ob-sub">Dein Vermögen, dein Monat, deine Zukunft.<br>Starte mit ein paar Schätzwerten – genauer werden kannst du später.</p><div class="ob-welcome-actions"><button class="btn btn-primary" onclick="startSetup()">Geführt einrichten</button><label class="btn btn-ghost ob-import" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">Bestehende Daten laden<input type="file" accept=".json,.csv,application/json,text/csv" style="display:none" onchange="hideOnboarding();document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label><button class="ob-skip" onclick="_v2LoadDemo()">Mit Demo-Daten ausprobieren</button></div><p class="ob-tip">Etwa drei Minuten, ohne Unterlagen. Jeder Schritt lässt sich überspringen.</p></div>`;
 }
+/* ── Einrichtung: eine Frage je Screen, Schätzwerte genügen, jeder Schritt ist optional.
+   Erfasst wird nur das Nötigste; Stückzahlen, Kurse, Darlehensverträge und Einzelposten
+   schlägt die Daten-Seite danach nach und nach vor („Nach und nach ergänzen“).
+   mode 'full' richtet einen leeren Bestand ein, 'budget' | 'future' | 'pension' ergänzen später einen Bereich. ── */
+const SETUP_ASSETS=[['Girokonto','cash'],['Tagesgeld','cash'],['Depot / ETF','etf','Depot'],['Aktien','stock'],['Bitcoin','bitcoin'],['Krypto','crypto'],['Gold','metal'],['Immobilie','realEstate'],['Auto','vehicle'],['Sonstiges','other']];
+const SETUP_DEBTS=[['Immobilienkredit','realEstate'],['Autokredit','vehicle'],['Ratenkredit',''],['Kreditkarte',''],['Privatdarlehen',''],['Sonstige Schulden','']];
+const SETUP_SAVE_CATS=['etf','stock','bitcoin','crypto','metal','cash','other'];
+const SETUP_MARKET_CATS=['etf','stock','bitcoin','crypto'];
+let _setup=null,_setupSeq=0;
+function _setupState(mode){
+  return {mode,i:0,focus:{budget:false,future:false},assets:[],debts:[],hasDebts:null,budgetSkipped:false,futureSkipped:false,
+    budget:{income:'',fixed:'',living:'',saving:'',target:''},future:{birthYear:'',retireAge:'67',need:'',needFromBudget:false},pension:'',
+    hist:{},history:{},historyFailed:[]};
+}
+function _setupSteps(s=_setup){
+  if(s.mode==='budget')return ['budget'];
+  if(s.mode==='future')return ['future','pension'];
+  if(s.mode==='pension')return ['pension'];
+  return ['focus','assets',...(_setupHistoryRows(s).length?['history']:[]),'debts',...(s.focus.budget?['budget']:[]),...(s.focus.future?['future',...(s.futureSkipped?[]:['pension'])]:[]),'done'];
+}
+function startSetup(mode='full'){
+  if(mode!=='full'&&!_resolvePendingEdits())return;
+  _guideActive=false;
+  _setup=_setupState(mode);
+  if(mode!=='full'){
+    const doc=appStorage.document(),st=doc.forecast.settings;
+    if(doc.retirement.primary.birthYear!==undefined)_setup.future.birthYear=String(doc.retirement.primary.birthYear);
+    if(st.retirementAge!==undefined)_setup.future.retireAge=String(st.retirementAge);
+    if(st.monthlySpending!==undefined)_setup.future.need=String(st.monthlySpending);
+    else _setupPrefillNeed(_setup);
+  }
+  if(document.getElementById('onboardingOverlay').style.display!=='block')_openOnboardingOverlay();
+  _setupRender();
+}
+function _setupClose(){
+  const full=_setup&&_setup.mode==='full';_setup=null;
+  if(full)guideRender();else hideOnboarding();
+}
+/* Beträge: leer = keine Angabe; sonst deutsches Zahlenformat ab null */
+function _setupNum(raw,label,min=0,max=Infinity){
+  const t=String(raw??'').trim();if(!t)return null;
+  const clean=t.replace(/[€\s %]/g,'');
+  if(!/^(?:\d+(?:[.,]\d+)?|\d{1,3}(?:\.\d{3})+(?:,\d+)?)$/.test(clean))throw new Error(label+': Bitte eine Zahl eingeben, z. B. 1.500.');
+  const n=_parseDec(clean);
+  if(!isFinite(n)||n<min||n>max)throw new Error(label+': Bitte eine Zahl zwischen '+min.toLocaleString('de-DE')+' und '+max.toLocaleString('de-DE')+' eingeben.');
+  return n;
+}
+const _setupLenient=raw=>{try{return _setupNum(raw,'')||0;}catch(error){return 0;}};
+function _setupAssetRows(s){
+  const out=[];
+  s.assets.forEach((r,i)=>{
+    const name=r.name.trim().replace(/[;\r\n]/g,','),raw=r.amount.trim();
+    if(!name&&!raw)return;
+    const label=name||'Position '+(i+1);
+    if(!name)throw new Error(label+': Bitte einen Namen eintragen.');
+    if(!raw)throw new Error(label+': Bitte ungefähr den Wert eintragen. 0 € geht auch.');
+    out.push({row:r,name,category:r.category,value:_setupNum(raw,label)});
+  });
+  return out;
+}
+function _setupDebtRows(s){
+  if(s.hasDebts!==true)return [];
+  const out=[];
+  s.debts.forEach((r,i)=>{
+    const name=r.name.trim().replace(/[;\r\n]/g,','),raw=r.amount.trim();
+    if(!name&&!raw&&!r.pay.trim()&&!r.rate.trim())return;
+    const label=name||'Schuld '+(i+1);
+    if(!name)throw new Error(label+': Bitte einen Namen eintragen.');
+    if(!raw)throw new Error(label+': Bitte die offene Restschuld eintragen.');
+    out.push({row:r,name,link:r.link,value:_setupNum(raw,label+' · Restschuld'),pay:_setupNum(r.pay,label+' · Rate'),rate:_setupNum(r.rate,label+' · Zins',0,50)});
+  });
+  return out;
+}
+/* Kreditraten ohne Darlehensvertrag; Verträge erscheinen bereits automatisch im Budget */
+function _setupLoanPay(s){
+  if(s.mode==='full')return s.hasDebts?s.debts.reduce((a,d)=>a+_setupLenient(d.pay),0):0;
+  const lp=getLoanParams();
+  return _fc.fields.filter(f=>f.category==='liab').reduce((a,f)=>{const p=lp[f.id];return a+(p&&!LoanModel.configured(p)?(+p.pay||0):0);},0);
+}
+/* Wohin fließt das Gesparte: neue Positionen (Einrichtung) oder vorhandene liquide Gruppen */
+function _setupTargets(s){
+  if(s.mode==='full')return s.assets.filter(r=>SETUP_SAVE_CATS.includes(r.category)&&r.name.trim()).map(r=>({value:r.id,label:r.name.trim(),cat:r.category}));
+  const doc=appStorage.document();
+  return doc.groups.map(g=>{const p=doc.positions.find(p=>!p.archived&&p.groupId===g.id&&p.category!=='liab'&&AssetModel.liquidity(p)==='liquid');return p?{value:g.id,label:g.name,cat:p.category}:null;}).filter(Boolean);
+}
+function _setupDefaultTarget(targets){
+  const t=targets.find(t=>SETUP_MARKET_CATS.includes(t.cat))||targets.find(t=>t.cat==='cash')||targets[0];
+  return t?t.value:'';
+}
+function _setupBudget(s,strict=true){
+  const n=strict?(k,l)=>_setupNum(s.budget[k],l)||0:k=>_setupLenient(s.budget[k]);
+  const b={income:n('income','Einnahmen'),fixed:n('fixed','Fixkosten'),living:n('living','Lebenshaltung'),saving:n('saving','Sparen'),loans:_setupLoanPay(s)};
+  b.left=b.income-b.fixed-b.living-b.saving-b.loans;
+  const targets=_setupTargets(s);
+  b.target=targets.some(t=>t.value===s.budget.target)?s.budget.target:_setupDefaultTarget(targets);
+  return b;
+}
+function _setupPrefillNeed(s){
+  if(s.future.need.trim())return;
+  let need=0;
+  if(s.mode==='full'){if(s.focus.budget&&!s.budgetSkipped){const b=_setupBudget(s,false);need=b.fixed+b.living;}}
+  else if(_mod('budget')){
+    /* Kreditraten rechnet die Prognose im Ruhestand selbst ein, daher ohne Zinsanteile */
+    const bd=loadBudgetData();
+    if(bd)for(let m=0;m<12;m++){const c=calcBudgetMonth(bd,m);if(c)need+=(c.variable+c.fixItems.filter(it=>!/Zinsanteil$/.test(it.label)).reduce((a,it)=>a+it.val,0))/12;}
+  }
+  if(need>0){s.future.need=_moneyInput(Math.round(need/50)*50);s.future.needFromBudget=true;}
+}
+function _setupFuture(s){
+  const year=new Date().getFullYear();
+  const by=_setupNum(s.future.birthYear,'Geburtsjahr',1920,year-14);
+  if(by===null)throw new Error('Bitte dein Geburtsjahr eintragen. Ohne Alter lässt sich der Ruhestand nicht planen.');
+  const age=_setupNum(s.future.retireAge,'Ruhestand mit',40,85);
+  if(age===null)throw new Error('Bitte eintragen, mit wie vielen Jahren du in den Ruhestand gehen möchtest.');
+  const need=_setupNum(s.future.need,'Bedarf im Ruhestand');
+  if(need===null)throw new Error('Bitte ungefähr eintragen, was du im Ruhestand pro Monat brauchst. Ein Schätzwert reicht.');
+  return {birthYear:Math.round(by),retireAge:Math.round(age),need};
+}
+/* Baut das neue Dokument; nur die Bereiche dieser Einrichtung werden verändert */
+function buildSetupDocument(original,s,month,liveMonth=month){
+  const doc=JSON.parse(JSON.stringify(original)),mods=doc.preferences.modules;
+  const usedGroups=new Set(doc.groups.map(g=>g.name)),usedIds=new Set([...doc.groups.map(g=>g.id),...doc.positions.map(p=>p.id)]);
+  const uniqueName=name=>{let n=name,k=2;while(usedGroups.has(n))n=name+' ('+(k++)+')';usedGroups.add(n);return n;};
+  const uniqueId=prefix=>{let k=1;while(usedIds.has(prefix+k))k++;usedIds.add(prefix+k);return prefix+k;};
+  const targetGroup={};
+  if(s.mode==='full'){
+    if(hasOnboardingData(doc))throw new Error('Es sind bereits Daten vorhanden. Die Einrichtung startet nur bei einem leeren Bestand.');
+    const assets=_setupAssetRows(s),debts=_setupDebtRows(s),values=[],held=[];
+    const add=(name,category,value,assumptions,h=null)=>{
+      const groupId=uniqueId('group-'),id=uniqueId(category==='liab'?'custom-setup-debt-':'custom-setup-');
+      doc.groups.push({id:groupId,name:uniqueName(name),defaultProfile:null,assumptions});
+      /* Mit Kursquelle bewertet die App ab jetzt selbst: Stückzahl × Kurs */
+      doc.positions.push({id,name,category,groupId,archived:false,custom:true,ticker:null,unit:h?{name:(AssetModel.categories[category]||{}).unit||'Stück',key:id}:null,
+        ...(h?{valuation:'market',instrument:JSON.parse(JSON.stringify(h.instrument)),lastQuote:JSON.parse(JSON.stringify(h.quote))}:{})});
+      const v={positionId:id,value,...(h?{quantity:h.quantity}:{})};
+      values.push(v);held.push({v,months:h?h.months:[]});
+      return {id,groupId};
+    };
+    const byCat={},history=s.history||{};
+    assets.forEach(a=>{const r=add(a.name,a.category,a.value,{monthlySaving:0},history[a.row.id]||null);targetGroup[a.row.id]=r.groupId;(byCat[a.category]=byCat[a.category]||[]).push(r.id);});
+    debts.forEach(d=>{
+      const r=add(d.name,'liab',d.value,{});
+      /* Immobilien- und Autokredit gehören zur einzigen Immobilie bzw. zum einzigen Auto */
+      const link=d.link&&byCat[d.link]&&byCat[d.link].length===1?byCat[d.link][0]:null;
+      doc.loans.push({positionId:r.id,linkedAssetId:link,...(d.rate!==null?{interestPercent:d.rate}:{}),...(d.pay!==null?{monthlyPayment:d.pay}:{})});
+    });
+    /* Bisheriger Verlauf: Anlagen mit Kursen aus ihrem Stückzahl-Verlauf (vor dem Kauf nicht im Bestand),
+       alle übrigen Werte mit ihrem heutigen Stand. Diese Monate bleiben als berechnet gekennzeichnet. */
+    const first=held.flatMap(x=>x.months.map(m=>m.month)).sort()[0];
+    if(first)for(let m=first;m<month;m=LoanModel.addMonths(m,1)){
+      const positions=[];
+      held.forEach(({v,months})=>{
+        if(!months.length){positions.push(JSON.parse(JSON.stringify(v)));return;}
+        const x=months.find(x=>x.month===m);
+        if(x)positions.push({positionId:v.positionId,value:x.value,quantity:x.quantity});
+      });
+      if(positions.length)doc.snapshots.push({month:m,positions,estimated:true});
+    }
+    if(values.length){
+      doc.snapshots.push({month,positions:values});
+      if(liveMonth!==month)doc.snapshots.push({month:liveMonth,positions:JSON.parse(JSON.stringify(values))});
+    }
+    mods.assets=true;mods.liab=debts.length>0;mods.budget=false;mods.forecast=false;mods.pension=false;
+    doc.preferences.onboardingCompleted=true;
+  }
+  const wantsBudget=s.mode==='budget'||(s.mode==='full'&&s.focus.budget&&!s.budgetSkipped);
+  if(wantsBudget){
+    const b=_setupBudget(s),items=doc.budget?doc.budget.items:[],ids=new Set(items.map(r=>r.id)),rows=[];
+    const target=b.target?(s.mode==='full'?targetGroup[b.target]:b.target)||null:null;
+    const row=(id,name,category,kind,amount,targetGroupId=null)=>{
+      if(!(amount>0))return;
+      let rid=id,k=2;while(ids.has(rid))rid=id+'-'+(k++);ids.add(rid);
+      rows.push({id:rid,name,category,subcategory:'',kind,targetGroupId,monthlyAmounts:Array(12).fill(amount)});
+    };
+    row('setup-income','Nettoeinkommen','einkommen','income',b.income);
+    row('setup-loans','Kreditraten','fixe','loanPayment',b.loans);
+    row('setup-fixed','Fixkosten','fixe','expense',b.fixed);
+    row('setup-living','Lebenshaltung','variable','expense',b.living);
+    row('setup-saving','Sparen','sparen','saving',b.saving,target);
+    doc.budget=doc.budget||{items:[],standingOrders:[]};
+    doc.budget.items=[...items,...rows];
+    /* Die Sparrate fließt direkt in die Prognose der Zielanlage */
+    if(target&&b.saving>0){const g=doc.groups.find(g=>g.id===target);if(g)g.assumptions={...g.assumptions,monthlySaving:b.saving};}
+    mods.budget=true;
+  }
+  const wantsFuture=s.mode==='future'||(s.mode==='full'&&s.focus.future&&!s.futureSkipped);
+  if(wantsFuture){
+    const f=_setupFuture(s);
+    doc.retirement.primary.birthYear=f.birthYear;
+    Object.assign(doc.forecast.settings,{retirementAge:f.retireAge,saveUntilAge:f.retireAge,monthlySpending:f.need});
+    mods.forecast=true;
+  }
+  if(s.mode==='pension'||wantsFuture){
+    const amount=_setupNum(s.pension,'Rente pro Monat');
+    if(amount){
+      const sp=doc.retirement.primary.statutoryPension,rw=sp.pensionPointValue||DRV_DEFAULTS.rw;
+      sp.points=Math.round(amount/rw*10000)/10000;
+      mods.pension=true;
+    }
+  }
+  return AssetsData.validate(doc);
+}
+/* Nächster Schritt; Vorschläge aus früheren Antworten werden beim Betreten vorbelegt */
+function _setupAdvance(s){
+  s.i++;
+  const key=_setupSteps()[s.i];
+  if(key==='future')_setupPrefillNeed(s);
+  if(key==='budget')_setupPrefillSaving(s);
+  _setupRender();
+}
+async function _setupNext(){
+  const s=_setup,steps=_setupSteps(),key=steps[s.i];
+  if(key==='history'){
+    const btn=document.querySelector('.ob-setup-foot [data-act="next"]');
+    if(btn){if(btn.disabled)return;btn.disabled=true;btn.textContent='Verlauf wird berechnet …';}
+    try{await _setupBuildHistory(s);}
+    catch(error){if(btn){btn.disabled=false;btn.textContent='Weiter';}_guideError(error);return;}
+    if(_setup!==s)return;
+  }
+  try{
+    if(key==='assets')_setupAssetRows(s);
+    if(key==='debts')_setupDebtRows(s);
+    if(key==='budget'){_setupBudget(s);s.budgetSkipped=false;}
+    if(key==='future'){_setupFuture(s);s.futureSkipped=false;}
+    if(key==='pension')_setupNum(s.pension,'Rente pro Monat');
+  }catch(error){_guideError(error);return;}
+  if(s.mode!=='full'&&s.i===steps.length-1){_setupFinish();return;}
+  _setupAdvance(s);
+}
+function _setupSkip(){
+  const s=_setup,key=_setupSteps()[s.i];
+  /* Später ergänzen: Abbrechen speichert nichts; nur „Weiß ich nicht“ zur Rente übernimmt die übrigen Angaben */
+  if(s.mode!=='full'){if(key==='pension'&&s.mode==='future'){s.pension='';_setupFinish();}else _setupClose();return;}
+  if(key==='history'){s.history={};s.historyFailed=[];}
+  if(key==='budget')s.budgetSkipped=true;
+  if(key==='future')s.futureSkipped=true;
+  if(key==='pension')s.pension='';
+  _setupAdvance(s);
+}
+function _setupFinish(){
+  const s=_setup;
+  try{
+    const doc=buildSetupDocument(appStorage.document(),s,currentYM(),nextYM());
+    appStorage.importBackup(doc);
+  }catch(error){_guideError(error);return;}
+  _fc=loadFieldConfig();_modsCache=null;_ltCalcCache=null;_orphanMemo={key:null,val:null};_loanShareMemo={key:null,val:null};
+  Object.keys(charts).forEach(c=>destroyChart(c));
+  if(s.mode==='full'){selectedMonth=nextYM();picker.setVal(selectedMonth);}
+  buildDynamicForm();updateLifetimeInputs();_v2ApplyModules();_v2SyncSwitches();render();
+  hideOnboarding();
+  if(s.mode==='full'){
+    navigateToPage('home');
+    document.getElementById('onboardingNextStep').hidden=false;
+    document.getElementById('onboardingNextTitle').focus({preventScroll:true});
+  }else{
+    navigateToPage(s.mode==='budget'?'budget':'lifetime');
+    _toast('Gespeichert');
+  }
+}
+/* ── Bisheriger Verlauf aus Kursen: Monatskurse (Yahoo), Stückzahl-Verlauf aus „Seit wann“ und Kaufart ── */
+const SETUP_HISTORY_CATS=['etf','stock','bitcoin','crypto','metal'];
+const SETUP_FIXED_INSTRUMENTS={bitcoin:{provider:'bitcoin',symbol:'XBTEUR',label:'Bitcoin, Kurs in Euro'},metal:{provider:'yahoo',symbol:'XAUEUR',label:'Gold, Preis je Feinunze'}};
+const SETUP_GENERIC_NAMES=['depot','aktien','krypto','gold','bitcoin','sonstiges'];
+function _ymOf(date){return date.getUTCFullYear()+'-'+String(date.getUTCMonth()+1).padStart(2,'0');}
+async function _yahooMonthly(symbol){
+  const url='https://query2.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(symbol)+'?interval=1mo&range=max';
+  const r=await fetchWithTimeout(proxied(url),9000);if(!r.ok)throw new Error('Kursverlauf: HTTP '+r.status);
+  const res=JSON.parse(await r.text()).chart?.result?.[0];
+  if(!res||!Array.isArray(res.timestamp))throw new Error('Kein Kursverlauf gefunden.');
+  /* Zeitstempel liegen auf dem Monatsanfang in Börsenzeit; der Schlusskurs gilt für das Monatsende */
+  const off=+res.meta?.gmtoffset||0,close=res.indicators?.quote?.[0]?.close||[],prices={};
+  res.timestamp.forEach((t,i)=>{const c=+close[i];if(c>0)prices[_ymOf(new Date((t+off)*1000))]=c;});
+  return {prices,currency:res.meta?.currency||'EUR'};
+}
+/* Monatliche Schlusskurse in EUR, Fremdwährungen mit dem Monatskurs umgerechnet */
+async function fetchMonthlyPricesEUR(symbol){
+  const {prices,currency}=await _yahooMonthly(symbol);
+  let cur=currency,div=1;if(cur==='GBp'||cur==='GBX'){cur='GBP';div=100;}
+  const fx=cur==='EUR'?null:(await _yahooMonthly(cur+'EUR=X')).prices;
+  const out={};let rate=null;
+  for(const m of Object.keys(prices).sort()){
+    if(fx&&fx[m]>0)rate=fx[m];
+    const r=fx?rate:1;if(r>0)out[m]=prices[m]/div*r;
+  }
+  return out;
+}
+function _historySymbol(instrument){
+  if(instrument.provider==='bitcoin')return 'BTC-EUR';
+  if(instrument.provider==='kraken')return instrument.symbol.replace(/EUR$/,'')+'-EUR';
+  if(instrument.symbol==='XAUEUR')return 'GC=F';
+  if(instrument.symbol==='XAGEUR')return 'SI=F';
+  return instrument.symbol;
+}
+/* Wertpapiersuche über den Namen oder die ISIN; deutsche Handelsplätze zuerst */
+async function searchInstruments(query,category){
+  const url='https://query2.finance.yahoo.com/v1/finance/search?q='+encodeURIComponent(query)+'&quotesCount=10&newsCount=0&lang=de-DE&region=DE';
+  const r=await fetchWithTimeout(proxied(url),7000);if(!r.ok)throw new Error('Suche nicht erreichbar');
+  const quotes=(JSON.parse(await r.text()).quotes||[]).filter(q=>q.symbol&&q.quoteType&&q.quoteType!=='INDEX'&&q.quoteType!=='FUTURE'&&q.quoteType!=='CURRENCY');
+  const types={etf:['ETF','MUTUALFUND'],stock:['EQUITY'],crypto:['CRYPTOCURRENCY']}[category];
+  const typed=types?quotes.filter(q=>types.includes(q.quoteType)):quotes;
+  const rank=q=>{const s=q.symbol;if(/-EUR$/.test(s)||/\.DE$/.test(s))return 0;if(/\.(F|MU|SG|DU|BE|HM|HA)$/.test(s))return 1;if(/\.(AS|PA|MI|SW|L|VI|MC|BR)$/.test(s))return 2;return 3;};
+  /* Yahoos Relevanz bleibt; derselbe Fonds an mehreren Börsen erscheint einmal mit dem deutschen Handelsplatz */
+  const best=new Map();
+  (typed.length?typed:quotes).forEach((q,i)=>{
+    const key=(q.longname||q.shortname||q.symbol).toLowerCase(),cur=best.get(key);
+    if(!cur)best.set(key,{q,i});else if(rank(q)<rank(cur.q))best.set(key,{q,i:cur.i});
+  });
+  return [...best.values()].sort((a,b)=>(rank(a.q)>2)-(rank(b.q)>2)||a.i-b.i).slice(0,3)
+    .map(({q})=>({provider:'yahoo',symbol:q.symbol,name:q.longname||q.shortname||q.symbol,exchange:q.exchDisp||q.exchange||''}));
+}
+/* Stückzahl-Verlauf bis zum Vormonat von „until“ (der aktuelle Monat ist der erfasste Stand).
+   Einmal gekauft: gleiche Stückzahl. Sparplan: jeden Monat Betrag ÷ Kurs; was zum heutigen Bestand fehlt,
+   gilt als Einmalkauf zu Beginn, ein zu hoch angegebener Sparplan wird auf den heutigen Bestand verkleinert. */
+function reconstructHolding(prices,since,until,quantity,plan=0){
+  const known=Object.keys(prices).filter(m=>prices[m]>0).sort();
+  if(!known.length||!(quantity>0)||since>=until)return [];
+  const months=[];let last=null;
+  for(let m=since<known[0]?known[0]:since;m<=until;m=LoanModel.addMonths(m,1)){if(prices[m]>0)last=prices[m];if(last)months.push([m,last]);}
+  if(months.length<2)return [];
+  let q;
+  if(plan>0){
+    const buys=months.map(([,p])=>plan/p),total=buys.reduce((a,b)=>a+b,0);
+    const k=total>quantity?quantity/total:1;let held=Math.max(0,quantity-total);
+    q=buys.map(b=>held+=b*k);
+  }else q=months.map(()=>quantity);
+  return months.slice(0,-1).map(([month,p],i)=>({month,quantity:Math.round(q[i]*1e6)/1e6,value:AssetModel.money(q[i]*p)}));
+}
+function _setupHistoryRows(s){return s.assets.filter(r=>SETUP_HISTORY_CATS.includes(r.category)&&r.name.trim()&&_setupLenient(r.amount)>0);}
+function _setupHist(s,id){return s.hist[id]||(s.hist[id]={query:'',results:null,searching:false,instrument:null,month:'',year:'',mode:'',plan:''});}
+function _setupSince(h){return h.year&&h.month?h.year+'-'+String(h.month).padStart(2,'0'):null;}
+function _setupSearch(id,query,category){
+  const h=_setup&&_setup.hist[id];if(!h)return;
+  h.query=query;clearTimeout(h.timer);
+  if(query.trim().length<2){h.results=null;h.searching=false;_setupPaintResults(id);return;}
+  h.searching=true;_setupPaintResults(id);
+  const token=h.token={};
+  h.timer=setTimeout(async()=>{
+    let results=[];try{results=await searchInstruments(query.trim(),category);}catch(error){results=null;}
+    if(h.token!==token)return;
+    h.searching=false;h.results=results;h.failed=results===null;_setupPaintResults(id);
+  },350);
+}
+function _setupResultsHTML(h){
+  if(h.searching)return '<p class="ob-hist-note">Suche …</p>';
+  if(h.failed)return '<p class="ob-hist-note">Die Suche ist gerade nicht erreichbar. Du kannst diesen Schritt überspringen.</p>';
+  if(!h.results)return '';
+  if(!h.results.length)return '<p class="ob-hist-note">Nichts gefunden. Versuche einen anderen Namen oder die ISIN.</p>';
+  return h.results.map((x,i)=>`<button type="button" class="ob-hist-hit" data-act="hist-pick" data-i="${i}"><span>${escHTML(x.name)}</span><small>${escHTML(x.symbol)}${x.exchange?' · '+escHTML(x.exchange):''}</small></button>`).join('');
+}
+function _setupPaintResults(id){const el=document.getElementById('hr-'+id);if(el&&_setup)el.innerHTML=_setupResultsHTML(_setup.hist[id]);}
+function _setupHistoryCard(s,r){
+  const h=_setupHist(s,r.id),fixed=SETUP_FIXED_INSTRUMENTS[r.category],year=new Date().getFullYear();
+  let inst;
+  if(fixed)inst=`<div class="ob-hist-inst"><span>${fixed.label}</span></div>`;
+  else if(h.instrument)inst=`<div class="ob-hist-inst is-picked"><span><b>${escHTML(h.instrument.name)}</b><small>${escHTML(h.instrument.symbol)}${h.instrument.exchange?' · '+escHTML(h.instrument.exchange):''}</small></span><button type="button" class="ob-link" data-act="hist-change">Ändern</button></div>`;
+  else inst=`<label class="ob-hist-search"><span class="ob-hist-l">Welches Wertpapier?</span><input class="ob-in" type="search" data-h="query" value="${escHTML(h.query)}" placeholder="Name oder ISIN" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"></label><div class="ob-hist-results" id="hr-${r.id}">${_setupResultsHTML(h)}</div>`;
+  const opt=(v,label,cur)=>`<option value="${v}"${String(v)===String(cur)?' selected':''}>${label}</option>`;
+  const months=opt('','Monat',h.month)+MONTH_FULL.map((m,i)=>opt(i+1,m,h.month)).join('');
+  const years=opt('','Jahr',h.year)+Array.from({length:41},(_,i)=>opt(year-i,year-i,h.year)).join('');
+  const mode=(v,label)=>`<button type="button" class="ob-hist-mode${h.mode===v?' on':''}" data-act="hist-mode" data-v="${v}" aria-pressed="${h.mode===v}">${label}</button>`;
+  return `<div class="ob-hist" data-row="${r.id}"><div class="ob-hist-head"><b>${escHTML(r.name.trim())}</b><span>${fmt(_setupLenient(r.amount))}</span></div>${inst}
+    <div class="ob-hist-row"><span class="ob-hist-l">Seit</span><select class="ob-in ob-select" data-h="month" aria-label="Seit Monat">${months}</select><select class="ob-in ob-select" data-h="year" aria-label="Seit Jahr">${years}</select></div>
+    <div class="ob-hist-row"><span class="ob-hist-l">Gekauft</span><span class="ob-hist-modes">${mode('once','Einmal')}${mode('plan','Mit Sparplan')}</span></div>
+    ${h.mode==='plan'?`<label class="ob-hist-row"><span class="ob-hist-l">Pro Monat</span>${_setupMoney('data-h="plan"',h.plan,'Sparplan pro Monat für '+r.name)}</label>`:''}</div>`;
+}
+function _setupHistoryView(s){
+  const rows=_setupHistoryRows(s);
+  return {title:'Seit wann hast du deine Anlagen?',sub:'Optional: Dann zeichnet die App deinen bisherigen Verlauf mit echten Kursen, und der Wert aktualisiert sich ab jetzt von selbst.',
+    body:`<div class="ob-entries">${rows.map(r=>_setupHistoryCard(s,r)).join('')}</div><p class="ob-hint">Ungefähre Angaben reichen. Konten und Sachwerte setzt die App für die Vergangenheit mit ihrem heutigen Wert an. Berechnete Monate sind gekennzeichnet und lassen sich jederzeit korrigieren.</p>`,
+    foot:'<button type="button" class="btn btn-primary" data-act="next">Weiter</button><button type="button" class="ob-skip" data-act="skip">Überspringen</button>'};
+}
+/* Prüft die Angaben und lädt Kurse; einzelne Abrufe dürfen scheitern, dann startet ihr Verlauf heute */
+async function _setupBuildHistory(s){
+  const rows=_setupHistoryRows(s),cur=currentYM(),todo=[];
+  for(const r of rows){
+    const h=_setupHist(s,r.id),fixed=SETUP_FIXED_INSTRUMENTS[r.category],name=r.name.trim();
+    const touched=h.month||h.year||h.mode;
+    if(touched){
+      if(!h.month||!h.year)throw new Error(name+': Bitte Monat und Jahr wählen, seit wann du es hast.');
+      if(_setupSince(h)>cur)throw new Error(name+': Der Monat liegt in der Zukunft.');
+      if(!h.mode)throw new Error(name+': Bitte wählen, ob einmal gekauft oder mit Sparplan.');
+      if(h.mode==='plan'&&!(_setupNum(h.plan,name+' · Sparplan')>0))throw new Error(name+': Bitte den Sparplan pro Monat eintragen.');
+      if(!fixed&&!h.instrument)throw new Error(name+': Bitte das Wertpapier auswählen, damit die App seine Kurse kennt.');
+    }
+    const instrument=fixed?{provider:fixed.provider,symbol:fixed.symbol}:h.instrument;
+    if(instrument)todo.push({r,h,instrument,since:touched?_setupSince(h):null,plan:h.mode==='plan'?_setupNum(h.plan,''):0});
+  }
+  s.history={};s.historyFailed=[];
+  await Promise.all(todo.map(async({r,h,instrument,since,plan})=>{
+    try{
+      const {instrument:inst,quote}=await fetchInstrumentQuote(instrument);
+      const quantity=Math.round(_setupLenient(r.amount)/quote.priceEUR*1e6)/1e6;
+      const months=since?reconstructHolding(await fetchMonthlyPricesEUR(_historySymbol(inst)),since,cur,quantity,plan):[];
+      s.history[r.id]={instrument:{provider:inst.provider,symbol:inst.symbol,exchange:inst.exchange||'',currency:inst.currency||'EUR',name:inst.name||inst.symbol},quote,quantity,months};
+    }catch(error){s.historyFailed.push(r.name.trim());}
+  }));
+}
+/* Sparpläne aus diesem Schritt als Vorschlag für „Sparen & Anlegen“ im Budget */
+function _setupPrefillSaving(s){
+  if(s.budget.saving.trim())return;
+  const plans=_setupHistoryRows(s).map(r=>{const h=_setupHist(s,r.id);return {id:r.id,plan:h.mode==='plan'?_setupLenient(h.plan):0};}).filter(x=>x.plan>0);
+  if(!plans.length)return;
+  s.budget.saving=_moneyInput(plans.reduce((a,x)=>a+x.plan,0));
+  s.budget.target=plans.sort((a,b)=>b.plan-a.plan)[0].id;
+}
+/* Kleiner Verlauf für die Zusammenfassung, aus genau dem Dokument, das gespeichert wird */
+function _setupSparkHTML(s){
+  let doc;try{doc=buildSetupDocument(AssetsData.empty(),{...s,focus:{budget:false,future:false}},currentYM(),nextYM());}catch(error){return '';}
+  const liab=new Set(doc.positions.filter(p=>p.category==='liab').map(p=>p.id));
+  const series=doc.snapshots.filter(x=>x.month<=currentYM()).sort((a,b)=>a.month.localeCompare(b.month)).map(x=>x.positions.reduce((a,v)=>a+(liab.has(v.positionId)?-1:1)*(v.value||0),0));
+  if(series.length<3)return '';
+  const min=Math.min(...series),max=Math.max(...series),span=max-min||1;
+  const pts=series.map((v,i)=>`${(i/(series.length-1)*320).toFixed(1)} ${(64-(v-min)/span*56).toFixed(1)}`);
+  const first=doc.snapshots.map(x=>x.month).sort()[0];
+  return `<svg class="ob-spark" viewBox="0 0 320 72" fill="none" aria-hidden="true"><path d="M${pts.join('L')}V72H0Z" fill="currentColor" opacity=".08"/><path d="M${pts.join('L')}" stroke="currentColor" stroke-width="2"/></svg><span class="ob-spark-note">Verlauf seit ${fmtMonth(first)}, berechnet aus echten Kursen und deinen Angaben</span>`;
+}
+/* ── Darstellung ── */
+const _setupMoney=(attrs,value,label)=>`<span class="ob-money"><input class="ob-in" type="text" inputmode="decimal" autocomplete="off" ${attrs} value="${escHTML(value)}" placeholder="0" aria-label="${escHTML(label)}"><i>€</i></span>`;
+function _setupChips(list,act){
+  return `<div class="ob-chips">${list.map(([label],i)=>`<button type="button" class="ob-chip" data-act="${act}" data-i="${i}">${escHTML(label)}</button>`).join('')}</div>`;
+}
+function _setupAssetsView(s){
+  const cat=c=>(AssetModel.categories[c]||{}).name||'';
+  const rows=s.assets.map(r=>`<div class="ob-entry" data-row="${r.id}"><span class="ob-entry-l"><input class="ob-entry-name" type="text" data-f="name" value="${escHTML(r.name)}" aria-label="Bezeichnung" autocomplete="off"><small>${escHTML(cat(r.category))}</small></span>${_setupMoney('data-f="amount"',r.amount,'Wert von '+r.name)}<button type="button" class="ob-x" data-act="remove" aria-label="${escHTML(r.name)} entfernen">×</button></div>`).join('');
+  const total=s.assets.reduce((a,r)=>a+_setupLenient(r.amount),0);
+  return {title:'Was besitzt du?',sub:'Tippe an, was du hast, und trage ungefähr den heutigen Wert ein. Schätzwerte reichen völlig.',
+    body:_setupChips(SETUP_ASSETS,'add-asset')+(rows?`<div class="ob-entries">${rows}</div><div class="ob-total"><span>Zusammen</span><b id="setupTotal">${fmt(total)}</b></div>`:'')
+      +`<p class="ob-hint">Stückzahlen, Live-Kurse und den bisherigen Verlauf kannst du später ergänzen.</p>`,
+    foot:`<button type="button" class="btn btn-primary" data-act="next">Weiter</button>${rows?'':'<button type="button" class="ob-skip" data-act="skip">Später eintragen</button>'}`};
+}
+function _setupDebtsView(s){
+  if(s.hasDebts!==true)return {title:'Hast du Kredite oder Schulden?',sub:'Zum Beispiel einen Immobilien- oder Autokredit, einen Ratenkredit oder eine offene Kreditkarte.',
+    body:`<button type="button" class="ob-choice${s.hasDebts===false?' is-on':''}" data-act="nodebts"><span><b>Nein, keine Schulden</b></span></button><button type="button" class="ob-choice" data-act="yesdebts"><span><b>Ja, habe ich</b><span>Die Restschuld genügt, Rate und Zins sind optional.</span></span></button>`,foot:''};
+  const field=(r,k,label,ph,pct)=>`<label class="ob-mini"><span>${label}</span><span class="ob-money"><input class="ob-in" type="text" inputmode="decimal" autocomplete="off" data-f="${k}" value="${escHTML(r[k])}" placeholder="${ph||'0'}" aria-label="${escHTML(label)}"><i>${pct?'%':'€'}</i></span></label>`;
+  const rows=s.debts.map(r=>`<div class="ob-debt" data-row="${r.id}" data-list="debt"><div class="ob-debt-head"><input class="ob-entry-name" type="text" data-f="name" value="${escHTML(r.name)}" aria-label="Bezeichnung" autocomplete="off"><button type="button" class="ob-x" data-act="remove" aria-label="${escHTML(r.name)} entfernen">×</button></div><div class="ob-debt-grid">${field(r,'amount','Restschuld')}${field(r,'pay','Rate / Monat','optional')}${field(r,'rate','Zins','optional',true)}</div></div>`).join('');
+  return {title:'Welche Schulden hast du?',sub:'Trage die offene Restschuld ein. Mit Rate und Zins rechnet die App aus, wann du schuldenfrei bist.',
+    body:_setupChips(SETUP_DEBTS,'add-debt')+(rows?`<div class="ob-entries">${rows}</div>`:'')+`<p class="ob-hint">Zinsbindung, Sondertilgungen und den Tilgungsplan kannst du später ergänzen.</p>`,
+    foot:`<button type="button" class="btn btn-primary" data-act="next">Weiter</button><button type="button" class="ob-skip" data-act="nodebts">Doch keine Schulden</button>`};
+}
+function _setupBudgetView(s){
+  const b=_setupBudget(s,false),targets=_setupTargets(s),mini=s.mode!=='full';
+  const row=(k,label,hint)=>`<label class="ob-form-row"><span class="ob-l">${label}<small>${hint}</small></span>${_setupMoney(`data-b="${k}"`,s.budget[k],label)}</label>`;
+  const target=targets.length?`<label class="ob-form-row"><span class="ob-l">Fließt in<small>für die Prognose</small></span><select class="ob-in ob-select" data-b="target">${targets.map(t=>`<option value="${escHTML(t.value)}"${t.value===b.target?' selected':''}>${escHTML(t.label)}</option>`).join('')}</select></label>`:'';
+  return {title:'Dein Monat',sub:'Grobe Monatswerte genügen. Einzelne Posten wie Miete oder Versicherungen kannst du später aufteilen.',
+    body:`<div class="ob-form">${row('income','Einnahmen','Nettogehalt und alles, was regelmäßig reinkommt')}${b.loans>0?`<div class="ob-form-row"><span class="ob-l">Kreditraten<small>aus deinen Schulden</small></span><b class="ob-fixed">${fmt(b.loans)}</b></div>`:''}${row('fixed','Fixkosten','Miete, Nebenkosten, Versicherungen, Verträge'+(b.loans>0?' – ohne Kreditraten':''))}${row('living','Lebenshaltung','Essen, Mobilität, Freizeit, Sonstiges')}${row('saving','Sparen & Anlegen','z. B. Sparplan oder Tagesgeld')}${target}</div>`
+      +`<div class="ob-result" id="setupResult">${_setupResultHTML(b)}</div>`,
+    foot:`<button type="button" class="btn btn-primary" data-act="next">${mini?'Übernehmen':'Weiter'}</button><button type="button" class="ob-skip" data-act="skip">${mini?'Abbrechen':'Überspringen'}</button>`};
+}
+function _setupResultHTML(b){
+  if(!(b.income>0))return '<span>Bleibt jeden Monat übrig</span><b class="is-empty">–</b><small>Sobald du deine Einnahmen einträgst, siehst du hier, was übrig bleibt.</small>';
+  const neg=b.left<0;
+  return `<span>${neg?'Fehlt jeden Monat':'Bleibt jeden Monat übrig'}</span><b class="${neg?'is-neg':''}">${fmt(Math.abs(b.left))}</b><small>${neg?'Deine Ausgaben und Sparraten sind höher als deine Einnahmen.':'Einnahmen minus Ausgaben'+(b.saving>0?' und Sparen':'')+'.'}</small>`;
+}
+function _setupFutureView(s){
+  const f=s.future,mini=s.mode!=='full',year=new Date().getFullYear();
+  const row=(k,label,hint,input)=>`<label class="ob-form-row"><span class="ob-l">${label}${hint?`<small${k==='need'?' id="setupNeedHint"':''}>${hint}</small>`:''}</span>${input}</label>`;
+  return {title:'Deine Zukunft',sub:'Drei Angaben genügen für eine erste Prognose. Beträge in heutiger Kaufkraft.',
+    body:`<div class="ob-form">${row('birthYear','Geburtsjahr','','<input class="ob-in" type="text" inputmode="numeric" maxlength="4" data-fu="birthYear" value="'+escHTML(f.birthYear)+'" placeholder="JJJJ" aria-label="Geburtsjahr" autocomplete="bday-year">')}${row('retireAge','Ruhestand mit','','<span class="ob-money"><input class="ob-in" type="text" inputmode="numeric" maxlength="2" data-fu="retireAge" value="'+escHTML(f.retireAge)+'" placeholder="67" aria-label="Ruhestand mit Jahren"><i>Jahren</i></span>')}${row('need','Bedarf im Ruhestand',f.needFromBudget?'pro Monat · Vorschlag aus deinem Budget':'pro Monat, was du dann zum Leben brauchst',_setupMoney('data-fu="need"',f.need,'Bedarf im Ruhestand pro Monat'))}</div>`
+      +`<p class="ob-hint">Die Prognose ist ein Szenario, keine Garantie. Renditen, Inflation und weitere Annahmen kannst du später anpassen.</p>`,
+    foot:`<button type="button" class="btn btn-primary" data-act="next">Weiter</button><button type="button" class="ob-skip" data-act="skip">${mini?'Abbrechen':'Später planen'}</button>`};
+}
+function _setupPensionView(s){
+  const last=s.mode!=='full';
+  return {title:'Deine gesetzliche Rente',sub:'Den Betrag findest du in deiner jährlichen Renteninformation unter „Höhe Ihrer künftigen Regelaltersrente“.',
+    body:`<div class="ob-form"><label class="ob-form-row"><span class="ob-l">Rente pro Monat<small>brutto, laut Renteninformation</small></span>${_setupMoney('data-p="1"',s.pension,'Gesetzliche Rente pro Monat')}</label></div>`
+      +`<p class="ob-hint">Betriebsrente, private Renten oder die Rente deines Partners kannst du später unter Altersvorsorge ergänzen.</p>`,
+    foot:`<button type="button" class="btn btn-primary" data-act="next">${last?'Übernehmen':'Weiter'}</button><button type="button" class="ob-skip" data-act="skip">Weiß ich nicht</button>`};
+}
+function _setupDoneView(s){
+  let assets=0,debts=0,n=0;
+  try{_setupAssetRows(s).forEach(a=>{assets+=a.value;n++;});_setupDebtRows(s).forEach(d=>{debts+=d.value;});}catch(error){}
+  const rows=[[n===1?'1 Vermögenswert':n+' Vermögenswerte',fmt(assets)]];
+  if(debts>0)rows.push(['Schulden','−'+fmt(debts)]);
+  if(s.focus.budget&&!s.budgetSkipped){
+    const b=_setupBudget(s,false);
+    if(b.saving>0)rows.push(['Du sparst jeden Monat',fmt(b.saving)]);
+    if(b.income>0&&(b.left!==0||!b.saving))rows.push([b.left<0?'Fehlt jeden Monat':'Bleibt zusätzlich übrig',fmt(Math.abs(b.left))]);
+  }
+  if(s.focus.future&&!s.futureSkipped){
+    try{const f=_setupFuture(s);rows.push(['Ruhestand',`mit ${f.retireAge} · ${fmt(f.need)}/Monat`]);}catch(error){}
+    const p=_setupLenient(s.pension);if(p>0)rows.push(['Gesetzliche Rente',fmt(p)+' brutto']);
+  }
+  const next=[];
+  if(!n)next.push('Deinen ersten Vermögenswert anlegen');
+  if(s.assets.some(r=>SETUP_MARKET_CATS.includes(r.category)&&!(s.history||{})[r.id]))next.push('Live-Kurse für Depot oder Krypto verbinden');
+  if(!s.focus.budget||s.budgetSkipped)next.push('Dein Monatsbudget einrichten');else next.push('Das Budget in einzelne Posten aufteilen');
+  if(!s.focus.future||s.futureSkipped)next.push('Deine Zukunft planen');else if(!_setupLenient(s.pension))next.push('Deine gesetzliche Rente ergänzen');
+  if(debts>0)next.push('Kredite mit Zinsbindung genauer erfassen');
+  return {title:'Geschafft!',sub:'Dein Start steht. Mehr musst du heute nicht tun.',
+    body:`<div class="ob-example ob-summary"><span class="ob-example-label">Nettovermögen</span><strong class="ob-example-total">${(assets-debts).toLocaleString('de-DE',{maximumFractionDigits:0})} <small>€</small></strong>${_setupSparkHTML(s)}${_guideRows(rows)}</div>`
+      +((s.historyFailed||[]).length?`<p class="ob-hint ob-hint-warn">Für ${escHTML(s.historyFailed.join(', '))} konnten gerade keine Kurse geladen werden. Dort beginnt der Verlauf heute; den Kurs kannst du später auf der Daten-Seite verbinden.</p>`:'')
+      +`<div class="ob-later"><b>Nach und nach, wann du magst</b><ul>${next.slice(0,3).map(t=>`<li>${escHTML(t)}</li>`).join('')}</ul><span>Diese Vorschläge findest du auf der Daten-Seite.</span></div>`,
+    foot:`<button type="button" class="btn btn-primary" data-act="finish">Los geht’s</button><p class="ob-foot-note">Deine Daten bleiben auf diesem Gerät.</p>`};
+}
+function _setupView(key,s){
+  if(key==='focus'){
+    const choice=(k,title,text,fixed)=>`<button type="button" class="ob-choice" role="checkbox" aria-checked="${fixed||s.focus[k]?'true':'false'}"${fixed?' aria-disabled="true"':` data-act="toggle" data-k="${k}"`}><i class="ob-check" aria-hidden="true"></i><span><b>${title}</b><span>${text}</span></span></button>`;
+    return {title:'Wobei soll dir die App helfen?',sub:'Wähle aus, was dich interessiert. Alles andere bleibt erst einmal ausgeblendet und lässt sich später einschalten.',
+      body:choice('assets','Vermögen im Blick','Was du besitzt und was du schuldest. Immer dabei.',true)+choice('budget','Monatsbudget','Was reinkommt, was rausgeht und was übrig bleibt.')+choice('future','Zukunft & Ruhestand','Wie sich dein Vermögen entwickeln könnte und ob es für den Ruhestand reicht.'),
+      foot:'<button type="button" class="btn btn-primary" data-act="next">Weiter</button>'};
+  }
+  if(key==='assets')return _setupAssetsView(s);
+  if(key==='history')return _setupHistoryView(s);
+  if(key==='debts')return _setupDebtsView(s);
+  if(key==='budget')return _setupBudgetView(s);
+  if(key==='future')return _setupFutureView(s);
+  if(key==='pension')return _setupPensionView(s);
+  return _setupDoneView(s);
+}
+function _setupRender(focusSel){
+  const overlay=document.getElementById('onboardingOverlay'),s=_setup,steps=_setupSteps(),key=steps[s.i],v=_setupView(key,s);
+  const progress=steps.length>1?`<div class="ob-progress" role="progressbar" aria-label="Fortschritt der Einrichtung" aria-valuemin="1" aria-valuemax="${steps.length}" aria-valuenow="${s.i+1}">${steps.map((_,i)=>`<i class="${i<s.i?'filled':i===s.i?'current':''}"><b></b></i>`).join('')}</div>`:'';
+  overlay.innerHTML=`<div class="ob-screen ob-setup" data-step="${key}">${progress}<div class="ob-tour-top">${s.i>0?'<button type="button" class="ob-back" data-act="back">‹ Zurück</button>':'<span></span>'}<button type="button" class="ob-close" data-act="close" aria-label="Einrichtung schließen">×</button></div><h1 class="ob-title" tabindex="-1">${v.title}</h1>${v.sub?`<p class="ob-sub">${v.sub}</p>`:''}<div class="ob-setup-body">${v.body}</div><p id="onboardingError" class="ob-error" role="alert" tabindex="-1" hidden></p><div class="ob-setup-foot">${v.foot}</div></div>`;
+  overlay.onclick=_setupClick;overlay.oninput=_setupInput;overlay.onchange=_setupInput;
+  if(!overlay._setupBlur){overlay._setupBlur=true;overlay.addEventListener('focusout',_setupBlur);}
+  overlay.onkeydown=e=>{if(e.key!=='Enter'||e.target.tagName!=='INPUT')return;e.preventDefault();if(['budget','future','pension'].includes(key))_setupNext();else e.target.blur();};
+  const target=focusSel&&overlay.querySelector(focusSel);
+  if(target){target.focus();target.scrollIntoView({block:'center'});}
+  else{overlay.scrollTop=0;overlay.querySelector('h1')?.focus({preventScroll:true});}
+  /* Wertpapiere mit aussagekräftigem Namen gleich suchen, z. B. „MSCI World ETF“ */
+  if(key==='history')_setupHistoryRows(s).forEach(r=>{
+    const h=_setupHist(s,r.id),name=r.name.trim();
+    if(SETUP_FIXED_INSTRUMENTS[r.category]||h.instrument||h.query||h.results||SETUP_GENERIC_NAMES.includes(name.toLowerCase().replace(/\s*\d+$/,'')))return;
+    /* Füllwörter verschlechtern die Treffer („MSCI World ETF“ → „MSCI World“) */
+    const query=name.replace(/\b(etfs?|fonds|ucits|aktien?|sparplan|depot)\b/gi,' ').replace(/\s+/g,' ').trim()||name;
+    _setupSearch(r.id,query,r.category);
+    const input=overlay.querySelector(`[data-row="${r.id}"] [data-h="query"]`);if(input)input.value=query;
+  });
+}
+function _setupName(list,label){
+  if(!list.some(r=>r.name===label))return label;
+  let k=2;while(list.some(r=>r.name===label+' '+k))k++;return label+' '+k;
+}
+function _setupClick(e){
+  const b=e.target.closest('[data-act]'),s=_setup;if(!b||!s)return;
+  const act=b.dataset.act;
+  if(act==='close')return _setupClose();
+  if(act==='back'){s.i=Math.max(0,s.i-1);return _setupRender();}
+  if(act==='toggle'){const k=b.dataset.k;s.focus[k]=!s.focus[k];return _setupRender(`[data-k="${k}"]`);}
+  if(act==='add-asset'){const [label,category,name]=SETUP_ASSETS[+b.dataset.i],id='a'+(++_setupSeq);s.assets.push({id,name:_setupName(s.assets,name||label),category,amount:''});return _setupRender(`[data-row="${id}"] [data-f="amount"]`);}
+  if(act==='add-debt'){const [label,link]=SETUP_DEBTS[+b.dataset.i],id='d'+(++_setupSeq);s.debts.push({id,name:_setupName(s.debts,label),link,amount:'',pay:'',rate:''});return _setupRender(`[data-row="${id}"] [data-f="amount"]`);}
+  if(act==='remove'){const id=b.closest('[data-row]').dataset.row;s.assets=s.assets.filter(r=>r.id!==id);s.debts=s.debts.filter(r=>r.id!==id);return _setupRender();}
+  if(act==='nodebts'){s.hasDebts=false;s.debts=[];return _setupAdvance(s);}
+  if(act==='yesdebts'){s.hasDebts=true;return _setupRender('.ob-chip');}
+  if(act==='hist-pick'||act==='hist-change'||act==='hist-mode'){
+    const id=b.closest('[data-row]').dataset.row,h=_setupHist(s,id);
+    if(act==='hist-pick'){h.instrument=h.results[+b.dataset.i];}
+    if(act==='hist-change'){h.instrument=null;h.results=null;}
+    if(act==='hist-mode')h.mode=b.dataset.v;
+    return _setupRender(act==='hist-change'?`[data-row="${id}"] [data-h="query"]`:act==='hist-mode'&&h.mode==='plan'?`[data-row="${id}"] [data-h="plan"]`:`[data-row="${id}"] [data-h="month"]`);
+  }
+  if(act==='next')return _setupNext();
+  if(act==='skip')return _setupSkip();
+  if(act==='finish')return _setupFinish();
+}
+function _setupBlur(e){
+  const t=e.target;if(!_setup||!t.classList||!t.classList.contains('ob-in')||t.tagName!=='INPUT'||['birthYear','retireAge','rate'].includes(t.dataset.fu||t.dataset.f))return;
+  const n=_parseDec(t.value);if(t.value.trim()&&isFinite(n)&&n>=0){t.value=_moneyInput(n);_setupInput({target:t});}
+}
+function _setupInput(e){
+  const t=e.target,s=_setup;if(!s||!t.closest)return;
+  const row=t.closest('[data-row]');
+  if(row&&t.dataset.h){
+    const id=row.dataset.row,h=_setupHist(s,id);
+    if(t.dataset.h==='query'){if(e.type==='input')_setupSearch(id,t.value,(s.assets.find(r=>r.id===id)||{}).category);return;}
+    h[t.dataset.h]=t.value;
+  }
+  else if(row&&t.dataset.f){const r=[...s.assets,...s.debts].find(x=>x.id===row.dataset.row);if(r)r[t.dataset.f]=t.value;}
+  else if(t.dataset.b)s.budget[t.dataset.b]=t.value;
+  else if(t.dataset.fu){s.future[t.dataset.fu]=t.value;if(t.dataset.fu==='need'&&s.future.needFromBudget){s.future.needFromBudget=false;const h=document.getElementById('setupNeedHint');if(h)h.textContent='pro Monat, was du dann zum Leben brauchst';}}
+  else if(t.dataset.p)s.pension=t.value;
+  else return;
+  const total=document.getElementById('setupTotal');if(total)total.textContent=fmt(s.assets.reduce((a,r)=>a+_setupLenient(r.amount),0));
+  const result=document.getElementById('setupResult');if(result)result.innerHTML=_setupResultHTML(_setupBudget(s,false));
+  const err=document.getElementById('onboardingError');if(err)err.hidden=true;
+}
+
+/* ── Nach und nach ergänzen: höchstens drei passende Vorschläge auf der Daten-Seite ── */
+const TIPS_KEY='vermoegen-tips-dismissed';
+function _tipsDismissed(){try{const v=JSON.parse(localStorage.getItem(TIPS_KEY)||'[]');return Array.isArray(v)?v:[];}catch(error){return [];}}
+function _nextSteps(){
+  const doc=appStorage.document(),m=_mods(),out=[];
+  const pos=doc.positions.filter(p=>!p.archived),assets=pos.filter(p=>p.category!=='liab');
+  const items=doc.budget?doc.budget.items:[];
+  if(!assets.length)out.push({id:'first-asset',title:'Ersten Vermögenswert anlegen',text:'Konto, Depot oder Immobilie – ein Schätzwert reicht.',run:()=>openAddAssetSheet()});
+  if(!m.budget&&!items.length)out.push({id:'budget',title:'Monatsbudget einrichten',text:'Vier grobe Zahlen zeigen dir, was jeden Monat übrig bleibt.',run:()=>startSetup('budget')});
+  if(!m.forecast&&doc.retirement.primary.birthYear===undefined&&assets.length)out.push({id:'future',title:'Zukunft planen',text:'Mit drei Angaben siehst du, ob dein Vermögen für den Ruhestand reicht.',run:()=>startSetup('future')});
+  const sp=doc.retirement.primary.statutoryPension;
+  if(assets.length&&m.forecast&&!m.pension&&!(sp.points>0)&&!(sp.annualSalary>0)&&!doc.retirement.incomes.length&&!doc.retirement.people.length)out.push({id:'pension',title:'Rente ergänzen',text:'Ein Betrag aus deiner Renteninformation macht die Prognose deutlich genauer.',run:()=>startSetup('pension')});
+  const quote=assets.find(p=>SETUP_MARKET_CATS.includes(p.category)&&!p.instrument);
+  if(quote)out.push({id:'quotes-'+quote.id,title:'Live-Kurs für „'+quote.name+'“',text:'Mit Ticker und Stückzahl hält sich der Wert von selbst aktuell.',run:()=>_nsQuote(quote.id)});
+  if(m.budget&&items.some(r=>/^setup-(fixed|living)/.test(r.id)))out.push({id:'budget-split',title:'Budget genauer aufteilen',text:'Ersetze Fixkosten und Lebenshaltung nach und nach durch Posten wie Miete oder Versicherungen.',run:()=>_openDataSection('budget','ds-budget-items')});
+  const lp=getLoanParams(),loan=pos.find(p=>p.category==='liab'&&!LoanModel.configured(lp[p.id]||{}));
+  if(m.liab&&loan)out.push({id:'loan-'+loan.id,title:'„'+loan.name+'“ genauer erfassen',text:'Mit Darlehensvertrag und Zinsbindung berechnet die App die Restschuld jeden Monat selbst.',run:()=>openLoanSheet(loan.id)});
+  if(assets.length&&m.forecast)out.push({id:'assumptions',title:'Annahmen prüfen',text:'Rendite je Anlage, Inflation und Sicherheit findest du unter Prognose & Annahmen.',run:()=>_v2OpenForecastSettings()});
+  if(assets.length&&!_lastBackup())out.push({id:'backup',title:'Erste Sicherung erstellen',text:'Deine Daten liegen nur auf diesem Gerät. Eine Datei genügt für den Umzug.',run:()=>exportBackup()});
+  const hidden=new Set(_tipsDismissed());
+  return out.filter(t=>!hidden.has(t.id)).slice(0,3);
+}
+function _nextStepsHTML(){
+  const tips=_nextSteps();if(!tips.length)return '<div id="nextSteps"></div>';
+  return `<div id="nextSteps" class="ns-card"><div class="ns-head"><b>Nach und nach ergänzen</b><span>Kein Muss – wann immer du magst.</span></div>${tips.map(t=>`<div class="ns-item"><button type="button" class="ns-main" onclick="_nsRun('${escHTML(t.id)}')"><span class="ns-t">${escHTML(t.title)}</span><span class="ns-s">${escHTML(t.text)}</span></button><button type="button" class="ns-x" onclick="_nsDismiss('${escHTML(t.id)}')" aria-label="Vorschlag ausblenden">×</button></div>`).join('')}</div>`;
+}
+function _nsQuote(id){
+  openAssetSheet(id);
+  const prefix='asset-'+id,sel=_assetEl(prefix,'valuation');if(!sel)return;
+  sel.value='market';_assetMetadataChanged(prefix,'valuation');_assetSheetRows(prefix);
+  const sym=_assetEl(prefix,'symbol');if(sym){sym.scrollIntoView({block:'center'});sym.focus({preventScroll:true});}
+}
+function _nsRefresh(){const el=document.getElementById('nextSteps');if(el)el.outerHTML=_nextStepsHTML();}
+function _nsRun(id){const t=_nextSteps().find(t=>t.id===id);if(t)t.run();}
+function _nsDismiss(id){
+  try{localStorage.setItem(TIPS_KEY,JSON.stringify([...new Set([..._tipsDismissed(),id])]));}catch(error){}
+  _nsRefresh();
+}
+
 
 /* Fetch and validate before replacement, keeping the current data on failure. */
 async function _loadDemoBackup(){
@@ -9129,7 +9868,8 @@ function initApp(){
     document.addEventListener('keydown',e=>{
       const overlay=document.getElementById('onboardingOverlay');
       if(overlay.style.display!=='block')return;
-      if(e.key==='Escape'&&_guideActive){e.preventDefault();cancelOnboarding();}
+      if(e.key==='Escape'&&_setup){e.preventDefault();_setupClose();}
+      else if(e.key==='Escape'&&_guideActive){e.preventDefault();cancelOnboarding();}
       if(e.key==='Tab'){
         const controls=[...overlay.querySelectorAll('button,input,select,[href],[tabindex="0"]')].filter(el=>!el.disabled&&el.getClientRects().length);
         const first=controls[0],last=controls[controls.length-1];
