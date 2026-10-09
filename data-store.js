@@ -4,7 +4,7 @@
   'use strict';
   const KEY = 'vermoegen-data-v1';
   const FORMAT = 'vermoegen-backup';
-  const VERSION = 3;
+  const VERSION = 4;
   const CATEGORIES = ['cash', 'etf', 'stock', 'bitcoin', 'crypto', 'metal', 'realEstate', 'vehicle', 'other', 'bav', 'illiquid', 'liab'];
   const BUDGET_CATEGORIES = ['einkommen', 'fixe', 'variable', 'sparen'];
   const MODULES = ['assets', 'liab', 'pension', 'budget', 'forecast'];
@@ -81,8 +81,15 @@
     const used = new Set(previous.map(x => x.id));
     const claimed = new Set();
     return (row, index) => {
-      const match = previous.find(p => p.id === row.id) || previous.find(p => !claimed.has(p.id) && p.name === row.name);
-      const id = match && !claimed.has(match.id) ? match.id : nextId(prefix, used);
+      const byId = previous.find(p => p.id === row.id);
+      let id;
+      if (byId) id = claimed.has(byId.id) ? nextId(prefix, used) : byId.id;
+      // New rows from the app bring their own ID; keep it instead of borrowing a namesake's.
+      else if (typeof row.id === 'string' && /^[a-zA-Z0-9äöüß_-]+$/.test(row.id) && !used.has(row.id)) { id = row.id; used.add(id); }
+      else {
+        const match = previous.find(p => !claimed.has(p.id) && p.name === row.name);
+        id = match ? match.id : nextId(prefix, used);
+      }
       claimed.add(id);
       return id;
     };
@@ -220,6 +227,12 @@
       }
       const orderId = idsFor('order-', previous.budget ? previous.budget.standingOrders : []);
       doc.budget.standingOrders = (bd.standingOrders || []).map((r, i) => ({ id: orderId(r, i), from: endpoint(r.from), to: endpoint(r.to), amount: number(r.amount) ?? 0 }));
+      // Version 4: one-time payments belong to one calendar month and never repeat.
+      const onceId = idsFor('once-', (previous.budget && previous.budget.oneTime) || []);
+      doc.budget.oneTime = (bd.oneTime || []).map((r, i) => {
+        const category = BUDGET_CATEGORIES.includes(r.category) ? r.category : 'variable';
+        return { id: onceId(r, i), name: r.name, category, kind: budgetKind(r, category), month: r.month, amount: number(r.amount) ?? 0, targetGroupId: r.targetGroupId ?? null };
+      });
     }
     const primary = doc.retirement.primary;
     primary.id = previous.retirement.primary.id;
@@ -290,6 +303,7 @@
       const endpoint = v => v.type === 'account' ? doc.accounts.find(a => a.id === v.accountId).name : v.name;
       bd.standingOrders = doc.budget.standingOrders.map(o => ({ id: o.id, from: endpoint(o.from), to: endpoint(o.to), amount: o.amount }));
       for (const r of doc.budget.items) bd[r.category].push({ id: r.id, name: r.name, subcat: r.subcategory, kind: r.kind, targetGroupId: r.targetGroupId, targetGroup: r.targetGroupId ? groupName(r.targetGroupId) : null, values: copy(r.monthlyAmounts) });
+      bd.oneTime = copy(doc.budget.oneTime || []);
       put('budgetData', bd);
     }
     const lp = record();
@@ -349,7 +363,7 @@
     safeKeys(doc);
     object(doc, 'Datei', ['format', 'schemaVersion', 'currency', 'exportedAt', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences'], ['format', 'schemaVersion', 'currency', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences']);
     if (doc.format !== FORMAT) fail('format', 'keine Vermögen-Sicherung');
-    if (![1,2,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
+    if (![1,2,3,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
     if (doc.currency !== 'EUR') fail('currency', 'nur EUR wird unterstützt');
     if (own(doc, 'exportedAt') && (typeof doc.exportedAt !== 'string' || !Number.isFinite(Date.parse(doc.exportedAt)))) fail('exportedAt', 'ungültiges Datum');
     const groups = unique(doc.groups, 'groups');
@@ -413,7 +427,18 @@
       if (names.has(a.name)) fail('accounts', 'doppelter Kontoname'); names.add(a.name);
     }
     if (doc.budget !== null) {
-      object(doc.budget, 'Budget', ['items', 'standingOrders']); unique(doc.budget.items, 'Budgetposten');
+      object(doc.budget, 'Budget', ['items', 'standingOrders', 'oneTime'], ['items', 'standingOrders']); unique(doc.budget.items, 'Budgetposten');
+      if (own(doc.budget, 'oneTime')) {
+        unique(doc.budget.oneTime, 'Einmalige Zahlungen');
+        for (const o of doc.budget.oneTime) {
+          object(o, 'Einmalige Zahlung', ['id', 'name', 'category', 'kind', 'month', 'amount', 'targetGroupId']);
+          text(o.name, 'Name der Zahlung', true);
+          if (!BUDGET_CATEGORIES.includes(o.category)) fail('Einmalige Zahlung', 'unbekannte Kategorie');
+          if (!['income', 'expense', 'saving'].includes(o.kind)) fail('Einmalige Zahlung', 'unbekannte Art');
+          month(o.month, 'Einmalige Zahlung.month'); num(o.amount, 'Einmalige Zahlung.amount', 0);
+          if (o.targetGroupId !== null) ref(o.targetGroupId, 'Einmalige Zahlung.Ziel', groups);
+        }
+      }
       for (const b of doc.budget.items) {
         object(b, 'Budgetposten', ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts']);
         text(b.name, 'Budgetname', true); text(b.subcategory, 'Unterkategorie');
