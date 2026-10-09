@@ -43,7 +43,7 @@ test('depreciation travels in the single backup file and malformed settings are 
   const store=Data.createStore(new MemoryStorage());store.importBackup(fixture(car));
   const copy=Data.createStore(new MemoryStorage());copy.importBackup(store.exportBackup());
   assert.deepEqual(copy.document().positions[1].depreciation,car);
-  assert.equal(copy.document().schemaVersion,3);
+  assert.equal(copy.document().schemaVersion,Data.VERSION);
   for(const bad of [{...car,method:'linear'},{...car,interval:'week'},{...car,amount:0},{...car,amount:150},{...car,startMonth:'01/26'},{...car,extra:1}]){
     assert.throws(()=>Data.validate(fixture(bad)));
   }

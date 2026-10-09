@@ -5,17 +5,17 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `vermoegen_YYYY-MM-DD.json`. Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 3
+## Struktur, Version 4
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `3`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `4`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
 | `snapshots` | Monatsstände (`YYYY-MM`) mit Positions-ID, Wert und optionaler Stückzahl |
 | `accounts` | Konten mit ID, Name und IBAN |
-| `budget` | Zwölfmonatiger Plan ohne Jahresbezug, Budgetposten und Daueraufträge; `null`, wenn nicht eingerichtet |
+| `budget` | Zwölfmonatiger Plan ohne Jahresbezug, Budgetposten, Daueraufträge und einmalige Zahlungen (`oneTime`); `null`, wenn nicht eingerichtet |
 | `loans` | Darlehensparameter, über `positionId` einer Verbindlichkeit zugeordnet |
 | `retirement` | Eigene Person, weitere Personen mit gesetzlicher Rente und weitere Renteneinkünfte |
 | `forecast` | Lebensplanung, Bedarf, Inflation, Sicherheitsniveau und einmalige Ereignisse |
@@ -338,3 +338,31 @@ damit der Verlauf erhalten bleibt.
 Version 1- und 2-Dateien werden weiterhin gelesen und beim Speichern als Version 3
 geschrieben. Ältere App-Versionen lehnen Version-3-Dateien ab, statt die
 Abschreibung stillschweigend zu verwerfen.
+
+## Einnahmen und Ausgaben (Version 4)
+
+Wiederkehrende Posten bleiben Teil des Zwölfmonatsplans (`budget.items`,
+`monthlyAmounts`). Die App bietet die Rhythmen monatlich, quartalsweise und
+jährlich mit Fälligkeitsmonat an und schreibt daraus die zwölf Werte; beim
+Bearbeiten wird der Rhythmus aus den Werten abgelesen. Abweichende Muster (z. B.
+Gehalt mit Weihnachtsgeld) bleiben als „je Monat unterschiedlich“ erhalten.
+
+Einmalige Zahlungen gehören zu genau einem Kalendermonat und wiederholen sich nicht:
+
+```json
+{"id": "once-1", "name": "Autoreparatur", "category": "variable", "kind": "expense",
+ "month": "2026-11", "amount": 800, "targetGroupId": null}
+```
+
+`category` ist eine Budgetkategorie, `kind` `income`, `expense` oder `saving`,
+`targetGroupId` optional die Zielgruppe einer Sparzahlung. Sie zählen nur im Budget
+ihres Monats und fließen nicht in Ø-Werte, Min/Max des Jahres, abgeleitete
+Sparraten oder die Prognose ein. Version-3-Dateien ohne `oneTime` bleiben gültig.
+
+Konten (`accounts`, Name und optional IBAN) und Daueraufträge
+(`budget.standingOrders`, Von/Nach und Betrag pro Monat) werden auf der Daten-Seite
+unter „Einnahmen & Ausgaben“ gepflegt. Von/Nach ist ein Konto oder eine freie
+Bezeichnung (z. B. Kindergeld). Umbenennen eines Kontos passt seine Daueraufträge
+an; beim Löschen bleiben sie mit der bisherigen Bezeichnung erhalten. Ohne
+Einnahmen bzw. ohne Daueraufträge zeigt die Budget-Seite anstelle des Geldflusses
+einen Hinweis mit Sprung zur passenden Stelle der Daten-Seite.
