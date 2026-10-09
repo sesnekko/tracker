@@ -64,7 +64,7 @@ test('single-file backup roundtrip keeps metadata and quote; unrelated writes re
   const b=Data.createStore(new MemoryStorage());b.importBackup(a.exportBackup());
   assert.deepEqual(b.document().positions,a.document().positions);assert.deepEqual(b.document().snapshots,a.document().snapshots);
   const old=fixture();old.schemaVersion=1;delete old.positions[0].instrument;delete old.positions[0].valuation;delete old.positions[0].lastQuote;delete old.positions[0].liquidity;
-  b.importBackup(old);assert.equal(b.document().schemaVersion,2);assert.equal(Asset.valuation(JSON.parse(b.getItem('fieldConfig')).fields[0]),'market');
+  b.importBackup(old);assert.equal(b.document().schemaVersion,Data.VERSION);assert.equal(Asset.valuation(JSON.parse(b.getItem('fieldConfig')).fields[0]),'market');
   assert.deepEqual(b.document().snapshots,old.snapshots);
 });
 test('invalid quote and automatic configuration fail atomic import; quota fails atomic creation',()=>{
