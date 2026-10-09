@@ -185,8 +185,16 @@ body.iso-mode .hero-label { color:var(--ink); }
 
 /* ── Stacked Bar (Budget only) ── */
 .structure-section { padding:0 0 20px; }
-/* iPhone: ohne Überschrift derselbe Abstand wie zur Vermögensentwicklung darunter */
-#page-home .structure-section-mobile { padding-top:26px; }
+/* iPhone: ein einheitlicher Abstand zwischen allen Blöcken der Vermögensseite
+   (Hero, Chart, Zeitraum-Buttons, Kacheln, Liste, Vermögensentwicklung) und zwischen den Kacheln */
+@media (max-width:767px){
+  #page-home { --home-gap:14px; }
+  #page-home .chart-section { margin-top:var(--home-gap); }
+  #page-home .range-bar { padding-top:var(--home-gap); }
+  #page-home .kpi-grid { padding-top:var(--home-gap); gap:var(--home-gap); }
+  #page-home .structure-section-mobile { padding-top:var(--home-gap); padding-bottom:0; }
+  #page-home .flow-section { margin-top:var(--home-gap); }
+}
 .stacked-bar { display:flex;height:12px;border-radius:4px;overflow:hidden;gap:1px;margin-bottom:12px; }
 .breakdown-collapsible { cursor:pointer;transition:opacity .2s,transform .35s cubic-bezier(.4,0,.2,1); }
 .breakdown-collapsible:active { opacity:0.8; }
@@ -1866,6 +1874,20 @@ body.onboarding-open{overflow:hidden}
 .ob-spark-note{display:block;font-size:12px;color:var(--muted);margin:-12px 0 6px}
 .ob-hint-warn{color:var(--text)}
 .ns-card{background:var(--card);border-radius:14px;margin:14px 0 4px;overflow:hidden}
+#page-home .hero,#page-lifetime .hero{cursor:pointer;-webkit-tap-highlight-color:transparent}
+#chartDefaults .ds-group-t{margin-top:10px;font-size:13px}
+#chartDefaults .ds-group-t:first-child{margin-top:4px}
+.st-t{font-size:15px;font-weight:500;color:var(--ink);margin-top:22px}
+#dsBody>.st-t:first-of-type{margin-top:6px}
+.st-version{font-size:12px;color:var(--muted);text-align:center;padding:22px 0 4px}
+/* Kacheln Einstellungen · Daten · Hilfe */
+.dp-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0 6px}
+.dp-tile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:84px;border:0;border-radius:14px;background:var(--card);color:var(--ink);font:inherit;font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dp-tile:active{background:var(--fill)}
+.dp-tile svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.dp-tile.has-badge::after{content:'';position:absolute;top:12px;right:14px;width:8px;height:8px;border-radius:50%;background:var(--red)}
+.cd-seg button{min-width:0;padding:6px 10px;font-size:14px}
+.cd-help{margin:10px 2px 0}
 .ns-head{padding:14px 16px 6px}
 .ns-head b{display:block;font-size:16px;font-weight:500;color:var(--ink)}
 .ns-head span{font-size:13px;color:var(--muted)}
@@ -2137,20 +2159,33 @@ body.onboarding-open{overflow:hidden}
 </details>
 
 
-<div class="sec-h">Sicherung</div>
+<!-- Einstellungen, Daten, Hilfe: drei Kacheln unter den Datenbereichen -->
+<div class="dp-tiles">
+  <button type="button" class="dp-tile" onclick="openInfoSheet('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Einstellungen</span></button>
+  <button type="button" class="dp-tile" id="dataTile" onclick="openInfoSheet('data')"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.5"/><path d="M4.5 5.5v6c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5v-6"/><path d="M4.5 11.5v6c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5v-6"/></svg><span>Daten</span></button>
+  <button type="button" class="dp-tile" onclick="openInfoSheet('help')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.8 9.6a2.3 2.3 0 1 1 3.2 2.1c-.6.3-1 .8-1 1.5v.3"/><path d="M12 16.6v.1"/></svg><span>Hilfe</span></button>
+</div>
+
+<template id="tpl-settings">
+<div class="ds-group-t st-t">Darstellung der Charts</div>
+<div id="chartDefaults"></div>
+</template>
+<template id="tpl-data">
+<div class="ds-group-t st-t">Sicherung</div>
 <div class="v2-list">
   <button class="v2-row v2-row-action" onclick="exportBackup()"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><polyline points="7 8 12 3 17 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span><span class="v2-t"><span class="v2-t1">Sicherung exportieren</span><span class="v2-t2" id="backupSub">Eine Datei mit allen Daten und Einstellungen</span></span><span class="v2-chev"></span></button>
   <label class="v2-row v2-row-action" style="cursor:pointer"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span><span class="v2-t"><span class="v2-t1">Sicherung wiederherstellen</span><span class="v2-t2">JSON-Sicherung oder alte CSV-Datei</span></span><span class="v2-chev"></span><input type="file" accept=".json,.csv,application/json,text/csv" id="csvInput2" style="display:none" onchange="document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
+  <button class="v2-row ds-row-danger" id="resetBtn" onclick="_settingsRun(resetApp)"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5h9l1-12.5"/></svg></span><span class="v2-t"><span class="v2-t1">Alle Daten löschen</span></span></button>
 </div>
-
-<div class="sec-h">Hilfe</div>
+<p class="ds-help">Deine Daten liegen nur auf diesem Gerät. Eine Sicherung ist eine einzelne Datei, mit der du auf einem anderen Gerät weitermachst.</p>
+</template>
+<template id="tpl-help">
 <div class="v2-list">
-  <button class="v2-row v2-row-action" onclick="startOnboarding('data')"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.8 9.6a2.3 2.3 0 1 1 3.2 2.1c-.6.3-1 .8-1 1.5v.3"/><path d="M12 16.6v.1"/></svg></span><span class="v2-t"><span class="v2-t1">App kennenlernen</span><span class="v2-t2">Geführter Einstieg in wenigen Schritten</span></span><span class="v2-chev"></span></button>
-  <button class="v2-row" onclick="_v2RestoreDemo()"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8 12 4l8 4v8l-8 4-8-4z"/><path d="m4 8 8 4 8-4M12 12v8"/></svg></span><span class="v2-t"><span class="v2-t1">Demo-Daten laden</span><span class="v2-t2">Ersetzt alle Daten durch Beispieldaten</span></span><span class="v2-chev"></span></button>
-  <button class="v2-row ds-row-danger" id="resetBtn"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5h9l1-12.5"/></svg></span><span class="v2-t"><span class="v2-t1">Alle Daten löschen</span></span></button>
+  <button class="v2-row v2-row-action" onclick="_settingsRun(()=>startOnboarding('data'))"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.8 9.6a2.3 2.3 0 1 1 3.2 2.1c-.6.3-1 .8-1 1.5v.3"/><path d="M12 16.6v.1"/></svg></span><span class="v2-t"><span class="v2-t1">App kennenlernen</span><span class="v2-t2">Geführter Einstieg in wenigen Schritten</span></span><span class="v2-chev"></span></button>
+  <button class="v2-row" onclick="_settingsRun(_v2RestoreDemo)"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8 12 4l8 4v8l-8 4-8-4z"/><path d="m4 8 8 4 8-4M12 12v8"/></svg></span><span class="v2-t"><span class="v2-t1">Demo-Daten laden</span><span class="v2-t2">Ersetzt alle Daten durch Beispieldaten</span></span><span class="v2-chev"></span></button>
 </div>
-
-<div style="font-size:12px;color:var(--muted);text-align:center;padding:22px 0 4px">Version 1.1</div>
+<div class="st-version">Version 1.1</div>
+</template>
 
 <!-- Spacer for bottom navigation bar -->
 <div style="height:80px"></div>
@@ -2439,7 +2474,7 @@ body.onboarding-open{overflow:hidden}
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="data-store.js?v=11"></script>
+<script src="data-store.js?v=12"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
 <script src="asset-model.js?v=4"></script>
@@ -3613,6 +3648,73 @@ function _clearIsolationState(){
   document.querySelectorAll('.legend-row.iso-active').forEach(r=>r.classList.remove('iso-active'));
   const heroLabel=document.querySelector('#page-home .hero-label');
   if(heroLabel)heroLabel.textContent=_heroDefaultLabel();
+}
+/* ── Chart-Standards je Seite (je Gerät, nicht Teil der Sicherung): Zeitraum, Asset-Flächen, Log-Skala.
+   Sie gelten beim Öffnen der App und nach einem Tipp auf den Gesamtwert, der alle Filter der Seite entfernt. ── */
+const CHART_DEFAULTS_KEY='vermoegen-chart-defaults';
+const CHART_DEFAULTS={home:{range:12,assets:true,log:false},lifetime:{range:10,assets:true,log:true}};
+const CHART_RANGES={home:[[12,'1 J'],[36,'3 J'],[60,'5 J'],[0,'Alle']],lifetime:[[5,'5 J'],[10,'10 J'],[25,'25 J'],[0,'Alle']]};
+function _chartDefaults(){
+  let v={};try{v=JSON.parse(localStorage.getItem(CHART_DEFAULTS_KEY)||'{}')||{};}catch(error){}
+  const pick=(page,raw)=>{
+    const d={...CHART_DEFAULTS[page],...(raw&&typeof raw==='object'?raw:{})};
+    if(!CHART_RANGES[page].some(([r])=>r===d.range))d.range=CHART_DEFAULTS[page].range;
+    d.assets=d.assets!==false;d.log=d.log===true;return d;
+  };
+  return {home:pick('home',v.home),lifetime:pick('lifetime',v.lifetime)};
+}
+function _saveChartDefault(page,key,value){
+  const d=_chartDefaults();d[page][key]=value;
+  try{localStorage.setItem(CHART_DEFAULTS_KEY,JSON.stringify(d));}catch(error){}
+}
+function _applyChartDefaults(page){
+  const d=_chartDefaults();
+  if(!page||page==='home'){netRange=d.home.range;showAssets=d.home.assets;useLogScale=d.home.log;}
+  if(!page||page==='lifetime'){ltRange=d.lifetime.range;ltShowAssets=d.lifetime.assets;ltUseLog=d.lifetime.log;}
+  document.querySelectorAll('[data-range]').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.range)===netRange));
+}
+/* Tipp auf den Gesamtwert: Kachel-Filter, Einzel-Asset, Zeitraum, Flächen und Skala zurück auf den Standard */
+function resetHomeChart(){
+  _applyChartDefaults('home');
+  kpiChartFilter=null;netLineHidden[0]=false;netLineHidden[1]=true;netLineHidden[2]=true;
+  isolatedAsset=null;isolatedAssetLabel=null;chartInteractionActive=false;
+  document.body.classList.remove('iso-mode');
+  document.querySelectorAll('.legend-row.iso-active').forEach(r=>r.classList.remove('iso-active'));
+  document.querySelectorAll('.kpi-item[data-kpi]').forEach(el=>el.classList.remove('kpi-active'));
+  _applyKpiListDim();
+  const label=document.querySelector('#page-home .hero-label');if(label)label.textContent=_heroDefaultLabel();
+  render();
+}
+function resetLifetimeChart(){_applyChartDefaults('lifetime');renderLifetimePageCalcs();}
+/* ── Kacheln unter den Datenbereichen: Einstellungen (Darstellung), Daten (Sicherung), Hilfe ── */
+const INFO_SHEETS={settings:'Einstellungen',data:'Daten',help:'Hilfe'};
+function openInfoSheet(kind){
+  const tpl=document.getElementById('tpl-'+kind);if(!tpl)return;
+  if(!_openSheet(INFO_SHEETS[kind],tpl.innerHTML,()=>'quiet','Fertig'))return;
+  _sheetCtx={info:kind};
+  document.getElementById('dsCancel').style.visibility='hidden';
+  _renderChartDefaults();_refreshBackupInfo();
+}
+/* Aktionen, die selbst ein Fenster öffnen oder neu laden: Einstellungen vorher schließen */
+function _settingsRun(fn){_closeSheet(true);fn();}
+/* Daten-Seite → Darstellung: Standard je Seite wählen; die Änderung gilt sofort */
+function _chartDefaultsHTML(){
+  const d=_chartDefaults(),m=_mods();
+  const seg=(page,key,opts,cur)=>`<div class="ds-seg cd-seg" role="group">${opts.map(([v,l])=>{const on=String(v)===String(cur);return `<button type="button" data-cd="${page}:${key}:${v}" class="${on?'on':''}" aria-pressed="${on}">${l}</button>`;}).join('')}</div>`;
+  const block=(page,title)=>`<div class="ds-group-t">${title}</div><div class="ds-group">
+    <div class="ds-row"><span class="ds-l">Zeitraum</span>${seg(page,'range',CHART_RANGES[page],d[page].range)}</div>
+    <div class="ds-row"><span class="ds-l">Ansicht</span>${seg(page,'assets',[[true,'Mit Flächen'],[false,'Nur Linie']],d[page].assets)}</div>
+    <div class="ds-row"><span class="ds-l">Skala</span>${seg(page,'log',[[false,'Linear'],[true,'Log']],d[page].log)}</div></div>`;
+  return (m.assets||m.liab?block('home','Vermögen'):'')+(m.forecast?block('lifetime','Prognose'):'')
+    +'<p class="ds-help cd-help">So starten die Charts. Ein Tipp auf den Gesamtwert oben auf der Seite entfernt alle Filter und stellt diese Ansicht wieder her. Gilt für dieses Gerät.</p>';
+}
+function _renderChartDefaults(){const el=document.getElementById('chartDefaults');if(el)el.innerHTML=_chartDefaultsHTML();}
+function _chartDefaultsClick(e){
+  const b=e.target.closest('[data-cd]');if(!b)return;
+  const [page,key,raw]=b.dataset.cd.split(':'),value=key==='range'?parseInt(raw):raw==='true';
+  _saveChartDefault(page,key,value);haptic('light');
+  if(page==='home')resetHomeChart();else if(_mod('forecast'))resetLifetimeChart();
+  _renderChartDefaults();
 }
 function render(){_clearIsolationState();renderKPIs();renderNetChart();renderPieChart();renderFlowSection();_initLegendListHover();const ltP=document.getElementById('page-lifetime');if(ltP&&ltP.classList.contains('active'))renderLifetimePage();}
 
@@ -5279,6 +5381,24 @@ function _isSparposten(r){
   const n=(r.name||'').toLowerCase(),sc=(r.subcat||'').toLowerCase();
   return sc==='sparen'||n.includes('etf')||n.includes('btc')||n.includes('bitcoin')||n.includes('cash')||n.includes('sparplan');
 }
+/* Restschulden des letzten Monats je Kredit, für die Aufteilung verknüpfter Raten in Zins und Tilgung */
+let _loanBalMemo={key:null,val:null};
+function _loanBalances(){
+  const raw=appStorage.getItem('finData')||'',key=raw.length+'|'+(appStorage.getItem('loanParams')||'').length;
+  if(_loanBalMemo.key===key)return _loanBalMemo.val;
+  const data=loadData(),last=Object.keys(data).sort().pop(),val={...((last&&data[last]._details)||{})};
+  _loanBalMemo={key,val};return val;
+}
+/* Rate eines verknüpften Kredits: mit Vertrag ersetzt die automatische Rate den Posten (nie doppelt),
+   sonst Zins = Restschuld × Sollzins / 12, der Rest ist Tilgung (Vermögensaufbau) */
+function _linkedLoanRow(r,v,autoLoans){
+  if(!r.loanId||!_mod('liab'))return null;
+  const f=_fc.fields.find(x=>x.id===r.loanId&&x.category==='liab');if(!f)return null;
+  if(autoLoans.some(l=>l.id===r.loanId))return {skip:true};
+  const p=getLoanParams()[r.loanId]||{},balance=+_loanBalances()[r.loanId]||0;
+  const interest=Math.min(v,Math.max(0,balance*(+p.rate||0)/1200));
+  return {interest,principal:v-interest,targetGroup:_liabTargetGroup(f)};
+}
 /* includeOnce: einmalige Zahlungen dieses Kalendermonats mitzählen (nicht für Ø-Werte des Plans) */
 function calcBudgetMonth(bd,monthIdx,includeOnce=false){
   const ym=(selectedMonth||currentYM()).slice(0,4)+'-'+String(monthIdx+1).padStart(2,'0');
@@ -5293,6 +5413,13 @@ function calcBudgetMonth(bd,monthIdx,includeOnce=false){
   const share=loanInterestShare();/* null = keine Kreditdaten hinterlegt */
   /* Kreditrate: mit Kreditdaten aufteilen, sonst "Tilgung" ganz als Vermögensaufbau */
   const loanRow=(r,v,fallbackFix)=>{
+    const linked=_linkedLoanRow(r,v,autoLoans);
+    if(linked){
+      if(linked.skip)return true;
+      if(linked.interest>0){fixkosten+=linked.interest;fixItems.push({label:r.name+' – Zinsanteil',val:linked.interest,subcat:r.subcat||''});}
+      if(linked.principal>0){tilgung+=linked.principal;tilgItems.push({id:r.id,label:r.name+' – Tilgungsanteil',val:linked.principal,subcat:r.subcat||'',targetGroup:linked.targetGroup,explicitTarget:true});}
+      return true;
+    }
     if(share!=null){
       const zi=v*share;
       if(zi>0){fixkosten+=zi;fixItems.push({label:r.name+' – Zinsanteil',val:zi,subcat:r.subcat||''});}
@@ -5309,13 +5436,13 @@ function calcBudgetMonth(bd,monthIdx,includeOnce=false){
   (bd.fixe||[]).forEach(r=>{
     const v=r.values[mi]||0;
     if(v<=0||autoLoans.some(l=>l.label.trim().toLowerCase()===r.name.trim().toLowerCase()))return;
-    if(_isLoanPayment(r)&&loanRow(r,v))return;
+    if((r.loanId||_isLoanPayment(r))&&loanRow(r,v))return;
     fixkosten+=v;fixItems.push(item(r));
   });
   (bd.variable||[]).forEach(r=>{
     const v=r.values[mi]||0;
     if(v<=0||autoLoans.some(l=>l.label.trim().toLowerCase()===r.name.trim().toLowerCase()))return;
-    if(_isLoanPayment(r)&&loanRow(r,v))return;
+    if((r.loanId||_isLoanPayment(r))&&loanRow(r,v))return;
     if(_isSparposten(r)){sparplaene+=v;sparItems.push(item(r));}
     else{variable+=v;varItems.push(item(r));}
   });
@@ -6473,8 +6600,9 @@ function downloadJSON(value,name){
 const BACKUP_KEY='vermoegen-last-backup';
 function _lastBackup(){try{const t=localStorage.getItem(BACKUP_KEY);return t&&isFinite(Date.parse(t))?new Date(t):null;}catch(error){return null;}}
 function _refreshBackupInfo(){
-  const el=document.getElementById('backupSub');if(!el)return;
   const t=_lastBackup(),days=t?Math.floor((Date.now()-t.getTime())/864e5):null;
+  const tile=document.getElementById('dataTile');if(tile)tile.classList.toggle('has-badge',(!t||days>30)&&hasOnboardingData(appStorage.document()));
+  const el=document.getElementById('backupSub');if(!el)return;
   el.textContent=!t?'Noch nie gesichert · empfohlen':'Zuletzt '+(days<1?'heute':days===1?'gestern':'vor '+days+' Tagen');
   el.classList.toggle('ds-warn',!t||days>30);
 }
@@ -6511,7 +6639,7 @@ async function handleDataUpload(ev){
 
 /* ── Tutorial / Onboarding ── */
 function buildTutorialHTML(){
-  return '<div class="tut-body"><p>Unter Daten → Sicherung exportieren werden alle Daten und Einstellungen in einer JSON-Datei gespeichert.</p><p>Importiere diese Datei auf einem weiteren Gerät, um den vollständigen Stand wiederherzustellen. Bisherige CSV-Dateien können weiterhin importiert werden.</p></div>';
+  return '<div class="tut-body"><p>Auf der Daten-Seite unter „Daten“ → Sicherung exportieren werden alle Daten und Einstellungen in einer JSON-Datei gespeichert.</p><p>Importiere diese Datei auf einem weiteren Gerät, um den vollständigen Stand wiederherzustellen. Bisherige CSV-Dateien können weiterhin importiert werden.</p></div>';
 }
 
 function _loanAssetOptions(selected,legacy=false){
@@ -6655,6 +6783,7 @@ function _closeSheet(force=false){
   if(!_sheetOpen)return true;
   if(!force&&_sheetDirty&&!confirm('Änderungen verwerfen?'))return false;
   _sheetOpen=false;_sheetSave=null;_sheetDirty=false;_sheetCtx={};
+  document.getElementById('dsCancel').style.visibility='';
   _assetChecks.clear();_assetCheckRuns.clear();
   document.getElementById('dsOverlay').classList.remove('show');
   document.getElementById('dsSheet').classList.remove('show');
@@ -6667,9 +6796,9 @@ function _submitSheet(){
   if(!_sheetSave)return;
   _sheetError('');
   const active=document.activeElement;if(active&&active.blur&&active.closest&&active.closest('#dsBody'))active.blur();
-  let ok=false;
-  try{ok=_sheetSave()!==false;}catch(error){_sheetError(error.message);return;}
-  if(ok){_closeSheet(true);_toast('Gespeichert');}
+  let ok=false,result;
+  try{result=_sheetSave();ok=result!==false;}catch(error){_sheetError(error.message);return;}
+  if(ok){_closeSheet(true);if(result!=='quiet')_toast('Gespeichert');}
 }
 function _initSheet(){
   const b=document.getElementById('dsBody');if(!b||b._ready)return;b._ready=true;
@@ -6678,10 +6807,11 @@ function _initSheet(){
   document.getElementById('dsSave').addEventListener('click',_submitSheet);
   document.getElementById('dsOverlay').addEventListener('click',()=>_closeSheet());
   document.addEventListener('keydown',e=>{if(_sheetOpen&&e.key==='Escape')_closeSheet();});
-  b.addEventListener('input',e=>{_sheetDirty=true;_dataInput(e);_monthSheetInput(e);_historyInput(e);_unitHint(e);if(_sheetCtx.budget)_budgetSheetUpdate();});
+  b.addEventListener('input',e=>{if(e.target.id==='b-loan'&&_sheetCtx.budget)_sheetCtx.budget.loanTouched=true;_sheetDirty=true;_dataInput(e);_monthSheetInput(e);_historyInput(e);_unitHint(e);if(_sheetCtx.budget)_budgetSheetUpdate();});
   b.addEventListener('click',e=>{
     const tog=e.target.closest('[data-dep-toggle]');if(tog){_depToggle(tog.dataset.depToggle);return;}
     const hist=e.target.closest('[data-ds-hist]');if(hist){openHistorySheet(hist.dataset.dsHist);return;}
+    if(e.target.closest('[data-cd]')){_chartDefaultsClick(e);return;}
     if(e.target.closest('[data-hist-calc]')){_historyCalc();return;}
     const seg=e.target.closest('[data-seg-for] button');if(seg){_segPick(seg);return;}
     const custom=e.target.closest('[data-b-custom]');if(custom){_budgetToggleCustom();return;}
@@ -7346,7 +7476,9 @@ function _budgetListHTML(){
     const rows=bd[key]||[];if(!rows.length)return;
     html+=`<div class="ds-list-t ds-list-sum"><span>${title}</span><span>Ø ${fmt(rows.reduce((s,r)=>s+_yearSum(r.values),0)/12)} / Monat</span></div><div class="ds-list">${rows.map(r=>{
       const rh=_budgetRhythm(r.values),val=rh.rhythm==='custom'?'Ø '+fmt(_yearSum(r.values)/12):fmt(rh.amount);
-      return _dsItem('budget',key+':'+r.id,r.name,[_rhythmText(rh),r.subcat].filter(Boolean).join(' · '),val,!_yearSum(r.values));
+      const loan=r.loanId&&_fc.fields.find(f=>f.id===r.loanId);
+      const loanText=loan?(LoanModel.configured(getLoanParams()[loan.id]||{})?'ersetzt durch Kreditvertrag':'Kredit: '+loan.label):'';
+      return _dsItem('budget',key+':'+r.id,r.name,[_rhythmText(rh),r.subcat,loanText].filter(Boolean).join(' · '),val,!_yearSum(r.values));
     }).join('')}</div>`;
   });
   const once=[...(bd.oneTime||[])].sort((a,b)=>b.month.localeCompare(a.month)),limit=LoanModel.addMonths(selectedMonth,-12);
@@ -7466,14 +7598,29 @@ function _budgetHint(title,text,label,anchor){
 function _seg(id,options,cur){
   return `<div class="ds-seg" data-seg-for="${id}">${options.map(([v,l])=>`<button type="button" data-v="${v}" class="${v===cur?'on':''}" aria-pressed="${v===cur}">${l}</button>`).join('')}</div><input type="hidden" id="${id}" value="${cur}">`;
 }
+/* Passender Kredit zu einem Ausgabenamen: nur bei Kredit-Wörtern, über ein gemeinsames Wort oder den einzigen Kredit */
+function _guessLoan(name){
+  const liabs=_mod('liab')?_fc.fields.filter(f=>f.category==='liab'):[],n=String(name||'').toLowerCase();
+  if(!liabs.length||!/kredit|darlehen|rate\b|raten|finanzier|tilgung|baufi|hypothek|annuit/.test(n))return '';
+  /* Wortstämme ohne Kredit-Wörter: „Autokredit Tesla“ → auto, tesla; „Immobilienkredit“ → immobilien */
+  const words=l=>l.toLowerCase().split(/[^a-zäöüß0-9]+/).map(t=>t.replace(/(kredit|darlehen|finanzierung|rate|schuld(en)?)/g,'')).filter(t=>t.length>=3);
+  const hit=liabs.filter(f=>n.includes(f.label.toLowerCase())||words(f.label).some(t=>n.includes(t)));
+  if(hit.length===1)return hit[0].id;
+  return liabs.length===1?liabs[0].id:'';
+}
+function _loanLinkHint(id){
+  if(!id)return '';
+  if(id==='*')return 'Die Rate wird anteilig auf deine Kredite aufgeteilt.';
+  return LoanModel.configured(getLoanParams()[id]||{})?'Die Rate kommt automatisch aus dem Kreditvertrag. Dieser Posten wird deshalb nicht zusätzlich gezählt.':'Zins und Tilgung werden getrennt; die Tilgung zählt als Vermögensaufbau.';
+}
 /* opts: {} neu, {ref:'kategorie:id'} wiederkehrend bearbeiten, {once:id} einmalig bearbeiten, {mode:'once'} neu einmalig */
 function openBudgetSheet(opts={}){
   const bd=loadBudgetData()||{};
-  let mode=opts.mode||'recurring',isNew=true,type='expense',cost='fixe',name='',amount=0,rhythm='month',start=+selectedMonth.slice(5)-1,month=selectedMonth,target=null,subcat='',values=Array(12).fill(0),origKind=null;
+  let mode=opts.mode||'recurring',isNew=true,type='expense',cost='fixe',name='',amount=0,rhythm='month',start=+selectedMonth.slice(5)-1,month=selectedMonth,target=null,subcat='',values=Array(12).fill(0),origKind=null,loanId='';
   if(opts.ref){
     const [key,rid]=opts.ref.split(':'),r=(bd[key]||[]).find(x=>x.id===rid);if(!r)return;
     isNew=false;mode='recurring';type=key==='einkommen'?'income':key==='sparen'?'saving':'expense';cost=key==='variable'?'variable':'fixe';
-    name=r.name;subcat=r.subcat||'';target=r.targetGroupId??null;origKind=r.kind||null;values=r.values.map(x=>+x||0);
+    name=r.name;subcat=r.subcat||'';target=r.targetGroupId??null;origKind=r.kind||null;values=r.values.map(x=>+x||0);loanId=r.loanId||'';
     const rh=_budgetRhythm(values);rhythm=rh.rhythm;amount=rh.amount;if(rh.rhythm!=='month')start=rh.start;
   }
   if(opts.once){
@@ -7481,7 +7628,10 @@ function openBudgetSheet(opts={}){
     isNew=false;mode='once';type=o.kind;cost=o.category==='fixe'?'fixe':'variable';name=o.name;amount=o.amount;month=o.month;target=o.targetGroupId;
   }
   if(isNew&&mode==='once')cost='variable';
-  _sheetCtx={budget:{isNew,mode,ref:opts.ref||null,once:opts.once||null,origKind}};
+  /* Bestehende Ausgabe ohne Verknüpfung: passenden Kredit vorschlagen; Sammelposten aller Kredite bleibt anteilig */
+  if(!loanId&&type==='expense')loanId=['principal','loanPayment'].includes(origKind)?'*':_guessLoan(name);
+  const liabs=_mod('liab')?_fc.fields.filter(f=>f.category==='liab'):[];
+  _sheetCtx={budget:{isNew,mode,ref:opts.ref||null,once:opts.once||null,origKind,loanTouched:!isNew}};
   const custom=rhythm==='custom',groups=appStorage.document().groups;
   const subcats=[...new Set(BUDGET_LIST.flatMap(([k])=>(bd[k]||[]).map(r=>r.subcat).filter(Boolean)))];
   const monthRows=values.map((v,i)=>`<label class="ds-row"><span class="ds-l">${MONTH_FULL[i]}</span><input class="ds-in ds-money" type="text" inputmode="decimal" id="b-m${i}" value="${v?_moneyInput(v):''}" placeholder="0"></label>`).join('');
@@ -7491,6 +7641,7 @@ function openBudgetSheet(opts={}){
     <div class="ds-row"><span class="ds-l">Art</span>${_seg('b-type',[['income','Einnahme'],['expense','Ausgabe'],['saving','Sparen']],type)}</div>
     <div class="ds-row" id="b-costRow"><span class="ds-l">Kosten</span>${_seg('b-cost',[['fixe','Fix'],['variable','Variabel']],cost)}</div>
     <label class="ds-row" id="b-amountRow"><span class="ds-l">Betrag €</span><input class="ds-in ds-money" type="text" inputmode="decimal" id="b-amount" value="${amount?_moneyInput(amount):''}" placeholder="0"></label>
+    ${liabs.length?`<label class="ds-row" id="b-loanRow"><span class="ds-l">Kreditrate für<small id="b-loanHint">${escHTML(_loanLinkHint(loanId))}</small></span><select class="ds-in ds-wide" id="b-loan"><option value="">Kein Kredit</option>${loanId==='*'?'<option value="*" selected>Mehrere Kredite (anteilig)</option>':''}${liabs.map(f=>`<option value="${escHTML(f.id)}"${f.id===loanId?' selected':''}>${escHTML(f.label)}</option>`).join('')}</select></label>`:''}
   </div>
   <div class="ds-group" id="b-recurring">
     <div class="ds-row" id="b-rhythmRow"><span class="ds-l">Rhythmus</span>${_seg('b-rhythm',[['month','Monatlich'],['quarter','Quartal'],['year','Jährlich']],custom?'month':rhythm)}</div>
@@ -7535,7 +7686,12 @@ function _budgetSheetUpdate(){
   const mode=ctx.isNew?v('b-mode'):ctx.mode,type=v('b-type'),rhythm=v('b-rhythm');
   const custom=mode==='recurring'&&_switchOn('b-customOn');
   show('b-recurring',mode==='recurring');show('b-once',mode==='once');show('b-customWrap',mode==='recurring');
-  show('b-costRow',type==='expense');show('b-targetRow',type==='saving');
+  show('b-costRow',type==='expense');show('b-targetRow',type==='saving');show('b-loanRow',type==='expense'&&mode==='recurring');
+  const loan=document.getElementById('b-loan');
+  if(loan){
+    if(ctx.isNew&&!ctx.loanTouched)loan.value=_guessLoan(v('b-name'));
+    const hint=document.getElementById('b-loanHint');if(hint)hint.textContent=_loanLinkHint(loan.value);
+  }
   show('b-amountRow',!custom);show('b-rhythmRow',!custom);show('b-startRow',!custom&&rhythm!=='month');
   show('b-customFields',custom);
   const label=document.getElementById('b-startLabel');if(label)label.textContent=rhythm==='quarter'?'Erstmals im':'Fällig im';
@@ -7566,9 +7722,11 @@ function _saveBudgetSheet(){
       if(!values)throw new Error('Bitte einen Betrag eingeben.');
       let id='budget-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),pos=-1,old=null;
       if(ctx.ref){const [key,rid]=ctx.ref.split(':');const list=bd[key]||[];const i=list.findIndex(r=>r.id===rid);if(i>=0){old=list[i];id=rid;if(key===category)pos=i;list.splice(i,1);}}
-      /* Kreditraten behalten ihre Art, solange sie Ausgaben bleiben */
-      const kind=type==='expense'&&['principal','loanPayment'].includes(ctx.origKind)?ctx.origKind:type;
-      const row={id,name,subcat:v('b-subcat'),kind,targetGroupId:type==='saving'?target:(old&&kind!==type?old.targetGroupId??null:null),values};
+      /* Kreditraten behalten ihre Art, solange sie Ausgaben bleiben; eine Verknüpfung macht die Ausgabe zur Kreditrate */
+      const loanRow=document.getElementById('b-loanRow'),loanSel=loanRow&&!loanRow.hidden?v('b-loan'):null;
+      let kind=type==='expense'&&['principal','loanPayment'].includes(ctx.origKind)?ctx.origKind:type;
+      if(type==='expense'&&loanSel!==null&&loanSel!=='*')kind=loanSel?'loanPayment':'expense';
+      const row={id,name,subcat:v('b-subcat'),kind,targetGroupId:type==='saving'?target:(old&&kind!==type?old.targetGroupId??null:null),values,...(type==='expense'&&loanSel&&loanSel!=='*'?{loanId:loanSel}:{})};
       bd[category]=bd[category]||[];
       if(pos>=0)bd[category].splice(pos,0,row);else bd[category].push(row);
     }
@@ -8851,6 +9009,7 @@ function _v2SubText(mod){
   return'';
 }
 function _v2SyncSwitches(){
+  _renderChartDefaults();
   const m=_mods();
   document.querySelectorAll('#page-import details[data-mod]').forEach(d=>{
     const k=d.dataset.mod,on=m[k];
@@ -9042,6 +9201,34 @@ const ONBOARDING_CATEGORIES=[
 ];
 /* Positionen derselben Art bilden eine Gruppe, die Übersicht zeigt dann z. B. „ETF“ statt einzelner Depots */
 const CATEGORY_GROUPS={cash:'Cash',etf:'ETF',stock:'Aktien',bitcoin:'Bitcoin',crypto:'Krypto',metal:'Edelmetalle',realEstate:'Immobilien',vehicle:'Fahrzeuge',other:'Weitere Anlagen',illiquid:'Sachwerte',bav:'Altersvorsorge'};
+/* Bestehende Daten: automatisch entstandene Einzelgruppen kommen in die Gruppe ihrer Art.
+   Betroffen sind nur Gruppen, die beim Anlegen nach der Position benannt wurden (frühere App-Versionen),
+   und „Sonstiges“ aus alten CSV-Importen, wenn darin nur ein Fahrzeug steckt. Selbst benannte Gruppen bleiben.
+   Gibt es die Zielgruppe noch nicht, wird die Gruppe umbenannt (Annahmen und Verweise bleiben); sonst zieht die
+   Position mit Sparrate, Budget-Sparzielen und Ereignissen um. Liefert null, wenn nichts zu tun ist. */
+function regroupByCategory(original){
+  const doc=JSON.parse(JSON.stringify(original)),active=doc.positions.filter(p=>!p.archived);
+  const names=Object.values(CATEGORY_GROUPS);let changed=false;
+  for(const p of active){
+    const target=CATEGORY_GROUPS[p.category],g=doc.groups.find(x=>x.id===p.groupId);
+    if(!target||p.category==='liab'||!g||names.includes(g.name))continue;
+    const members=active.filter(x=>x.groupId===g.id&&x.category!=='liab');
+    const auto=(g.name===p.name&&/^custom-\d/.test(p.id))||(g.name==='Sonstiges'&&p.category==='vehicle');
+    if(members.length!==1||!auto)continue;
+    const tg=doc.groups.find(x=>x.name===target);
+    changed=true;
+    if(!tg){g.name=target;continue;}
+    active.filter(x=>x.groupId===g.id).forEach(x=>{x.groupId=tg.id;});
+    const saving=+g.assumptions.monthlySaving||0;
+    if(saving>0)tg.assumptions.monthlySaving=(+tg.assumptions.monthlySaving||0)+saving;
+    if(doc.budget){
+      doc.budget.items.forEach(b=>{if(b.targetGroupId===g.id)b.targetGroupId=tg.id;});
+      (doc.budget.oneTime||[]).forEach(o=>{if(o.targetGroupId===g.id)o.targetGroupId=tg.id;});
+    }
+    doc.forecast.events.forEach(e=>['from','to'].forEach(k=>{if(e[k].type==='group'&&e[k].groupId===g.id)e[k].groupId=tg.id;}));
+  }
+  return changed?AssetsData.validate(doc):null;
+}
 function hasOnboardingData(doc){
   return !!(doc.positions.length||doc.snapshots.length||doc.groups.length||doc.accounts.length||
     (doc.budget&&doc.budget.items.length)||doc.loans.length||doc.retirement.people.length||
@@ -9096,7 +9283,7 @@ function _guideContent(key){
   if(key==='data')return {section:'Daten',title:'Alles lässt sich ergänzen',text:'Auf der Daten-Seite pflegst du deine Werte und schaltest die Bereiche ein, die du brauchst.',
     content:'<div class="ob-data-steps"><div><b>1</b><span>Monat wählen</span><small>Kalender oben</small></div><div><b>2</b><span>Werte eintragen</span><small>Aktualisieren</small></div><div><b>3</b><span>Übernehmen</span><small>Sichern</small></div></div>',
     tip:'Tippe auf eine Position, um nur sie zu ändern. Prognose-Annahmen werden direkt übernommen.'};
-  return {section:'Sicherung',title:'Eine Datei für deinen Stand',text:'Unter Daten → Sicherung exportieren sicherst du alle Werte und Einstellungen. Importiere diese Datei auf einem anderen Gerät, um dort weiterzumachen.',
+  return {section:'Sicherung',title:'Eine Datei für deinen Stand',text:'Auf der Daten-Seite unter „Daten“ → Sicherung exportieren sicherst du alle Werte und Einstellungen. Importiere diese Datei auf einem anderen Gerät, um dort weiterzumachen.',
     content:'<div class="ob-backup-preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 14h8M8 18h5"/></svg><b>Deine Sicherung</b><span>Alle Daten · eine Datei</span></div>'+(_guideNew?'<div class="ob-setup-summary">Als Nächstes richtest du in wenigen Schritten deinen Start ein. Schätzwerte reichen.</div>':'<div class="ob-setup-summary">Du kannst den Rundgang jederzeit auf der Daten-Seite erneut starten.</div>'),
     tip:'Deine Daten bleiben auf diesem Gerät. Exportiere regelmäßig eine Sicherung.'};
 }
@@ -9823,15 +10010,18 @@ function _setupView(key,s){
   if(key==='pension')return _setupPensionView(s);
   return _setupDoneView(s);
 }
-function _setupRender(focusSel){
-  const overlay=document.getElementById('onboardingOverlay'),s=_setup,steps=_setupSteps(),key=steps[s.i],v=_setupView(key,s);
+/* keep: Scroll-Position behalten (Umschalten innerhalb eines Schritts), ohne ein Feld zu öffnen */
+function _setupRender(focusSel,keep=false){
+  const overlay=document.getElementById('onboardingOverlay'),s=_setup,steps=_setupSteps(),key=steps[s.i],v=_setupView(key,s),scroll=overlay.scrollTop;
   const progress=steps.length>1?`<div class="ob-progress" role="progressbar" aria-label="Fortschritt der Einrichtung" aria-valuemin="1" aria-valuemax="${steps.length}" aria-valuenow="${s.i+1}">${steps.map((_,i)=>`<i class="${i<s.i?'filled':i===s.i?'current':''}"><b></b></i>`).join('')}</div>`:'';
   overlay.innerHTML=`<div class="ob-screen ob-setup" data-step="${key}">${progress}<div class="ob-tour-top">${s.i>0?'<button type="button" class="ob-back" data-act="back">‹ Zurück</button>':'<span></span>'}<button type="button" class="ob-close" data-act="close" aria-label="Einrichtung schließen">×</button></div><h1 class="ob-title" tabindex="-1">${v.title}</h1>${v.sub?`<p class="ob-sub">${v.sub}</p>`:''}<div class="ob-setup-body">${v.body}</div><p id="onboardingError" class="ob-error" role="alert" tabindex="-1" hidden></p><div class="ob-setup-foot">${v.foot}</div></div>`;
   overlay.onclick=_setupClick;overlay.oninput=_setupInput;overlay.onchange=_setupInput;
   if(!overlay._setupBlur){overlay._setupBlur=true;overlay.addEventListener('focusout',_setupBlur);}
   overlay.onkeydown=e=>{if(e.key!=='Enter'||e.target.tagName!=='INPUT')return;e.preventDefault();if(['budget','future','pension'].includes(key))_setupNext();else e.target.blur();};
+  /* Auswahllisten nie automatisch fokussieren: auf dem iPhone öffnet das sofort die Auswahl */
   const target=focusSel&&overlay.querySelector(focusSel);
-  if(target){target.focus();target.scrollIntoView({block:'center'});}
+  if(keep||(target&&target.tagName==='SELECT'))overlay.scrollTop=scroll;
+  else if(target){target.focus();target.scrollIntoView({block:'center'});}
   else{overlay.scrollTop=0;overlay.querySelector('h1')?.focus({preventScroll:true});}
   /* Wertpapiere mit aussagekräftigem Namen gleich suchen, z. B. „MSCI World ETF“ */
   if(key==='history')_setupHistoryRows(s).forEach(r=>{
@@ -9852,7 +10042,7 @@ function _setupClick(e){
   const act=b.dataset.act;
   if(act==='close')return _setupClose();
   if(act==='back'){s.i=Math.max(0,s.i-1);return _setupRender();}
-  if(act==='toggle'){const k=b.dataset.k;s.focus[k]=!s.focus[k];return _setupRender(`[data-k="${k}"]`);}
+  if(act==='toggle'){const k=b.dataset.k;s.focus[k]=!s.focus[k];return _setupRender(null,true);}
   if(act==='add-asset'){
     const [label,category,name]=SETUP_ASSETS[+b.dataset.i],id='a'+(++_setupSeq),mode=SETUP_QTY_DEFAULT.includes(category)?'qty':'eur';
     const r={id,name:_setupName(s.assets,name||label),category,amount:'',qty:'',mode};s.assets.push(r);
@@ -9868,7 +10058,7 @@ function _setupClick(e){
     return;
   }
   if(act==='add-debt'){const [label,link]=SETUP_DEBTS[+b.dataset.i],id='d'+(++_setupSeq);s.debts.push({id,name:_setupName(s.debts,label),link,amount:'',pay:'',rate:''});return _setupRender(`[data-row="${id}"] [data-f="amount"]`);}
-  if(act==='remove'){const id=b.closest('[data-row]').dataset.row;s.assets=s.assets.filter(r=>r.id!==id);s.debts=s.debts.filter(r=>r.id!==id);return _setupRender();}
+  if(act==='remove'){const id=b.closest('[data-row]').dataset.row;s.assets=s.assets.filter(r=>r.id!==id);s.debts=s.debts.filter(r=>r.id!==id);return _setupRender(null,true);}
   if(act==='nodebts'){s.hasDebts=false;s.debts=[];return _setupAdvance(s);}
   if(act==='yesdebts'){s.hasDebts=true;return _setupRender('.ob-chip');}
   if(act==='hist-pick'||act==='hist-change'||act==='hist-mode'){
@@ -9881,7 +10071,10 @@ function _setupClick(e){
     }
     if(act==='hist-change'){h.instrument=null;h.results=null;Object.assign(h,{quote:null,quoteKey:null,quoteFailed:false});}
     if(act==='hist-mode')h.mode=b.dataset.v;
-    _setupRender(act==='hist-change'?`[data-row="${id}"] [data-h="query"]`:act==='hist-mode'&&h.mode==='plan'?`[data-row="${id}"] [data-h="plan"]`:qtyRow?`[data-row="${id}"] [data-f="qty"]`:`[data-row="${id}"] [data-h="month"]`);
+    /* Einmal/Sparplan und die Auswahl im Verlauf-Schritt öffnen kein Feld; Ändern führt in die Suche, im Vermögens-Schritt geht es mit der Stückzahl weiter */
+    if(act==='hist-change')_setupRender(`[data-row="${id}"] [data-h="query"]`);
+    else if(act==='hist-pick'&&qtyRow)_setupRender(`[data-row="${id}"] [data-f="qty"]`);
+    else _setupRender(null,true);
     if(act==='hist-pick'&&r&&r.mode==='qty')_setupLoadQuote(r);
     return;
   }
@@ -9919,6 +10112,9 @@ function _nextSteps(){
   const pos=doc.positions.filter(p=>!p.archived),assets=pos.filter(p=>p.category!=='liab');
   const items=doc.budget?doc.budget.items:[];
   if(!assets.length)out.push({id:'first-asset',title:'Ersten Vermögenswert anlegen',text:'Konto, Depot oder Immobilie – ein Schätzwert reicht.',run:()=>openAddAssetSheet()});
+  const bdLegacy=m.budget&&m.liab?loadBudgetData():null;
+  const unlinked=bdLegacy&&['fixe','variable'].flatMap(k=>(bdLegacy[k]||[]).map(r=>({r,k}))).find(({r})=>!r.loanId&&!['loanPayment','principal'].includes(r.kind)&&_guessLoan(r.name));
+  if(unlinked)out.push({id:'loanlink-'+unlinked.r.id,title:'„'+unlinked.r.name+'“ mit Kredit verknüpfen',text:'Dann trennt die App Zins und Tilgung und zählt die Rate nicht doppelt.',run:()=>openBudgetSheet({ref:unlinked.k+':'+unlinked.r.id})});
   if(!m.budget&&!items.length)out.push({id:'budget',title:'Monatsbudget einrichten',text:'Vier grobe Zahlen zeigen dir, was jeden Monat übrig bleibt.',run:()=>startSetup('budget')});
   if(!m.forecast&&doc.retirement.primary.birthYear===undefined&&assets.length)out.push({id:'future',title:'Zukunft planen',text:'Mit drei Angaben siehst du, ob dein Vermögen für den Ruhestand reicht.',run:()=>startSetup('future')});
   const sp=doc.retirement.primary.statutoryPension;
@@ -9993,6 +10189,8 @@ function _handleMonthRollover(){
 /* ── Init ── */
 function initApp(){
   try{
+    try{const regrouped=regroupByCategory(appStorage.document());if(regrouped){appStorage.importBackup(regrouped);_fc=loadFieldConfig();}}
+    catch(error){console.warn('Gruppierung nach Art übersprungen:',error);}
     /* Theme: default to dark mode, allow manual override */
     let stored=appStorage.getItem('darkMode');
     // Clean up ANY old value that's not '0' or '1'
@@ -10042,7 +10240,6 @@ function initApp(){
     /* Event Handlers */
     document.getElementById('themeToggle').addEventListener('click',toggleTheme);
     document.getElementById('csvInput').addEventListener('change',handleDataUpload);
-    document.getElementById('resetBtn').addEventListener('click',resetApp);
     document.getElementById('assetsToggleBtn').addEventListener('click',toggleAssets);
     document.getElementById('scaleToggleBtn').addEventListener('click',toggleScale);
     /* Lifetime chart toggles */
@@ -10105,6 +10302,10 @@ function initApp(){
     document.querySelectorAll('[data-range]').forEach(btn=>{
       btn.addEventListener('click',()=>setNetRange(parseInt(btn.dataset.range),btn));
     });
+
+    _applyChartDefaults();
+    document.querySelector('#page-home .hero').addEventListener('click',()=>{haptic('light');resetHomeChart();});
+    document.querySelector('#page-lifetime .hero').addEventListener('click',()=>{haptic('light');resetLifetimeChart();});
 
     /* Render */
     render();

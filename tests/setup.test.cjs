@@ -286,3 +286,79 @@ test('the net chart axis spans only the visible months and lines, without roundi
   a.context.scale={chart,type:'logarithmic'};a.run('_netYLimits(scale)');
   assert.ok(a.context.scale.min>0&&a.context.scale.min<50);
 });
+
+test('existing auto groups move into their kind once: two cars end up together, named groups stay',()=>{
+  const a=context(),doc=Data.empty();
+  doc.groups=[{id:'group-1',name:'Sonstiges',defaultProfile:'misc',assumptions:{}},{id:'group-2',name:'Tesla Model 3',defaultProfile:null,assumptions:{monthlySaving:100}},
+    {id:'group-3',name:'Uhren',defaultProfile:'watches',assumptions:{}},{id:'group-4',name:'Autokredit',defaultProfile:null,assumptions:{}}];
+  const pos=(id,name,category,groupId,custom)=>({id,name,category,groupId,archived:false,custom,ticker:null,unit:null});
+  doc.positions=[pos('porsche-911','Porsche 911','vehicle','group-1',false),pos('custom-1791','Tesla Model 3','vehicle','group-2',true),pos('uhren','Uhren','illiquid','group-3',false),pos('custom-1792','Autokredit','liab','group-4',true)];
+  doc.loans=[{positionId:'custom-1792',linkedAssetId:'custom-1791',interestPercent:5,monthlyPayment:400}];
+  doc.snapshots=[{month:'2026-10',positions:[{positionId:'porsche-911',value:65000},{positionId:'custom-1791',value:45768},{positionId:'uhren',value:8000},{positionId:'custom-1792',value:20000}]}];
+  doc.budget={items:[{id:'b1',name:'Sparen Tesla',category:'sparen',subcategory:'',kind:'saving',targetGroupId:'group-2',monthlyAmounts:Array(12).fill(100)}],standingOrders:[]};
+  a.context.doc=Data.validate(doc);
+  const out=a.json('regroupByCategory(doc)');
+  const g=id=>out.groups.find(x=>x.id===id);
+  assert.equal(g('group-1').name,'Fahrzeuge');assert.equal(g('group-1').defaultProfile,'misc');
+  assert.deepEqual(out.positions.filter(p=>p.groupId==='group-1').map(p=>p.id),['porsche-911','custom-1791']);
+  assert.equal(g('group-1').assumptions.monthlySaving,100);
+  assert.equal(out.budget.items[0].targetGroupId,'group-1');
+  assert.equal(g('group-3').name,'Uhren');assert.equal(out.positions.find(p=>p.id==='uhren').groupId,'group-3');
+  a.context.out=out;assert.equal(a.run('regroupByCategory(out)'),null,'runs only once');
+  a.run("appStorage.importBackup(out);_fc=loadFieldConfig();_modsCache=null;_orphanMemo={key:null,val:null};");
+  const groups=a.json("buildNetGroups(loadData()['2026-10']._details)").map(x=>[x.key,x.val]);
+  assert.deepEqual(groups.find(x=>x[0]==='Fahrzeuge'),['Fahrzeuge',65000+45768-20000]);
+});
+
+/* ── Kreditraten im Budget ── */
+function loanDoc(){
+  const doc=Data.empty();
+  doc.groups=[{id:'g-car',name:'Fahrzeuge',defaultProfile:null,assumptions:{}},{id:'g-l1',name:'Autokredit Tesla',defaultProfile:null,assumptions:{}},{id:'g-l2',name:'Immobilienkredit',defaultProfile:null,assumptions:{}},{id:'g-home',name:'Immobilien',defaultProfile:null,assumptions:{}}];
+  const pos=(id,name,category,groupId)=>({id,name,category,groupId,archived:false,custom:true,ticker:null,unit:null});
+  doc.positions=[pos('tesla','Tesla Model 3','vehicle','g-car'),pos('home','Wohnung','realEstate','g-home'),pos('l-car','Autokredit Tesla','liab','g-l1'),pos('l-home','Immobilienkredit','liab','g-l2')];
+  doc.loans=[{positionId:'l-car',linkedAssetId:'tesla',interestPercent:6,monthlyPayment:400},
+    {positionId:'l-home',linkedAssetId:'home',principalAmount:240000,interestPercent:3.5,initialRepaymentPercent:2.5,monthlyPayment:1200,firstPaymentMonth:'2024-01'}];
+  doc.snapshots=[{month:'2026-10',positions:[{positionId:'tesla',value:40000},{positionId:'home',value:300000},{positionId:'l-car',value:20000},{positionId:'l-home',value:200000}]}];
+  const row=(id,name,amount,loanId)=>({id,name,category:'fixe',subcategory:'',kind:loanId?'loanPayment':'expense',targetGroupId:null,monthlyAmounts:Array(12).fill(amount),...(loanId?{loanId}:{})});
+  doc.budget={items:[{id:'inc',name:'Gehalt',category:'einkommen',subcategory:'',kind:'income',targetGroupId:null,monthlyAmounts:Array(12).fill(5000)},row('car','Kreditrate Tesla',400,'l-car'),row('home','Rate Wohnung',1200,'l-home')],standingOrders:[]};
+  return Data.validate(doc);
+}
+test('a linked loan payment is split into interest and repayment; with a contract it is never counted twice',()=>{
+  const a=context();a.context.doc=loanDoc();
+  a.run("appStorage.importBackup(doc);_fc=loadFieldConfig();_modsCache=null;_loanShareMemo={key:null,val:null};selectedMonth='2026-10';");
+  const c=a.json('calcBudgetMonth(loadBudgetData(),9)');
+  const item=label=>[...c.fixItems,...c.tilgItems].filter(x=>x.label.startsWith(label));
+  assert.equal(Math.round(item('Kreditrate Tesla – Zinsanteil')[0].val),100,'20.000 € × 6 % / 12');
+  assert.equal(Math.round(item('Kreditrate Tesla – Tilgungsanteil')[0].val),300);
+  assert.equal(item('Rate Wohnung').length,0,'contract rate replaces the manual row');
+  const auto=item('Immobilienkredit');assert.ok(auto.length>=2);
+  const total=c.fixkosten+c.tilgung;
+  assert.equal(Math.round(total),400+Math.round(auto.reduce((s,x)=>s+x.val,0)),'each rate counted exactly once');
+  const back=Data.createStore(new (require('./app-harness.cjs').MemoryStorage)());back.importBackup(JSON.parse(JSON.stringify(a.json('appStorage.exportBackup()'))));
+  assert.equal(back.document().budget.items.find(b=>b.id==='car').loanId,'l-car');
+  const bad=loanDoc();bad.budget.items[1].loanId='tesla';assert.throws(()=>Data.validate(bad),/keine Verbindlichkeit/);
+});
+test('the matching loan is suggested from the expense name',()=>{
+  const a=context();a.context.doc=loanDoc();
+  a.run("appStorage.importBackup(doc);_fc=loadFieldConfig();_modsCache=null;");
+  assert.equal(a.run("_guessLoan('Kreditrate Tesla')"),'l-car');
+  assert.equal(a.run("_guessLoan('Tesla Versicherung')"),'');
+  assert.equal(a.run("_guessLoan('Rate Immobilienkredit')"),'l-home');
+  assert.equal(a.run("_guessLoan('Miete')"),'');
+  assert.equal(a.run("_guessLoan('Kreditrate Auto')"),'l-car','stem of „Autokredit“');
+  assert.equal(a.run("_guessLoan('Autoversicherung')"),'','no loan word, no guess');
+});
+
+test('chart defaults per page are stored per device and fall back on invalid values',()=>{
+  const a=context();
+  assert.deepEqual(a.json('_chartDefaults()'),{home:{range:12,assets:true,log:false},lifetime:{range:10,assets:true,log:true}});
+  a.run("_saveChartDefault('home','range',0);_saveChartDefault('home','log',true);_saveChartDefault('lifetime','assets',false)");
+  assert.deepEqual(a.json('_chartDefaults()'),{home:{range:0,assets:true,log:true},lifetime:{range:10,assets:false,log:true}});
+  a.run("_applyChartDefaults()");
+  assert.deepEqual(a.json('[netRange,useLogScale,ltShowAssets]'),[0,true,false]);
+  a.storage.setItem('vermoegen-chart-defaults','{"home":{"range":7},"lifetime":"x"}');
+  assert.equal(a.json('_chartDefaults().home.range'),12,'unknown range falls back');
+  a.storage.setItem('vermoegen-chart-defaults','kaputt');
+  assert.equal(a.json('_chartDefaults().lifetime.range'),10);
+  assert.ok(!a.storage.getItem(Data.KEY)||!a.storage.getItem(Data.KEY).includes('chart-defaults'),'not part of the backup');
+});

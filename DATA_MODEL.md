@@ -5,11 +5,11 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `vermoegen_YYYY-MM-DD.json`. Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 5
+## Struktur, Version 6
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `5`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `6`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
@@ -237,7 +237,7 @@ verschwinden, ausgeblendete werden je Gerät unter `vermoegen-tips-dismissed`
 gemerkt (nicht Teil der Sicherung). Beim Verbinden eines Live-Kurses schlägt die
 App nach der Kursprüfung die Stückzahl aus dem bisherigen Wert vor.
 
-Unter Daten → Hilfe lässt sich der Rundgang „App kennenlernen“ starten. Er zeigt
+Auf der Daten-Seite unter „Hilfe“ lässt sich der Rundgang „App kennenlernen“ starten. Er zeigt
 fünf kurze Screens zu Vermögen, Budget, Prognose, Datenpflege und Sicherung. Auf
 schmalen Bildschirmen (iPhone) läuft er wie Stories ab: Segmente oben laufen ab
 und blättern weiter, Tippen rechts/links blättert, Halten pausiert, nach unten
@@ -403,6 +403,37 @@ Euro-Wert. „Verlauf neu berechnen“ nutzt dieselbe Rückrechnung wie die Einr
 Kaufmonat steht 0, neu angelegte Monate sind berechnet gekennzeichnet. Gespeichert
 wird erst mit „Sichern“ und nur für geänderte Monate. „Aktualisieren“ in einem
 vergangenen Monat zeigt Positionen mit Kursquelle ebenfalls als Stückzahl.
+
+## Kreditraten im Budget (Version 6)
+
+Ein wiederkehrender Budgetposten kann mit `loanId` auf eine Verbindlichkeit zeigen
+(„Kreditrate für“ im Sheet; der passende Kredit wird aus dem Namen vorgeschlagen,
+z. B. „Kreditrate Auto“ → „Autokredit“). Hat der Kredit einen vollständigen Vertrag,
+ersetzt die automatische Rate den Posten, er wird nie zusätzlich gezählt. Ohne
+Vertrag wird die Rate in Zins (Restschuld des letzten Monats × Sollzins / 12) und
+Tilgung (Vermögensaufbau der Gruppe des Kredits) getrennt. Unverknüpfte Ausgaben,
+die nach einer Kreditrate klingen, schlägt die Daten-Seite zum Verknüpfen vor.
+
+## Darstellung der Charts
+
+Unter den Datenbereichen der Daten-Seite stehen drei Kacheln: „Einstellungen“
+(Darstellung der Charts), „Daten“ (Sicherung exportieren, wiederherstellen, alle
+Daten löschen) und „Hilfe“ (Rundgang, Demo-Daten). Ein roter Punkt an „Daten“
+erinnert an eine fällige Sicherung (noch nie oder vor mehr als 30 Tagen). Unter
+„Einstellungen“ wählt man je Seite (Vermögen, Prognose), wie der Chart
+startet: Zeitraum, Ansicht (mit Asset-Flächen oder nur Linie) und Skala (linear oder
+logarithmisch). Ein Tipp auf den Gesamtwert oben auf der Seite entfernt alle Filter
+(Kachel-Filter, einzelnes Asset, Zeitraum, Ansicht, Skala) und stellt diese
+Standards wieder her. Die Einstellungen gelten je Gerät unter
+`vermoegen-chart-defaults` und sind nicht Teil der Sicherung.
+
+## Gruppen nach Art
+
+Beim Start ordnet die App automatisch entstandene Einzelgruppen der Gruppe ihrer Art
+zu: Gruppen, die frühere Versionen beim Anlegen nach der Position benannt haben, und
+„Sonstiges“ aus alten CSV-Importen, wenn darin nur ein Fahrzeug steckt. Gibt es die
+Zielgruppe noch nicht, wird die Gruppe umbenannt; sonst ziehen Position, Sparrate,
+Budget-Sparziele und Ereignisse um. Selbst benannte Gruppen bleiben unverändert.
 
 ## Berechnete Monate (Version 5)
 

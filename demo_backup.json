@@ -1,6 +1,6 @@
 {
   "format": "vermoegen-backup",
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "currency": "EUR",
   "groups": [
     {
