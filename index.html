@@ -3224,12 +3224,32 @@ function renderNetChart(){
     ...ad
   ]},options:{...cd(),layout:{padding:{left:0,right:0,top:0,bottom:0}},plugins:{...cd().plugins,legend:{display:false},tooltip:{mode:'nearest',intersect:false,filter:it=>!showAssets||it.dataset._isAsset||it.datasetIndex<3,titleFont:{family:'IBM Plex Sans'},bodyFont:{family:'IBM Plex Sans'},callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},scales:{
     x:{display:false,min:xMin,max:ns.length-1},
-    y:{type:'linear',display:false}
+    y:{type:useLogScale?'logarithmic':'linear',display:false,bounds:'data',afterDataLimits:_netYLimits}
   }}});
   charts['net']._palette={ink,grn,red,gN,gA,gL};
   document.getElementById('assetsToggleBtn').classList.toggle('active',showAssets);
   document.getElementById('scaleToggleBtn').classList.toggle('active',useLogScale);
   setupChartInteraction();
+}
+
+/* Achse des Netto-Charts: nur die sichtbaren Monate und Linien zählen, kein Aufrunden auf „schöne“ Werte.
+   So füllt die Linie die Höhe bei jedem Zeitraum, Filter und Einzel-Asset aus. */
+function _netYLimits(scale){
+  const c=scale.chart,xo=c.options.scales.x,n=c.data.labels.length;
+  const lo=Math.max(0,Math.floor(xo.min??0)),hi=Math.min(n-1,Math.ceil(xo.max??n-1));
+  let mn=Infinity,mx=-Infinity;
+  c.data.datasets.forEach((ds,i)=>{
+    if(!c.isDatasetVisible(i))return;
+    for(let k=lo;k<=hi;k++){const v=ds.data[k];if(v==null||!isFinite(v))continue;if(v<mn)mn=v;if(v>mx)mx=v;}
+  });
+  if(!isFinite(mn))return;
+  if(scale.type==='logarithmic'){
+    const pos=c.data.datasets.flatMap((ds,i)=>c.isDatasetVisible(i)?ds.data.slice(lo,hi+1).filter(v=>v>0):[]);
+    scale.min=pos.length?Math.min(...pos)*0.85:1;scale.max=Math.max(mx,1)*1.08;return;
+  }
+  const span=mx-mn||Math.abs(mx)||1;
+  scale.min=mn>=0?Math.max(0,mn-span*0.06):mn-span*0.06;
+  scale.max=mx+span*0.06;
 }
 
 /* ── Asset-Liste: gemeinsame Helfer für Rendern und Scrubben ── */
@@ -3274,6 +3294,7 @@ const V2_ICONS={
 const DATA_SECTION_ICONS={assets:'pulse',liab:'bank',pension:'umbrella',budget:'flow',forecast:'clock'};
 /* Anzeigename einer Gruppe: mit nur einer Position deren Name (ältere Importe sammeln z. B. Autos in „Sonstiges“) */
 function _groupDisplayName(key){
+  if(Object.values(CATEGORY_GROUPS).includes(key)||['BAV','Edelmetalle','Kredite'].includes(key))return key;
   const fs=_vf().filter(f=>f.category!=='liab'&&(f.displayGroup||f.category)===key);
   return fs.length===1?fs[0].label:key;
 }
@@ -4599,7 +4620,8 @@ function setupChartInteraction(){
       const e=loadData()[dataKeys[idx]];
       yVal=assetGroupValue((e&&e._details)?e._details:{},isolatedAsset);
     }
-    const py=yScale.getPixelForValue(yVal);
+    /* Punkt bleibt im Chart, auch wenn ein Wert außerhalb der Achse liegt */
+    const py=Math.min(yScale.bottom,Math.max(yScale.top,yScale.getPixelForValue(yVal)));
     return{x:px,y:py};
   }
 
@@ -6226,13 +6248,17 @@ function addCustomField(section='assets'){
     }
   }catch(error){showCsvMsg(error.message,'error');return false;}
   let id='custom-'+Date.now();while(_fc.fields.some(f=>f.id===id))id+='-1';
-  let group=label,n=2;while(_fc.fields.some(f=>(f.displayGroup||f.category)===group))group=label+' ('+(n++)+')';
+  /* Vermögenswerte kommen in die Gruppe ihrer Art (z. B. „ETF“), Verbindlichkeiten in eine eigene */
+  let group=!liability&&CATEGORY_GROUPS[category]||label,n=2;
+  const joins=!liability&&!!CATEGORY_GROUPS[category];
+  if(!joins)while(_fc.fields.some(f=>(f.displayGroup||f.category)===group))group=label+' ('+(n++)+')';
+  const newGroup=!_fc.fields.some(f=>(f.displayGroup||f.category)===group);
   _fc.fields.push({id,label,category,displayGroup:group,...metadata,hasUnits:!liability,...(!liability?{unitId:id}:{})});
   appStorage.beginTransaction();
   try{
     saveFieldConfig(_fc);
     if(liability){const lp=getLoanParams();lp[id]={assetId:document.getElementById('newLiabAsset')?.value||null,extras:[]};appStorage.setItem('loanParams',JSON.stringify(lp));}
-    else {const ap=JSON.parse(appStorage.getItem('lt-asset-params')||'{}');ap[group]={...(ap[group]||{}),saving:0};appStorage.setItem('lt-asset-params',JSON.stringify(ap));}
+    else if(newGroup){const ap=JSON.parse(appStorage.getItem('lt-asset-params')||'{}');ap[group]={...(ap[group]||{}),saving:0};appStorage.setItem('lt-asset-params',JSON.stringify(ap));}
     if(!liability&&(value!==null||quantity!==null)){const data=loadData(),e=_monthEntryForEdit(data,selectedMonth);e._details={...e._details,[id]:value||0};e._units={...e._units,...(quantity!==null?{[id]:quantity}:{})};recalcAggregates(e);data[selectedMonth]=e;saveData(data);}
     /* Optional "Im Besitz seit": derselbe Wert ab diesem Monat, ohne bestehende Werte anderer Positionen zu ändern */
     if(!liability&&since&&since<selectedMonth&&(value!==null||quantity!==null)){
@@ -6912,7 +6938,7 @@ function _historySheetBody(){
       <div class="ds-row"><span class="ds-l">Seit</span><select class="ds-in ds-sel" id="hc-month">${opt('','Monat',c.calc.month)+MONTH_FULL.map((m,i)=>opt(i+1,m,c.calc.month)).join('')}</select><select class="ds-in ds-sel" id="hc-year">${opt('','Jahr',c.calc.year)+Array.from({length:41},(_,i)=>opt(year-i,year-i,c.calc.year)).join('')}</select></div>
       <div class="ds-row"><span class="ds-l">Gekauft</span>${_seg('hc-mode',[['once','Einmal'],['plan','Mit Sparplan']],c.calc.mode)}</div>
       <label class="ds-row" id="hc-planRow"${c.calc.mode==='plan'?'':' hidden'}><span class="ds-l">Sparplan pro Monat</span><input class="ds-in ds-money" type="text" inputmode="decimal" id="hc-plan" value="${escHTML(c.calc.plan)}" placeholder="0"></label>
-      <div class="ds-sub"><button type="button" class="btn btn-ghost" data-hist-calc>Berechnen</button><p class="ds-help">Rechnet die heutige Stückzahl mit echten Monatskursen zurück. Vor dem Kaufmonat steht 0. Gespeichert wird erst mit „Sichern“.</p></div>
+      <div class="ds-sub"><button type="button" class="btn btn-ghost" data-hist-calc>Berechnen</button><p class="ds-help">Rechnet die heutige Stückzahl mit echten Monatskursen zurück. Vor dem Kaufmonat steht 0. Neue Monate vor deinem ersten erfassten Monat übernehmen die übrigen Positionen mit ihrem ersten bekannten Wert. Gespeichert wird erst mit „Sichern“.</p></div>
     </div></details>`;
   }
   if(!c.months.length)return h+`<p class="ds-empty">Noch keine früheren Monate.${c.inst?' Mit „Verlauf neu berechnen“ legst du sie an.':''}</p>`;
@@ -6955,7 +6981,12 @@ async function _historyCalc(){
     c.months=[...new Set([...c.months,...c.added.map(r=>r.month)])].sort().reverse();
     document.getElementById('dsBody').innerHTML='<div class="ds-error" id="dsError" role="alert" hidden></div>'+_historySheetBody();
     /* Bestehende Monate: berechnete Stückzahl, vor dem Kaufmonat 0; der aktuelle Monat bleibt der erfasste Stand */
-    document.querySelectorAll('#dsBody [data-hm]').forEach(i=>{const m=i.dataset.hm;if(m>=cur)return;i.value=_qtyInput(byMonth[m]??(m<since?0:+i.dataset.qty));});
+    document.querySelectorAll('#dsBody [data-hm]').forEach(i=>{
+      const m=i.dataset.hm;if(m>cur)return;
+      /* Aktueller Monat: erfasster Stand bleibt; fehlt die Position dort, gilt die heutige Stückzahl */
+      if(m===cur){if(!(+i.dataset.qty>0))i.value=_qtyInput(qty);return;}
+      i.value=_qtyInput(byMonth[m]??(m<since?0:+i.dataset.qty));
+    });
     _sheetDirty=true;_historyPaint();_toast(rows.length+' Monate berechnet');
   }catch(error){
     const btn=document.querySelector('#dsBody [data-hist-calc]');if(btn){btn.disabled=false;btn.textContent='Berechnen';}
@@ -6967,10 +6998,12 @@ function _saveHistorySheet(){
   appStorage.beginTransaction();
   try{
     const data=loadData();let changed=0;
+    /* Neue Monate vor dem ersten erfassten Monat: übrige Positionen mit ihrem ersten bekannten Wert, sonst springt der Chart */
+    const first=Object.keys(data).sort()[0],firstEntry=first?data[first]:null;
     document.querySelectorAll('#dsBody [data-hm]').forEach(i=>{
       const m=i.dataset.hm,isNew=i.dataset.new==='1';
       if(i.value.trim()===i.dataset.orig&&!isNew)return;
-      const e=_monthEntryForEdit(data,m);
+      const e=isNew&&firstEntry&&m<first?{_details:{...(firstEntry._details||{})},_units:{...(firstEntry._units||{})}}:_monthEntryForEdit(data,m);
       if(c.inst){
         let q;try{q=_assetNumber(i.value,true)??0;}catch(error){throw new Error(fmtMonth(m)+': Bitte eine gültige Stückzahl eingeben.');}
         const p=_historyPrice(m,i);
@@ -9007,6 +9040,8 @@ const ONBOARDING_CATEGORIES=[
   ['realEstate','Immobilie','Immobilien'],['vehicle','Fahrzeug','Fahrzeuge'],['other','Sonstige Anlage','Weitere Anlagen'],
   ['illiquid','Immobilien & Sachwerte','Sachwerte'],['liab','Kredite & Schulden','Verbindlichkeiten']
 ];
+/* Positionen derselben Art bilden eine Gruppe, die Übersicht zeigt dann z. B. „ETF“ statt einzelner Depots */
+const CATEGORY_GROUPS={cash:'Cash',etf:'ETF',stock:'Aktien',bitcoin:'Bitcoin',crypto:'Krypto',metal:'Edelmetalle',realEstate:'Immobilien',vehicle:'Fahrzeuge',other:'Weitere Anlagen',illiquid:'Sachwerte',bav:'Altersvorsorge'};
 function hasOnboardingData(doc){
   return !!(doc.positions.length||doc.snapshots.length||doc.groups.length||doc.accounts.length||
     (doc.budget&&doc.budget.items.length)||doc.loans.length||doc.retirement.people.length||
@@ -9220,7 +9255,7 @@ function guideWelcome(){
    Erfasst wird nur das Nötigste; Stückzahlen, Kurse, Darlehensverträge und Einzelposten
    schlägt die Daten-Seite danach nach und nach vor („Nach und nach ergänzen“).
    mode 'full' richtet einen leeren Bestand ein, 'budget' | 'future' | 'pension' ergänzen später einen Bereich. ── */
-const SETUP_ASSETS=[['Girokonto','cash'],['Tagesgeld','cash'],['Depot / ETF','etf','Depot'],['Aktien','stock'],['Bitcoin','bitcoin'],['Krypto','crypto'],['Gold','metal'],['Immobilie','realEstate'],['Auto','vehicle'],['Sonstiges','other']];
+const SETUP_ASSETS=[['Girokonto','cash'],['Tagesgeld','cash'],['ETF','etf'],['Aktien','stock'],['Bitcoin','bitcoin'],['Krypto','crypto'],['Gold','metal'],['Immobilie','realEstate'],['Auto','vehicle'],['Sonstiges','other']];
 const SETUP_DEBTS=[['Immobilienkredit','realEstate'],['Autokredit','vehicle'],['Ratenkredit',''],['Kreditkarte',''],['Privatdarlehen',''],['Sonstige Schulden','']];
 const SETUP_SAVE_CATS=['etf','stock','bitcoin','crypto','metal','cash','other'];
 const SETUP_MARKET_CATS=['etf','stock','bitcoin','crypto'];
@@ -9266,7 +9301,7 @@ function _setupNum(raw,label,min=0,max=Infinity){
 const _setupLenient=raw=>{try{return _setupNum(raw,'')||0;}catch(error){return 0;}};
 /* Bitcoin, Gold und Wertpapiere: Bestand wahlweise in Euro oder als Stückzahl; Stückzahl × aktueller Kurs = Wert */
 const SETUP_UNITS={bitcoin:['BTC','BTC'],metal:['oz','Unzen'],etf:['Stk','Stück'],stock:['Stk','Stück'],crypto:['Stk','Stück']};
-const SETUP_QTY_DEFAULT=['bitcoin','metal'];
+const SETUP_QTY_DEFAULT=['etf','stock','bitcoin','crypto','metal'];
 const _setupQty=raw=>{try{return _assetNumber(raw,true)||0;}catch(error){return 0;}};
 function _setupInstrument(s,r){const fixed=SETUP_FIXED_INSTRUMENTS[r.category];return fixed?{provider:fixed.provider,symbol:fixed.symbol}:((s.hist&&s.hist[r.id]&&s.hist[r.id].instrument)||null);}
 function _setupRowValue(s,r){
@@ -9386,8 +9421,10 @@ function buildSetupDocument(original,s,month,liveMonth=month){
     if(hasOnboardingData(doc))throw new Error('Es sind bereits Daten vorhanden. Die Einrichtung startet nur bei einem leeren Bestand.');
     const assets=_setupAssetRows(s),debts=_setupDebtRows(s),values=[],held=[];
     const add=(name,category,value,assumptions,h=null)=>{
-      const groupId=uniqueId('group-'),id=uniqueId(category==='liab'?'custom-setup-debt-':'custom-setup-');
-      doc.groups.push({id:groupId,name:uniqueName(name),defaultProfile:null,assumptions});
+      const id=uniqueId(category==='liab'?'custom-setup-debt-':'custom-setup-'),groupName=CATEGORY_GROUPS[category];
+      let group=groupName&&doc.groups.find(g=>g.name===groupName);
+      if(!group){group={id:uniqueId('group-'),name:uniqueName(groupName||name),defaultProfile:null,assumptions};doc.groups.push(group);}
+      const groupId=group.id;
       /* Mit Kursquelle bewertet die App ab jetzt selbst: Stückzahl × Kurs */
       doc.positions.push({id,name,category,groupId,archived:false,custom:true,ticker:null,unit:h?{name:(AssetModel.categories[category]||{}).unit||'Stück',key:id}:null,
         ...(h?{valuation:'market',instrument:JSON.parse(JSON.stringify(h.instrument)),lastQuote:JSON.parse(JSON.stringify(h.quote))}:{})});
@@ -9525,7 +9562,7 @@ function _setupFinish(){
 /* ── Bisheriger Verlauf aus Kursen: Monatskurse (Yahoo), Stückzahl-Verlauf aus „Seit wann“ und Kaufart ── */
 const SETUP_HISTORY_CATS=['etf','stock','bitcoin','crypto','metal'];
 const SETUP_FIXED_INSTRUMENTS={bitcoin:{provider:'bitcoin',symbol:'XBTEUR',label:'Bitcoin, Kurs in Euro'},metal:{provider:'yahoo',symbol:'XAUEUR',label:'Gold, Preis je Feinunze'}};
-const SETUP_GENERIC_NAMES=['depot','aktien','krypto','gold','bitcoin','sonstiges'];
+const SETUP_GENERIC_NAMES=['etf','depot','aktien','krypto','gold','bitcoin','sonstiges'];
 function _ymOf(date){return date.getUTCFullYear()+'-'+String(date.getUTCMonth()+1).padStart(2,'0');}
 async function _yahooMonthly(symbol){
   const url='https://query2.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(symbol)+'?interval=1mo&range=max';
@@ -9819,7 +9856,7 @@ function _setupClick(e){
   if(act==='add-asset'){
     const [label,category,name]=SETUP_ASSETS[+b.dataset.i],id='a'+(++_setupSeq),mode=SETUP_QTY_DEFAULT.includes(category)?'qty':'eur';
     const r={id,name:_setupName(s.assets,name||label),category,amount:'',qty:'',mode};s.assets.push(r);
-    _setupRender(`[data-row="${id}"] [data-f="${mode==='qty'?'qty':'amount'}"]`);
+    _setupRender(mode==='qty'&&!_setupInstrument(s,r)?`[data-row="${id}"] [data-h="query"]`:`[data-row="${id}"] [data-f="${mode==='qty'?'qty':'amount'}"]`);
     if(mode==='qty')_setupLoadQuote(r);
     return;
   }
@@ -9837,7 +9874,11 @@ function _setupClick(e){
   if(act==='hist-pick'||act==='hist-change'||act==='hist-mode'){
     const id=b.closest('[data-row]').dataset.row,h=_setupHist(s,id);
     const r=s.assets.find(x=>x.id===id),qtyRow=r&&r.mode==='qty'&&_setupSteps()[s.i]==='assets';
-    if(act==='hist-pick'){h.instrument=h.results[+b.dataset.i];}
+    if(act==='hist-pick'){
+      h.instrument=h.results[+b.dataset.i];
+      const generic=r&&SETUP_ASSETS.some(([label,,name])=>new RegExp('^'+(name||label).replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')+'( \\d+)?$').test(r.name.trim()));
+      if(generic)r.name=h.instrument.name;
+    }
     if(act==='hist-change'){h.instrument=null;h.results=null;Object.assign(h,{quote:null,quoteKey:null,quoteFailed:false});}
     if(act==='hist-mode')h.mode=b.dataset.v;
     _setupRender(act==='hist-change'?`[data-row="${id}"] [data-h="query"]`:act==='hist-mode'&&h.mode==='plan'?`[data-row="${id}"] [data-h="plan"]`:qtyRow?`[data-row="${id}"] [data-f="qty"]`:`[data-row="${id}"] [data-h="month"]`);

@@ -112,8 +112,11 @@ tatsächlichen Export-/Importfunktionen. `demo_backup.json` ist die neue Demo f�
 die App; `demo_export.csv` bleibt eine Test- und Kompatibilitätsvorlage.
 
 Die JSON-Demo zeigt einen fiktiven Haushalt mit 34 Monatsständen von Januar 2024
-bis Oktober 2026: Konten, zwei ETFs, eine Beispielaktie, getrennte Bitcoin- und
-Ethereum-Positionen, physisches Gold, Altersvorsorge, Wohnung und Familienauto.
+bis Oktober 2026: Konten, zwei ETFs, die Einzelaktien Apple, Amazon und Nestlé,
+getrennte Bitcoin- und Ethereum-Positionen, physisches Gold, Altersvorsorge, Wohnung
+und Familienauto. Das Nettovermögen wächst von rund 190.000 € auf 430.000 €. Die
+Kurse folgen erfundenen, aber realistisch schwankenden Verläufen mit festem
+Zufallsstartwert (gemeinsame Korrekturen, Krypto-Rücksetzer), sodass jeder Build gleich ist.
 Immobilien- und Autokredit sind mit ihren Assets verknüpft. Restschulden stammen
 aus vollständigen Annuitätenverträgen einschließlich datierter Sondertilgungen.
 Budget, Daueraufträge, Rentenangaben und Prognoseereignisse sind enthalten; die
@@ -185,11 +188,12 @@ Frage je Screen, Schätzwerte genügen, jeder Schritt lässt sich überspringen.
 
 1. Schwerpunkte: Vermögen (immer), optional Monatsbudget und Zukunft & Ruhestand.
    Nicht gewählte Bereiche bleiben ausgeschaltet.
-2. Vermögenswerte: Antippen einer Art (Girokonto, Depot, Immobilie …) legt eine
+2. Vermögenswerte: Antippen einer Art (Girokonto, ETF, Immobilie …) legt eine
    Zeile mit Name und Wert an. Bei Bitcoin, Gold, ETF, Aktie und Krypto lässt sich
-   zwischen Euro und Stückzahl (BTC, Unzen, Stück) wechseln; Bitcoin und Gold starten
-   mit Stückzahl. Bei Stückzahl lädt die App den aktuellen Kurs (bei Wertpapieren nach
-   der Auswahl über die Suche) und speichert Kursquelle, Stückzahl und Wert.
+   zwischen Euro und Stückzahl (BTC, Unzen, Stück) wechseln; Standard ist die
+   Stückzahl. Bei Stückzahl lädt die App den aktuellen Kurs (bei Wertpapieren nach
+   der Auswahl über die Suche, die Zeile übernimmt dann den Namen des Wertpapiers)
+   und speichert Kursquelle, Stückzahl und Wert.
 2a. Bisheriger Verlauf (nur bei ETF, Aktie, Bitcoin, Krypto und Gold, optional):
    Wertpapier per Name oder ISIN suchen (Yahoo-Suche, deutscher Handelsplatz
    bevorzugt, höchstens drei Treffer; Bitcoin und Gold ohne Suche), „Seit“ Monat
@@ -218,8 +222,9 @@ Frage je Screen, Schätzwerte genügen, jeder Schritt lässt sich überspringen.
    Rentenpunkte (Betrag / Rentenwert). „Weiß ich nicht“ lässt die Altersvorsorge aus.
 
 Alles wird am Ende als ein Dokument geprüft und gespeichert
-(`buildSetupDocument`); bei einem Fehler bleibt der Speicher unverändert. Jede
-Position und Schuld erhält eine eigene Gruppe. Der aktuelle Monat und der
+(`buildSetupDocument`); bei einem Fehler bleibt der Speicher unverändert. Positionen
+derselben Art teilen sich eine Gruppe (Cash, ETF, Aktien, Bitcoin, Krypto,
+Edelmetalle, Immobilien, Fahrzeuge …); jede Schuld erhält eine eigene Gruppe. Der aktuelle Monat und der
 Live-Monat bekommen denselben Stand, damit der Chart sofort eine Linie zeigt.
 Die Einrichtung ersetzt nie vorhandene Daten.
 
@@ -289,8 +294,11 @@ Zusätzliche optionale Asset-Angaben:
 ```
 
 `liquidity` ist unabhängig von der Kategorie (`liquid` / `illiquid`). Sie
-steuert Vermögenssummen und Filter. Neu angelegte Assets bekommen eine eigene
-Gruppe und keine erfundene Sparrate. Die Prognose berücksichtigt die
+steuert Vermögenssummen und Filter. Neu angelegte Assets kommen in die Gruppe
+ihrer Art (z. B. „ETF“) und bekommen keine erfundene Sparrate; die Sparrate einer
+bestehenden Gruppe bleibt erhalten. Die Vermögensübersicht zeigt Gruppen mit nur
+einer Position und ohne Art-Namen (z. B. das frühere „Sonstiges“) mit dem Namen der
+Position. Die Prognose berücksichtigt die
 Verfügbarkeit der Gruppe; bei alten Gruppen mit gemischten Assets gilt eine
 illiquide Einstufung konservativ für die gesamte Gruppe. Gebundene Altersvorsorge
 bleibt über das Verfügbarkeitsalter planbar.

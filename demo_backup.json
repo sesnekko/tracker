@@ -1,6 +1,6 @@
 {
   "format": "vermoegen-backup",
-  "schemaVersion": 2,
+  "schemaVersion": 5,
   "currency": "EUR",
   "groups": [
     {
@@ -92,7 +92,7 @@
       "assumptions": {
         "returnPercent": 5,
         "volatilityPercent": 20,
-        "monthlySaving": 100
+        "monthlySaving": 250
       }
     },
     {
@@ -283,8 +283,8 @@
       "valuation": "manual"
     },
     {
-      "id": "demo-aktie",
-      "name": "Beispielaktie",
+      "id": "aktie-apple",
+      "name": "Apple",
       "category": "stock",
       "groupId": "group-stock",
       "archived": false,
@@ -292,10 +292,61 @@
       "ticker": null,
       "unit": {
         "name": "Stück",
-        "key": "demo-aktie"
+        "key": "aktie-apple"
       },
       "liquidity": "liquid",
-      "valuation": "manual"
+      "valuation": "manual",
+      "instrument": {
+        "provider": "yahoo",
+        "symbol": "APC.DE",
+        "exchange": "XETRA",
+        "currency": "EUR",
+        "name": "Apple"
+      }
+    },
+    {
+      "id": "aktie-amazon",
+      "name": "Amazon",
+      "category": "stock",
+      "groupId": "group-stock",
+      "archived": false,
+      "custom": true,
+      "ticker": null,
+      "unit": {
+        "name": "Stück",
+        "key": "aktie-amazon"
+      },
+      "liquidity": "liquid",
+      "valuation": "manual",
+      "instrument": {
+        "provider": "yahoo",
+        "symbol": "AMZ.DE",
+        "exchange": "XETRA",
+        "currency": "EUR",
+        "name": "Amazon"
+      }
+    },
+    {
+      "id": "aktie-nestle",
+      "name": "Nestlé",
+      "category": "stock",
+      "groupId": "group-stock",
+      "archived": false,
+      "custom": true,
+      "ticker": null,
+      "unit": {
+        "name": "Stück",
+        "key": "aktie-nestle"
+      },
+      "liquidity": "liquid",
+      "valuation": "manual",
+      "instrument": {
+        "provider": "yahoo",
+        "symbol": "NESR.DE",
+        "exchange": "XETRA",
+        "currency": "EUR",
+        "name": "Nestlé"
+      }
     },
     {
       "id": "ethereum",
@@ -350,7 +401,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 8000
+          "value": 22000
         },
         {
           "positionId": "girokonto",
@@ -362,18 +413,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 775,
-          "quantity": 9.12
+          "quantity": 560,
+          "value": 47040
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 623,
-          "quantity": 1.32
+          "quantity": 55,
+          "value": 25850
         },
         {
           "positionId": "bitcoin",
-          "value": 444,
-          "quantity": 0.0113
+          "quantity": 0.3,
+          "value": 11700
         },
         {
           "positionId": "bausparvertrag",
@@ -392,14 +443,9 @@
           "value": 239500
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 20,
-          "value": 900
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.4,
-          "value": 720
+          "quantity": 1.5,
+          "value": 3150
         },
         {
           "positionId": "familienauto",
@@ -408,6 +454,26 @@
         {
           "positionId": "kredit-auto",
           "value": 0
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 40,
+          "value": 6800
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 45,
+          "value": 6300
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 80,
+          "value": 8080
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 9500
         }
       ]
     },
@@ -416,7 +482,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 8075
+          "value": 23150.95
         },
         {
           "positionId": "girokonto",
@@ -428,18 +494,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 1154,
-          "quantity": 13.08
+          "quantity": 569.7,
+          "value": 47974.44
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 800,
-          "quantity": 1.62
+          "quantity": 56.12,
+          "value": 27085.98
         },
         {
           "positionId": "bitcoin",
-          "value": 688,
-          "quantity": 0.0122
+          "quantity": 0.3076,
+          "value": 10643.87
         },
         {
           "positionId": "bausparvertrag",
@@ -458,14 +524,9 @@
           "value": 238998.54
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 22,
-          "value": 1025.39
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.41,
-          "value": 805.17
+          "quantity": 1.527,
+          "value": 3259.1
         },
         {
           "positionId": "familienauto",
@@ -474,6 +535,26 @@
         {
           "positionId": "kredit-auto",
           "value": 0
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 41,
+          "value": 7318.82
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 46,
+          "value": 5915.39
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 81,
+          "value": 8161.84
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 9792.03
         }
       ]
     },
@@ -482,7 +563,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 8150
+          "value": 24191.24
         },
         {
           "positionId": "girokonto",
@@ -494,18 +575,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 1547,
-          "quantity": 16.91
+          "quantity": 579.39,
+          "value": 50700.1
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 979,
-          "quantity": 1.91
+          "quantity": 57.24,
+          "value": 28727.46
         },
         {
           "positionId": "bitcoin",
-          "value": 853,
-          "quantity": 0.0129
+          "quantity": 0.3152,
+          "value": 17420.16
         },
         {
           "positionId": "bausparvertrag",
@@ -524,14 +605,9 @@
           "value": 238495.62
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 24,
-          "value": 1153.76
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.42,
-          "value": 878.83
+          "quantity": 1.555,
+          "value": 4273.01
         },
         {
           "positionId": "familienauto",
@@ -540,6 +616,26 @@
         {
           "positionId": "kredit-auto",
           "value": 0
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 42,
+          "value": 7703.67
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 47,
+          "value": 6852.31
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 82,
+          "value": 8077.59
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 9891.14
         }
       ]
     },
@@ -548,7 +644,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 8225
+          "value": 25027.67
         },
         {
           "positionId": "girokonto",
@@ -560,18 +656,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 1865,
-          "quantity": 20.82
+          "quantity": 589.09,
+          "value": 49144.45
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 1108,
-          "quantity": 2.21
+          "quantity": 58.36,
+          "value": 28137.16
         },
         {
           "positionId": "bitcoin",
-          "value": 784,
-          "quantity": 0.0138
+          "quantity": 0.3227,
+          "value": 14101.73
         },
         {
           "positionId": "bausparvertrag",
@@ -590,14 +686,9 @@
           "value": 237991.23
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 26,
-          "value": 1280.91
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.43,
-          "value": 928.48
+          "quantity": 1.582,
+          "value": 4231.09
         },
         {
           "positionId": "familienauto",
@@ -606,6 +697,26 @@
         {
           "positionId": "kredit-auto",
           "value": 0
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 42,
+          "value": 7280.91
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 47,
+          "value": 7379.1
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 83,
+          "value": 7650.6
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 10626.95
         }
       ]
     },
@@ -614,7 +725,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 8300
+          "value": 25599.23
         },
         {
           "positionId": "girokonto",
@@ -626,18 +737,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 2239,
-          "quantity": 24.68
+          "quantity": 598.79,
+          "value": 51661.12
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 1271,
-          "quantity": 2.51
+          "quantity": 59.48,
+          "value": 29002.89
         },
         {
           "positionId": "bitcoin",
-          "value": 907,
-          "quantity": 0.0146
+          "quantity": 0.3303,
+          "value": 16323.02
         },
         {
           "positionId": "bausparvertrag",
@@ -656,14 +767,9 @@
           "value": 237485.37
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 28,
-          "value": 1402.46
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.44,
-          "value": 947.23
+          "quantity": 1.609,
+          "value": 4896.9
         },
         {
           "positionId": "familienauto",
@@ -672,6 +778,26 @@
         {
           "positionId": "kredit-auto",
           "value": 0
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 43,
+          "value": 7975.68
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 48,
+          "value": 9207.22
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 84,
+          "value": 8165.42
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 10725.07
         }
       ]
     },
@@ -680,7 +806,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 8375
+          "value": 25886.74
         },
         {
           "positionId": "girokonto",
@@ -692,18 +818,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 2699,
-          "quantity": 28.35
+          "quantity": 608.48,
+          "value": 54188.09
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 1510,
-          "quantity": 2.79
+          "quantity": 60.61,
+          "value": 29751.75
         },
         {
           "positionId": "bitcoin",
-          "value": 902,
-          "quantity": 0.0154
+          "quantity": 0.3379,
+          "value": 14397.18
         },
         {
           "positionId": "bausparvertrag",
@@ -722,14 +848,9 @@
           "value": 236978.04
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 30,
-          "value": 1514.45
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.45,
-          "value": 935.79
+          "quantity": 1.636,
+          "value": 4972.87
         },
         {
           "positionId": "familienauto",
@@ -738,6 +859,26 @@
         {
           "positionId": "kredit-auto",
           "value": 0
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 44,
+          "value": 9040.3
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 49,
+          "value": 9662.85
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 85,
+          "value": 8141.97
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 11058.21
         }
       ]
     },
@@ -746,7 +887,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 8450
+          "value": 25915.83
         },
         {
           "positionId": "girokonto",
@@ -758,18 +899,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 3054,
-          "quantity": 32.02
+          "quantity": 618.18,
+          "value": 53542.62
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 1653,
-          "quantity": 3.07
+          "quantity": 61.73,
+          "value": 29827.11
         },
         {
           "positionId": "bitcoin",
-          "value": 972,
-          "quantity": 0.0163
+          "quantity": 0.3455,
+          "value": 15929.92
         },
         {
           "positionId": "bausparvertrag",
@@ -788,14 +929,9 @@
           "value": 236469.23
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 32,
-          "value": 1613.99
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.46,
-          "value": 902.67
+          "quantity": 1.664,
+          "value": 6024.23
         },
         {
           "positionId": "familienauto",
@@ -804,6 +940,26 @@
         {
           "positionId": "kredit-auto",
           "value": 0
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 45,
+          "value": 9266.32
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 50,
+          "value": 10754.94
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 85,
+          "value": 7583.92
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 11239.63
         }
       ]
     },
@@ -812,7 +968,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 8525
+          "value": 25752.98
         },
         {
           "positionId": "girokonto",
@@ -824,18 +980,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 3396,
-          "quantity": 35.7
+          "quantity": 627.88,
+          "value": 51701.08
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 1790,
-          "quantity": 3.35
+          "quantity": 62.85,
+          "value": 28022.16
         },
         {
           "positionId": "bitcoin",
-          "value": 918,
-          "quantity": 0.0172
+          "quantity": 0.353,
+          "value": 14368.7
         },
         {
           "positionId": "bausparvertrag",
@@ -854,14 +1010,9 @@
           "value": 235958.93
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 34,
-          "value": 1699.74
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.47,
-          "value": 862.34
+          "quantity": 1.691,
+          "value": 5841.77
         },
         {
           "positionId": "familienauto",
@@ -870,6 +1021,26 @@
         {
           "positionId": "kredit-auto",
           "value": 0
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 45,
+          "value": 9016.54
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 50,
+          "value": 9506.33
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 86,
+          "value": 7538.35
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 11491.82
         }
       ]
     },
@@ -878,7 +1049,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 8600
+          "value": 25494.93
         },
         {
           "positionId": "girokonto",
@@ -890,18 +1061,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 3792,
-          "quantity": 39.33
+          "quantity": 637.58,
+          "value": 53831.31
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 1971,
-          "quantity": 3.62
+          "quantity": 63.97,
+          "value": 29270.69
         },
         {
           "positionId": "bitcoin",
-          "value": 1029,
-          "quantity": 0.0181
+          "quantity": 0.3606,
+          "value": 15125.37
         },
         {
           "positionId": "bausparvertrag",
@@ -920,14 +1091,9 @@
           "value": 235447.14
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 36,
-          "value": 1772.25
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.48,
-          "value": 831.82
+          "quantity": 1.718,
+          "value": 7345.83
         },
         {
           "positionId": "familienauto",
@@ -936,6 +1102,26 @@
         {
           "positionId": "kredit-auto",
           "value": 0
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 46,
+          "value": 10413.54
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 51,
+          "value": 9847.6
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 87,
+          "value": 7415.6
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 11500.65
         }
       ]
     },
@@ -944,7 +1130,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 8675
+          "value": 25253.46
         },
         {
           "positionId": "girokonto",
@@ -956,18 +1142,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 4188,
-          "quantity": 42.92
+          "quantity": 647.27,
+          "value": 56187.44
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 2173,
-          "quantity": 3.89
+          "quantity": 65.09,
+          "value": 29284.7
         },
         {
           "positionId": "bitcoin",
-          "value": 1218,
-          "quantity": 0.0189
+          "quantity": 0.3682,
+          "value": 17404.45
         },
         {
           "positionId": "bausparvertrag",
@@ -986,14 +1172,9 @@
           "value": 234933.86
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 38,
-          "value": 1834.05
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.49,
-          "value": 826.5
+          "quantity": 1.745,
+          "value": 7378.56
         },
         {
           "positionId": "familienauto",
@@ -1002,6 +1183,26 @@
         {
           "positionId": "kredit-auto",
           "value": 0
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 47,
+          "value": 10909.87
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 52,
+          "value": 11475.4
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 88,
+          "value": 7794.03
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 12010.58
         }
       ]
     },
@@ -1010,7 +1211,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 8750
+          "value": 25137.76
         },
         {
           "positionId": "girokonto",
@@ -1022,18 +1223,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 4848,
-          "quantity": 46.26
+          "quantity": 656.97,
+          "value": 60743.27
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 2507,
-          "quantity": 4.14
+          "quantity": 66.21,
+          "value": 33161.13
         },
         {
           "positionId": "bitcoin",
-          "value": 1771,
-          "quantity": 0.0194
+          "quantity": 0.3758,
+          "value": 29950.7
         },
         {
           "positionId": "bausparvertrag",
@@ -1052,14 +1253,9 @@
           "value": 234419.08
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 40,
-          "value": 1889.51
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.5,
-          "value": 856.16
+          "quantity": 1.773,
+          "value": 9232.89
         },
         {
           "positionId": "familienauto",
@@ -1068,6 +1264,26 @@
         {
           "positionId": "kredit-auto",
           "value": 0
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 48,
+          "value": 12208.6
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 53,
+          "value": 12836.35
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 89,
+          "value": 8326.63
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 11707.94
         }
       ]
     },
@@ -1076,7 +1292,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 8825
+          "value": 25237.12
         },
         {
           "positionId": "girokonto",
@@ -1088,18 +1304,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 5142,
-          "quantity": 49.64
+          "quantity": 666.67,
+          "value": 61372.45
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 2636,
-          "quantity": 4.39
+          "quantity": 67.33,
+          "value": 34200.76
         },
         {
           "positionId": "bitcoin",
-          "value": 1804,
-          "quantity": 0.02
+          "quantity": 0.3833,
+          "value": 28103.16
         },
         {
           "positionId": "bausparvertrag",
@@ -1118,14 +1334,9 @@
           "value": 231402.8
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 42,
-          "value": 1944.39
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.51,
-          "value": 922.25
+          "quantity": 1.8,
+          "value": 10064.04
         },
         {
           "positionId": "familienauto",
@@ -1134,6 +1345,26 @@
         {
           "positionId": "kredit-auto",
           "value": 0
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 48,
+          "value": 12279.61
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 53,
+          "value": 12184.87
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 90,
+          "value": 7897.61
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 11644.1
         }
       ]
     },
@@ -1142,7 +1373,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 8900
+          "value": 16606.9
         },
         {
           "positionId": "girokonto",
@@ -1154,18 +1385,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 5720,
-          "quantity": 52.87
+          "quantity": 676.36,
+          "value": 62661.11
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 2887,
-          "quantity": 4.63
+          "quantity": 68.45,
+          "value": 35445.19
         },
         {
           "positionId": "bitcoin",
-          "value": 2025,
-          "quantity": 0.0205
+          "quantity": 0.3909,
+          "value": 27605.08
         },
         {
           "positionId": "bausparvertrag",
@@ -1184,14 +1415,9 @@
           "value": 230877.72
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 44,
-          "value": 2005.2
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.52,
-          "value": 1017.21
+          "quantity": 1.827,
+          "value": 11634.91
         },
         {
           "positionId": "familienauto",
@@ -1200,6 +1426,26 @@
         {
           "positionId": "kredit-auto",
           "value": 19700
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 49,
+          "value": 12770.35
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 54,
+          "value": 12857.73
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 91,
+          "value": 7828.3
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 11791.84
         }
       ]
     },
@@ -1208,7 +1454,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 8975
+          "value": 17259.78
         },
         {
           "positionId": "girokonto",
@@ -1220,18 +1466,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 5930,
-          "quantity": 56.19
+          "quantity": 686.06,
+          "value": 62998.4
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 2932,
-          "quantity": 4.88
+          "quantity": 69.58,
+          "value": 35801.82
         },
         {
           "positionId": "bitcoin",
-          "value": 1715,
-          "quantity": 0.0211
+          "quantity": 0.3985,
+          "value": 20933.82
         },
         {
           "positionId": "bausparvertrag",
@@ -1250,14 +1496,9 @@
           "value": 230351.11
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 46,
-          "value": 2078.46
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.53,
-          "value": 1126
+          "quantity": 1.855,
+          "value": 9911.2
         },
         {
           "positionId": "familienauto",
@@ -1266,6 +1507,26 @@
         {
           "positionId": "kredit-auto",
           "value": 19398.5
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 50,
+          "value": 12436.85
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 55,
+          "value": 12003.07
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 92,
+          "value": 7856.22
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 12382.34
         }
       ]
     },
@@ -1274,7 +1535,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 9050
+          "value": 18163.72
         },
         {
           "positionId": "girokonto",
@@ -1286,18 +1547,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 5811,
-          "quantity": 59.79
+          "quantity": 695.76,
+          "value": 60481.67
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 2818,
-          "quantity": 5.15
+          "quantity": 70.7,
+          "value": 33692.08
         },
         {
           "positionId": "bitcoin",
-          "value": 1660,
-          "quantity": 0.0218
+          "quantity": 0.4061,
+          "value": 20138.8
         },
         {
           "positionId": "bausparvertrag",
@@ -1316,14 +1577,9 @@
           "value": 229822.97
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 48,
-          "value": 2169.8
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.54,
-          "value": 1229.63
+          "quantity": 1.882,
+          "value": 10178.54
         },
         {
           "positionId": "familienauto",
@@ -1332,6 +1588,26 @@
         {
           "positionId": "kredit-auto",
           "value": 19095.49
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 51,
+          "value": 12356.52
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 56,
+          "value": 11041.53
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 93,
+          "value": 7708.61
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 12874.99
         }
       ]
     },
@@ -1340,7 +1616,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 9125
+          "value": 19247.05
         },
         {
           "positionId": "girokonto",
@@ -1352,18 +1628,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 5932,
-          "quantity": 63.54
+          "quantity": 705.45,
+          "value": 56987.49
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 2817,
-          "quantity": 5.44
+          "quantity": 71.82,
+          "value": 33173.21
         },
         {
           "positionId": "bitcoin",
-          "value": 1860,
-          "quantity": 0.0224
+          "quantity": 0.4136,
+          "value": 16600.28
         },
         {
           "positionId": "bausparvertrag",
@@ -1382,14 +1658,9 @@
           "value": 229293.29
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 50,
-          "value": 2283.22
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.55,
-          "value": 1309.77
+          "quantity": 1.909,
+          "value": 9515.63
         },
         {
           "positionId": "familienauto",
@@ -1398,6 +1669,26 @@
         {
           "positionId": "kredit-auto",
           "value": 18790.97
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 51,
+          "value": 10700.71
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 56,
+          "value": 9442.8
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 94,
+          "value": 7362.44
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 12897.15
         }
       ]
     },
@@ -1406,7 +1697,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 9200
+          "value": 20409.79
         },
         {
           "positionId": "girokonto",
@@ -1418,18 +1709,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 6660,
-          "quantity": 67.06
+          "quantity": 715.15,
+          "value": 61919.92
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 3161,
-          "quantity": 5.71
+          "quantity": 72.94,
+          "value": 37350.31
         },
         {
           "positionId": "bitcoin",
-          "value": 2112,
-          "quantity": 0.0229
+          "quantity": 0.4212,
+          "value": 18512.36
         },
         {
           "positionId": "bausparvertrag",
@@ -1448,14 +1739,9 @@
           "value": 228762.06
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 52,
-          "value": 2420.43
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.56,
-          "value": 1353.41
+          "quantity": 1.936,
+          "value": 8742.72
         },
         {
           "positionId": "familienauto",
@@ -1464,6 +1750,26 @@
         {
           "positionId": "kredit-auto",
           "value": 18484.92
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 52,
+          "value": 12121.75
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 57,
+          "value": 9682.28
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 95,
+          "value": 7939.36
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 13161.72
         }
       ]
     },
@@ -1472,7 +1778,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 9275
+          "value": 21539.4
         },
         {
           "positionId": "girokonto",
@@ -1484,18 +1790,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 7067,
-          "quantity": 70.56
+          "quantity": 724.85,
+          "value": 62991.47
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 3358,
-          "quantity": 5.98
+          "quantity": 74.06,
+          "value": 39160.43
         },
         {
           "positionId": "bitcoin",
-          "value": 2131,
-          "quantity": 0.0234
+          "quantity": 0.4288,
+          "value": 17013.59
         },
         {
           "positionId": "bausparvertrag",
@@ -1514,14 +1820,9 @@
           "value": 228229.28
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 54,
-          "value": 2580.51
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.57,
-          "value": 1356.34
+          "quantity": 1.964,
+          "value": 8501.95
         },
         {
           "positionId": "familienauto",
@@ -1530,6 +1831,26 @@
         {
           "positionId": "kredit-auto",
           "value": 18177.34
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 53,
+          "value": 12957.38
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 58,
+          "value": 11125.91
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 95,
+          "value": 7990.68
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 13371.12
         }
       ]
     },
@@ -1538,7 +1859,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 9350
+          "value": 22528.6
         },
         {
           "positionId": "girokonto",
@@ -1550,18 +1871,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 7758,
-          "quantity": 73.89
+          "quantity": 734.55,
+          "value": 64076.74
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 3713,
-          "quantity": 6.23
+          "quantity": 75.18,
+          "value": 40548.82
         },
         {
           "positionId": "bitcoin",
-          "value": 2427,
-          "quantity": 0.0239
+          "quantity": 0.4364,
+          "value": 19034.54
         },
         {
           "positionId": "bausparvertrag",
@@ -1580,14 +1901,9 @@
           "value": 227694.95
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 56,
-          "value": 2759.81
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.58,
-          "value": 1324.51
+          "quantity": 1.991,
+          "value": 12246.02
         },
         {
           "positionId": "familienauto",
@@ -1596,6 +1912,26 @@
         {
           "positionId": "kredit-auto",
           "value": 17868.23
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 54,
+          "value": 12638.38
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 59,
+          "value": 12335.75
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 96,
+          "value": 7451.95
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 14292.82
         }
       ]
     },
@@ -1604,7 +1940,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 9425
+          "value": 23292.26
         },
         {
           "positionId": "girokonto",
@@ -1616,18 +1952,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 8078,
-          "quantity": 77.24
+          "quantity": 744.24,
+          "value": 66274.77
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 3822,
-          "quantity": 6.49
+          "quantity": 76.3,
+          "value": 43450.85
         },
         {
           "positionId": "bitcoin",
-          "value": 2267,
-          "quantity": 0.0245
+          "quantity": 0.4439,
+          "value": 26097.09
         },
         {
           "positionId": "bausparvertrag",
@@ -1646,14 +1982,9 @@
           "value": 227159.06
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 58,
-          "value": 2952.23
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.59,
-          "value": 1272.9
+          "quantity": 2.018,
+          "value": 11766.3
         },
         {
           "positionId": "familienauto",
@@ -1662,6 +1993,26 @@
         {
           "positionId": "kredit-auto",
           "value": 17557.57
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 54,
+          "value": 12785.32
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 59,
+          "value": 13279.48
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 97,
+          "value": 7640.44
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 14745.62
         }
       ]
     },
@@ -1670,7 +2021,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 9500
+          "value": 23780.84
         },
         {
           "positionId": "girokonto",
@@ -1682,18 +2033,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 8629,
-          "quantity": 80.5
+          "quantity": 753.94,
+          "value": 68767.53
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 4079,
-          "quantity": 6.73
+          "quantity": 77.42,
+          "value": 43267.61
         },
         {
           "positionId": "bitcoin",
-          "value": 2430,
-          "quantity": 0.025
+          "quantity": 0.4515,
+          "value": 26101.59
         },
         {
           "positionId": "bausparvertrag",
@@ -1712,14 +2063,9 @@
           "value": 226621.61
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 60,
-          "value": 3149.8
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.6,
-          "value": 1222.08
+          "quantity": 2.045,
+          "value": 11890.91
         },
         {
           "positionId": "familienauto",
@@ -1728,6 +2074,26 @@
         {
           "positionId": "kredit-auto",
           "value": 17245.36
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 55,
+          "value": 13231.26
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 60,
+          "value": 12974.68
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 98,
+          "value": 7801.94
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 14538.1
         }
       ]
     },
@@ -1736,7 +2102,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 9575
+          "value": 23988.28
         },
         {
           "positionId": "girokonto",
@@ -1748,18 +2114,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 9353,
-          "quantity": 83.63
+          "quantity": 763.64,
+          "value": 68616.43
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 4423,
-          "quantity": 6.97
+          "quantity": 78.55,
+          "value": 42811.61
         },
         {
           "positionId": "bitcoin",
-          "value": 2411,
-          "quantity": 0.0255
+          "quantity": 0.4591,
+          "value": 32667.76
         },
         {
           "positionId": "bausparvertrag",
@@ -1778,14 +2144,9 @@
           "value": 226082.59
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 62,
-          "value": 3343.53
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.61,
-          "value": 1193.22
+          "quantity": 2.073,
+          "value": 12086.32
         },
         {
           "positionId": "familienauto",
@@ -1794,6 +2155,26 @@
         {
           "positionId": "kredit-auto",
           "value": 16931.59
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 56,
+          "value": 14795.16
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 61,
+          "value": 11997.34
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 99,
+          "value": 7903.87
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 15153.45
         }
       ]
     },
@@ -1802,7 +2183,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 9650
+          "value": 23952.85
         },
         {
           "positionId": "girokonto",
@@ -1814,18 +2195,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 9672,
-          "quantity": 86.77
+          "quantity": 773.33,
+          "value": 70430.56
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 4551,
-          "quantity": 7.21
+          "quantity": 79.67,
+          "value": 43003.97
         },
         {
           "positionId": "bitcoin",
-          "value": 2039,
-          "quantity": 0.0262
+          "quantity": 0.4667,
+          "value": 27030.54
         },
         {
           "positionId": "bausparvertrag",
@@ -1844,14 +2225,9 @@
           "value": 225542
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 64,
-          "value": 3524.48
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.62,
-          "value": 1202.8
+          "quantity": 2.1,
+          "value": 11496.42
         },
         {
           "positionId": "familienauto",
@@ -1860,6 +2236,26 @@
         {
           "positionId": "kredit-auto",
           "value": 16616.25
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 57,
+          "value": 14800.05
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 62,
+          "value": 11069.26
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 100,
+          "value": 7953.35
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 15632.97
         }
       ]
     },
@@ -1868,7 +2264,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 9725
+          "value": 23751.2
         },
         {
           "positionId": "girokonto",
@@ -1880,18 +2276,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 10050,
-          "quantity": 89.91
+          "quantity": 783.03,
+          "value": 73002.74
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 4685,
-          "quantity": 7.45
+          "quantity": 80.79,
+          "value": 45599.63
         },
         {
           "positionId": "bitcoin",
-          "value": 2002,
-          "quantity": 0.0268
+          "quantity": 0.4742,
+          "value": 26332.4
         },
         {
           "positionId": "bausparvertrag",
@@ -1910,14 +2306,9 @@
           "value": 221999.83
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 66,
-          "value": 3684.78
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.63,
-          "value": 1258.34
+          "quantity": 2.127,
+          "value": 11375.01
         },
         {
           "positionId": "familienauto",
@@ -1926,6 +2317,26 @@
         {
           "positionId": "kredit-auto",
           "value": 16299.33
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 57,
+          "value": 12728.97
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 62,
+          "value": 13439.98
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 101,
+          "value": 8103.2
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 15732.46
         }
       ]
     },
@@ -1934,7 +2345,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 9800
+          "value": 27486.21
         },
         {
           "positionId": "girokonto",
@@ -1946,18 +2357,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 10445,
-          "quantity": 93.02
+          "quantity": 792.73,
+          "value": 74996.45
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 4813,
-          "quantity": 7.69
+          "quantity": 81.91,
+          "value": 45918.38
         },
         {
           "positionId": "bitcoin",
-          "value": 1830,
-          "quantity": 0.0276
+          "quantity": 0.4818,
+          "value": 23414.17
         },
         {
           "positionId": "bausparvertrag",
@@ -1976,14 +2387,9 @@
           "value": 221447.33
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 68,
-          "value": 3818.71
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.64,
-          "value": 1356.18
+          "quantity": 2.155,
+          "value": 9555.52
         },
         {
           "positionId": "familienauto",
@@ -1992,6 +2398,26 @@
         {
           "positionId": "kredit-auto",
           "value": 15980.83
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 58,
+          "value": 13573.33
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 63,
+          "value": 15104.27
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 102,
+          "value": 8767.84
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 15089.45
         }
       ]
     },
@@ -2000,7 +2426,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 9875
+          "value": 27270.76
         },
         {
           "positionId": "girokonto",
@@ -2012,18 +2438,18 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 10912,
-          "quantity": 96.11
+          "quantity": 802.42,
+          "value": 74805.31
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 4946,
-          "quantity": 7.93
+          "quantity": 83.03,
+          "value": 47470.93
         },
         {
           "positionId": "bitcoin",
-          "value": 1614,
-          "quantity": 0.0285
+          "quantity": 0.4894,
+          "value": 22684.26
         },
         {
           "positionId": "bausparvertrag",
@@ -2042,14 +2468,9 @@
           "value": 220893.22
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 70,
-          "value": 3923.44
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.65,
-          "value": 1482.07
+          "quantity": 2.182,
+          "value": 10984.77
         },
         {
           "positionId": "familienauto",
@@ -2058,6 +2479,26 @@
         {
           "positionId": "kredit-auto",
           "value": 15660.73
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 59,
+          "value": 12961.19
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 64,
+          "value": 13873.41
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 103,
+          "value": 9149.56
+        },
+        {
+          "positionId": "gold",
+          "quantity": 5,
+          "value": 15280.08
         }
       ]
     },
@@ -2066,7 +2507,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 9950
+          "value": 27209.91
         },
         {
           "positionId": "girokonto",
@@ -2078,23 +2519,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 10735,
-          "quantity": 99.34
+          "quantity": 812.12,
+          "value": 81048.38
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 4907,
-          "quantity": 8.18
+          "quantity": 84.15,
+          "value": 47371.26
         },
         {
           "positionId": "bitcoin",
-          "value": 1729,
-          "quantity": 0.0293
+          "quantity": 0.497,
+          "value": 25248.26
         },
         {
           "positionId": "gold",
-          "value": 8526,
-          "quantity": 2
+          "quantity": 5,
+          "value": 14833.77
         },
         {
           "positionId": "bausparvertrag",
@@ -2113,14 +2554,9 @@
           "value": 220337.49
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 72,
-          "value": 3999.61
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.66,
-          "value": 1614.39
+          "quantity": 2.209,
+          "value": 10369.93
         },
         {
           "positionId": "familienauto",
@@ -2129,6 +2565,21 @@
         {
           "positionId": "kredit-auto",
           "value": 14339.03
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 60,
+          "value": 14923.9
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 65,
+          "value": 15450.41
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 104,
+          "value": 8999.16
         }
       ]
     },
@@ -2137,7 +2588,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 10025
+          "value": 27384.31
         },
         {
           "positionId": "girokonto",
@@ -2149,23 +2600,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 11316,
-          "quantity": 102.52
+          "quantity": 821.82,
+          "value": 82693.31
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 5150,
-          "quantity": 8.42
+          "quantity": 85.27,
+          "value": 48517.59
         },
         {
           "positionId": "bitcoin",
-          "value": 1753,
-          "quantity": 0.0302
+          "quantity": 0.5045,
+          "value": 29448.86
         },
         {
           "positionId": "gold",
-          "value": 12267,
-          "quantity": 3
+          "quantity": 5,
+          "value": 15098.46
         },
         {
           "positionId": "bausparvertrag",
@@ -2184,14 +2635,9 @@
           "value": 219780.14
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 74,
-          "value": 4051.39
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.67,
-          "value": 1729.36
+          "quantity": 2.236,
+          "value": 11170.27
         },
         {
           "positionId": "familienauto",
@@ -2200,6 +2646,21 @@
         {
           "positionId": "kredit-auto",
           "value": 14010.73
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 60,
+          "value": 13925.06
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 65,
+          "value": 15183.4
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 105,
+          "value": 8711.7
         }
       ]
     },
@@ -2208,7 +2669,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 10100
+          "value": 27837.48
         },
         {
           "positionId": "girokonto",
@@ -2220,23 +2681,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 12067,
-          "quantity": 105.85
+          "quantity": 831.52,
+          "value": 87148.65
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 5445,
-          "quantity": 8.67
+          "quantity": 86.39,
+          "value": 50637.97
         },
         {
           "positionId": "bitcoin",
-          "value": 1891,
-          "quantity": 0.031
+          "quantity": 0.5121,
+          "value": 34244.32
         },
         {
           "positionId": "gold",
-          "value": 12150,
-          "quantity": 3
+          "quantity": 5,
+          "value": 15668.72
         },
         {
           "positionId": "bausparvertrag",
@@ -2255,14 +2716,9 @@
           "value": 219221.17
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 76,
-          "value": 4086.16
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.68,
-          "value": 1806.88
+          "quantity": 2.264,
+          "value": 10921.86
         },
         {
           "positionId": "familienauto",
@@ -2271,6 +2727,21 @@
         {
           "positionId": "kredit-auto",
           "value": 13680.78
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 61,
+          "value": 13515.12
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 66,
+          "value": 15440.65
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 105,
+          "value": 8639.02
         }
       ]
     },
@@ -2279,7 +2750,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 10175
+          "value": 28568.91
         },
         {
           "positionId": "girokonto",
@@ -2291,23 +2762,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 12829,
-          "quantity": 109.18
+          "quantity": 841.21,
+          "value": 93918.04
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 5843,
-          "quantity": 8.92
+          "quantity": 87.52,
+          "value": 52532.46
         },
         {
           "positionId": "bitcoin",
-          "value": 2051,
-          "quantity": 0.0318
+          "quantity": 0.5197,
+          "value": 44623.31
         },
         {
           "positionId": "gold",
-          "value": 11940,
-          "quantity": 3
+          "quantity": 5,
+          "value": 15883.61
         },
         {
           "positionId": "bausparvertrag",
@@ -2326,14 +2797,9 @@
           "value": 218660.57
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 78,
-          "value": 4113.86
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.69,
-          "value": 1835.72
+          "quantity": 2.291,
+          "value": 9397.56
         },
         {
           "positionId": "familienauto",
@@ -2342,6 +2808,21 @@
         {
           "positionId": "kredit-auto",
           "value": 13349.18
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 62,
+          "value": 14401.04
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 67,
+          "value": 16633.41
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 106,
+          "value": 8685.84
         }
       ]
     },
@@ -2350,7 +2831,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 6050
+          "value": 29534.17
         },
         {
           "positionId": "girokonto",
@@ -2362,23 +2843,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 13051,
-          "quantity": 112.51
+          "quantity": 850.91,
+          "value": 97152.54
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 5878,
-          "quantity": 9.17
+          "quantity": 88.64,
+          "value": 53810.44
         },
         {
           "positionId": "bitcoin",
-          "value": 1972,
-          "quantity": 0.0326
+          "quantity": 0.5273,
+          "value": 39617
         },
         {
           "positionId": "gold",
-          "value": 15560,
-          "quantity": 4
+          "quantity": 5,
+          "value": 16710.86
         },
         {
           "positionId": "bausparvertrag",
@@ -2397,14 +2878,9 @@
           "value": 218098.33
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 80,
-          "value": 4145.91
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.7,
-          "value": 1816.56
+          "quantity": 2.318,
+          "value": 8921.99
         },
         {
           "positionId": "familienauto",
@@ -2413,6 +2889,21 @@
         {
           "positionId": "kredit-auto",
           "value": 13015.93
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 63,
+          "value": 14770.7
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 68,
+          "value": 15724.57
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 107,
+          "value": 9259.1
         }
       ]
     },
@@ -2421,7 +2912,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 6125
+          "value": 30651.91
         },
         {
           "positionId": "girokonto",
@@ -2433,23 +2924,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 14017,
-          "quantity": 115.84
+          "quantity": 860.61,
+          "value": 101748.77
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 6453,
-          "quantity": 9.42
+          "quantity": 89.76,
+          "value": 55304.29
         },
         {
           "positionId": "bitcoin",
-          "value": 2254,
-          "quantity": 0.0334
+          "quantity": 0.5348,
+          "value": 45988.3
         },
         {
           "positionId": "gold",
-          "value": 15360,
-          "quantity": 4
+          "quantity": 5,
+          "value": 17117.68
         },
         {
           "positionId": "bausparvertrag",
@@ -2468,14 +2959,9 @@
           "value": 215034.45
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 82,
-          "value": 4193.93
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.71,
-          "value": 1762.18
+          "quantity": 2.345,
+          "value": 7833.26
         },
         {
           "positionId": "familienauto",
@@ -2484,6 +2970,21 @@
         {
           "positionId": "kredit-auto",
           "value": 12681.01
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 63,
+          "value": 14772.97
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 68,
+          "value": 14284.31
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 108,
+          "value": 9110.31
         }
       ]
     },
@@ -2492,7 +2993,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 6200
+          "value": 31816.72
         },
         {
           "positionId": "girokonto",
@@ -2504,23 +3005,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 15015,
-          "quantity": 119.17
+          "quantity": 870.3,
+          "value": 105535.95
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 6943,
-          "quantity": 9.67
+          "quantity": 90.88,
+          "value": 55366.09
         },
         {
           "positionId": "bitcoin",
-          "value": 2456,
-          "quantity": 0.0342
+          "quantity": 0.5424,
+          "value": 41799.16
         },
         {
           "positionId": "gold",
-          "value": 15040,
-          "quantity": 4
+          "quantity": 5,
+          "value": 17820.52
         },
         {
           "positionId": "bausparvertrag",
@@ -2539,14 +3040,9 @@
           "value": 214461.63
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 84,
-          "value": 4268.41
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.72,
-          "value": 1694.61
+          "quantity": 2.373,
+          "value": 7091.57
         },
         {
           "positionId": "familienauto",
@@ -2555,6 +3051,21 @@
         {
           "positionId": "kredit-auto",
           "value": 12344.42
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 64,
+          "value": 15132.33
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 69,
+          "value": 14762.62
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 109,
+          "value": 9199.66
         }
       ]
     },
@@ -2563,7 +3074,7 @@
       "positions": [
         {
           "positionId": "tagesgeld",
-          "value": 6275
+          "value": 32915.73
         },
         {
           "positionId": "girokonto",
@@ -2575,23 +3086,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "value": 15986,
-          "quantity": 122.5
+          "quantity": 880,
+          "value": 115280
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "value": 7400,
-          "quantity": 9.92
+          "quantity": 92,
+          "value": 56120
         },
         {
           "positionId": "bitcoin",
-          "value": 2576,
-          "quantity": 0.035
+          "quantity": 0.55,
+          "value": 40700
         },
         {
           "positionId": "gold",
-          "value": 14840,
-          "quantity": 4
+          "quantity": 5,
+          "value": 18500
         },
         {
           "positionId": "bausparvertrag",
@@ -2610,14 +3121,9 @@
           "value": 213887.14
         },
         {
-          "positionId": "demo-aktie",
-          "quantity": 86,
-          "value": 4377.4
-        },
-        {
           "positionId": "ethereum",
-          "quantity": 0.73,
-          "value": 1639.92
+          "quantity": 2.4,
+          "value": 7920
         },
         {
           "positionId": "familienauto",
@@ -2626,6 +3132,21 @@
         {
           "positionId": "kredit-auto",
           "value": 12006.14
+        },
+        {
+          "positionId": "aktie-apple",
+          "quantity": 65,
+          "value": 14820
+        },
+        {
+          "positionId": "aktie-amazon",
+          "quantity": 70,
+          "value": 14350
+        },
+        {
+          "positionId": "aktie-nestle",
+          "quantity": 110,
+          "value": 9240
         }
       ]
     }
@@ -3156,18 +3677,18 @@
         "kind": "saving",
         "targetGroupId": "group-stock",
         "monthlyAmounts": [
-          100,
-          100,
-          100,
-          100,
-          100,
-          100,
-          100,
-          100,
-          100,
-          100,
-          100,
-          100
+          250,
+          250,
+          250,
+          250,
+          250,
+          250,
+          250,
+          250,
+          250,
+          250,
+          250,
+          250
         ]
       },
       {
@@ -3288,7 +3809,8 @@
         },
         "amount": 250
       }
-    ]
+    ],
+    "oneTime": []
   },
   "loans": [
     {

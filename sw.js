@@ -1,4 +1,4 @@
-const CACHE='verm-v100';
+const CACHE='verm-v102';
 const ASSETS=[
   './index.html',
   './data-store.js?v=11',
@@ -15,7 +15,8 @@ const ASSETS=[
 ];
 
 self.addEventListener('install',e=>{
-  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));
+  // cache:'reload' umgeht den HTTP-Cache, sonst landen beim Update veraltete Dateien im neuen Cache
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS.map(u=>new Request(u,{cache:'reload'})))));
   self.skipWaiting();
 });
 

@@ -51,7 +51,7 @@ test('P01 Max: estimates only; budget, saving rate and pension reach the forecas
   assert.equal(doc.preferences.onboardingCompleted,true);
   const b=budgetAvg(a);
   assert.equal(b.einnahmen,2400);assert.equal(b.ausgaben,2100);assert.equal(b.aufbau,300);assert.equal(b.frei,0);
-  const etf=doc.groups.find(g=>g.name==='MSCI World ETF');
+  const etf=doc.groups.find(g=>g.name==='ETF');
   assert.equal(etf.assumptions.monthlySaving,300,'saving flows into the forecast of the target asset');
   assert.equal(doc.budget.items.find(r=>r.kind==='saving').targetGroupId,etf.id);
   assert.equal(doc.retirement.primary.birthYear,2002);
@@ -77,7 +77,7 @@ test('P03 Müller: loans link to their asset, rates enter the budget once and re
   assert.equal(b.einnahmen,6320);assert.equal(b.frei,0);
   assert.ok(b.tilgung>1200&&b.tilgung<1400,'repayment share of the rates is wealth building: '+b.tilgung);
   assert.equal(b.ausgaben+b.aufbau,6320);
-  assert.equal(doc.groups.find(g=>g.name==='MSCI ACWI ETF').assumptions.monthlySaving,600);
+  assert.equal(doc.groups.find(g=>g.name==='ETF').assumptions.monthlySaving,600);
   assert.equal(doc.preferences.modules.forecast,false);
 });
 
@@ -265,4 +265,24 @@ test('a group with a single position is shown with the position name',()=>{
   a.run("const fc=loadFieldConfig();fc.fields.find(f=>f.label==='Porsche 911').displayGroup='Sonstiges';fc.fields.filter(f=>f.category==='cash').forEach(f=>f.displayGroup='Cash');saveFieldConfig(fc);_fc=loadFieldConfig();_modsCache=null;");
   assert.equal(a.run("_groupDisplayName('Sonstiges')"),'Porsche 911');
   assert.equal(a.run("_groupDisplayName('Cash')"),'Cash');
+});
+
+test('assets of the same kind share one group (e.g. ETF); debts keep their own',()=>{
+  const a=context();
+  const doc=apply(a,state('full',{assets:[asset('a1','MSCI World','etf','10.000'),asset('a2','Emerging Markets','etf','5.000'),asset('a3','Girokonto','cash','2.000')],hasDebts:true,debts:[debt('d1','Kreditkarte','','500')]}));
+  const group=name=>doc.groups.find(g=>g.name===name);
+  assert.equal(doc.positions.filter(p=>p.groupId===group('ETF').id).length,2);
+  assert.ok(group('Cash')&&group('Kreditkarte'));
+  assert.equal(a.run("_groupDisplayName('ETF')"),'ETF');
+  assert.equal(a.run("_groupDisplayName('Cash')"),'Cash','category groups keep their name even with one position');
+  assert.equal(a.json("buildNetGroups(loadData()['2026-11']._details).find(g=>g.key==='ETF').val"),15000);
+});
+test('the net chart axis spans only the visible months and lines, without rounding up',()=>{
+  const a=context();
+  const chart={options:{scales:{x:{min:2,max:3}}},data:{labels:[0,1,2,3],datasets:[{data:[10,500,100,200]},{data:[1,1,50,60]},{data:[9999,9999,9999,9999]}]},isDatasetVisible:i=>i<2};
+  a.context.scale={chart,type:'linear'};a.run('_netYLimits(scale)');
+  const s=a.context.scale;
+  assert.ok(s.min<50&&s.min>=0&&s.max>200&&s.max<215,`${s.min}–${s.max}`);
+  a.context.scale={chart,type:'logarithmic'};a.run('_netYLimits(scale)');
+  assert.ok(a.context.scale.min>0&&a.context.scale.min<50);
 });
