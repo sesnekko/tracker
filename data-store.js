@@ -4,7 +4,7 @@
   'use strict';
   const KEY = 'vermoegen-data-v1';
   const FORMAT = 'vermoegen-backup';
-  const VERSION = 4;
+  const VERSION = 5;
   const CATEGORIES = ['cash', 'etf', 'stock', 'bitcoin', 'crypto', 'metal', 'realEstate', 'vehicle', 'other', 'bav', 'illiquid', 'liab'];
   const BUDGET_CATEGORIES = ['einkommen', 'fixe', 'variable', 'sparen'];
   const MODULES = ['assets', 'liab', 'pension', 'budget', 'forecast'];
@@ -179,12 +179,15 @@
     }
     doc.snapshots = Object.keys(data).sort().map(month => {
       const e = data[month], details = e._details || {}, units = e._units || {};
-      return { month, positions: doc.positions.filter(p => own(details, p.id) || (p.unit && own(units, p.unit.key))).map(p => {
+      const snapshot = { month, positions: doc.positions.filter(p => own(details, p.id) || (p.unit && own(units, p.unit.key))).map(p => {
         const v = { positionId: p.id };
         if (own(details, p.id)) v.value = number(details[p.id]);
         if (p.unit && own(units, p.unit.key)) v.quantity = number(units[p.unit.key]);
         return v;
       }) };
+      // Version 5: months reconstructed from price history stay marked until confirmed.
+      if (e._estimated === true) snapshot.estimated = true;
+      return snapshot;
     });
     const params = parse(values, 'lt-asset-params', {});
     for (const [name, value] of Object.entries(params)) group(name).assumptions = mapped(value, ASSUMPTIONS);
@@ -294,6 +297,7 @@
         if (own(v, 'value')) { e._details[p.id] = v.value; if (!p.archived) e[p.category] = (e[p.category]||0) + v.value; }
         if (own(v, 'quantity')) e._units[p.unit.key] = v.quantity;
       }
+      if (snapshot.estimated) e._estimated = true;
       data[snapshot.month] = e;
     }
     put('finData', data);
@@ -363,7 +367,7 @@
     safeKeys(doc);
     object(doc, 'Datei', ['format', 'schemaVersion', 'currency', 'exportedAt', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences'], ['format', 'schemaVersion', 'currency', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences']);
     if (doc.format !== FORMAT) fail('format', 'keine Vermögen-Sicherung');
-    if (![1,2,3,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
+    if (![1,2,3,4,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
     if (doc.currency !== 'EUR') fail('currency', 'nur EUR wird unterstützt');
     if (own(doc, 'exportedAt') && (typeof doc.exportedAt !== 'string' || !Number.isFinite(Date.parse(doc.exportedAt)))) fail('exportedAt', 'ungültiges Datum');
     const groups = unique(doc.groups, 'groups');
@@ -410,7 +414,8 @@
     }
     array(doc.snapshots, 'snapshots'); const months = new Set();
     for (const s of doc.snapshots) {
-      object(s, 'Monatsstand', ['month', 'positions']);
+      object(s, 'Monatsstand', ['month', 'positions', 'estimated'], ['month', 'positions']);
+      if (own(s, 'estimated')) bool(s.estimated, 'Monatsstand.estimated');
       if (typeof s.month !== 'string' || !/^\d{4}-(0[1-9]|1[0-2])$/.test(s.month)) fail('month', 'YYYY-MM erwartet');
       if (months.has(s.month)) fail('month', 'doppelter Monat'); months.add(s.month);
       unique(s.positions, 'Monatspositionen', 'positionId');
