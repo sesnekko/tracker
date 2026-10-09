@@ -186,7 +186,10 @@ Frage je Screen, Schätzwerte genügen, jeder Schritt lässt sich überspringen.
 1. Schwerpunkte: Vermögen (immer), optional Monatsbudget und Zukunft & Ruhestand.
    Nicht gewählte Bereiche bleiben ausgeschaltet.
 2. Vermögenswerte: Antippen einer Art (Girokonto, Depot, Immobilie …) legt eine
-   Zeile mit Name und Wert an.
+   Zeile mit Name und Wert an. Bei Bitcoin, Gold, ETF, Aktie und Krypto lässt sich
+   zwischen Euro und Stückzahl (BTC, Unzen, Stück) wechseln; Bitcoin und Gold starten
+   mit Stückzahl. Bei Stückzahl lädt die App den aktuellen Kurs (bei Wertpapieren nach
+   der Auswahl über die Suche) und speichert Kursquelle, Stückzahl und Wert.
 2a. Bisheriger Verlauf (nur bei ETF, Aktie, Bitcoin, Krypto und Gold, optional):
    Wertpapier per Name oder ISIN suchen (Yahoo-Suche, deutscher Handelsplatz
    bevorzugt, höchstens drei Treffer; Bitcoin und Gold ohne Suche), „Seit“ Monat
@@ -381,6 +384,17 @@ damit der Verlauf erhalten bleibt.
 Version 1- und 2-Dateien werden weiterhin gelesen und beim Speichern als Version 3
 geschrieben. Ältere App-Versionen lehnen Version-3-Dateien ab, statt die
 Abschreibung stillschweigend zu verwerfen.
+
+## Verlauf einer Position bearbeiten
+
+Im Sheet einer Position führt „Verlauf bearbeiten“ zu allen früheren Monaten dieser
+Position. Mit Kursquelle wird die Stückzahl bearbeitet; der Wert ist Stückzahl ×
+Monatsschlusskurs (fehlt der Kurs, gilt gespeicherter Wert ÷ Stückzahl), sonst der
+Euro-Wert. „Verlauf neu berechnen“ nutzt dieselbe Rückrechnung wie die Einrichtung
+(seit wann, einmal oder Sparplan) ausgehend von der heutigen Stückzahl; vor dem
+Kaufmonat steht 0, neu angelegte Monate sind berechnet gekennzeichnet. Gespeichert
+wird erst mit „Sichern“ und nur für geänderte Monate. „Aktualisieren“ in einem
+vergangenen Monat zeigt Positionen mit Kursquelle ebenfalls als Stückzahl.
 
 ## Berechnete Monate (Version 5)
 
