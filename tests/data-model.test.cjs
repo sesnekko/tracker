@@ -203,9 +203,10 @@ test('bundled JSON demo restores a complete household without double counting lo
   Data.validate(doc);
   const a = app(html); a.context.demo = doc;
   a.run("appStorage.importBackup(demo);_fc=loadFieldConfig();selectedMonth='2026-10';ensureNextMonth();");
-  assert.equal(doc.schemaVersion, 2);
+  assert.equal(doc.schemaVersion, Data.VERSION);
   assert.equal(doc.snapshots.length, 34);
-  assert.equal(doc.positions.length, 15);
+  assert.equal(doc.positions.length, 17);
+  assert.deepEqual(doc.positions.filter(p => p.category === 'stock').map(p => p.name), ['Apple', 'Amazon', 'Nestlé']);
   assert.ok(['bitcoin', 'crypto', 'stock', 'vehicle', 'realEstate'].every(category => doc.positions.some(p => p.category === category)));
   assert.ok(doc.positions.every(p => p.valuation === 'manual'));
   assert.ok(doc.accounts.every(p => p.iban === ''));
@@ -215,10 +216,10 @@ test('bundled JSON demo restores a complete household without double counting lo
   const jan = a.json('calcBudgetMonth(loadBudgetData(),0)');
   const aug = a.json('calcBudgetMonth(loadBudgetData(),7)');
   assert.equal(jan.einnahmen, 5250);
-  assert.equal(jan.sparplaene, 745);
-  // Ordinary spending (1,661) + both contract rates (1,600) + savings (745).
-  assert.equal(Math.round(jan.frei), 1244);
-  assert.equal(Math.round(aug.frei), -1256);
+  assert.equal(jan.sparplaene, 895);
+  // Ordinary spending (1,661) + both contract rates (1,600) + savings (895).
+  assert.equal(Math.round(jan.frei), 1094);
+  assert.equal(Math.round(aug.frei), -1406);
   assert.equal(jan.fixItems.filter(p => p.automatic).length, 2);
   const target = app(html); target.context.demo = a.json('appStorage.exportBackup()');
   target.run('appStorage.importBackup(demo);_fc=loadFieldConfig();');
