@@ -4,7 +4,7 @@
   'use strict';
   const KEY = 'vermoegen-data-v1';
   const FORMAT = 'vermoegen-backup';
-  const VERSION = 5;
+  const VERSION = 6;
   const CATEGORIES = ['cash', 'etf', 'stock', 'bitcoin', 'crypto', 'metal', 'realEstate', 'vehicle', 'other', 'bav', 'illiquid', 'liab'];
   const BUDGET_CATEGORIES = ['einkommen', 'fixe', 'variable', 'sparen'];
   const MODULES = ['assets', 'liab', 'pension', 'budget', 'forecast'];
@@ -226,7 +226,10 @@
         const kind = budgetKind(row, category);
         const targetGroupId = own(row, 'targetGroupId') ? row.targetGroupId :
           (kind === 'saving' || kind === 'principal' || kind === 'loanPayment' ? guessTarget(row, doc.groups, doc.positions, data) : null);
-        doc.budget.items.push({ id: itemId(row), name: row.name, category, subcategory: row.subcat || '', kind, targetGroupId, monthlyAmounts: row.values.map(v => number(v) ?? 0) });
+        const item = { id: itemId(row), name: row.name, category, subcategory: row.subcat || '', kind, targetGroupId, monthlyAmounts: row.values.map(v => number(v) ?? 0) };
+        // Version 6: a loan payment may name its loan, so its rate is split and never counted twice.
+        if (row.loanId) item.loanId = row.loanId;
+        doc.budget.items.push(item);
       }
       const orderId = idsFor('order-', previous.budget ? previous.budget.standingOrders : []);
       doc.budget.standingOrders = (bd.standingOrders || []).map((r, i) => ({ id: orderId(r, i), from: endpoint(r.from), to: endpoint(r.to), amount: number(r.amount) ?? 0 }));
@@ -306,7 +309,7 @@
       bd.accounts = Object.fromEntries(doc.accounts.map(a => [a.name, a.iban]));
       const endpoint = v => v.type === 'account' ? doc.accounts.find(a => a.id === v.accountId).name : v.name;
       bd.standingOrders = doc.budget.standingOrders.map(o => ({ id: o.id, from: endpoint(o.from), to: endpoint(o.to), amount: o.amount }));
-      for (const r of doc.budget.items) bd[r.category].push({ id: r.id, name: r.name, subcat: r.subcategory, kind: r.kind, targetGroupId: r.targetGroupId, targetGroup: r.targetGroupId ? groupName(r.targetGroupId) : null, values: copy(r.monthlyAmounts) });
+      for (const r of doc.budget.items) bd[r.category].push({ id: r.id, name: r.name, subcat: r.subcategory, kind: r.kind, targetGroupId: r.targetGroupId, targetGroup: r.targetGroupId ? groupName(r.targetGroupId) : null, ...(r.loanId ? { loanId: r.loanId } : {}), values: copy(r.monthlyAmounts) });
       bd.oneTime = copy(doc.budget.oneTime || []);
       put('budgetData', bd);
     }
@@ -367,7 +370,7 @@
     safeKeys(doc);
     object(doc, 'Datei', ['format', 'schemaVersion', 'currency', 'exportedAt', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences'], ['format', 'schemaVersion', 'currency', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences']);
     if (doc.format !== FORMAT) fail('format', 'keine Vermögen-Sicherung');
-    if (![1,2,3,4,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
+    if (![1,2,3,4,5,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
     if (doc.currency !== 'EUR') fail('currency', 'nur EUR wird unterstützt');
     if (own(doc, 'exportedAt') && (typeof doc.exportedAt !== 'string' || !Number.isFinite(Date.parse(doc.exportedAt)))) fail('exportedAt', 'ungültiges Datum');
     const groups = unique(doc.groups, 'groups');
@@ -445,7 +448,8 @@
         }
       }
       for (const b of doc.budget.items) {
-        object(b, 'Budgetposten', ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts']);
+        object(b, 'Budgetposten', ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts', 'loanId'], ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts']);
+        if (own(b, 'loanId')) { ref(b.loanId, 'Budgetposten.Kredit', positions); if (doc.positions.find(p => p.id === b.loanId).category !== 'liab') fail('Budgetposten.Kredit', 'keine Verbindlichkeit'); }
         text(b.name, 'Budgetname', true); text(b.subcategory, 'Unterkategorie');
         if (!BUDGET_CATEGORIES.includes(b.category)) fail('Budgetkategorie', 'unbekannt');
         if (!['income', 'expense', 'saving', 'principal', 'loanPayment'].includes(b.kind)) fail('Budgetart', 'unbekannt');

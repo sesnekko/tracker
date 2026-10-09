@@ -13,7 +13,7 @@ test('welcome offers guided setup, existing backup and demo; tour is reachable f
   assert.match(welcome,/Geführt einrichten/);
   assert.match(welcome,/Bestehende Daten laden/);
   assert.match(welcome,/Mit Demo-Daten ausprobieren/);
-  assert.match(html,/onclick="startOnboarding\('data'\)"/);
+  assert.match(html,/onclick="_settingsRun\(\(\)=>startOnboarding\('data'\)\)"/);
   a.run("startOnboarding('welcome')");
   assert.deepEqual(a.json('_guideKeys()'),['wealth','budget','forecast','data','backup']);
   assert.match(a.el('onboardingOverlay').innerHTML,/1 von 5/);
