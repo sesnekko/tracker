@@ -375,6 +375,7 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 details.input-collapsible[open]>.input-collapsible-summary::before{transform:rotate(45deg)}
 .input-collapsible-body{padding-top:12px}
 .input-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-bottom:12px}
+.drv-em:not([hidden]),.drv-em-limit:not([hidden]){display:contents}
 .input-group{display:flex;flex-direction:column;gap:3px;min-width:0}
 .input-group label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .num-input{
@@ -2474,7 +2475,7 @@ body.onboarding-open{overflow:hidden}
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="data-store.js?v=12"></script>
+<script src="data-store.js?v=13"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
 <script src="asset-model.js?v=4"></script>
@@ -2747,12 +2748,21 @@ const INFO={
   'lt-monthly-withdraw':['Bedarf €/Monat','<p>Monatliche Ausgaben im Ruhestand, netto und in heutiger Kaufkraft. Renten und Einkünfte werden davon abgezogen, nur der Rest wird entnommen.</p>'],
   'lt-safety':['Sicherheitsniveau','<p>In wie viel Prozent der 500 simulierten Marktverläufe das Geld bis „Planen bis Alter“ reichen muss. Bestimmt „Rente möglich ab“. 85–90 % sind ein gängiger Wert.</p>'],
   'drv-points':['Rentenpunkte heute','<p>Deine bisher gesammelten Entgeltpunkte. Stehen in der jährlichen Renteninformation bzw. Rentenauskunft der Deutschen Rentenversicherung.</p><p>Ein Jahr mit Durchschnittsverdienst ergibt 1 Punkt.</p>'],
-  'drv-salary':['Bruttojahresgehalt','<p>Dein aktuelles rentenversicherungspflichtiges Bruttogehalt pro Jahr. Daraus werden die Punkte bis „Sparen bis Alter“ hochgerechnet (Gehalt ÷ Durchschnittsentgelt, höchstens bis zur Beitragsbemessungsgrenze).</p><p>Annahme: Dein Gehalt wächst wie die Durchschnittslöhne.</p>'],
+  'drv-salary':['Bruttojahresgehalt','<p>Dein aktuelles rentenversicherungspflichtiges Bruttogehalt pro Jahr. Daraus werden die Punkte bis „Sparen bis Alter“ hochgerechnet (Gehalt ÷ Durchschnittsentgelt, höchstens bis zur Beitragsbemessungsgrenze).</p><p>Mit Erwerbsminderungsrente: dein Hinzuverdienst pro Jahr.</p><p>Annahme: Dein Gehalt wächst wie die Durchschnittslöhne.</p>'],
+  'drv-emType':['Erwerbsminderungsrente','<p>Nur ausfüllen, wenn du bereits eine Rente wegen Erwerbsminderung beziehst.</p><p><strong>Teilweise</strong>: Du kannst noch 3 bis unter 6 Stunden am Tag arbeiten, die Rente ist halb so hoch wie die volle. <strong>Voll</strong>: unter 3 Stunden. Bekommst du bei teilweiser Erwerbsminderung die volle Rente, weil du keine Teilzeitstelle findest (Arbeitsmarktrente), wähle „Voll“.</p><p>Ein Hinzuverdienst (z. B. Teilzeit) gehört ins Feld „Brutto/Jahr“: Er bringt weitere Rentenpunkte und wird mit der Hinzuverdienstgrenze verglichen.</p>'],
+  'drv-em':['EM-Rente netto','<p>Monatlicher Zahlbetrag laut Rentenbescheid nach Kranken- und Pflegeversicherung, abzüglich geschätzter Einkommensteuer.</p><p>In der Prognose deckt sie ab „Ruhestand ab Alter“ einen Teil des Bedarfs. Vorher wird angenommen, dass sie als Einnahme im Budget steht und in die Sparraten einfließt.</p>'],
+  'drv-emUntil':['Läuft bis Jahr','<p>Leer = bis zur Regelaltersgrenze. Dann wird sie zur Altersrente, die mindestens so hoch ist wie die volle Erwerbsminderungsrente.</p><p>Befristete Renten (meist 3 Jahre) werden oft verlängert. Trag ein Jahr nur ein, wenn du davon ausgehst, dass die Rente dann endet.</p>'],
+  'drv-emLimit':['Hinzuverdienstgrenze','<p>Deine persönliche Grenze bei teilweiser Erwerbsminderung steht im Rentenbescheid. Sie liegt 2026 bei mindestens 41.527,50 € im Jahr. Leer = Mindestgrenze.</p><p>Bei voller Erwerbsminderung gilt 2026 einheitlich 20.763,75 €. Vom Betrag über der Grenze werden 40 % auf die Rente angerechnet.</p>'],
   'drv-age':['Regelaltersgrenze','<p>Ab diesem Alter wird die gesetzliche Rente ohne Abschläge gezahlt. Wird aus dem Geburtsjahr berechnet (ab Jahrgang 1964: 67) und kann überschrieben werden.</p>'],
   'drv-deduct':['Abzüge %','<p>Pauschaler Abzug von der Bruttorente für Kranken- und Pflegeversicherung (ca. 11–13 %) und Einkommensteuer. 15–25 % sind ein üblicher Richtwert.</p>'],
   'drv-rw':['Aktueller Rentenwert','<p>Monatsrente pro Entgeltpunkt. Ab 1. Juli 2026: 42,52 €. Wird jährlich zum 1. Juli angepasst; die Prognose nimmt an, dass er mit der Inflation steigt.</p>'],
   'drv-de':['Durchschnittsentgelt','<p>Vorläufiges Durchschnittsentgelt der Rentenversicherung. 2026: 51.944 €. Wer so viel verdient, erhält 1 Entgeltpunkt pro Jahr.</p>'],
   'drv-bbg':['Beitragsbemessungsgrenze','<p>Gehalt oberhalb dieser Grenze bringt keine weiteren Rentenpunkte. 2026: 101.400 € pro Jahr.</p>'],
+  'bv-pay':['Ruhegehaltfähige Bezüge','<p>Brutto pro Monat: Grundgehalt deiner Besoldungsstufe plus ruhegehaltfähige Zulagen und Familienzuschlag Stufe 1. Steht auf der Bezügemitteilung.</p><p>Erwartest du noch Beförderungen, trag die Bezüge des Amts ein, das du voraussichtlich zuletzt mindestens zwei Jahre innehast. Annahme: Die Besoldung wächst mit der Inflation.</p>'],
+  'bv-years':['Dienstjahre bisher','<p>Deine bisherige ruhegehaltfähige Dienstzeit in Jahren, Teilzeit anteilig (20 Jahre mit halber Stelle = 10). Steht in der Versorgungsauskunft deines Dienstherrn.</p><p>Bis „Sparen bis Alter“ bzw. Pensionsbeginn werden weitere volle Jahre hochgerechnet.</p>'],
+  'bv-age':['Altersgrenze','<p>Ab diesem Alter gibt es das Ruhegehalt ohne Abschlag. Bund und die meisten Länder: 67, schrittweise angehoben (Jahrgang 1964 und jünger). Für Polizei, Feuerwehr und Justizvollzug gelten oft frühere Grenzen. Leer = wie die gesetzliche Regelaltersgrenze.</p>'],
+  'bv-from':['Pension ab Alter','<p>Optional, wenn du vor der Altersgrenze in den Ruhestand gehen willst (Antragsruhestand meist ab 63). Pro Jahr vor der Altersgrenze werden 3,6 % abgezogen, höchstens 10,8 %. Leer = ab Altersgrenze.</p>'],
+  'bv-deduct':['Abzüge %','<p>Pauschaler Abzug vom Ruhegehalt. Die Pension ist voll steuerpflichtig, dazu kommt die private Krankenversicherung (mit Beihilfe von meist 70 %). 20–30 % sind ein üblicher Richtwert.</p>'],
   'pen-name':['Weitere Renten & Einkünfte','<p>Zusätzliche regelmäßige Einkünfte im Ruhestand, z. B. Betriebsrente, private Rente, Mieteinnahmen.</p>'],
   'pen-amount':['Betrag €/Monat','<p>Netto pro Monat in heutiger Kaufkraft (nach Steuern und Krankenversicherung).</p>'],
   'pen-from':['ab Alter','<p>Ab diesem Alter fließt die Zahlung.</p>'],
@@ -6541,6 +6551,7 @@ function saveEntry(){
   appStorage.setItem('loanParams',JSON.stringify(lp));
   saveFieldConfig(_fc);
   if(document.getElementById('dp-drv-points'))appStorage.setItem('lt-drv',JSON.stringify(_drvFromInputs('dp')));
+  if(document.getElementById('dp-bv-pay')){const bv=_bvFromInputs();if(bv.pay>0)appStorage.setItem('lt-beamte',JSON.stringify(bv));else appStorage.removeItem('lt-beamte');}
   const dpWrap=document.getElementById('dpPensions');
   if(dpWrap)appStorage.setItem('lt-pensions',JSON.stringify(_collectPlanRows(dpWrap,PENSION_COLS).filter(r=>r.name||r.amount)));
   const dxWrapS=document.getElementById('dpDrvExtra');
@@ -7803,6 +7814,10 @@ function buildDynamicForm(){
   html+=`<details class="input-collapsible" data-mod="pension">${_v2Sum('pension','Altersvorsorge')}<div class="input-collapsible-body">`;
   html+=`<div class="ds-sec-actions"><button type="button" class="v2-textbtn" onclick="enterEditMode()">Bearbeiten</button></div>`;
   html+=`<div class="lt-block-label">Gesetzliche Rente</div>`+_drvFieldsHTML(getDrv(),'dp','form');
+  /* Beamtenversorgung: nur sichtbar, wenn eingetragen; sonst im Bearbeiten-Modus hinzufügbar */
+  const bvOn=hasBeamte();
+  html+=`<div id="dpBv"${bvOn?'':' hidden'}><div class="lt-block-label">Beamtenversorgung</div>${_bvFieldsHTML(getBeamte())}</div>`;
+  if(!bvOn)html+=`<button class="btn btn-ghost plan-add edit-only" id="dpBvAdd">+ Beamtenversorgung</button>`;
   const dx=getDrvExtra();
   html+=`<div class="lt-block-label${dx.length?'':' edit-only'}">Weitere gesetzliche Renten</div><div id="dpDrvExtra">${_v2DrvExtraRowsHTML(dx)}</div>`;
   html+=`<button class="btn btn-ghost plan-add edit-only" id="dpDrvExtraAdd">+ Gesetzliche Rente</button>`;
@@ -7821,7 +7836,13 @@ function buildDynamicForm(){
 
   /* Altersvorsorge: Ergebnis live, Zeilen hinzufügen/entfernen (gespeichert wird mit "Speichern") */
   container.querySelectorAll('input[id^="dp-drv-"]').forEach(inp=>inp.addEventListener('input',_updateDrvResult));
+  const emSel=document.getElementById('dp-drv-emType');
+  if(emSel)emSel.addEventListener('change',()=>{_syncDrvEm('dp');_updateDrvResult();});
   _updateDrvResult();
+  container.querySelectorAll('input[id^="dp-bv-"]').forEach(inp=>inp.addEventListener('input',_updateBvResult));
+  _updateBvResult();
+  const bvAdd=document.getElementById('dpBvAdd');
+  if(bvAdd)bvAdd.addEventListener('click',()=>{document.getElementById('dpBv').hidden=false;bvAdd.remove();document.getElementById('dp-bv-pay').focus();});
   const dpWrap=document.getElementById('dpPensions');
   const bindDp=()=>{
     dpWrap.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
@@ -7829,8 +7850,10 @@ function buildDynamicForm(){
       const rows=_collectPlanRows(dpWrap,PENSION_COLS);
       dpWrap.innerHTML=_planRowsHTML(rows,PENSION_COLS,'form');bindDp();setFormReadOnly(!_editMode);
     }));
+    _syncPensionHints(dpWrap);
   };
   if(dpWrap){
+    dpWrap.addEventListener('input',e=>{if(e.target.matches('[data-k="name"]'))_syncPensionHints(dpWrap);});
     bindDp();
     document.getElementById('dpPensionAdd').addEventListener('click',()=>{
       const rows=_collectPlanRows(dpWrap,PENSION_COLS);rows.push({name:'',amount:0,from:65});
@@ -7886,6 +7909,20 @@ function buildDynamicForm(){
   });
 }
 
+/* Rürup/Basisrente: sachlicher Hinweis, sobald ein solcher Vertrag als Rente eingetragen wird */
+const RUERUP_RE=/r(ü|ue|u)rup|basisrente|basis-rente/i;
+function _syncPensionHints(wrap){
+  wrap.querySelectorAll('.plan-row').forEach(row=>{
+    const inp=row.querySelector('[data-k="name"]');
+    let el=row.querySelector('.pen-hint');
+    const on=!!inp&&RUERUP_RE.test(inp.value);
+    if(!on){if(el)el.remove();return;}
+    if(el)return;
+    el=document.createElement('div');el.className='lt-result pen-hint';
+    el.innerHTML='Rürup-Verträge lassen sich nicht in ein Altersvorsorgedepot übertragen und werden nur als lebenslange Rente ausgezahlt. Für neue Beiträge lohnt ein Vergleich mit dem Altersvorsorgedepot (ab 2027); bei hohem Einkommen oder Selbstständigkeit ist die Basisrente steuerlich oft im Vorteil.';
+    row.insertBefore(el,row.querySelector('.plan-del'));
+  });
+}
 /* Weitere gesetzliche Renten als Karten (leere Werte bleiben leer statt "0") */
 function _v2DrvExtraRowsHTML(rows){
   const clean=rows.map(r=>Object.assign({},r,{by:+r.by||'',until:+r.until||'',age:+r.age||''}));
@@ -8079,7 +8116,24 @@ const DRV_DEFAULTS={points:0,salary:0,age:0,deduct:20,rw:42.52,de:51944,bbg:1014
 function getDrv(){
   const d=Object.assign({},DRV_DEFAULTS,_lsJSON('lt-drv',{}));
   Object.keys(DRV_DEFAULTS).forEach(k=>{d[k]=isFinite(+d[k])?+d[k]:DRV_DEFAULTS[k];});
+  DRV_EM_KEYS.forEach(k=>{if(k in d)d[k]=isFinite(+d[k])?+d[k]:0;});
   return d;
+}
+/* Erwerbsminderungsrente (laufend, nur eigene Person): emType 1 = teilweise, 2 = voll; em = Zahlbetrag netto/Monat;
+   emUntil = letztes Jahr (leer = bis Regelalter); emLimit = persönliche Hinzuverdienstgrenze (nur teilweise).
+   Hinzuverdienstgrenzen 2026: voll 3/8 × 14 × Bezugsgröße (3.955 €), teilweise mindestens 6/8 × 14 × Bezugsgröße. */
+const DRV_EM_KEYS=['emType','em','emUntil','emLimit'];
+const EM_LIMITS={1:41527.5,2:20763.75};
+function calcEm(s,drv,age){
+  if(!(drv.emType===1||drv.emType===2)||!(drv.em>0))return null;
+  const until=drv.emUntil>0?Math.min(age,_ageAt(s,drv.emUntil+1,0)):age;
+  const limit=drv.emType===1?Math.max(drv.emLimit||0,EM_LIMITS[1]):EM_LIMITS[2];
+  const over=Math.max(0,(drv.salary||0)-limit);
+  const cut=Math.min(drv.em,0.4*over/12);
+  /* Altersrente danach mindestens die volle EM-Rente (gleiche Entgeltpunkte, Rentenartfaktor 1 statt 0,5),
+     sofern die EM-Rente bis zur Altersrente läuft */
+  const full=until>=age-1e-9?drv.em*(drv.emType===1?2:1):0;
+  return{type:drv.emType,gross:drv.em,amount:drv.em-cut,cut,limit,over,until,full};
 }
 /* Weitere gesetzliche Renten (z. B. Partner/in): eigene Person mit Geburtsjahr und "Arbeiten bis Alter".
    Rentenwert, Durchschnittsentgelt und BBG gelten wie bei der eigenen gesetzlichen Rente. */
@@ -8098,6 +8152,7 @@ function calcDrvExtra(s,p){
   const by=+p.by>1900?+p.by:s.birthYear;
   const s2=Object.assign({},s,{birthYear:by,saveUntil:+p.until>0?+p.until:s.saveUntil});
   const d=Object.assign({},base,{points:+p.points||0,salary:+p.salary||0,age:+p.age||0,deduct:isFinite(+p.deduct)&&p.deduct!==''&&p.deduct!=null?+p.deduct:base.deduct});
+  DRV_EM_KEYS.forEach(k=>delete d[k]);
   const r=calcDrvPension(s2,d);
   r.fromMain=r.age+(by-s.birthYear);/* Rentenbeginn auf das eigene Alter umgerechnet */
   r.name=(p.name||'').trim()||'Weitere Rente';
@@ -8117,8 +8172,37 @@ function calcDrvPension(s,drv){
   const epYear=drv.salary>0&&drv.de>0?Math.min(drv.salary,drv.bbg||Infinity)/drv.de:0;
   const epTotal=Math.max(0,drv.points)+epYear*years;
   const brutto=epTotal*drv.rw;
-  const netto=brutto*(1-Math.min(90,Math.max(0,drv.deduct))/100);
-  return{age,years,epYear,epTotal,brutto,netto};
+  const em=calcEm(s,drv,age);
+  const calcNetto=brutto*(1-Math.min(90,Math.max(0,drv.deduct))/100);
+  const netto=em?Math.max(calcNetto,em.full):calcNetto;
+  const r={age,years,epYear,epTotal,brutto,netto};
+  if(em){r.em=em;r.calcNetto=calcNetto;}
+  return r;
+}
+/* ══ Beamtenversorgung (Ruhegehalt nach BeamtVG) ══
+   Ruhegehaltssatz 1,79375 % je Dienstjahr, höchstens 71,75 %; ab 5 Dienstjahren mindestens 35 %
+   (amtsabhängige Mindestversorgung). Vor der Altersgrenze 3,6 % Abschlag je Jahr, höchstens 10,8 %.
+   Bezüge in heutiger Kaufkraft (Besoldung wächst mit der Inflation). */
+const BV_DEFAULTS={pay:0,years:0,age:0,from:0,deduct:25};
+function getBeamte(){
+  const d=Object.assign({},BV_DEFAULTS,_lsJSON('lt-beamte',{}));
+  Object.keys(BV_DEFAULTS).forEach(k=>{d[k]=isFinite(+d[k])?+d[k]:BV_DEFAULTS[k];});
+  return d;
+}
+function hasBeamte(d){return (d||getBeamte()).pay>0;}
+function calcBeamtePension(s,b){
+  const limit=b.age>0?b.age:regelaltersgrenze(s.birthYear);
+  const age=b.from>0?Math.min(b.from,limit):limit;
+  const now=new Date();
+  const curAge=_ageAt(s,now.getFullYear(),now.getMonth());
+  const years=Math.max(0,Math.min(s.saveUntil,age)-curAge);
+  const total=Math.max(0,b.years)+years;
+  let rate=Math.min(71.75,total*1.79375);
+  if(total>=5)rate=Math.max(rate,35);
+  const cut=Math.min(10.8,Math.max(0,(limit-age)*3.6));
+  const brutto=b.pay>0?b.pay*rate/100*(1-cut/100):0;
+  const netto=brutto*(1-Math.min(90,Math.max(0,b.deduct))/100);
+  return{age,limit,years,total,rate,cut,brutto,netto};
 }
 function fmtAge(a){const y=Math.floor(a),m=Math.round((a-y)*12);return m?y+' J. '+m+' M.':String(y);}
 
@@ -8207,9 +8291,13 @@ function buildPlan(){
   /* Gesetzliche Rente aus Rentenpunkten + Gehalt hochgerechnet (Altersvorsorge aus: keine Renten) */
   const drv=penOn?calcDrvPension(s,getDrv()):{age:0,years:0,epYear:0,epTotal:0,brutto:0,netto:0};
   if(drv.netto>0)pensions.push({amount:drv.netto,from:drv.age,drv:true});
+  /* laufende EM-Rente: wirkt im Ruhestand bis zur Altersrente (vorher steckt sie in den Sparraten) */
+  if(drv.em&&drv.em.amount>0)pensions.push({amount:drv.em.amount,from:0,until:drv.em.until,drv:true});
+  const bv=penOn?calcBeamtePension(s,getBeamte()):{age:0,netto:0};
+  if(bv.netto>0)pensions.push({amount:bv.netto,from:bv.age,drv:true});
   const drvExtra=penOn?getDrvExtra().map(p=>calcDrvExtra(s,p)).filter(r=>r.netto>0):[];
   drvExtra.forEach(r=>pensions.push({amount:r.netto,from:r.fromMain,drv:true}));
-  return{drv,drvExtra,s,data,sorted,latestKey,latestNet:calc(data[latestKey]).net,currentAge,firstAge,horizonAge,nSteps,groups,lnr,vol,events,pensions,depositIdx};
+  return{drv,bv,drvExtra,s,data,sorted,latestKey,latestNet:calc(data[latestKey]).net,currentAge,firstAge,horizonAge,nSteps,groups,lnr,vol,events,pensions,depositIdx};
 }
 
 /* Ein Simulationslauf (jährliche Schritte). rnd = Standardnormal-Zufallszahlen (null = Median-/Erwartungspfad). */
@@ -8308,7 +8396,7 @@ function simulatePlan(plan,retireAge,opt={}){
       const inflF=Math.pow(1+infl,tEnd);
       const need=s.monthlyWithdraw*12*dt*inflF;
       let pens=0;
-      for(const p of pensions)if(prevAge>=p.from-1e-9)pens+=p.amount*12*dt*inflF;
+      for(const p of pensions)if(prevAge>=p.from-1e-9&&!(p.until<=prevAge+1e-9))pens+=p.amount*12*dt*inflF;
       const req=need+loanOut-pens;
       if(req>0){
         if(withdraw(req,age)>1&&shortfallAge===null)shortfallAge=age;
@@ -8408,7 +8496,7 @@ function targetCapital(plan,R,det){
   const aStart=Math.max(Math.round(R),Math.ceil(currentAge));
   for(let a=aStart;a<horizonAge;a++){
     let pens=0;
-    for(const p of pensions)if(a>=p.from)pens+=p.amount*12;
+    for(const p of pensions)if(a>=p.from&&!(p.until<=a))pens+=p.amount*12;
     const yA=Math.min(nSteps-1,Math.max(0,a+1-firstAge));
     const loanReal=det.loanOut?det.loanOut[yA]/Math.pow(1+infl,a+1-currentAge):0;
     const need=Math.max(0,s.monthlyWithdraw*12+loanReal-pens);
@@ -8485,23 +8573,59 @@ function _drvFieldsHTML(d,prefix,mode){
   h+=f('rw','Rentenwert €',_numStr(d.rw),'42,52');
   h+=f('de','Ø-Entgelt €',Math.round(d.de).toLocaleString('de-DE'),'51.944');
   h+=f('bbg','BBG €',Math.round(d.bbg).toLocaleString('de-DE'),'101.400');
-  h+=`</div><div class="lt-result" id="${prefix}-drv-result"></div>`;
+  /* Erwerbsminderungsrente: Auswahl, Details nur bei teilweise/voll */
+  const t=d.emType===1||d.emType===2?d.emType:0;
+  h+=`<div class="input-group"><label data-info="drv-emType">Erwerbsminderung</label><select class="num-input${mode==='form'?' form-store':''}" id="${prefix}-drv-emType" data-drv="emType">${[[0,'Keine'],[1,'Teilweise'],[2,'Voll']].map(([v,l])=>`<option value="${v}"${v===t?' selected':''}>${l}</option>`).join('')}</select></div>`;
+  h+=`<div class="drv-em"${t?'':' hidden'}>`;
+  h+=f('em','EM-Rente netto €',d.em>0?_numStr(d.em):'','0');
+  h+=f('emUntil','Läuft bis Jahr',d.emUntil>0?String(Math.round(d.emUntil)):'','bis Regelalter');
+  h+=`<div class="drv-em-limit"${t===1?'':' hidden'}>`+f('emLimit','Hinzuverdienst­grenze €',d.emLimit>0?Math.round(d.emLimit).toLocaleString('de-DE'):'','41.528')+`</div>`;
+  h+=`</div></div><div class="lt-result" id="${prefix}-drv-result"></div>`;
   return h;
+}
+/* Erwerbsminderung: Detailfelder ein-/ausblenden */
+function _syncDrvEm(prefix){
+  const sel=document.getElementById(prefix+'-drv-emType');
+  if(!sel)return;
+  const t=+sel.value||0,box=sel.closest('.input-grid');
+  box.querySelector('.drv-em').hidden=!t;
+  box.querySelector('.drv-em-limit').hidden=t!==1;
 }
 function _drvFromInputs(prefix){
   const d=getDrv();
   document.querySelectorAll(`[id^="${prefix}-drv-"][data-drv]`).forEach(inp=>{
     const k=inp.dataset.drv,n=_parseDec(inp.value);
-    d[k]=isFinite(n)?n:(k==='points'||k==='salary'||k==='age'?0:DRV_DEFAULTS[k]);
+    d[k]=isFinite(n)?n:(k==='points'||k==='salary'||k==='age'||DRV_EM_KEYS.includes(k)?0:DRV_DEFAULTS[k]);
   });
+  /* EM-Werte nur speichern, wenn eine Erwerbsminderungsrente ausgewählt ist */
+  if(!(d.emType===1||d.emType===2))DRV_EM_KEYS.forEach(k=>delete d[k]);
+  else{
+    if(d.emType!==1||!(d.emLimit>0))delete d.emLimit;
+    if(!(d.emUntil>0))delete d.emUntil;
+    if(!(d.em>0))d.em=0;
+  }
   return d;
 }
 function _drvResultText(d){
   const s=getLifetimeSettings(),r=calcDrvPension(s,d);
+  let emTxt='';
+  if(d.emType===1||d.emType===2){
+    const e=r.em;
+    if(!e)emTxt='Zahlbetrag der Erwerbsminderungsrente eintragen.';
+    else{
+      emTxt=`EM-Rente <strong>${fmt(e.amount)}</strong> netto/Monat bis ${fmtAge(e.until)}`+(e.full>0?`, danach Altersrente`:', danach keine EM-Rente mehr')+'.';
+      if(e.over>0)emTxt+=` <span style="color:var(--red)">Hinzuverdienst liegt ${fmt(e.over)} über der Grenze von ${fmt(e.limit)}/Jahr – rund ${fmt(e.cut)}/Monat werden angerechnet.</span>`;
+    }
+    emTxt='<br>'+emTxt;
+    if(!(r.epTotal>0))return emTxt.slice(4);
+  }
   if(!(r.epTotal>0))return 'Rentenpunkte und/oder Gehalt eintragen, um die gesetzliche Rente hochzurechnen.';
   const ep=r.epTotal.toLocaleString('de-DE',{maximumFractionDigits:1});
   const add=r.epYear*r.years;
-  return `≈ <strong>${ep} Punkte</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)} <span style="color:var(--muted)">(${fmt(r.brutto)} brutto${add>0?', +'+add.toLocaleString('de-DE',{maximumFractionDigits:1})+' Punkte bis '+Math.round(Math.min(s.saveUntil,r.age)):''})</span>`;
+  const pts=add>0?', +'+add.toLocaleString('de-DE',{maximumFractionDigits:1})+' Punkte bis '+Math.round(Math.min(s.saveUntil,r.age)):'';
+  /* Greift die Mindesthöhe aus der EM-Rente, die Hochrechnung nur zum Vergleich zeigen */
+  const detail=r.em&&r.netto>r.calcNetto?`mindestens volle EM-Rente; aus Punkten ${fmt(r.calcNetto)} netto${pts}`:`${fmt(r.brutto)} brutto${pts}`;
+  return `≈ <strong>${ep} Punkte</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)} <span style="color:var(--muted)">(${detail})</span>`+emTxt;
 }
 function renderDrvEditor(){
   const el=document.getElementById('lt-drv');
@@ -8519,6 +8643,40 @@ function _updateDrvResult(){
     const el=document.getElementById(prefix+'-drv-result');
     if(el)el.innerHTML=_drvResultText(_drvFromInputs(prefix));
   });
+  _updateBvResult();
+}
+
+/* ── Beamtenversorgung: Felder und Ergebnis auf der Daten-Seite ── */
+function _bvFieldsHTML(d){
+  const s=getLifetimeSettings();
+  const f=(k,label,val,ph)=>`<div class="input-group"><label data-info="bv-${k}">${label}</label><input class="num-input form-store" type="text" inputmode="decimal" id="dp-bv-${k}" data-bv="${k}" value="${val}" placeholder="${ph||''}"></div>`;
+  let h=`<div class="input-grid">`;
+  h+=f('pay','Bezüge/Monat €',d.pay?Math.round(d.pay).toLocaleString('de-DE'):'','0');
+  h+=f('years','Dienstjahre bisher',d.years?_numStr(d.years):'','0');
+  h+=f('age','Altersgrenze',d.age>0?_numStr(d.age):'',String(Math.round(regelaltersgrenze(s.birthYear)*10)/10).replace('.',','));
+  h+=f('from','Pension ab Alter',d.from>0?_numStr(d.from):'','wie Grenze');
+  h+=f('deduct','Abzüge %',_numStr(d.deduct),'25');
+  h+=`</div><div class="lt-result" id="dp-bv-result"></div>`;
+  return h;
+}
+function _bvFromInputs(){
+  const d=Object.assign({},BV_DEFAULTS);
+  document.querySelectorAll('[id^="dp-bv-"][data-bv]').forEach(inp=>{
+    const k=inp.dataset.bv,n=_parseDec(inp.value);
+    d[k]=isFinite(n)&&n>=0?n:BV_DEFAULTS[k];
+  });
+  return d;
+}
+function _bvResultText(b){
+  const s=getLifetimeSettings(),r=calcBeamtePension(s,b);
+  if(!(b.pay>0))return 'Bezüge und Dienstjahre eintragen, um die Pension hochzurechnen.';
+  const pc=v=>v.toLocaleString('de-DE',{maximumFractionDigits:2})+' %';
+  const yrs=r.total.toLocaleString('de-DE',{maximumFractionDigits:1});
+  return `≈ <strong>${yrs} Dienstjahre</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)} <span style="color:var(--muted)">(${pc(r.rate)} Ruhegehaltssatz${r.cut>0?', −'+pc(r.cut)+' Abschlag':''}, ${fmt(r.brutto)} brutto)</span>`;
+}
+function _updateBvResult(){
+  const el=document.getElementById('dp-bv-result');
+  if(el)el.innerHTML=_bvResultText(_bvFromInputs());
 }
 
 /* ── Listen (weitere Renten, Ereignisse): gleiche Optik wie die Eingabefelder der Data-Seite ── */
@@ -8788,7 +8946,9 @@ function renderLifetimePageCalcs(){
   const pc=v=>(v*100).toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})+' %';
   /* Einkommen im Ruhestand: einzelne Renten (heutige Kaufkraft) im Verhältnis zum Bedarf */
   const inc=[];
+  if(plan.drv&&plan.drv.em&&plan.drv.em.amount>0&&plan.drv.em.until>currentAge)inc.push({n:'Erwerbsminderungsrente',v:plan.drv.em.amount,until:plan.drv.em.until,temp:true});
   if(plan.drv&&plan.drv.netto>0)inc.push({n:'Gesetzliche Rente',v:plan.drv.netto,a:plan.drv.age});
+  if(plan.bv&&plan.bv.netto>0)inc.push({n:'Beamtenpension',v:plan.bv.netto,a:plan.bv.age});
   (plan.drvExtra||[]).forEach(r=>inc.push({n:'Rente '+r.name,v:r.netto,a:r.age}));
   if(_mod('pension'))(s.pensions||[]).filter(p=>(+p.amount||0)>0).forEach(p=>inc.push({n:p.name||'Weitere Rente',v:+p.amount,a:+p.from||67}));
   /* Kreditfrei: erstes Alter, ab dem im Erwartungspfad keine Kreditrate mehr anfällt */
@@ -8803,12 +8963,13 @@ function renderLifetimePageCalcs(){
   if(ml){
     let h='';
     if(inc.length){
-      const tot=inc.reduce((x,i)=>x+i.v,0),need=+s.monthlyWithdraw||0,base=Math.max(need,tot)||1,cov=need>0?tot/need:0;
+      const steady=inc.filter(x=>!x.temp);
+      const tot=steady.reduce((x,i)=>x+i.v,0),need=+s.monthlyWithdraw||0,base=Math.max(need,tot)||1,cov=need>0?tot/need:0;
       const shade=i=>`color-mix(in srgb,var(--green) ${[100,62,38,22][i%4]}%,var(--bg3))`;
       h+=`<div class="v2-inc"><div class="v2-inc-t">Einkommen im Ruhestand</div><div class="v2-inc-v">${Math.round(tot).toLocaleString('de-DE')}<small>€ / Monat</small></div>`;
-      h+=`<div class="v2-inc-bar">${inc.map((x,i)=>`<i style="width:${(x.v/base*100).toFixed(2)}%;background:${shade(i)}"></i>`).join('')}</div>`;
+      h+=`<div class="v2-inc-bar">${steady.map((x,i)=>`<i style="width:${(x.v/base*100).toFixed(2)}%;background:${shade(i)}"></i>`).join('')}</div>`;
       if(need>0)h+=`<div class="v2-inc-cap">${cov>=1?'Deckt deinen Bedarf von '+fmt(need):'Deckt '+Math.round(cov*100)+' % deines Bedarfs von '+fmt(need)}</div>`;
-      h+=`<div class="v2-inc-rows">${inc.map((x,i)=>`<div class="v2-inc-row"><i style="background:${shade(i)}"></i><span class="n">${escHTML(x.n)}<small>ab ${fmtAge(x.a)}</small></span><span class="v">${fmt(Math.round(x.v))}</span></div>`).join('')}</div></div>`;
+      h+=`<div class="v2-inc-rows">${inc.map((x,i)=>`<div class="v2-inc-row"><i style="background:${shade(i)}"></i><span class="n">${escHTML(x.n)}<small>${x.temp?'bis '+fmtAge(x.until)+', danach Altersrente':'ab '+fmtAge(x.a)}</small></span><span class="v">${fmt(Math.round(x.v))}</span></div>`).join('')}</div></div>`;
     }
     const facts=[[fmtCompact(mc.p50[endIdx]/defl(plan.horizonAge)),'Vermögen mit '+plan.horizonAge,'Median'],[pc(pr),'Ø Rendite p. a.','real '+pc((1+pr)/(1+infl)-1)]];
     if(lastPayoff)facts.push([fmtMonth(lastPayoff),'Schuldenfrei','mit '+Math.floor(_ageAt(s,+lastPayoff.slice(0,4),+lastPayoff.slice(5)-1))]);
@@ -9002,7 +9163,7 @@ function _v2SubText(mod){
     const data=loadData(),e=data[selectedMonth]||data[Object.keys(data).sort().pop()];
     if(mod==='assets'){if(!e)return'';const n=_fc.fields.filter(f=>f.category!=='liab'&&(+((e._details||{})[f.id])||0)>0).length;return n+(n===1?' Position · ':' Positionen · ')+fmt(calc(e).assets);}
     if(mod==='liab'){if(!e)return'';const b=_fc.fields.filter(f=>f.category==='liab').reduce((a,f)=>a+(+((e._details||{})[f.id])||0),0);return 'Restschuld '+fmt(b);}
-    if(mod==='pension'){const s=getLifetimeSettings();const r=calcDrvPension(s,getDrv());const x=getDrvExtra().map(p=>calcDrvExtra(s,p)).reduce((a,q)=>a+q.netto,0);const n=s.pensions.length;return (r.netto+x>0?'Gesetzlich ≈ '+fmt(r.netto+x)+'/Mon.':'Gesetzliche Rente')+(n?' · '+n+' weitere':'');}
+    if(mod==='pension'){const s=getLifetimeSettings();const r=calcDrvPension(s,getDrv());const x=getDrvExtra().map(p=>calcDrvExtra(s,p)).reduce((a,q)=>a+q.netto,0);const bv=calcBeamtePension(s,getBeamte()).netto;const n=s.pensions.length;return [r.em&&r.em.amount>0?'EM-Rente ≈ '+fmt(r.em.amount)+'/Mon.':'',r.netto+x>0?'Gesetzlich ≈ '+fmt(r.netto+x)+'/Mon.':(bv>0?'':'Gesetzliche Rente'),bv>0?'Pension ≈ '+fmt(bv)+'/Mon.':''].filter(Boolean).join(' · ')+(n?' · '+n+' weitere':'');}
     if(mod==='budget'){const bd=loadBudgetData();return bd?'Ø Einnahmen '+fmt(calcAvgHaushaltsnetto(bd)):'';}
     if(mod==='forecast'){const pv=document.getElementById('v2-prev-pct');return pv&&pv.textContent!=='—'?'Erfolgschance '+pv.textContent:'Annahmen, Ereignisse, Renditen';}
   }catch(err){}
@@ -10118,7 +10279,7 @@ function _nextSteps(){
   if(!m.budget&&!items.length)out.push({id:'budget',title:'Monatsbudget einrichten',text:'Vier grobe Zahlen zeigen dir, was jeden Monat übrig bleibt.',run:()=>startSetup('budget')});
   if(!m.forecast&&doc.retirement.primary.birthYear===undefined&&assets.length)out.push({id:'future',title:'Zukunft planen',text:'Mit drei Angaben siehst du, ob dein Vermögen für den Ruhestand reicht.',run:()=>startSetup('future')});
   const sp=doc.retirement.primary.statutoryPension;
-  if(assets.length&&m.forecast&&!m.pension&&!(sp.points>0)&&!(sp.annualSalary>0)&&!doc.retirement.incomes.length&&!doc.retirement.people.length)out.push({id:'pension',title:'Rente ergänzen',text:'Ein Betrag aus deiner Renteninformation macht die Prognose deutlich genauer.',run:()=>startSetup('pension')});
+  if(assets.length&&m.forecast&&!m.pension&&!(sp.points>0)&&!(sp.annualSalary>0)&&!doc.retirement.primary.civilServicePension&&!doc.retirement.incomes.length&&!doc.retirement.people.length)out.push({id:'pension',title:'Rente ergänzen',text:'Ein Betrag aus deiner Renteninformation macht die Prognose deutlich genauer.',run:()=>startSetup('pension')});
   const quote=assets.find(p=>SETUP_MARKET_CATS.includes(p.category)&&!p.instrument);
   if(quote)out.push({id:'quotes-'+quote.id,title:'Live-Kurs für „'+quote.name+'“',text:'Mit Ticker und Stückzahl hält sich der Wert von selbst aktuell.',run:()=>_nsQuote(quote.id)});
   if(m.budget&&items.some(r=>/^setup-(fixed|living)/.test(r.id)))out.push({id:'budget-split',title:'Budget genauer aufteilen',text:'Ersetze Fixkosten und Lebenshaltung nach und nach durch Posten wie Miete oder Versicherungen.',run:()=>_openDataSection('budget','ds-budget-items')});
