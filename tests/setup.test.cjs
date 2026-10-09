@@ -240,3 +240,29 @@ test('incomplete history answers explain what is missing before any download',as
   a.run("_setup.hist={}");await a.run('_setupBuildHistory(_setup)');
   assert.deepEqual(a.json('_setup.history'),{});
 });
+
+test('assets can be entered as quantity: value = quantity × current price, price source kept without history',()=>{
+  const a=context();
+  const quote={priceEUR:75000,price:75000,currency:'EUR',asOf:'2026-10-08T10:00:00.000Z',fetchedAt:'2026-10-08T10:00:00.000Z'};
+  const s=state('full',{assets:[{id:'a1',name:'Bitcoin',category:'bitcoin',amount:'',qty:'0,02',mode:'qty'},asset('a2','Girokonto','cash','1.000')],
+    hist:{a1:{quote,qinst:{provider:'bitcoin',symbol:'XBTEUR',exchange:'Kraken',currency:'EUR',name:'Bitcoin'}}}});
+  const doc=apply(a,s);
+  const btc=doc.positions.find(p=>p.name==='Bitcoin');
+  assert.equal(btc.valuation,'market');assert.equal(btc.unit.name,'BTC');
+  assert.deepEqual(doc.snapshots[0].positions.find(v=>v.positionId===btc.id),{positionId:btc.id,value:1500,quantity:0.02});
+  assert.equal(a.json("calc(loadData()['2026-11']).net"),2500);
+  /* ohne Kurs oder Wertpapier: verständliche Meldung statt falscher Werte */
+  a.context.s=state('full',{assets:[{id:'a1',name:'Bitcoin',category:'bitcoin',amount:'',qty:'0,02',mode:'qty'}],hist:{a1:{quoteFailed:true}}});
+  assert.throws(()=>a.run("buildSetupDocument(AssetsData.empty(),s,'2026-10')"),/Wert stattdessen in Euro/);
+  a.context.s=state('full',{assets:[{id:'a1',name:'Depot',category:'etf',amount:'',qty:'20',mode:'qty'}],hist:{}});
+  assert.throws(()=>a.run("buildSetupDocument(AssetsData.empty(),s,'2026-10')"),/Wertpapier auswählen/);
+  a.context.s=state('full',{assets:[{id:'a1',name:'Gold',category:'metal',amount:'',qty:'zwei',mode:'qty'}],hist:{}});
+  assert.throws(()=>a.run("buildSetupDocument(AssetsData.empty(),s,'2026-10')"),/gültige Stückzahl/);
+});
+test('a group with a single position is shown with the position name',()=>{
+  const a=context();
+  apply(a,state('full',{assets:[asset('a1','Porsche 911','vehicle','65.000'),asset('a2','Tagesgeld','cash','1.000'),asset('a3','Girokonto','cash','500')]}));
+  a.run("const fc=loadFieldConfig();fc.fields.find(f=>f.label==='Porsche 911').displayGroup='Sonstiges';fc.fields.filter(f=>f.category==='cash').forEach(f=>f.displayGroup='Cash');saveFieldConfig(fc);_fc=loadFieldConfig();_modsCache=null;");
+  assert.equal(a.run("_groupDisplayName('Sonstiges')"),'Porsche 911');
+  assert.equal(a.run("_groupDisplayName('Cash')"),'Cash');
+});

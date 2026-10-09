@@ -1786,6 +1786,12 @@ body.onboarding-open{overflow:hidden}
 .ob-entry{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:14px;padding:6px 4px 6px 14px}
 .ob-entry-l{flex:1;min-width:0;display:flex;flex-direction:column}
 .ob-entry-l small{font-size:12px;color:var(--muted);margin-top:-2px}
+.ob-entry.is-qty{flex-wrap:wrap;padding-bottom:10px}
+.ob-entry-extra{flex:0 0 100%;padding-right:10px;display:flex;flex-direction:column;gap:6px}
+.ob-qline{margin:2px 0 0;font-size:13px;color:var(--muted)}.ob-qline:empty{display:none}.ob-qline b{color:var(--ink);font-weight:500}
+.ob-unitseg{display:inline-flex;gap:2px;padding:2px;border-radius:8px;background:var(--fill);align-self:flex-start;margin:1px 0 3px}
+.ob-unitseg button{border:0;background:none;font:inherit;font-size:13px;color:var(--muted);padding:3px 10px;border-radius:6px;min-height:26px;cursor:pointer}
+.ob-unitseg button.on{background:var(--bg2);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
 .ob-entry-name{width:100%;min-width:0;border:0;background:none;font:inherit;font-size:16px;color:var(--ink);padding:6px 0;outline:none}
 .ob-money{position:relative;display:inline-flex;align-items:center;flex-shrink:0}
 .ob-money i{position:absolute;right:10px;font-style:normal;font-size:15px;color:var(--muted);pointer-events:none}
@@ -1822,6 +1828,11 @@ body.onboarding-open{overflow:hidden}
 .ob-later b{display:block;font-size:15px;font-weight:500;color:var(--ink);margin-bottom:8px}
 .ob-later ul{margin:0 0 10px;padding-left:20px;font-size:15px;line-height:1.7;color:var(--text)}
 .ob-later span{font-size:13px;color:var(--muted)}
+.ob-entry [data-f="qty"]{padding-right:42px}
+.ds-linkrow{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;min-height:50px;margin-top:12px;padding:6px 14px;border:0;border-radius:14px;background:var(--card);font:inherit;font-size:16px;color:var(--ink);cursor:pointer;text-align:left}
+.ds-linkrow small{font-size:14px;color:var(--muted)}
+.ds-linkrow small::after{content:' ›'}
+.ds-sel{width:auto;flex:1;min-width:0;text-align:left;padding-right:28px;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat}
 .ob-hist{background:var(--card);border-radius:14px;padding:12px 14px 14px}
 .ob-hist-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
 .ob-hist-head b{font-size:16px;font-weight:500;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -2078,7 +2089,6 @@ body.onboarding-open{overflow:hidden}
 
 <!-- Vermögensstruktur -->
 <div class="structure-section structure-section-mobile">
-  <div class="sec-h v2-sec-split"><span>Zusammensetzung</span><span>ggü. Vormonat</span></div>
   <ul class="legend-list" id="legendAssets"></ul>
 </div>
 
@@ -3260,6 +3270,11 @@ const V2_ICONS={
 };
 /* Bereiche der Daten-Seite nutzen die Icons ihrer Seite in der Navigationsleiste */
 const DATA_SECTION_ICONS={assets:'pulse',liab:'bank',pension:'umbrella',budget:'flow',forecast:'clock'};
+/* Anzeigename einer Gruppe: mit nur einer Position deren Name (ältere Importe sammeln z. B. Autos in „Sonstiges“) */
+function _groupDisplayName(key){
+  const fs=_vf().filter(f=>f.category!=='liab'&&(f.displayGroup||f.category)===key);
+  return fs.length===1?fs[0].label:key;
+}
 function _v2GroupFields(key){return _vf().filter(f=>(f.category==='liab'?_liabTargetGroup(f):(f.displayGroup||f.category))===key);}
 function _v2Icon(key){
   const k=String(key||'').toLowerCase(),cats=_v2GroupFields(key).map(f=>f.category);
@@ -3296,7 +3311,7 @@ function _createLegendRow(item,color,st){
   const li=document.createElement('li');
   li.className='legend-row';
   li.dataset.assetKey=item.key;
-  li.innerHTML=`<span class="v2-ico">${_v2Icon(item.key)}</span><div class="v2-row-l"><span class="legend-name">${escHTML(item.label)}</span><span class="v2-sub"><span class="legend-pct">${st.pct}</span><span class="v2-kind">${_v2GroupKind(item.key)}</span></span></div><div class="v2-row-r"><span class="legend-val${st.neg?' neg':''}">${fmt(item.val)}</span><span class="legend-delta"></span></div><button class="v2-more" type="button" aria-label="Details">Details</button>`;
+  li.innerHTML=`<span class="v2-ico">${_v2Icon(item.key)}</span><div class="v2-row-l"><span class="legend-name">${escHTML(_groupDisplayName(item.key))}</span><span class="v2-sub"><span class="legend-pct">${st.pct}</span><span class="v2-kind">${_v2GroupKind(item.key)}</span></span></div><div class="v2-row-r"><span class="legend-val${st.neg?' neg':''}">${fmt(item.val)}</span><span class="legend-delta"></span></div><button class="v2-more" type="button" aria-label="Details">Details</button>`;
   _setLegendDelta(li.querySelector('.legend-delta'),st.delta);
   /* Tippen hebt das Asset im Chart hervor (erneut tippen = zurück); "Details" öffnet die Aufschlüsselung */
   li.addEventListener('click',(ev)=>{
@@ -4455,8 +4470,7 @@ function showAssetDetail(assetKey){
   const mapping=getAssetDetailMap()[assetKey];
   if(!mapping)return;
   
-  const title=assetKey;
-  document.getElementById('assetPopupTitle').textContent=title;
+  document.getElementById('assetPopupTitle').textContent=_groupDisplayName(assetKey);
   
   const details=entry._details||{};
   const units=entry._units||{};
@@ -4681,7 +4695,7 @@ function setupChartInteraction(){
         const fillEl=el.querySelector('.legend-fill');
         const barEl=el.querySelector('.legend-bar');
         const nameEl=el.querySelector('.legend-name');
-        if(nameEl)nameEl.textContent=item.label;
+        if(nameEl)nameEl.textContent=_groupDisplayName(item.key);
         if(barEl)barEl.style.background=m.colors[j];
         if(fillEl){fillEl.style.width=st.barPct+'%';fillEl.style.background=m.colors[j];}
         if(pctEl)pctEl.textContent=st.pct;
@@ -6636,9 +6650,11 @@ function _initSheet(){
   document.getElementById('dsSave').addEventListener('click',_submitSheet);
   document.getElementById('dsOverlay').addEventListener('click',()=>_closeSheet());
   document.addEventListener('keydown',e=>{if(_sheetOpen&&e.key==='Escape')_closeSheet();});
-  b.addEventListener('input',e=>{_sheetDirty=true;_dataInput(e);_monthSheetInput(e);_unitHint(e);if(_sheetCtx.budget)_budgetSheetUpdate();});
+  b.addEventListener('input',e=>{_sheetDirty=true;_dataInput(e);_monthSheetInput(e);_historyInput(e);_unitHint(e);if(_sheetCtx.budget)_budgetSheetUpdate();});
   b.addEventListener('click',e=>{
     const tog=e.target.closest('[data-dep-toggle]');if(tog){_depToggle(tog.dataset.depToggle);return;}
+    const hist=e.target.closest('[data-ds-hist]');if(hist){openHistorySheet(hist.dataset.dsHist);return;}
+    if(e.target.closest('[data-hist-calc]')){_historyCalc();return;}
     const seg=e.target.closest('[data-seg-for] button');if(seg){_segPick(seg);return;}
     const custom=e.target.closest('[data-b-custom]');if(custom){_budgetToggleCustom();return;}
     if(e.target.closest('[data-b-delete]')){_deleteBudgetEntry();return;}
@@ -6799,7 +6815,8 @@ function openMonthSheet(){
       const v=AssetModel.depreciatedValue(f.depreciation,ym)??0;
       return `<div class="ds-row" data-ms-fixed-asset="${v}"><span class="ds-l">${escHTML(f.label)}<small>automatisch aus der Abschreibung</small></span><span class="ds-static">${fmt(v)}</span></div>`;
     }
-    const key=f.unitId||f.id,price=AssetModel.valuation(f)==='market'&&live?(livePrices[key]||(f.lastQuote&&f.lastQuote.priceEUR)):0;
+    const key=f.unitId||f.id,market=AssetModel.valuation(f)==='market';
+    const price=market&&live?(livePrices[key]||(f.lastQuote&&f.lastQuote.priceEUR)):market&&+units[key]>0&&+det[f.id]>0?+det[f.id]/+units[key]:0;
     if(!price)return valueRow(f,'a');
     const q=+units[key]||0,unit=f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück';
     return `<label class="ds-row"><span class="ds-l">${escHTML(f.label)} <span style="color:var(--muted)">(${escHTML(unit)})</span><small id="ms-s-${escHTML(f.id)}">${_msQtySub(q,price)}</small></span><input class="ds-in" type="text" inputmode="decimal" data-ms-qty="${escHTML(f.id)}" data-price="${price}" value="${_qtyInput(q)}" placeholder="Stückzahl" aria-label="${escHTML(f.label)}: Stückzahl in ${escHTML(unit)}"></label>`;
@@ -6852,6 +6869,116 @@ function _saveMonthSheet(){
       e._units[f.unitId||f.id]=q??0;e._details[f.id]=AssetModel.money((+i.dataset.price)*(q??0));
     });
     recalcAggregates(e);data[ym]=e;saveData(data);
+    appStorage.commitTransaction();
+  }catch(error){appStorage.rollbackTransaction();_sheetError(error.message);return false;}
+  _afterDataChange();return true;
+}
+
+/* ── Verlauf einer Position: Bestand am Ende jedes früheren Monats.
+   Mit Kursquelle als Stückzahl (Wert = Stückzahl × Monatskurs), sonst als Euro-Wert.
+   „Neu berechnen“ rechnet die heutige Stückzahl mit Monatskursen zurück (wie bei der Einrichtung). ── */
+function _histCount(id){const data=loadData();return Object.keys(data).filter(m=>m<nextYM()&&(+((data[m]._details||{})[id])||0)>0).length;}
+function openHistorySheet(id){
+  const f=_fc.fields.find(x=>x.id===id);if(!f)return;
+  if(_sheetOpen&&!_closeSheet())return;/* erst schließen: das Schließen räumt den Sheet-Kontext */
+  const inst=AssetModel.valuation(f)==='market'?AssetModel.instrument(f):null;
+  const months=Object.keys(loadData()).filter(m=>m<nextYM()).sort().reverse();
+  _sheetCtx={hist:{id,key:f.unitId||f.id,inst,unit:f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück',prices:null,months,added:[],calc:{month:'',year:'',mode:'once',plan:''}}};
+  if(!_openSheet('Verlauf · '+f.label,_historySheetBody(),_saveHistorySheet))return;
+  _historyPaint();
+  if(inst)fetchMonthlyPricesEUR(_historySymbol(inst)).then(p=>{const c=_sheetCtx.hist;if(c&&c.id===id){c.prices=p;_historyPaint();}}).catch(()=>{const c=_sheetCtx.hist;if(c&&c.id===id){c.pricesFailed=true;_historyPaint();}});
+}
+/* Kurs eines Monats: Monatskurs, sonst aus dem gespeicherten Wert ÷ Stückzahl */
+function _historyPrice(m,input){
+  const c=_sheetCtx.hist,p=c.prices&&c.prices[m];if(p>0)return p;
+  const v=+input.dataset.value,q=+input.dataset.qty;return v>0&&q>0?v/q:null;
+}
+function _historySub(input){
+  const c=_sheetCtx.hist,m=input.dataset.hm,est=input.dataset.est==='1'?' · berechnet':'';
+  if(!c.inst){return input.dataset.value>0?'':'kein Bestand'+est;}
+  let q=0;try{q=_assetNumber(input.value,true)||0;}catch(error){return 'Bitte eine gültige Stückzahl eingeben';}
+  const p=_historyPrice(m,input);
+  if(!q)return '—'+est;
+  return (p?'≈ '+fmt(q*p):c.prices||c.pricesFailed?'Kurs unbekannt':'Kurs wird geladen …')+est;
+}
+function _historySheetBody(){
+  const c=_sheetCtx.hist,data=loadData(),f=_fc.fields.find(x=>x.id===c.id),year=new Date().getFullYear();
+  let h=`<p class="ds-note">${c.inst?'Stückzahl am Ende jedes Monats. Der Wert ergibt sich aus dem Kurs des Monats.':'Wert am Ende jedes Monats.'} Den aktuellen Stand änderst du wie gewohnt in der Position.</p>`;
+  if(c.inst){
+    const opt=(v,l,cur)=>`<option value="${v}"${String(v)===String(cur)?' selected':''}>${l}</option>`;
+    h+=`<details class="ds-more"${c.added.length?' open':''}><summary>Verlauf neu berechnen</summary><div class="ds-group">
+      <div class="ds-row"><span class="ds-l">Seit</span><select class="ds-in ds-sel" id="hc-month">${opt('','Monat',c.calc.month)+MONTH_FULL.map((m,i)=>opt(i+1,m,c.calc.month)).join('')}</select><select class="ds-in ds-sel" id="hc-year">${opt('','Jahr',c.calc.year)+Array.from({length:41},(_,i)=>opt(year-i,year-i,c.calc.year)).join('')}</select></div>
+      <div class="ds-row"><span class="ds-l">Gekauft</span>${_seg('hc-mode',[['once','Einmal'],['plan','Mit Sparplan']],c.calc.mode)}</div>
+      <label class="ds-row" id="hc-planRow"${c.calc.mode==='plan'?'':' hidden'}><span class="ds-l">Sparplan pro Monat</span><input class="ds-in ds-money" type="text" inputmode="decimal" id="hc-plan" value="${escHTML(c.calc.plan)}" placeholder="0"></label>
+      <div class="ds-sub"><button type="button" class="btn btn-ghost" data-hist-calc>Berechnen</button><p class="ds-help">Rechnet die heutige Stückzahl mit echten Monatskursen zurück. Vor dem Kaufmonat steht 0. Gespeichert wird erst mit „Sichern“.</p></div>
+    </div></details>`;
+  }
+  if(!c.months.length)return h+`<p class="ds-empty">Noch keine früheren Monate.${c.inst?' Mit „Verlauf neu berechnen“ legst du sie an.':''}</p>`;
+  let y='';
+  c.months.forEach(m=>{
+    const e=data[m]||{},q=+((e._units||{})[c.key])||0,v=+((e._details||{})[c.id])||0,added=c.added.find(a=>a.month===m);
+    if(m.slice(0,4)!==y){if(y)h+='</div>';y=m.slice(0,4);h+=`<div class="ds-group-t">${y}</div><div class="ds-group">`;}
+    const attrs=`data-hm="${m}" data-value="${v}" data-qty="${q}"${e._estimated||added?' data-est="1"':''}${added?' data-new="1"':''}`;
+    const input=c.inst?`<input class="ds-in" type="text" inputmode="decimal" ${attrs} data-orig="${escHTML(_qtyInput(q))}" value="${escHTML(added?_qtyInput(added.quantity):_qtyInput(q))}" placeholder="0" aria-label="${escHTML(fmtMonth(m))}: Stückzahl in ${escHTML(c.unit)}">`
+      :`<input class="ds-in ds-money" type="text" inputmode="decimal" ${attrs} data-orig="${v?escHTML(_moneyInput(v)):''}" value="${v?escHTML(_moneyInput(v)):''}" placeholder="0" aria-label="${escHTML(fmtMonth(m))}: Wert in Euro">`;
+    h+=`<label class="ds-row"><span class="ds-l">${MONTH_FULL[+m.slice(5)-1]}${c.inst?` <span style="color:var(--muted)">(${escHTML(c.unit)})</span>`:''}<small id="hs-${m}"></small></span>${input}</label>`;
+  });
+  return h+'</div>';
+}
+function _historyPaint(){
+  if(!_sheetCtx.hist)return;
+  document.querySelectorAll('#dsBody [data-hm]').forEach(i=>{const s=document.getElementById('hs-'+i.dataset.hm);if(s)s.textContent=_historySub(i);});
+}
+function _historyInput(e){if(_sheetCtx.hist&&e.target.dataset&&e.target.dataset.hm){const s=document.getElementById('hs-'+e.target.dataset.hm);if(s)s.textContent=_historySub(e.target);}}
+async function _historyCalc(){
+  const c=_sheetCtx.hist;if(!c||!c.inst)return;
+  const v=id=>(document.getElementById(id)?.value||'').trim();
+  c.calc={month:v('hc-month'),year:v('hc-year'),mode:v('hc-mode')||'once',plan:v('hc-plan')};
+  try{
+    if(!c.calc.month||!c.calc.year)throw new Error('Bitte Monat und Jahr wählen, seit wann du die Position hast.');
+    const since=c.calc.year+'-'+String(c.calc.month).padStart(2,'0'),cur=currentYM();
+    if(since>=cur)throw new Error('Bitte einen Monat vor '+fmtMonth(cur)+' wählen.');
+    const plan=c.calc.mode==='plan'?_sheetMoney(c.calc.plan,'Sparplan'):0;
+    if(c.calc.mode==='plan'&&!(plan>0))throw new Error('Bitte den Sparplan pro Monat eintragen.');
+    const data=loadData(),latest=Object.keys(data).sort().pop(),qty=+((data[latest]?._units||{})[c.key])||0;
+    if(!(qty>0))throw new Error('Trage zuerst die heutige Stückzahl in der Position ein.');
+    const btn=document.querySelector('#dsBody [data-hist-calc]');if(btn){btn.disabled=true;btn.textContent='Kurse werden geladen …';}
+    if(!c.prices)c.prices=await fetchMonthlyPricesEUR(_historySymbol(c.inst));
+    if(_sheetCtx.hist!==c)return;
+    const rows=reconstructHolding(c.prices,since,cur,qty,plan);
+    if(!rows.length)throw new Error('Für diesen Zeitraum gibt es keine Kurse.');
+    const existing=new Set(c.months);
+    c.added=rows.filter(r=>!existing.has(r.month));
+    const byMonth=Object.fromEntries(rows.map(r=>[r.month,r.quantity]));
+    c.months=[...new Set([...c.months,...c.added.map(r=>r.month)])].sort().reverse();
+    document.getElementById('dsBody').innerHTML='<div class="ds-error" id="dsError" role="alert" hidden></div>'+_historySheetBody();
+    /* Bestehende Monate: berechnete Stückzahl, vor dem Kaufmonat 0; der aktuelle Monat bleibt der erfasste Stand */
+    document.querySelectorAll('#dsBody [data-hm]').forEach(i=>{const m=i.dataset.hm;if(m>=cur)return;i.value=_qtyInput(byMonth[m]??(m<since?0:+i.dataset.qty));});
+    _sheetDirty=true;_historyPaint();_toast(rows.length+' Monate berechnet');
+  }catch(error){
+    const btn=document.querySelector('#dsBody [data-hist-calc]');if(btn){btn.disabled=false;btn.textContent='Berechnen';}
+    _sheetError(error.message);
+  }
+}
+function _saveHistorySheet(){
+  const c=_sheetCtx.hist;if(!c)return false;
+  appStorage.beginTransaction();
+  try{
+    const data=loadData();let changed=0;
+    document.querySelectorAll('#dsBody [data-hm]').forEach(i=>{
+      const m=i.dataset.hm,isNew=i.dataset.new==='1';
+      if(i.value.trim()===i.dataset.orig&&!isNew)return;
+      const e=_monthEntryForEdit(data,m);
+      if(c.inst){
+        let q;try{q=_assetNumber(i.value,true)??0;}catch(error){throw new Error(fmtMonth(m)+': Bitte eine gültige Stückzahl eingeben.');}
+        const p=_historyPrice(m,i);
+        if(q>0&&!p)throw new Error(fmtMonth(m)+': Für diesen Monat ist noch kein Kurs bekannt. Bitte kurz warten, bis die Kurse geladen sind.');
+        e._units[c.key]=q;e._details[c.id]=AssetModel.money(q*(p||0));
+      }else e._details[c.id]=_sheetMoney(i.value,fmtMonth(m))??0;
+      if(isNew)e._estimated=true;
+      recalcAggregates(e);data[m]=e;changed++;
+    });
+    if(changed)saveData(data);
     appStorage.commitTransaction();
   }catch(error){appStorage.rollbackTransaction();_sheetError(error.message);return false;}
   _afterDataChange();return true;
@@ -6945,6 +7072,7 @@ function _segPick(button){
   input.value=button.dataset.v;
   seg.querySelectorAll('button').forEach(b=>{const on=b===button;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
   if(/^b-/.test(seg.dataset.segFor)){_sheetDirty=true;_budgetSheetUpdate();return;}
+  if(seg.dataset.segFor==='hc-mode'){const row=document.getElementById('hc-planRow');if(row)row.hidden=input.value!=='plan';return;}
   const prefix=seg.dataset.segFor.replace(/-dep(Method|Interval)$/,'');
   if(/-depMethod$/.test(seg.dataset.segFor)){
     const label=document.getElementById(prefix+'-depAmountLabel'),amount=document.getElementById(prefix+'-depAmount');
@@ -6998,6 +7126,7 @@ function openAssetSheet(id){
   const note=!e?`Für ${fmtMonth(ym)} gibt es noch keinen Stand.`+(pk?` Die übrigen Werte werden beim Sichern aus ${fmtMonth(pk)} übernommen.`:''):estimated?'Dieser Wert ist geschätzt (aus dem letzten erfassten Monat fortgeschrieben). Mit „Sichern“ bestätigst du ihn.':'';
   _sheetCtx={value:AssetModel.money(v),qty:q,estimated};
   const body=(note?`<p class="ds-note">${escHTML(note)}</p>`:'')+_assetSheetHTML('asset-'+id,f,{valueTitle:_monthTitle(ym),valueId:'f-'+id,qtyId:'fu-'+key,value:v?_moneyInput(v):'',qty:_qtyInput(q),valueHint:hint})
+    +`<button type="button" class="ds-linkrow" data-ds-hist="${escHTML(id)}"><span>Verlauf bearbeiten</span><small>${(n=>n?n+(n===1?' früherer Monat':' frühere Monate'):'Noch kein Verlauf')(_histCount(id))}</small></button>`
     +`<button type="button" class="ds-danger" data-ds-remove="${escHTML(id)}">Position entfernen</button>`;
   if(!_openSheet(f.label,body,()=>_saveAssetSheet(id)))return;
   _assetMetadataChanged('asset-'+id,'valuation');_assetSheetRows('asset-'+id);
@@ -9133,15 +9262,56 @@ function _setupNum(raw,label,min=0,max=Infinity){
   return n;
 }
 const _setupLenient=raw=>{try{return _setupNum(raw,'')||0;}catch(error){return 0;}};
+/* Bitcoin, Gold und Wertpapiere: Bestand wahlweise in Euro oder als Stückzahl; Stückzahl × aktueller Kurs = Wert */
+const SETUP_UNITS={bitcoin:['BTC','BTC'],metal:['oz','Unzen'],etf:['Stk','Stück'],stock:['Stk','Stück'],crypto:['Stk','Stück']};
+const SETUP_QTY_DEFAULT=['bitcoin','metal'];
+const _setupQty=raw=>{try{return _assetNumber(raw,true)||0;}catch(error){return 0;}};
+function _setupInstrument(s,r){const fixed=SETUP_FIXED_INSTRUMENTS[r.category];return fixed?{provider:fixed.provider,symbol:fixed.symbol}:((s.hist&&s.hist[r.id]&&s.hist[r.id].instrument)||null);}
+function _setupRowValue(s,r){
+  if(r.mode!=='qty')return _setupLenient(r.amount);
+  const h=s.hist&&s.hist[r.id];return h&&h.quote?AssetModel.money(_setupQty(r.qty)*h.quote.priceEUR):0;
+}
+function _setupLoadQuote(r){
+  const s=_setup;if(!s)return;
+  const h=_setupHist(s,r.id),inst=_setupInstrument(s,r);if(!inst)return;
+  const key=inst.provider+':'+inst.symbol;if(h.quoteKey===key&&(h.quote||h.quoteLoading))return;
+  Object.assign(h,{quoteKey:key,quote:null,qinst:null,quoteFailed:false,quoteLoading:true});_setupPaintEntry(r.id);
+  fetchInstrumentQuote(inst).then(q=>{if(h.quoteKey===key){h.quote=q.quote;h.qinst=q.instrument;}})
+    .catch(()=>{if(h.quoteKey===key)h.quoteFailed=true;})
+    .finally(()=>{if(h.quoteKey!==key)return;h.quoteLoading=false;if(_setup===s)_setupPaintEntry(r.id);});
+}
+function _setupQuoteLine(s,r){
+  const h=(s.hist&&s.hist[r.id])||{},unit=(SETUP_UNITS[r.category]||['Stk'])[0];
+  if(!_setupInstrument(s,r))return '';
+  if(h.quoteLoading)return 'Kurs wird geladen …';
+  if(h.quoteFailed)return 'Kurs gerade nicht erreichbar. Trage den Wert stattdessen in Euro ein.';
+  if(!h.quote)return '';
+  const price=h.quote.priceEUR.toLocaleString('de-DE',{maximumFractionDigits:h.quote.priceEUR<10?4:2});
+  return (_setupQty(r.qty)>0?'≈ <b>'+fmt(_setupRowValue(s,r))+'</b> · ':'')+'1 '+escHTML(unit)+' = '+price+' €';
+}
+function _setupPaintEntry(id){
+  const s=_setup;if(!s)return;
+  const r=s.assets.find(x=>x.id===id),line=document.getElementById('oq-'+id);
+  if(r&&line)line.innerHTML=_setupQuoteLine(s,r);
+  const total=document.getElementById('setupTotal');if(total)total.textContent=fmt(s.assets.reduce((a,x)=>a+_setupRowValue(s,x),0));
+}
 function _setupAssetRows(s){
   const out=[];
   s.assets.forEach((r,i)=>{
-    const name=r.name.trim().replace(/[;\r\n]/g,','),raw=r.amount.trim();
+    const qtyMode=r.mode==='qty',name=r.name.trim().replace(/[;\r\n]/g,','),raw=String((qtyMode?r.qty:r.amount)||'').trim();
     if(!name&&!raw)return;
     const label=name||'Position '+(i+1);
     if(!name)throw new Error(label+': Bitte einen Namen eintragen.');
-    if(!raw)throw new Error(label+': Bitte ungefähr den Wert eintragen. 0 € geht auch.');
-    out.push({row:r,name,category:r.category,value:_setupNum(raw,label)});
+    if(!qtyMode){
+      if(!raw)throw new Error(label+': Bitte ungefähr den Wert eintragen. 0 € geht auch.');
+      out.push({row:r,name,category:r.category,value:_setupNum(raw,label)});return;
+    }
+    if(!raw)throw new Error(label+': Bitte die Stückzahl eintragen.');
+    let quantity;try{quantity=_assetNumber(raw,true);}catch(error){throw new Error(label+': Bitte eine gültige Stückzahl eingeben, z. B. 0,25.');}
+    const h=_setupHist(s,r.id);
+    if(!_setupInstrument(s,r))throw new Error(label+': Bitte das Wertpapier auswählen, damit die App den Wert berechnen kann.');
+    if(!h.quote)throw new Error(label+(h.quoteFailed?': Der Kurs ist gerade nicht erreichbar. Trage den Wert stattdessen in Euro ein.':': Der Kurs wird noch geladen. Einen Moment bitte.'));
+    out.push({row:r,name,category:r.category,value:AssetModel.money(quantity*h.quote.priceEUR),quantity});
   });
   return out;
 }
@@ -9224,7 +9394,13 @@ function buildSetupDocument(original,s,month,liveMonth=month){
       return {id,groupId};
     };
     const byCat={},history=s.history||{};
-    assets.forEach(a=>{const r=add(a.name,a.category,a.value,{monthlySaving:0},history[a.row.id]||null);targetGroup[a.row.id]=r.groupId;(byCat[a.category]=byCat[a.category]||[]).push(r.id);});
+    const priced=a=>{
+      if(history[a.row.id])return history[a.row.id];
+      if(a.quantity==null)return null;
+      const h=s.hist[a.row.id],i=h.qinst;
+      return {instrument:{provider:i.provider,symbol:i.symbol,exchange:i.exchange||'',currency:i.currency||'EUR',name:i.name||i.symbol},quote:h.quote,quantity:a.quantity,months:[]};
+    };
+    assets.forEach(a=>{const r=add(a.name,a.category,a.value,{monthlySaving:0},priced(a));targetGroup[a.row.id]=r.groupId;(byCat[a.category]=byCat[a.category]||[]).push(r.id);});
     debts.forEach(d=>{
       const r=add(d.name,'liab',d.value,{});
       /* Immobilien- und Autokredit gehören zur einzigen Immobilie bzw. zum einzigen Auto */
@@ -9412,7 +9588,7 @@ function reconstructHolding(prices,since,until,quantity,plan=0){
   }else q=months.map(()=>quantity);
   return months.slice(0,-1).map(([month,p],i)=>({month,quantity:Math.round(q[i]*1e6)/1e6,value:AssetModel.money(q[i]*p)}));
 }
-function _setupHistoryRows(s){return s.assets.filter(r=>SETUP_HISTORY_CATS.includes(r.category)&&r.name.trim()&&_setupLenient(r.amount)>0);}
+function _setupHistoryRows(s){return s.assets.filter(r=>SETUP_HISTORY_CATS.includes(r.category)&&r.name.trim()&&_setupRowValue(s,r)>0);}
 function _setupHist(s,id){return s.hist[id]||(s.hist[id]={query:'',results:null,searching:false,instrument:null,month:'',year:'',mode:'',plan:''});}
 function _setupSince(h){return h.year&&h.month?h.year+'-'+String(h.month).padStart(2,'0'):null;}
 function _setupSearch(id,query,category){
@@ -9439,13 +9615,14 @@ function _setupHistoryCard(s,r){
   const h=_setupHist(s,r.id),fixed=SETUP_FIXED_INSTRUMENTS[r.category],year=new Date().getFullYear();
   let inst;
   if(fixed)inst=`<div class="ob-hist-inst"><span>${fixed.label}</span></div>`;
-  else if(h.instrument)inst=`<div class="ob-hist-inst is-picked"><span><b>${escHTML(h.instrument.name)}</b><small>${escHTML(h.instrument.symbol)}${h.instrument.exchange?' · '+escHTML(h.instrument.exchange):''}</small></span><button type="button" class="ob-link" data-act="hist-change">Ändern</button></div>`;
+  else if(h.instrument)inst=`<div class="ob-hist-inst is-picked"><span><b>${escHTML(h.instrument.name)}</b><small>${escHTML(h.instrument.symbol)}${h.instrument.exchange?' · '+escHTML(h.instrument.exchange):''}</small></span>${r.mode==='qty'?'':'<button type="button" class="ob-link" data-act="hist-change">Ändern</button>'}</div>`;
   else inst=`<label class="ob-hist-search"><span class="ob-hist-l">Welches Wertpapier?</span><input class="ob-in" type="search" data-h="query" value="${escHTML(h.query)}" placeholder="Name oder ISIN" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"></label><div class="ob-hist-results" id="hr-${r.id}">${_setupResultsHTML(h)}</div>`;
   const opt=(v,label,cur)=>`<option value="${v}"${String(v)===String(cur)?' selected':''}>${label}</option>`;
   const months=opt('','Monat',h.month)+MONTH_FULL.map((m,i)=>opt(i+1,m,h.month)).join('');
   const years=opt('','Jahr',h.year)+Array.from({length:41},(_,i)=>opt(year-i,year-i,h.year)).join('');
   const mode=(v,label)=>`<button type="button" class="ob-hist-mode${h.mode===v?' on':''}" data-act="hist-mode" data-v="${v}" aria-pressed="${h.mode===v}">${label}</button>`;
-  return `<div class="ob-hist" data-row="${r.id}"><div class="ob-hist-head"><b>${escHTML(r.name.trim())}</b><span>${fmt(_setupLenient(r.amount))}</span></div>${inst}
+  const amount=r.mode==='qty'?_setupQty(r.qty).toLocaleString('de-DE',{maximumFractionDigits:8})+' '+(SETUP_UNITS[r.category]||['Stk'])[0]+' · '+fmt(_setupRowValue(s,r)):fmt(_setupRowValue(s,r));
+  return `<div class="ob-hist" data-row="${r.id}"><div class="ob-hist-head"><b>${escHTML(r.name.trim())}</b><span>${amount}</span></div>${inst}
     <div class="ob-hist-row"><span class="ob-hist-l">Seit</span><select class="ob-in ob-select" data-h="month" aria-label="Seit Monat">${months}</select><select class="ob-in ob-select" data-h="year" aria-label="Seit Jahr">${years}</select></div>
     <div class="ob-hist-row"><span class="ob-hist-l">Gekauft</span><span class="ob-hist-modes">${mode('once','Einmal')}${mode('plan','Mit Sparplan')}</span></div>
     ${h.mode==='plan'?`<label class="ob-hist-row"><span class="ob-hist-l">Pro Monat</span>${_setupMoney('data-h="plan"',h.plan,'Sparplan pro Monat für '+r.name)}</label>`:''}</div>`;
@@ -9476,7 +9653,7 @@ async function _setupBuildHistory(s){
   await Promise.all(todo.map(async({r,h,instrument,since,plan})=>{
     try{
       const {instrument:inst,quote}=await fetchInstrumentQuote(instrument);
-      const quantity=Math.round(_setupLenient(r.amount)/quote.priceEUR*1e6)/1e6;
+      const quantity=r.mode==='qty'?_setupQty(r.qty):Math.round(_setupRowValue(s,r)/quote.priceEUR*1e6)/1e6;
       const months=since?reconstructHolding(await fetchMonthlyPricesEUR(_historySymbol(inst)),since,cur,quantity,plan):[];
       s.history[r.id]={instrument:{provider:inst.provider,symbol:inst.symbol,exchange:inst.exchange||'',currency:inst.currency||'EUR',name:inst.name||inst.symbol},quote,quantity,months};
     }catch(error){s.historyFailed.push(r.name.trim());}
@@ -9508,11 +9685,24 @@ function _setupChips(list,act){
 }
 function _setupAssetsView(s){
   const cat=c=>(AssetModel.categories[c]||{}).name||'';
-  const rows=s.assets.map(r=>`<div class="ob-entry" data-row="${r.id}"><span class="ob-entry-l"><input class="ob-entry-name" type="text" data-f="name" value="${escHTML(r.name)}" aria-label="Bezeichnung" autocomplete="off"><small>${escHTML(cat(r.category))}</small></span>${_setupMoney('data-f="amount"',r.amount,'Wert von '+r.name)}<button type="button" class="ob-x" data-act="remove" aria-label="${escHTML(r.name)} entfernen">×</button></div>`).join('');
-  const total=s.assets.reduce((a,r)=>a+_setupLenient(r.amount),0);
+  const row=r=>{
+    const units=SETUP_UNITS[r.category],qty=r.mode==='qty';
+    const sub=units?`<span class="ob-unitseg" role="group" aria-label="Angabe in"><button type="button" data-act="unit" data-v="eur" class="${qty?'':'on'}" aria-pressed="${!qty}">€</button><button type="button" data-act="unit" data-v="qty" class="${qty?'on':''}" aria-pressed="${qty}">${units[1]}</button></span>`:`<small>${escHTML(cat(r.category))}</small>`;
+    const input=qty?`<span class="ob-money"><input class="ob-in" type="text" inputmode="decimal" autocomplete="off" data-f="qty" value="${escHTML(r.qty)}" placeholder="0" aria-label="${escHTML(r.name)} in ${escHTML(units[1])}"><i>${units[0]}</i></span>`:_setupMoney('data-f="amount"',r.amount,'Wert von '+r.name);
+    let extra='';
+    if(qty){
+      const h=_setupHist(s,r.id),fixed=SETUP_FIXED_INSTRUMENTS[r.category];
+      const pick=fixed?'':h.instrument?`<div class="ob-hist-inst is-picked"><span><b>${escHTML(h.instrument.name)}</b><small>${escHTML(h.instrument.symbol)}${h.instrument.exchange?' · '+escHTML(h.instrument.exchange):''}</small></span><button type="button" class="ob-link" data-act="hist-change">Ändern</button></div>`
+        :`<label class="ob-hist-search"><span class="ob-hist-l">Welches Wertpapier?</span><input class="ob-in" type="search" data-h="query" value="${escHTML(h.query)}" placeholder="Name oder ISIN" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"></label><div class="ob-hist-results" id="hr-${r.id}">${_setupResultsHTML(h)}</div>`;
+      extra=`<div class="ob-entry-extra">${pick}<p class="ob-qline" id="oq-${r.id}" aria-live="polite">${_setupQuoteLine(s,r)}</p></div>`;
+    }
+    return `<div class="ob-entry${qty?' is-qty':''}" data-row="${r.id}"><span class="ob-entry-l"><input class="ob-entry-name" type="text" data-f="name" value="${escHTML(r.name)}" aria-label="Bezeichnung" autocomplete="off">${sub}</span>${input}<button type="button" class="ob-x" data-act="remove" aria-label="${escHTML(r.name)} entfernen">×</button>${extra}</div>`;
+  };
+  const rows=s.assets.map(row).join('');
+  const total=s.assets.reduce((a,r)=>a+_setupRowValue(s,r),0);
   return {title:'Was besitzt du?',sub:'Tippe an, was du hast, und trage ungefähr den heutigen Wert ein. Schätzwerte reichen völlig.',
     body:_setupChips(SETUP_ASSETS,'add-asset')+(rows?`<div class="ob-entries">${rows}</div><div class="ob-total"><span>Zusammen</span><b id="setupTotal">${fmt(total)}</b></div>`:'')
-      +`<p class="ob-hint">Stückzahlen, Live-Kurse und den bisherigen Verlauf kannst du später ergänzen.</p>`,
+      +`<p class="ob-hint">${s.assets.some(r=>SETUP_UNITS[r.category])?'Bei Bitcoin, Gold und Wertpapieren kannst du zwischen Euro und Stückzahl wechseln. ':''}Genauere Angaben kannst du später ergänzen.</p>`,
     foot:`<button type="button" class="btn btn-primary" data-act="next">Weiter</button>${rows?'':'<button type="button" class="ob-skip" data-act="skip">Später eintragen</button>'}`};
 }
 function _setupDebtsView(s){
@@ -9624,24 +9814,40 @@ function _setupClick(e){
   if(act==='close')return _setupClose();
   if(act==='back'){s.i=Math.max(0,s.i-1);return _setupRender();}
   if(act==='toggle'){const k=b.dataset.k;s.focus[k]=!s.focus[k];return _setupRender(`[data-k="${k}"]`);}
-  if(act==='add-asset'){const [label,category,name]=SETUP_ASSETS[+b.dataset.i],id='a'+(++_setupSeq);s.assets.push({id,name:_setupName(s.assets,name||label),category,amount:''});return _setupRender(`[data-row="${id}"] [data-f="amount"]`);}
+  if(act==='add-asset'){
+    const [label,category,name]=SETUP_ASSETS[+b.dataset.i],id='a'+(++_setupSeq),mode=SETUP_QTY_DEFAULT.includes(category)?'qty':'eur';
+    const r={id,name:_setupName(s.assets,name||label),category,amount:'',qty:'',mode};s.assets.push(r);
+    _setupRender(`[data-row="${id}"] [data-f="${mode==='qty'?'qty':'amount'}"]`);
+    if(mode==='qty')_setupLoadQuote(r);
+    return;
+  }
+  if(act==='unit'){
+    const id=b.closest('[data-row]').dataset.row,r=s.assets.find(x=>x.id===id);if(!r||r.mode===b.dataset.v)return;
+    r.mode=b.dataset.v;
+    _setupRender(r.mode==='qty'&&!_setupInstrument(s,r)?`[data-row="${id}"] [data-h="query"]`:`[data-row="${id}"] [data-f="${r.mode==='qty'?'qty':'amount'}"]`);
+    if(r.mode==='qty')_setupLoadQuote(r);
+    return;
+  }
   if(act==='add-debt'){const [label,link]=SETUP_DEBTS[+b.dataset.i],id='d'+(++_setupSeq);s.debts.push({id,name:_setupName(s.debts,label),link,amount:'',pay:'',rate:''});return _setupRender(`[data-row="${id}"] [data-f="amount"]`);}
   if(act==='remove'){const id=b.closest('[data-row]').dataset.row;s.assets=s.assets.filter(r=>r.id!==id);s.debts=s.debts.filter(r=>r.id!==id);return _setupRender();}
   if(act==='nodebts'){s.hasDebts=false;s.debts=[];return _setupAdvance(s);}
   if(act==='yesdebts'){s.hasDebts=true;return _setupRender('.ob-chip');}
   if(act==='hist-pick'||act==='hist-change'||act==='hist-mode'){
     const id=b.closest('[data-row]').dataset.row,h=_setupHist(s,id);
+    const r=s.assets.find(x=>x.id===id),qtyRow=r&&r.mode==='qty'&&_setupSteps()[s.i]==='assets';
     if(act==='hist-pick'){h.instrument=h.results[+b.dataset.i];}
-    if(act==='hist-change'){h.instrument=null;h.results=null;}
+    if(act==='hist-change'){h.instrument=null;h.results=null;Object.assign(h,{quote:null,quoteKey:null,quoteFailed:false});}
     if(act==='hist-mode')h.mode=b.dataset.v;
-    return _setupRender(act==='hist-change'?`[data-row="${id}"] [data-h="query"]`:act==='hist-mode'&&h.mode==='plan'?`[data-row="${id}"] [data-h="plan"]`:`[data-row="${id}"] [data-h="month"]`);
+    _setupRender(act==='hist-change'?`[data-row="${id}"] [data-h="query"]`:act==='hist-mode'&&h.mode==='plan'?`[data-row="${id}"] [data-h="plan"]`:qtyRow?`[data-row="${id}"] [data-f="qty"]`:`[data-row="${id}"] [data-h="month"]`);
+    if(act==='hist-pick'&&r&&r.mode==='qty')_setupLoadQuote(r);
+    return;
   }
   if(act==='next')return _setupNext();
   if(act==='skip')return _setupSkip();
   if(act==='finish')return _setupFinish();
 }
 function _setupBlur(e){
-  const t=e.target;if(!_setup||!t.classList||!t.classList.contains('ob-in')||t.tagName!=='INPUT'||['birthYear','retireAge','rate'].includes(t.dataset.fu||t.dataset.f))return;
+  const t=e.target;if(!_setup||!t.classList||!t.classList.contains('ob-in')||t.tagName!=='INPUT'||['birthYear','retireAge','rate','qty'].includes(t.dataset.fu||t.dataset.f))return;
   const n=_parseDec(t.value);if(t.value.trim()&&isFinite(n)&&n>=0){t.value=_moneyInput(n);_setupInput({target:t});}
 }
 function _setupInput(e){
@@ -9652,12 +9858,12 @@ function _setupInput(e){
     if(t.dataset.h==='query'){if(e.type==='input')_setupSearch(id,t.value,(s.assets.find(r=>r.id===id)||{}).category);return;}
     h[t.dataset.h]=t.value;
   }
-  else if(row&&t.dataset.f){const r=[...s.assets,...s.debts].find(x=>x.id===row.dataset.row);if(r)r[t.dataset.f]=t.value;}
+  else if(row&&t.dataset.f){const r=[...s.assets,...s.debts].find(x=>x.id===row.dataset.row);if(r)r[t.dataset.f]=t.value;if(t.dataset.f==='qty')_setupPaintEntry(row.dataset.row);}
   else if(t.dataset.b)s.budget[t.dataset.b]=t.value;
   else if(t.dataset.fu){s.future[t.dataset.fu]=t.value;if(t.dataset.fu==='need'&&s.future.needFromBudget){s.future.needFromBudget=false;const h=document.getElementById('setupNeedHint');if(h)h.textContent='pro Monat, was du dann zum Leben brauchst';}}
   else if(t.dataset.p)s.pension=t.value;
   else return;
-  const total=document.getElementById('setupTotal');if(total)total.textContent=fmt(s.assets.reduce((a,r)=>a+_setupLenient(r.amount),0));
+  const total=document.getElementById('setupTotal');if(total)total.textContent=fmt(s.assets.reduce((a,r)=>a+_setupRowValue(s,r),0));
   const result=document.getElementById('setupResult');if(result)result.innerHTML=_setupResultHTML(_setupBudget(s,false));
   const err=document.getElementById('onboardingError');if(err)err.hidden=true;
 }
