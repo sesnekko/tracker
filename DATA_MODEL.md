@@ -5,11 +5,11 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `vermoegen_YYYY-MM-DD.json`. Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 6
+## Struktur, Version 7
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `6`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `7`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
@@ -17,7 +17,7 @@ weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 | `accounts` | Konten mit ID, Name und IBAN |
 | `budget` | Zwölfmonatiger Plan ohne Jahresbezug, Budgetposten, Daueraufträge und einmalige Zahlungen (`oneTime`); `null`, wenn nicht eingerichtet |
 | `loans` | Darlehensparameter, über `positionId` einer Verbindlichkeit zugeordnet |
-| `retirement` | Eigene Person, weitere Personen mit gesetzlicher Rente und weitere Renteneinkünfte |
+| `retirement` | Eigene Person (gesetzliche Rente, optional laufende Erwerbsminderungsrente und Beamtenversorgung), weitere Personen mit gesetzlicher Rente und weitere Renteneinkünfte |
 | `forecast` | Lebensplanung, Bedarf, Inflation, Sicherheitsniveau und einmalige Ereignisse |
 | `preferences` | Theme, fünf Bereichsschalter, Aufklappzustände und Abschluss des Onboardings |
 
@@ -403,6 +403,43 @@ Euro-Wert. „Verlauf neu berechnen“ nutzt dieselbe Rückrechnung wie die Einr
 Kaufmonat steht 0, neu angelegte Monate sind berechnet gekennzeichnet. Gespeichert
 wird erst mit „Sichern“ und nur für geänderte Monate. „Aktualisieren“ in einem
 vergangenen Monat zeigt Positionen mit Kursquelle ebenfalls als Stückzahl.
+
+## Beamtenversorgung (Version 7)
+
+Die eigene Person kann `civilServicePension` tragen: ruhegehaltfähige Bezüge pro
+Monat (`pensionableSalary`), bisherige Dienstjahre (`serviceYears`), Altersgrenze
+(`retirementAge`, 0 = gesetzliche Regelaltersgrenze), optional früherer
+Pensionsbeginn (`startAge`) und pauschale Abzüge (`deductionPercent`). Das Feld fehlt,
+solange keine Bezüge eingetragen sind; Dateien der Version 6 bleiben lesbar.
+
+Die Pension wird nicht gespeichert, sondern berechnet: Dienstjahre bis „Sparen bis
+Alter“ bzw. Pensionsbeginn hochgerechnet, 1,79375 % Ruhegehaltssatz je Jahr,
+höchstens 71,75 %, ab fünf Dienstjahren mindestens 35 %. Vor der Altersgrenze werden
+3,6 % je Jahr abgezogen, höchstens 10,8 %. Bezüge gelten in heutiger Kaufkraft. Die
+Pension fließt wie die gesetzliche Rente in die Prognose ein, solange der Bereich
+Altersvorsorge eingeschaltet ist.
+
+## Erwerbsminderungsrente (Version 7)
+
+Eine laufende Erwerbsminderungsrente der eigenen Person steht bei der gesetzlichen
+Rente: `disabilityType` (1 = teilweise, 2 = voll), Zahlbetrag netto pro Monat
+(`disabilityPension`), optional das letzte Bezugsjahr (`disabilityUntilYear`, fehlt =
+bis zur Regelaltersgrenze) und bei teilweiser Erwerbsminderung die persönliche
+Hinzuverdienstgrenze (`earningsLimit`, fehlt = Mindestgrenze). Der Hinzuverdienst ist
+das Bruttojahresgehalt (`annualSalary`); er bringt weiter Rentenpunkte. Liegt er über
+der Grenze (2026: voll 20.763,75 €, teilweise mindestens 41.527,50 €), werden 40 % des
+übersteigenden Betrags angerechnet. Weitere Personen haben keine EM-Felder.
+
+In der Prognose deckt die EM-Rente ab „Ruhestand ab Alter“ einen Teil des Bedarfs, bis
+sie endet. Vor dem Ruhestand wird angenommen, dass sie als Einnahme im Budget steht und
+in die Sparraten einfließt. Läuft sie bis zur Regelaltersgrenze, ist die anschließende
+Altersrente mindestens die volle Erwerbsminderungsrente (bei teilweiser also das
+Doppelte des Zahlbetrags), sonst gilt die normale Hochrechnung.
+
+Wird unter „Weitere Renten & Einkünfte“ ein Rürup- oder Basisrentenvertrag
+eingetragen, zeigt die Daten-Seite einen sachlichen Hinweis: Er ist nicht in ein
+Altersvorsorgedepot übertragbar, nur als lebenslange Rente auszahlbar, und für neue
+Beiträge lohnt ein Vergleich.
 
 ## Kreditraten im Budget (Version 6)
 
