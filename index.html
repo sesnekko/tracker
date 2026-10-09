@@ -1561,6 +1561,12 @@ select.ds-in{padding-right:28px;text-align:left;background-image:linear-gradient
 .ds-date-btn.is-empty{color:var(--muted)}
 button.num-input.ds-date-btn{font:inherit;color:var(--text)}
 button.num-input.ds-date-btn.is-empty{color:var(--muted)}
+.ds-seg{display:flex;flex-shrink:0;gap:2px;padding:2px;border-radius:9px;background:var(--fill)}
+.ds-seg button{border:none;background:none;font:inherit;font-size:14px;color:var(--muted);padding:6px 11px;border-radius:7px;cursor:pointer}
+.ds-seg button.on{background:var(--bg);color:var(--ink);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+body.dark .ds-seg button.on{background:var(--bg3)}
+.ds-group-t[hidden],.ds-summary[hidden],[id$="-depFields"][hidden]{display:none}
+.ds-group .v2-switch{flex-shrink:0}
 .ds-toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));z-index:450;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:999px;padding:9px 18px;font-size:14px;font-weight:500;transition:opacity .2s,transform .25s;white-space:nowrap}
 .ds-toast.show{opacity:1;transform:translate(-50%,0)}
 @media(min-width:768px){.ds-toast{bottom:32px}}
@@ -1664,9 +1670,30 @@ body.onboarding-open{overflow:hidden}
 .ob-tour-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .ob-tour .ob-step{margin:0;font-size:13px;letter-spacing:0}
 .ob-close{width:44px;height:44px;border:0;border-radius:50%;background:var(--fill);font:inherit;font-size:25px;line-height:1;color:var(--muted);cursor:pointer}
-.ob-progress{display:flex;gap:5px;margin-bottom:28px;height:4px}
-.ob-progress i{flex:1;border-radius:4px;background:var(--border)}
-.ob-progress i.filled{background:var(--green)}
+.ob-progress{display:flex;gap:5px;margin-bottom:18px;height:4px}
+.ob-progress i{flex:1;border-radius:4px;background:var(--border);overflow:hidden;display:block}
+.ob-progress i b{display:block;height:100%;width:0;background:var(--green);border-radius:inherit}
+.ob-progress i.filled b,.ob-progress i.current b{width:100%}
+.ob-story-who{display:flex;align-items:center;gap:9px;min-width:0}
+.ob-story-who img{width:28px;height:28px;border-radius:7px;flex-shrink:0}
+.ob-story-hint{display:none}
+/* Stories (iPhone) */
+.ob-story{justify-content:flex-start;padding-top:max(14px,env(safe-area-inset-top));touch-action:none;-webkit-user-select:none;user-select:none;transition:transform .2s,opacity .2s}
+.ob-story .ob-progress{height:3px;gap:4px;margin-bottom:12px}
+.ob-story .ob-progress i{background:color-mix(in srgb,var(--ink) 18%,transparent)}
+.ob-story .ob-progress i b{background:var(--ink)}
+.ob-story .ob-progress i.current b{width:0}
+.ob-story.ob-last .ob-progress i.current b{width:100%}
+.ob-story .ob-progress i.current b.run{animation:obStory linear forwards}
+.ob-story.paused .ob-progress i.current b.run{animation-play-state:paused}
+@keyframes obStory{from{width:0}to{width:100%}}
+.ob-story .ob-tour-top{margin-bottom:28px}
+.ob-story .ob-close{background:none;width:40px;height:40px}
+.ob-story .ob-title{margin-top:auto}
+.ob-story .ob-tip{margin-bottom:auto}
+.ob-story:not(.ob-last) .ob-actions{display:none}
+.ob-story.ob-last .ob-actions .ob-nav{display:none}
+.ob-story .ob-story-hint{display:block;text-align:center;font-size:13px;color:var(--muted);margin:18px 0 0;opacity:.8}
 .ob-tour .ob-title{font-size:29px;line-height:1.18;font-weight:400;margin-bottom:12px;text-align:left;outline:none}
 .ob-tour .ob-sub{text-align:left;font-size:16px;line-height:1.55;margin-bottom:22px;color:var(--muted)}
 .ob-tour-content{margin-bottom:16px}
@@ -2278,10 +2305,10 @@ body.onboarding-open{overflow:hidden}
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="data-store.js?v=8"></script>
+<script src="data-store.js?v=9"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
-<script src="asset-model.js?v=3"></script>
+<script src="asset-model.js?v=4"></script>
 <script>
 /* ── Constants ── */
 /* One authoritative document; legacy keys below are calculation/UI adapters. */
@@ -2607,9 +2634,34 @@ function fmtCompact(n){if(n==null||isNaN(n))return'—';const a=Math.abs(n);if(a
 function fmtAxis(n){if(n==null||isNaN(n))return'';if(Math.abs(n)>=1e6)return(n/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})+'M';if(Math.abs(n)>=1e3)return(n/1e3).toLocaleString('de-DE',{maximumFractionDigits:0})+'k';return n.toLocaleString('de-DE',{minimumFractionDigits:0});}
 function fmtIban(s){if(!s)return'';const clean=escHTML(s.replace(/\s/g,''));const spaced=clean.replace(/(.{4})/g,'$1 ').trim();if(clean.length>12){return spaced.slice(0,14)+'<br>'+spaced.slice(14).trim();}return spaced;}
 function loadStoredData(){try{const l=appStorage.getItem('finData');return l?JSON.parse(l):{};}catch{return{};}}
-function loadData(){return _applyLoanBalances(loadStoredData());}
+function loadData(){return _applyDepreciation(_applyLoanBalances(loadStoredData()));}
 function _applyLoanBalances(data){return LoanHistory.build(data,_fc.fields,getLoanParams(),currentYM()).data;}
-function saveData(data){appStorage.setItem('finData',JSON.stringify(LoanHistory.stored(data,loadStoredData())));}
+/* Abschreibung bestimmt den Wert: ab dem Kaufmonat berechnet, davor null. Eigene Werte bleiben gespeichert (saveData). */
+function _depreciatedFields(){return _fc.fields.filter(f=>f.category!=='liab'&&AssetModel.depreciationValid(f.depreciation));}
+function _applyDepreciation(data){
+  const fields=_depreciatedFields();if(!fields.length)return data;
+  for(const [month,e] of Object.entries(data)){
+    e._details=e._details||{};let changed=false;
+    for(const f of fields){
+      const v=AssetModel.depreciatedValue(f.depreciation,month);
+      if(v!==null){e._details[f.id]=v;changed=true;}
+      else if(Object.prototype.hasOwnProperty.call(e._details,f.id)){e._details[f.id]=0;changed=true;}
+      if(e._loanHistory&&e._loanHistory.estimatedAssetIds)e._loanHistory.estimatedAssetIds=e._loanHistory.estimatedAssetIds.filter(id=>id!==f.id);
+    }
+    if(changed)recalcAggregates(e);
+  }
+  return data;
+}
+function saveData(data){
+  const raw=loadStoredData(),out=LoanHistory.stored(data,raw),own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+  /* Berechnete Abschreibungswerte nicht als eigene Monatswerte festschreiben */
+  for(const f of _depreciatedFields())for(const [month,e] of Object.entries(out)){
+    const r=(raw[month]&&raw[month]._details)||{};
+    if(!e._details)continue;
+    if(own(r,f.id))e._details[f.id]=r[f.id];else delete e._details[f.id];
+  }
+  appStorage.setItem('finData',JSON.stringify(out));
+}
 
 /* Ensure next month exists, copying from the latest month if needed */
 function ensureNextMonth(){
@@ -5965,7 +6017,8 @@ function _readAssetMetadata(prefix,f){
     else if(!old||AssetModel.key(old)!==AssetModel.key(request))throw new Error('Bitte den Kurs prüfen und das passende Instrument bestätigen.');
     else instrument=old;
   }
-  return {label,category,liquidity,valuation,unitLabel,instrument,lastQuote,ticker:instrument?(instrument.provider==='bitcoin'?'BTC':instrument.symbol):undefined};
+  const depreciation=_readDepreciation(prefix);
+  return {label,category,liquidity,valuation,unitLabel,instrument,lastQuote,ticker:instrument?(instrument.provider==='bitcoin'?'BTC':instrument.symbol):undefined,...(depreciation!==undefined?{depreciation}:{})};
 }
 function _assetNumber(raw,quantity=false){
   const text=String(raw||'').trim();if(!text)return null;
@@ -5997,6 +6050,8 @@ function addCustomField(section='assets'){
         if(since<LoanModel.addMonths(selectedMonth,-600))throw new Error('Im Besitz seit: Bitte einen Monat innerhalb der letzten 50 Jahre angeben.');
       }
       metadata=_readAssetMetadata('newAsset');quantity=_assetNumber(document.getElementById('newAsset-quantity')?.value,true);value=_assetNumber(document.getElementById('newAsset-value')?.value);
+      if(metadata.depreciation){since=metadata.depreciation.startMonth;value=AssetModel.depreciatedValue(metadata.depreciation,selectedMonth)??0;}
+      else delete metadata.depreciation;
       if(metadata.valuation==='market'){
         if(quantity===null)throw new Error('Für die automatische Bewertung bitte eine Stückzahl eingeben.');
         if(!metadata.lastQuote)throw new Error('Bitte zuerst den Kurs prüfen.');
@@ -6432,7 +6487,11 @@ function _initSheet(){
   document.getElementById('dsOverlay').addEventListener('click',()=>_closeSheet());
   document.addEventListener('keydown',e=>{if(_sheetOpen&&e.key==='Escape')_closeSheet();});
   b.addEventListener('input',e=>{_sheetDirty=true;_dataInput(e);_monthSheetInput(e);_unitHint(e);});
-  b.addEventListener('click',_dataClick);
+  b.addEventListener('click',e=>{
+    const tog=e.target.closest('[data-dep-toggle]');if(tog){_depToggle(tog.dataset.depToggle);return;}
+    const seg=e.target.closest('[data-seg-for] button');if(seg){_segPick(seg);return;}
+    _dataClick(e);
+  });
   /* Beträge beim Tippen ohne Tausenderpunkte, danach lesbar formatiert */
   b.addEventListener('focusin',e=>{const i=e.target;if(!i.classList||!i.classList.contains('ds-money')||i.readOnly)return;const n=_parseDec(i.value);if(isFinite(n))i.value=String(n).replace('.',',');});
   b.addEventListener('focusout',e=>{const i=e.target;if(!i.classList||!i.classList.contains('ds-money')||i.readOnly)return;const n=_parseDec(i.value);if(isFinite(n)&&n>=0)i.value=_moneyInput(n);});
@@ -6520,6 +6579,7 @@ function _assetSub(f,e){
   const parts=[],key=f.unitId||f.id,q=+((e&&e._units||{})[key])||0;
   if(q>0)parts.push(q.toLocaleString('de-DE',{maximumFractionDigits:8})+' '+(f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück'));
   if(AssetModel.valuation(f)==='market')parts.push(_quoteErrors.has(f.id)?'Kursabruf fehlgeschlagen':'Kurs automatisch');
+  if(AssetModel.depreciationValid(f.depreciation))parts.push(_depText(f.depreciation));
   if(e&&e._loanHistory&&(e._loanHistory.estimatedAssetIds||[]).includes(f.id))parts.push('geschätzt');
   const liq=AssetModel.liquidity(f);if(liq!==(AssetModel.categories[f.category]?.liquidity||'illiquid'))parts.push(liq==='liquid'?'liquide':'gebunden');
   return parts.join(' · ');
@@ -6581,6 +6641,10 @@ function openMonthSheet(){
     return `<label class="ds-row"><span class="ds-l">${escHTML(f.label)}<small id="ms-s-${escHTML(f.id)}"></small></span><input class="ds-in ds-money" type="text" inputmode="decimal" data-ms-val="${escHTML(f.id)}" data-kind="${kind}"${est.has(f.id)?' data-est="1"':''}${prevAttrs} value="${v?_moneyInput(v):''}" placeholder="0" aria-label="${escHTML(f.label)} in Euro"></label>`;
   };
   const assetRow=f=>{
+    if(AssetModel.depreciationValid(f.depreciation)){
+      const v=AssetModel.depreciatedValue(f.depreciation,ym)??0;
+      return `<div class="ds-row" data-ms-fixed-asset="${v}"><span class="ds-l">${escHTML(f.label)}<small>automatisch aus der Abschreibung</small></span><span class="ds-static">${fmt(v)}</span></div>`;
+    }
     const key=f.unitId||f.id,price=AssetModel.valuation(f)==='market'&&live?(livePrices[key]||(f.lastQuote&&f.lastQuote.priceEUR)):0;
     if(!price)return valueRow(f,'a');
     const q=+units[key]||0,unit=f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück';
@@ -6612,6 +6676,7 @@ function _msUpdateTotal(){
   document.querySelectorAll('#dsBody [data-ms-val]').forEach(i=>{const n=_parseDec(i.value);if(isFinite(n))total+=i.dataset.kind==='l'?-n:n;});
   document.querySelectorAll('#dsBody [data-ms-qty]').forEach(i=>{let q=0;try{q=_assetNumber(i.value,true)||0;}catch(error){}total+=q*(+i.dataset.price);});
   document.querySelectorAll('#dsBody [data-ms-fixed]').forEach(r=>{total-=+r.dataset.msFixed;});
+  document.querySelectorAll('#dsBody [data-ms-fixed-asset]').forEach(r=>{total+=+r.dataset.msFixedAsset;});
   el.textContent=fmt(total);
 }
 function _monthSheetInput(event){
@@ -6640,7 +6705,9 @@ function _saveMonthSheet(){
 
 /* ── Vermögenswert: Angaben und Stand eines Monats ── */
 function _unitHint(event){
-  const i=event.target;if(!i.dataset||!i.dataset.assetPrefix||!['unit','category','valuation'].includes(i.dataset.assetKey))return;
+  const i=event.target;
+  if(i.id&&/-dep(Value|Start|Amount)$/.test(i.id)){_depUpdate(i.id.replace(/-dep(Value|Start|Amount)$/,''));return;}
+  if(!i.dataset||!i.dataset.assetPrefix||!['unit','category','valuation','liquidity'].includes(i.dataset.assetKey))return;
   const hint=document.getElementById(i.dataset.assetPrefix+'-unitHint'),unit=_assetEl(i.dataset.assetPrefix,'unit');
   if(hint&&unit)hint.textContent='in '+(unit.value.trim()||'Stück');
   _assetSheetRows(i.dataset.assetPrefix);
@@ -6654,6 +6721,88 @@ function _assetSheetRows(prefix){
   const q=document.getElementById(prefix+'-qtyRow'),v=document.getElementById(prefix+'-valuationRow');
   const u=document.getElementById(prefix+'-unitRow');if(u)u.hidden=!show;
   if(q)q.hidden=!show;if(v)v.hidden=!(UNIT_CATEGORIES.includes(cat)||market);
+  /* Abschreibung nur für nicht liquide Werte mit selbst eingetragenem Wert */
+  const showDep=_assetEl(prefix,'liquidity')?.value==='illiquid'&&!market;
+  ['depTitle','depGroup','depPreview'].forEach(k=>{const el=document.getElementById(prefix+'-'+k);if(el)el.hidden=!showDep;});
+  _depUpdate(prefix);
+}
+const DEP_INTERVALS={month:'Monat',quarter:'Quartal',year:'Jahr'};
+function _depText(d){return 'Abschreibung '+(d.method==='percent'?String(d.amount).replace('.',',')+' %':fmt(d.amount))+' je '+DEP_INTERVALS[d.interval];}
+function _depreciationHTML(prefix,f){
+  const dep=AssetModel.depreciationValid(f.depreciation)?f.depreciation:null,method=dep?dep.method:'percent',interval=dep?dep.interval:'year';
+  const seg=(key,options,cur)=>`<div class="ds-seg" data-seg-for="${prefix}-${key}">${options.map(([v,l])=>`<button type="button" data-v="${v}" class="${v===cur?'on':''}" aria-pressed="${v===cur}">${l}</button>`).join('')}</div><input type="hidden" id="${prefix}-${key}" value="${cur}">`;
+  return `<div class="ds-group-t" id="${prefix}-depTitle">Abschreibung</div>
+  <div class="ds-group" id="${prefix}-depGroup">
+    <div class="ds-row" data-dep-toggle="${prefix}" style="cursor:pointer"><span class="ds-l">Automatisch abschreiben<small>Der Wert sinkt ab dem Kaufmonat regelmäßig</small></span><span class="v2-switch" role="switch" tabindex="0" id="${prefix}-depOn" aria-checked="${!!dep}" aria-label="Automatisch abschreiben"><i></i></span></div>
+    <div id="${prefix}-depFields"${dep?'':' hidden'}>
+      <label class="ds-row"><span class="ds-l">Kaufwert €</span><input class="ds-in ds-money" type="text" inputmode="decimal" id="${prefix}-depValue" value="${dep?_moneyInput(dep.startValue):''}" placeholder="0"></label>
+      <label class="ds-row"><span class="ds-l">Gekauft im</span>${_dateFieldHTML({id:prefix+'-depStart',value:dep?dep.startMonth:'',title:'Gekauft im',max:selectedMonth})}</label>
+      <div class="ds-row"><span class="ds-l">Abschreibung als</span>${seg('depMethod',[['percent','Prozent'],['absolute','Betrag']],method)}</div>
+      <label class="ds-row"><span class="ds-l" id="${prefix}-depAmountLabel">${method==='percent'?'% vom Restwert':'€ je Zeitraum'}</span><input class="ds-in" type="text" inputmode="decimal" id="${prefix}-depAmount" value="${dep?String(dep.amount).replace('.',','):''}" placeholder="${method==='percent'?'z. B. 15':'z. B. 200'}"></label>
+      <div class="ds-row"><span class="ds-l">Rhythmus</span>${seg('depInterval',[['month','Monat'],['quarter','Quartal'],['year','Jahr']],interval)}</div>
+    </div>
+  </div>
+  <p class="ds-summary" id="${prefix}-depPreview"></p>`;
+}
+/* undefined: kein Abschreibungsfeld vorhanden (unverändert lassen), null: aus */
+function _readDepreciation(prefix,lenient=false){
+  const sw=document.getElementById(prefix+'-depOn');
+  if(!sw||typeof sw.getAttribute!=='function')return undefined;
+  const group=document.getElementById(prefix+'-depGroup');
+  if(sw.getAttribute('aria-checked')!=='true'||(group&&group.hidden))return null;
+  const val=k=>(document.getElementById(prefix+'-'+k)?.value||'').trim();
+  try{
+    const startValue=_sheetMoney(val('depValue'),'Kaufwert');
+    if(startValue===null)throw new Error('Abschreibung: Bitte den Kaufwert eingeben.');
+    const startMonth=LoanModel.normalizeMonth(val('depStart'));
+    if(!startMonth)throw new Error('Abschreibung: Bitte den Kaufmonat auswählen.');
+    if(startMonth>selectedMonth)throw new Error('Abschreibung: Der Kaufmonat liegt nach '+fmtMonth(selectedMonth)+'.');
+    if(startMonth<LoanModel.addMonths(selectedMonth,-600))throw new Error('Abschreibung: Bitte einen Kaufmonat innerhalb der letzten 50 Jahre wählen.');
+    const method=val('depMethod')==='absolute'?'absolute':'percent',interval=DEP_INTERVALS[val('depInterval')]?val('depInterval'):'year';
+    const amount=_parseDec(val('depAmount'));
+    if(!(amount>0))throw new Error('Abschreibung: Bitte '+(method==='percent'?'einen Prozentsatz':'einen Betrag')+' größer null eingeben.');
+    if(method==='percent'&&amount>100)throw new Error('Abschreibung: Höchstens 100 % je Zeitraum.');
+    return {method,amount:method==='absolute'?AssetModel.money(amount):amount,interval,startMonth,startValue};
+  }catch(error){if(lenient)return null;throw error;}
+}
+/* Wert und Vorschau live aus der Abschreibung; Kaufmonat ersetzt bei neuen Werten „Im Besitz seit“ */
+function _depUpdate(prefix){
+  const dep=_readDepreciation(prefix,true),on=!!dep;
+  const valueEl=document.getElementById(prefix==='newAsset'?'newAsset-value':'f-'+prefix.slice(6));
+  const preview=document.getElementById(prefix+'-depPreview'),hint=document.getElementById(prefix+'-valueHint');
+  const since=document.getElementById('newAsset-sinceRow');if(prefix==='newAsset'&&since)since.hidden=on;
+  if(valueEl&&on){valueEl.readOnly=true;valueEl.style.pointerEvents='none';valueEl.dataset.depDerived='1';valueEl.value=_moneyInput(AssetModel.depreciatedValue(dep,selectedMonth)??0);}
+  else if(valueEl&&valueEl.dataset.depDerived==='1'){valueEl.dataset.depDerived='0';valueEl.readOnly=valueEl.dataset.loanDerived==='1';valueEl.style.pointerEvents=valueEl.readOnly?'none':'';}
+  if(hint&&on)hint.textContent='aus der Abschreibung';
+  if(preview){
+    if(!on){preview.textContent='';return;}
+    const at=n=>fmt(AssetModel.depreciatedValue(dep,LoanModel.addMonths(selectedMonth,n))??0);
+    preview.innerHTML=`${escHTML(fmtMonth(selectedMonth))}: <strong>${at(0)}</strong> · in 1 Jahr: <strong>${at(12)}</strong> · in 5 Jahren: <strong>${at(60)}</strong>`;
+  }
+}
+function _depToggle(prefix){
+  const sw=document.getElementById(prefix+'-depOn'),fields=document.getElementById(prefix+'-depFields');if(!sw)return;
+  const on=sw.getAttribute('aria-checked')!=='true';
+  sw.setAttribute('aria-checked',String(on));if(fields)fields.hidden=!on;
+  _sheetDirty=true;_depUpdate(prefix);
+}
+function _segPick(button){
+  const seg=button.closest('[data-seg-for]'),input=document.getElementById(seg.dataset.segFor);if(!input)return;
+  input.value=button.dataset.v;
+  seg.querySelectorAll('button').forEach(b=>{const on=b===button;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
+  const prefix=seg.dataset.segFor.replace(/-dep(Method|Interval)$/,'');
+  if(/-depMethod$/.test(seg.dataset.segFor)){
+    const label=document.getElementById(prefix+'-depAmountLabel'),amount=document.getElementById(prefix+'-depAmount');
+    if(label)label.textContent=input.value==='percent'?'% vom Restwert':'€ je Zeitraum';
+    if(amount)amount.placeholder=input.value==='percent'?'z. B. 15':'z. B. 200';
+  }
+  _sheetDirty=true;_depUpdate(prefix);
+}
+/* Monatsstände von „from“ bis „to“ anlegen, damit der Verlauf ab dem Kaufmonat sichtbar ist */
+function _ensureMonths(from,to){
+  const data=loadData();let added=false;
+  for(let m=from;m<=to;m=LoanModel.addMonths(m,1))if(!data[m]){const e=_monthEntryForEdit(data,m);recalcAggregates(e);data[m]=e;added=true;}
+  if(added)saveData(data);
 }
 function _assetSheetHTML(prefix,f,o){
   const cat=f.category||'cash',valuation=AssetModel.valuation(f),i=AssetModel.instrument(f),liq=AssetModel.liquidity(f);
@@ -6669,7 +6818,7 @@ function _assetSheetHTML(prefix,f,o){
   <div class="ds-group-t">${o.valueTitle}</div>
   <div class="ds-group">
     <label class="ds-row"><span class="ds-l">Wert in €<small id="${prefix}-valueHint">${escHTML(o.valueHint||'')}</small></span><input class="ds-in ds-money" type="text" inputmode="decimal" id="${o.valueId}" value="${o.value}" placeholder="0"></label>
-    ${prefix==='newAsset'?`<label class="ds-row"><span class="ds-l">Im Besitz seit<small>optional · ergänzt den Verlauf</small></span>${_dateFieldHTML({id:'newAsset-since',title:'Im Besitz seit',placeholder:'Optional',optional:true,max:selectedMonth})}</label>`:''}
+    ${prefix==='newAsset'?`<label class="ds-row" id="newAsset-sinceRow"><span class="ds-l">Im Besitz seit<small>optional · ergänzt den Verlauf</small></span>${_dateFieldHTML({id:'newAsset-since',title:'Im Besitz seit',placeholder:'Optional',optional:true,max:selectedMonth})}</label>`:''}
     <label class="ds-row" id="${prefix}-qtyRow"><span class="ds-l"><span id="${prefix}-quantityLabel">${valuation==='market'?'Stückzahl':'Stückzahl (optional)'}</span><small id="${prefix}-unitHint">in ${escHTML(unit)}</small></span><input class="ds-in" type="text" inputmode="decimal" id="${o.qtyId}" value="${o.qty}" placeholder="0"></label>
     <label class="ds-row" id="${prefix}-valuationRow"><span class="ds-l">Wert ermitteln</span><select class="ds-in ds-wide" ${a('valuation')}>${opt('manual','Selbst eintragen',valuation)}${opt('market','Per Kurs',valuation)}</select></label>
   </div>
@@ -6678,6 +6827,7 @@ function _assetSheetHTML(prefix,f,o){
     <label class="ds-row"><span class="ds-l">Ticker</span><input class="ds-in ds-wide" type="text" ${a('symbol')} value="${escHTML(i?.symbol||(provider==='bitcoin'?'XBTEUR':''))}" placeholder="z. B. IUSQ.DE" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
     <div class="ds-sub"><button type="button" class="btn btn-ghost" onclick="checkAssetQuote('${prefix}')">Kurs prüfen</button><div id="${prefix}-quoteResult" class="asset-quote-result" aria-live="polite">${quote}</div><p class="ds-help">Wertpapiere: Yahoo-Ticker mit Börsenkürzel, z. B. IUSQ.DE. WKN und ISIN funktionieren nicht. Krypto: EUR-Handelspaar, z. B. ETHEUR.</p></div>
   </div>
+  ${_depreciationHTML(prefix,f)}
   <details class="ds-more"><summary>Weitere Angaben</summary><div class="ds-group">
     <label class="ds-row"><span class="ds-l">Verfügbarkeit<small>Liquide Werte zählen zum frei verfügbaren Vermögen</small></span><select class="ds-in" ${a('liquidity')}>${opt('liquid','Liquide',liq)}${opt('illiquid','Gebunden',liq)}</select></label>
     <label class="ds-row" id="${prefix}-unitRow"><span class="ds-l">Einheit</span><input class="ds-in" type="text" ${a('unit')} value="${escHTML(unit)}" placeholder="Stück"></label>
@@ -6702,7 +6852,7 @@ function _saveAssetSheet(id){
   const ym=selectedMonth,key=f.unitId||f.id;
   appStorage.beginTransaction();
   try{
-    const meta=_readAssetMetadata('asset-'+id,f);
+    const meta=_readAssetMetadata('asset-'+id,f),oldDep=AssetModel.depreciationValid(f.depreciation)?f.depreciation:null;
     const qty=_assetNumber(document.getElementById('fu-'+key)?.value,true);
     if(meta.valuation==='market'&&qty===null)throw new Error('Für die automatische Bewertung bitte eine Stückzahl eingeben.');
     let value=_sheetMoney(document.getElementById('f-'+id)?.value,'Wert')??0;
@@ -6711,7 +6861,19 @@ function _saveAssetSheet(id){
       value=AssetModel.money(meta.lastQuote.priceEUR*qty);
     }
     Object.assign(f,meta,{hasUnits:true,unitId:key});
+    if(!f.depreciation)delete f.depreciation;
     saveFieldConfig(_fc);
+    if(f.depreciation){
+      /* Abschreibung bestimmt den Wert: nur Monate ab Kauf anlegen, keine eigenen Werte schreiben */
+      _ensureMonths(f.depreciation.startMonth,ym);
+      appStorage.commitTransaction();_afterDataChange();return true;
+    }
+    if(oldDep){
+      /* Abschreibung beendet: eigene Monatswerte gelten wieder, übrige Monate übernehmen den berechneten Wert */
+      const data=loadData();
+      for(const m of Object.keys(data)){const v=AssetModel.depreciatedValue(oldDep,m),d=data[m]._details=data[m]._details||{};if(v!==null&&!Object.prototype.hasOwnProperty.call(d,id))d[id]=v;}
+      saveData(data);
+    }
     /* Nur geänderte (oder bestätigte geschätzte) Werte schreiben einen Monatsstand */
     if(value!==_sheetCtx.value||(qty??0)!==_sheetCtx.qty||_sheetCtx.estimated){
       const data=loadData(),e=_monthEntryForEdit(data,ym);
@@ -8386,7 +8548,7 @@ function showOnboarding(){
 function startOnboarding(origin='data'){
   if(!_resolvePendingEdits())return;
   _guideOrigin=origin;_guideNew=!hasOnboardingData(appStorage.document());
-  _guideDraft={positions:[{name:'',category:'cash',amount:''}]};
+  _guideDraft={positions:[]};
   _guideStep=0;_guideActive=true;
   if(document.getElementById('onboardingOverlay').style.display!=='block')_openOnboardingOverlay();
   guideRender();
@@ -8399,12 +8561,11 @@ function hideOnboarding(){
   if(_guideReturnFocus&&_guideReturnFocus.isConnected)_guideReturnFocus.focus();
 }
 function cancelOnboarding(){
-  const dirty=_guideNew&&_guideDraft.positions.some(p=>p.name.trim()||p.amount.trim());
-  if(dirty&&!confirm('Rundgang beenden? Deine Eingaben wurden noch nicht gespeichert.'))return;
   if(_guideOrigin==='welcome'){_guideActive=false;_guideDraft={positions:[]};guideRender();}
   else hideOnboarding();
 }
-function _guideKeys(){return _guideNew?['wealth','budget','forecast','data','positions','backup']:['wealth','budget','forecast','data','backup'];}
+/* Eigene Werte werden nicht im Rundgang erfasst: neue Nutzer legen am Ende ihr erstes Asset direkt auf der Daten-Seite an */
+function _guideKeys(){return ['wealth','budget','forecast','data','backup'];}
 function _guideRows(rows){return rows.map(([name,value])=>`<div class="ob-example-row"><span>${name}</span><b>${value}</b></div>`).join('');}
 function _guideExample(content){return `<div class="ob-example"><span class="ob-example-tag">Beispiel</span>${content}</div>`;}
 function _guideContent(key){
@@ -8418,20 +8579,12 @@ function _guideContent(key){
     content:'<div class="ob-example"><div class="ob-forecast-path" aria-hidden="true"><i></i><i></i><i></i></div>'+_guideRows([['Dein Ausgangspunkt','Vermögen heute'],['Deine Annahmen','Sparen & Rendite'],['Dein Ziel','Bedarf im Ruhestand']])+'</div>',
     tip:'Die Prognose ist ein Szenario. Richte erst Geburtsjahr, Bedarf und Annahmen ein; Renten kannst du später ergänzen.'};
   if(key==='data')return {section:'Daten',title:'Alles lässt sich ergänzen',text:'Auf der Daten-Seite pflegst du deine Werte und schaltest die Bereiche ein, die du brauchst.',
-    content:'<div class="ob-data-steps"><div><b>1</b><span>Monat wählen</span><small>Kalender oben</small></div><div><b>2</b><span>Werte ändern</span><small>Bearbeiten</small></div><div><b>3</b><span>Übernehmen</span><small>Sichern</small></div></div>',
-    tip:'Monatswerte sicherst du ausdrücklich. Prognose-Annahmen werden direkt übernommen.'};
-  if(key==='positions')return {section:'Dein Einstieg',title:'Starte mit deinen eigenen Werten',text:'Ein Konto reicht für den Anfang. Trage aktuelle Bestände ein; weitere Positionen kannst du jederzeit ergänzen.',
-    content:_guidePositionsHTML(),tip:'Stückzahlen, Ticker und Rentendaten sind für den Einstieg nicht nötig. Deine Eingaben werden erst am Ende gespeichert.'};
-  const rows=_guideDraft.positions.filter(p=>p.name.trim()&&p.amount.trim());
+    content:'<div class="ob-data-steps"><div><b>1</b><span>Monat wählen</span><small>Kalender oben</small></div><div><b>2</b><span>Werte eintragen</span><small>Aktualisieren</small></div><div><b>3</b><span>Übernehmen</span><small>Sichern</small></div></div>',
+    tip:'Tippe auf eine Position, um nur sie zu ändern. Prognose-Annahmen werden direkt übernommen.'};
   return {section:'Sicherung',title:'Eine Datei für deinen Stand',text:'Unter Daten → Sicherung exportieren sicherst du alle Werte und Einstellungen. Importiere diese Datei auf einem anderen Gerät, um dort weiterzumachen.',
-    content:'<div class="ob-backup-preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 14h8M8 18h5"/></svg><b>Deine Sicherung</b><span>Alle Daten · eine Datei</span></div>'+(_guideNew&&rows.length?`<div class="ob-setup-summary">${rows.length===1?'Deine erste Position wird':rows.length+' Positionen werden'} angelegt.<br>Budget, Altersvorsorge und Prognose richtest du später unter Daten ein.</div>`:'<div class="ob-setup-summary">Du kannst den Rundgang jederzeit auf der Daten-Seite erneut starten.</div>'),
+    content:'<div class="ob-backup-preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 14h8M8 18h5"/></svg><b>Deine Sicherung</b><span>Alle Daten · eine Datei</span></div>'+(_guideNew?'<div class="ob-setup-summary">Als Nächstes legst du dein erstes Asset an.<br>Budget, Altersvorsorge und Prognose schaltest du später unter Daten ein.</div>':'<div class="ob-setup-summary">Du kannst den Rundgang jederzeit auf der Daten-Seite erneut starten.</div>'),
     tip:'Deine Daten bleiben auf diesem Gerät. Exportiere regelmäßig eine Sicherung.'};
 }
-function _guidePositionsHTML(){
-  return `<div class="ob-position-list">${_guideDraft.positions.map((p,i)=>`<div class="ob-position" data-position="${i}"><div class="ob-position-head"><span>Position ${i+1}</span><button type="button" class="ob-remove" data-remove="${i}" aria-label="Position ${i+1} entfernen">Entfernen</button></div><label class="ob-field">Name<input name="name" data-position="${i}" value="${escHTML(p.name)}" placeholder="z. B. Girokonto" autocomplete="off" maxlength="100"></label><div class="ob-position-pair"><label class="ob-field">Art<select name="category" data-position="${i}">${ONBOARDING_CATEGORIES.map(([value,label])=>`<option value="${value}"${p.category===value?' selected':''}>${label}</option>`).join('')}</select></label><label class="ob-field">${p.category==='liab'?'Restschuld':'Aktueller Wert'} in €<input name="amount" data-position="${i}" value="${escHTML(p.amount)}" inputmode="decimal" placeholder="z. B. 1.500,00" autocomplete="off"></label></div></div>`).join('')}<button type="button" class="btn btn-ghost ob-add" onclick="guideAddPosition()">+ Weitere Position</button></div>`;
-}
-function guideAddPosition(){_guideDraft.positions.push({name:'',category:'cash',amount:''});guideRender();document.querySelector('#onboardingOverlay .ob-position:last-of-type input')?.focus();}
-function guideRemovePosition(index){_guideDraft.positions.splice(index,1);guideRender();}
 function validateOnboardingPositions(rows){
   const positions=[];
   for(let i=0;i<rows.length;i++){
@@ -8451,12 +8604,8 @@ function validateOnboardingPositions(rows){
 function _guideError(error){const el=document.getElementById('onboardingError');el.textContent=error.message;el.hidden=false;el.focus();}
 function guideNav(direction){
   if(!_guideActive)return;
-  if(direction>0&&_guideKeys()[_guideStep]==='positions'){
-    try{validateOnboardingPositions(_guideDraft.positions);}catch(error){_guideError(error);return;}
-  }
   _guideStep=Math.max(0,Math.min(_guideKeys().length-1,_guideStep+direction));guideRender();
 }
-function guideSkipPositions(){_guideDraft.positions=[];guideNav(1);}
 function prepareOnboardingDocument(original,rows,month,liveMonth=month){
   const doc=JSON.parse(JSON.stringify(original));
   if(!hasOnboardingData(doc)){
@@ -8473,7 +8622,7 @@ function prepareOnboardingDocument(original,rows,month,liveMonth=month){
       doc.snapshots.push(snapshot);
       if(liveMonth!==month)doc.snapshots.push({...JSON.parse(JSON.stringify(snapshot)),month:liveMonth});
       doc.preferences.modules={assets:true,liab:positions.some(p=>p.category==='liab'),pension:false,budget:false,forecast:false};
-    }
+    }else doc.preferences.modules={assets:true,liab:true,pension:false,budget:false,forecast:false};
   }
   doc.preferences.onboardingCompleted=true;
   return AssetsData.validate(doc);
@@ -8530,15 +8679,18 @@ function _initNotifSwipe(el){
     window.addEventListener('pointermove',move);window.addEventListener('pointerup',end);window.addEventListener('pointercancel',end);
   });
 }
-function finishOnboarding(){
+/* target 'asset': direkt auf die Daten-Seite ins Anlegen des ersten Vermögenswerts */
+function finishOnboarding(target){
   try{
-    const doc=prepareOnboardingDocument(appStorage.document(),_guideNew?_guideDraft.positions:[],currentYM(),nextYM());
+    const doc=prepareOnboardingDocument(appStorage.document(),[],currentYM(),nextYM());
     appStorage.importBackup(doc);
     _fc=loadFieldConfig();_modsCache=null;_ltCalcCache=null;
     selectedMonth=nextYM();picker.setVal(selectedMonth);
     buildDynamicForm();updateLifetimeInputs();_v2ApplyModules();_v2SyncSwitches();render();
+    hideOnboarding();
+    if(target==='asset'){navigateToPage('import');openAddAssetSheet();return;}
     document.getElementById('onboardingNextStep').hidden=false;
-    hideOnboarding();navigateToPage('home');
+    navigateToPage('home');
     document.getElementById('onboardingNextTitle').focus({preventScroll:true});
   }catch(error){_guideError(error);}
 }
@@ -8546,13 +8698,41 @@ function guideRender(){
   const overlay=document.getElementById('onboardingOverlay');
   if(!_guideActive){overlay.innerHTML=guideWelcome();overlay.scrollTop=0;return;}
   const keys=_guideKeys(),key=keys[_guideStep],step=_guideContent(key),last=_guideStep===keys.length-1;
-  overlay.innerHTML=`<div class="ob-screen ob-tour"><div class="ob-tour-top"><span class="ob-step">${_guideStep+1} von ${keys.length} · ${step.section}</span><button class="ob-close" onclick="cancelOnboarding()" aria-label="Rundgang schließen">×</button></div><div class="ob-progress" role="progressbar" aria-label="Fortschritt im Rundgang" aria-valuemin="1" aria-valuemax="${keys.length}" aria-valuenow="${_guideStep+1}">${keys.map((_,i)=>`<i class="${i<=_guideStep?'filled':''}"></i>`).join('')}</div><h1 class="ob-title" tabindex="-1">${step.title}</h1><p class="ob-sub">${step.text}</p><div class="ob-tour-content">${step.content}</div><p class="ob-tip">${step.tip}</p><p id="onboardingError" class="ob-error" role="alert" tabindex="-1" hidden></p><div class="ob-actions"><button class="btn btn-ghost" onclick="${_guideStep?'guideNav(-1)':'cancelOnboarding()'}">${_guideStep?'Zurück':_guideOrigin==='welcome'?'Zum Start':'Schließen'}</button><button class="btn btn-primary" onclick="${last?'finishOnboarding()':'guideNav(1)'}">${last?(_guideNew&&_guideDraft.positions.some(p=>p.name.trim()&&p.amount.trim())?'Meine Daten anlegen':'Zur Vermögensseite'):'Weiter'}</button></div>${key==='positions'?'<button class="ob-skip" onclick="guideSkipPositions()">Werte später eintragen</button>':''}</div>`;
-  overlay.querySelectorAll('.ob-position input,.ob-position select').forEach(input=>input.addEventListener('input',()=>{
-    const p=_guideDraft.positions[+input.dataset.position];p[input.name]=input.value;
-    if(input.name==='category'){guideRender();document.querySelector(`#onboardingOverlay input[name="amount"][data-position="${input.dataset.position}"]`)?.focus();}
-  }));
-  overlay.querySelectorAll('[data-remove]').forEach(button=>button.addEventListener('click',()=>guideRemovePosition(+button.dataset.remove)));
-  overlay.scrollTop=0;overlay.querySelector('h1')?.focus();
+  const primary=last?(_guideNew?'<button class="btn btn-primary" onclick="finishOnboarding(\'asset\')">Erstes Asset anlegen</button>':'<button class="btn btn-primary" onclick="finishOnboarding()">Fertig</button>'):'<button class="btn btn-primary ob-nav" onclick="guideNav(1)">Weiter</button>';
+  overlay.innerHTML=`<div class="ob-screen ob-tour${last?' ob-last':''}"><div class="ob-progress" role="progressbar" aria-label="Fortschritt im Rundgang" aria-valuemin="1" aria-valuemax="${keys.length}" aria-valuenow="${_guideStep+1}">${keys.map((_,i)=>`<i class="${i<_guideStep?'filled':i===_guideStep?'current':''}"><b></b></i>`).join('')}</div><div class="ob-tour-top"><span class="ob-story-who"><img src="icon-192.png" alt="" draggable="false"><span class="ob-step">${_guideStep+1} von ${keys.length} · ${step.section}</span></span><button class="ob-close" onclick="cancelOnboarding()" aria-label="Rundgang schließen">×</button></div><h1 class="ob-title" tabindex="-1">${step.title}</h1><p class="ob-sub">${step.text}</p><div class="ob-tour-content">${step.content}</div><p class="ob-tip">${step.tip}</p>${_guideStep===0?'<p class="ob-story-hint">Tippe rechts für weiter, links für zurück</p>':''}<p id="onboardingError" class="ob-error" role="alert" tabindex="-1" hidden></p><div class="ob-actions"><button class="btn btn-ghost ob-nav" onclick="${_guideStep?'guideNav(-1)':'cancelOnboarding()'}">${_guideStep?'Zurück':_guideOrigin==='welcome'?'Zum Start':'Schließen'}</button>${primary}</div>${last&&_guideNew?'<button class="ob-skip" onclick="finishOnboarding()">Später</button>':''}</div>`;
+  overlay.scrollTop=0;overlay.querySelector('h1')?.focus({preventScroll:true});
+  _bindGuideStory(overlay.querySelector('.ob-tour'),last);
+}
+/* iPhone: Rundgang wie Stories. Segment läuft ab und blättert weiter; Tippen rechts/links blättert,
+   Halten pausiert, nach unten wischen schließt. Ab Tablet-Breite bleibt die Navigation per Knopf. */
+const STORY_SECONDS=8;
+function _storyMode(){return !!(window.matchMedia&&window.matchMedia('(max-width:767px)').matches);}
+function _bindGuideStory(screen,last){
+  if(!screen||!_storyMode())return;
+  screen.classList.add('ob-story');
+  const bar=screen.querySelector('.ob-progress i.current b');
+  const reduce=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if(bar&&!last&&!reduce){bar.style.animationDuration=STORY_SECONDS+'s';bar.classList.add('run');bar.addEventListener('animationend',()=>{if(screen.isConnected)guideNav(1);},{once:true});}
+  let x0=0,y0=0,dx=0,dy=0,active=false,held=false,hold=null;
+  const pause=on=>screen.classList.toggle('paused',on);
+  screen.addEventListener('pointerdown',e=>{
+    if(e.button>0||e.target.closest('button,a,input,select,label,textarea'))return;
+    active=true;held=false;x0=e.clientX;y0=e.clientY;dx=dy=0;
+    hold=setTimeout(()=>{held=true;pause(true);},220);
+  });
+  screen.addEventListener('pointermove',e=>{
+    if(!active)return;dx=e.clientX-x0;dy=e.clientY-y0;
+    if(dy>8&&dy>Math.abs(dx)){clearTimeout(hold);pause(true);screen.style.transform=`translateY(${dy*.6}px) scale(${Math.max(.9,1-dy/2000)})`;screen.style.opacity=String(Math.max(.4,1-dy/500));}
+  });
+  const end=()=>{
+    if(!active)return;active=false;clearTimeout(hold);
+    if(dy>90&&dy>Math.abs(dx)){cancelOnboarding();return;}
+    screen.style.transform='';screen.style.opacity='';pause(false);
+    if(held||Math.hypot(dx,dy)>10)return;
+    if(x0<screen.clientWidth*.3)guideNav(-1);else if(!last)guideNav(1);
+  };
+  screen.addEventListener('pointerup',end);
+  screen.addEventListener('pointercancel',()=>{active=false;clearTimeout(hold);screen.style.transform='';screen.style.opacity='';pause(false);});
 }
 function guideWelcome(){
   return `<div class="ob-screen ob-welcome"><span class="ob-welcome-mark" aria-hidden="true">V</span><h1 class="ob-title">Vermögen</h1><p class="ob-sub">Dein Vermögen, dein Monat, deine Zukunft.<br>Starte mit deinen eigenen Daten oder lade einen vorhandenen Stand.</p><div class="ob-welcome-actions"><button class="btn btn-primary" onclick="startOnboarding('welcome')">Geführt einrichten</button><label class="btn btn-ghost ob-import" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">Bestehende Daten laden<input type="file" accept=".json,.csv,application/json,text/csv" style="display:none" onchange="hideOnboarding();document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label><button class="ob-skip" onclick="_v2LoadDemo()">Mit Demo-Daten ausprobieren</button></div><p class="ob-tip">Du brauchst keine vorbereitete Datei. Der Rundgang dauert nur wenige Minuten.</p></div>`;

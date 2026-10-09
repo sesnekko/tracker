@@ -5,11 +5,11 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `vermoegen_YYYY-MM-DD.json`. Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 2
+## Struktur, Version 3
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `2`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `3`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
@@ -180,18 +180,18 @@ bleiben importierbar.
 ## Geführter Einstieg
 
 Der Startbildschirm bietet „Geführt einrichten“, „Bestehende Daten laden“ und
-„Mit Demo-Daten ausprobieren“. Unter Daten → Einrichtung & Hilfe lässt sich der
-Rundgang erneut starten. Neue Nutzer erhalten sechs kurze Schritte zu Vermögen,
-Budget, Prognose, Datenpflege, optionalen ersten Positionen und Sicherung.
-Bei bestehenden Daten entfällt die Eingabe der ersten Positionen.
-Nach dem Abschluss öffnet sich die Vermögensseite. Ein Hinweis führt zur
-Daten-Seite, um Verbindlichkeiten, Einnahmen, Ausgaben und weitere Angaben zu ergänzen.
+„Mit Demo-Daten ausprobieren“. Unter Daten → Hilfe lässt sich der Rundgang erneut
+starten. Er zeigt fünf kurze Screens zu Vermögen, Budget, Prognose, Datenpflege und
+Sicherung. Auf schmalen Bildschirmen (iPhone) läuft er wie Stories ab: Segmente
+oben laufen ab und blättern weiter, Tippen rechts/links blättert, Halten pausiert,
+nach unten wischen schließt. Ab Tablet-Breite gibt es Knöpfe.
 
-Eigene Eingaben bleiben bis zum Abschluss ein Entwurf. Beim Abschluss werden
-aktuelle Bestände und der Live-Monat gemeinsam gespeichert. Unbekannte
-Stückzahlen, Ticker und Rentenwerte werden nicht ergänzt. Budget, Altersvorsorge
-und Prognose werden bei einem neuen Bestand zunächst ausgeschaltet und können
-später unter Daten aktiviert werden. Ein leeres Budget lässt sich dort einrichten.
+Im Rundgang werden keine Werte erfasst. Neue Nutzer wählen am Ende „Erstes Asset
+anlegen“ und landen direkt auf der Daten-Seite im Anlegen-Fenster; „Später“ und
+der erneute Rundgang führen zur Vermögensseite mit einem Hinweis zur Daten-Seite.
+Bei einem neuen Bestand sind zunächst nur Vermögenswerte und Verbindlichkeiten
+eingeschaltet; Budget, Altersvorsorge und Prognose lassen sich unter Daten
+aktivieren. Ein leeres Budget lässt sich dort einrichten.
 Vermögenswerte und Verbindlichkeiten sind feste, eigenständig schaltbare Bereiche
 auf der Daten-Seite. Neue Verbindlichkeiten werden direkt in ihrem eigenen
 Bereich angelegt; die Auswahl für Vermögenswerte enthält ausschließlich Anlagen.
@@ -303,3 +303,38 @@ und mit „Sichern“ als eigenen Monatsstand erfassen. Der Live-Monat bleibt wi
 bisher ein beschreibbarer Snapshot für Kurse und neue Angaben. Die Historie
 entsteht nach einer JSON-Übertragung erneut aus denselben Vertragsdaten und
 erfassten Monatswerten; weiterhin genügt eine einzelne Datei.
+
+## Abschreibung (Version 3)
+
+Nicht liquide Vermögenswerte mit selbst eingetragenem Wert können optional
+automatisch abgeschrieben werden. Die Angaben stehen an der Position:
+
+```json
+{
+  "depreciation": {
+    "method": "percent",
+    "amount": 15,
+    "interval": "year",
+    "startMonth": "2024-03",
+    "startValue": 32000
+  }
+}
+```
+
+`method` ist `percent` (Prozent vom jeweiligen Restwert) oder `absolute`
+(fester Betrag in EUR je Zeitraum), `interval` ist `month`, `quarter` oder `year`.
+`startMonth` ist der Kaufmonat, `startValue` der Kaufwert. Im Kaufmonat gilt der
+Kaufwert; am Ende jedes vollen Zeitraums sinkt der Wert, nie unter null. Prozent
+höchstens 100.
+
+Die Abschreibung bestimmt den Wert: Ab dem Kaufmonat wird jeder Monat aus dem Plan
+berechnet, davor zählt die Position null. Eigene Monatswerte dieser Position
+bleiben gespeichert, werden aber in der Anzeige ersetzt; berechnete Werte werden
+nicht als eigene Werte festgeschrieben. Beim Einschalten werden fehlende Monate ab
+dem Kaufmonat angelegt (übrige Werte aus dem Vormonat). Beim Ausschalten gelten
+eigene Monatswerte wieder, übrige Monate übernehmen den zuletzt berechneten Wert,
+damit der Verlauf erhalten bleibt.
+
+Version 1- und 2-Dateien werden weiterhin gelesen und beim Speichern als Version 3
+geschrieben. Ältere App-Versionen lehnen Version-3-Dateien ab, statt die
+Abschreibung stillschweigend zu verwerfen.

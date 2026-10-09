@@ -15,8 +15,9 @@ test('welcome offers guided setup, existing backup and demo; tour is reachable f
   assert.match(welcome,/Mit Demo-Daten ausprobieren/);
   assert.match(html,/onclick="startOnboarding\('data'\)"/);
   a.run("startOnboarding('welcome')");
-  assert.deepEqual(a.json('_guideKeys()'),['wealth','budget','forecast','data','positions','backup']);
-  assert.match(a.el('onboardingOverlay').innerHTML,/1 von 6/);
+  assert.deepEqual(a.json('_guideKeys()'),['wealth','budget','forecast','data','backup']);
+  assert.match(a.el('onboardingOverlay').innerHTML,/1 von 5/);
+  assert.doesNotMatch(a.el('onboardingOverlay').innerHTML,/ob-position|name="amount"/);
   assert.equal(a.json('appStorage.document().snapshots.length'),0);
 });
 test('Max persona can start with three positions without inventing ticker or quantity',()=>{
@@ -43,14 +44,11 @@ test('debts remain positive balances and net wealth is assets minus liabilities'
   assert.equal(c.assets,315000);assert.equal(c.liab,202000);assert.equal(c.net,113000);
   assert.equal(a.json('appStorage.document().preferences.modules.liab'),true);
 });
-test('invalid, incomplete and negative values cannot advance or persist',()=>{
+test('invalid, incomplete and negative values are rejected by the document preparation',()=>{
   const a=context();
   for(const row of [{name:'',category:'cash',amount:'100'}, {name:'Konto',category:'cash',amount:''}, {name:'Konto',category:'cash',amount:'-100'}, {name:'Konto',category:'cash',amount:'1,2,3'}, {name:'Konto',category:'cash',amount:'100abc'}, {name:'Konto',category:'invalid',amount:'100'}]){
     a.context.rows=[row];assert.throws(()=>a.run('validateOnboardingPositions(rows)'));
   }
-  a.run("startOnboarding('welcome');_guideStep=4;_guideDraft.positions=[{name:'Konto',category:'cash',amount:'abc'}];guideNav(1);");
-  assert.equal(a.json('_guideStep'),4);assert.equal(a.json('appStorage.document().snapshots.length'),0);
-  assert.match(a.el('onboardingError').textContent,/gültigen Betrag/);
 });
 test('decimal and zero amounts work; entirely blank rows remain optional',()=>{
   const a=context();a.context.rows=[{name:'Konto',category:'cash',amount:'1.500,50'},{name:'Leer',category:'cash',amount:'0'},{name:'',category:'cash',amount:''}];
@@ -75,49 +73,52 @@ test('a budget-only profile is recognized as existing data',()=>{
   assert.equal(a.json('_guideKeys().length'),5);
   assert.equal(a.json('appStorage.document().budget.items[0].monthlyAmounts[0]'),2400);
 });
-test('cancel keeps storage untouched, preserves draft on rejection and returns to start',()=>{
+test('cancel keeps storage untouched and returns to start',()=>{
   const a=context(),before=a.storage.getItem(Data.KEY);
-  a.run("startOnboarding('welcome');_guideDraft.positions=[{name:'Konto',category:'cash',amount:'100'}];confirm=()=>false;cancelOnboarding();");
-  assert.equal(a.json('_guideActive'),true);
-  a.run('confirm=()=>true;cancelOnboarding();');
+  a.run("startOnboarding('welcome');guideNav(1);cancelOnboarding();");
   assert.equal(a.json('_guideActive'),false);
   assert.equal(a.storage.getItem(Data.KEY),before);
   assert.match(a.el('onboardingOverlay').innerHTML,/Geführt einrichten/);
 });
-test('back navigation retains input and skip has an explicit no-values outcome',()=>{
-  const a=context();a.run("startOnboarding('welcome');_guideStep=4;_guideDraft.positions=[{name:'Konto',category:'cash',amount:'100'}];guideNav(-1);guideNav(1);");
-  assert.equal(a.json('_guideDraft.positions[0].amount'),'100');
-  a.run('guideSkipPositions();');
-  assert.equal(a.json('_guideStep'),5);assert.deepEqual(a.json('_guideDraft.positions'),[]);
-  assert.match(a.el('onboardingOverlay').innerHTML,/Zur Vermögensseite/);
+test('the last screen offers the first asset to new users and a plain finish on replay',()=>{
+  const a=context();a.run("startOnboarding('welcome');_guideStep=4;guideRender();");
+  const last=a.el('onboardingOverlay').innerHTML;
+  assert.match(last,/finishOnboarding\('asset'\)">Erstes Asset anlegen/);assert.match(last,/>Später</);
+  a.run('guideNav(-1)');assert.equal(a.json('_guideStep'),3);
+  const b=context();b.context.existing=fixture;b.run("appStorage.importBackup(existing);startOnboarding('data');_guideStep=4;guideRender();");
+  assert.match(b.el('onboardingOverlay').innerHTML,/finishOnboarding\(\)">Fertig/);
+  assert.doesNotMatch(b.el('onboardingOverlay').innerHTML,/Erstes Asset/);
 });
-test('completion prepares current and live months in one document; quota keeps the draft',()=>{
+test('completion prepares current and live months in one document; quota failure keeps storage',()=>{
   const a=context();a.context.rows=[{name:'Konto',category:'cash',amount:'100'}];
   const doc=a.json("prepareOnboardingDocument(AssetsData.empty(),rows,'2026-10','2026-11')");
   assert.deepEqual(doc.snapshots.map(s=>s.month),['2026-10','2026-11']);
   assert.deepEqual(doc.snapshots[0].positions,doc.snapshots[1].positions);
   const before=a.storage.getItem(Data.KEY);
-  a.run("startOnboarding('welcome');_guideStep=5;_guideDraft.positions=rows;");
-  a.storage.failWrites=true;a.run('finishOnboarding()');
+  a.run("startOnboarding('welcome');_guideStep=4;");
+  a.storage.failWrites=true;a.run("finishOnboarding('asset')");
   assert.equal(a.storage.getItem(Data.KEY),before);
-  assert.equal(a.json('_guideDraft.positions[0].amount'),'100');
   assert.match(a.el('onboardingError').textContent,/Quota/);
 });
-test('completion lands on Assets with a next-step link to Data, including skipped input and replay',()=>{
-  for(const mode of ['positions','skip','replay']){
-    const a=context();a.context.existing=fixture;
+test('"first asset" lands on Data with the add sheet open; "later" and replay land on Assets with a next-step hint',()=>{
+  for(const mode of ['asset','later','replay']){
+    const a=context();a.context.existing=fixture;a.context.CSS={escape:String};
     if(mode==='replay')a.run('appStorage.importBackup(existing)');
     a.run("_v2ApplyModules=()=>{};navigateToPage=page=>{landedPage=page};startOnboarding('data');");
-    if(mode==='positions')a.run("_guideDraft.positions=[{name:'Konto',category:'cash',amount:'100'}]");
-    if(mode==='skip')a.run('guideSkipPositions()');
     a.el('onboardingNextStep').hidden=true;
-    a.run('finishOnboarding()');
-    assert.equal(a.json('landedPage'),'home');
-    assert.equal(a.el('onboardingNextStep').hidden,false);
+    a.run(mode==='asset'?"finishOnboarding('asset')":'finishOnboarding()');
     assert.equal(a.json('_guideActive'),false);
     assert.equal(a.json('appStorage.document().preferences.onboardingCompleted'),true);
     assert.equal(a.el('onboardingOverlay').style.display,'none');
-    if(mode==='positions')assert.equal(a.json('appStorage.document().snapshots[0].positions[0].value'),100);
+    if(mode==='asset'){
+      assert.equal(a.json('landedPage'),'import');
+      assert.equal(a.json('_sheetOpen'),true);assert.equal(a.el('dsTitle').textContent,'Vermögenswert');
+      assert.equal(a.el('onboardingNextStep').hidden,true);
+      assert.deepEqual(a.json('appStorage.document().preferences.modules'),{assets:true,liab:true,pension:false,budget:false,forecast:false});
+      continue;
+    }
+    assert.equal(a.json('landedPage'),'home');
+    assert.equal(a.el('onboardingNextStep').hidden,false);
     const notice=html.match(/<aside id="onboardingNextStep"[\s\S]*?<\/aside>/)[0];
     assert.match(notice,/Verbindlichkeiten, Einnahmen &amp; Ausgaben/);
     a.context.event={preventDefault(){}};

@@ -4,7 +4,7 @@
   'use strict';
   const KEY = 'vermoegen-data-v1';
   const FORMAT = 'vermoegen-backup';
-  const VERSION = 2;
+  const VERSION = 3;
   const CATEGORIES = ['cash', 'etf', 'stock', 'bitcoin', 'crypto', 'metal', 'realEstate', 'vehicle', 'other', 'bav', 'illiquid', 'liab'];
   const BUDGET_CATEGORIES = ['einkommen', 'fixe', 'variable', 'sparen'];
   const MODULES = ['assets', 'liab', 'pension', 'budget', 'forecast'];
@@ -149,7 +149,7 @@
       archived: false, custom: f.custom ?? f.id.startsWith('custom-'),
       ticker: f.ticker || null,
       unit: f.hasUnits ? { name: f.unitLabel || 'Stk', key: f.unitId || f.id } : null,
-      ...Object.fromEntries(['liquidity','valuation','instrument','lastQuote'].filter(k=>own(f,k)).map(k=>[k,copy(f[k])]))
+      ...Object.fromEntries(['liquidity','valuation','instrument','lastQuote','depreciation'].filter(k=>own(f,k)&&f[k]!=null).map(k=>[k,copy(f[k])]))
     }));
     for (const p of previous.positions) if (!doc.positions.some(x => x.id === p.id))
       doc.positions.push({ ...copy(p), archived: true });
@@ -267,7 +267,7 @@
     const groupName = id => doc.groups.find(g => g.id === id).name;
     const fields = doc.positions.filter(p => !p.archived).map(p => {
       const f = { id: p.id, label: p.name, category: p.category, displayGroup: groupName(p.groupId), hasUnits: !!p.unit, custom: p.custom };
-      for(const k of ['liquidity','valuation','instrument','lastQuote'])if(own(p,k))f[k]=copy(p[k]);
+      for(const k of ['liquidity','valuation','instrument','lastQuote','depreciation'])if(own(p,k))f[k]=copy(p[k]);
       if (p.ticker) f.ticker = p.ticker;
       if (p.unit) { f.unitLabel = p.unit.name; f.unitId = p.unit.key; }
       return f;
@@ -349,7 +349,7 @@
     safeKeys(doc);
     object(doc, 'Datei', ['format', 'schemaVersion', 'currency', 'exportedAt', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences'], ['format', 'schemaVersion', 'currency', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences']);
     if (doc.format !== FORMAT) fail('format', 'keine Vermögen-Sicherung');
-    if (![1,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
+    if (![1,2,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
     if (doc.currency !== 'EUR') fail('currency', 'nur EUR wird unterstützt');
     if (own(doc, 'exportedAt') && (typeof doc.exportedAt !== 'string' || !Number.isFinite(Date.parse(doc.exportedAt)))) fail('exportedAt', 'ungültiges Datum');
     const groups = unique(doc.groups, 'groups');
@@ -363,7 +363,7 @@
     const positions = unique(doc.positions, 'positions');
     const unitKeys = new Set();
     for (const p of doc.positions) {
-      object(p, 'Position', ['id', 'name', 'category', 'groupId', 'archived', 'custom', 'ticker', 'unit', 'liquidity', 'valuation', 'instrument', 'lastQuote'], ['id', 'name', 'category', 'groupId', 'archived', 'custom', 'ticker', 'unit']);
+      object(p, 'Position', ['id', 'name', 'category', 'groupId', 'archived', 'custom', 'ticker', 'unit', 'liquidity', 'valuation', 'instrument', 'lastQuote', 'depreciation'], ['id', 'name', 'category', 'groupId', 'archived', 'custom', 'ticker', 'unit']);
       if(own(p,'liquidity')&&!['liquid','illiquid'].includes(p.liquidity))fail('liquidity','ungültig');
       if(own(p,'valuation')&&!['manual','market'].includes(p.valuation))fail('valuation','ungültig');
       if(p.instrument!=null){
@@ -372,6 +372,15 @@
         for(const k of ['symbol','exchange','currency','name'])text(p.instrument[k],'Kursquelle.'+k,k==='symbol');
       }
       if(p.valuation==='market'&&(!p.unit||!p.instrument))fail('Bewertung','Stückzahl-Einheit und Kursquelle erforderlich');
+      if(own(p,'depreciation')){
+        const d=p.depreciation;
+        object(d,'Abschreibung',['method','amount','interval','startMonth','startValue']);
+        if(!['percent','absolute'].includes(d.method))fail('Abschreibung.method','ungültig');
+        if(!['month','quarter','year'].includes(d.interval))fail('Abschreibung.interval','ungültig');
+        month(d.startMonth,'Abschreibung.startMonth');num(d.startValue,'Abschreibung.startValue',0);num(d.amount,'Abschreibung.amount',Number.MIN_VALUE);
+        if(d.method==='percent'&&d.amount>100)fail('Abschreibung.amount','höchstens 100 %');
+        if(p.category==='liab')fail('Abschreibung','nur für Vermögenswerte');
+      }
       if(p.lastQuote!=null){
         object(p.lastQuote,'Letzter Kurs',['priceEUR','price','currency','asOf','fetchedAt']);
         num(p.lastQuote.priceEUR,'Kurs in EUR',Number.MIN_VALUE);num(p.lastQuote.price,'Kurs',Number.MIN_VALUE);text(p.lastQuote.currency,'Kurswährung',true);
@@ -473,8 +482,8 @@
     const persisted = storage.getItem(KEY);
     if (persisted !== null) {
       current = validate(JSON.parse(persisted));
-      // Version 2 adds asset metadata and categories. Version 1 keeps its old
-      // category, liquidity and ticker semantics through the adapter defaults.
+      // Version 2 adds asset metadata and categories, version 3 optional depreciation.
+      // Older versions keep their semantics through the adapter defaults.
       current.schemaVersion=VERSION;
       delete current.exportedAt;
       // Profile identity is independent of a group's editable display name.
