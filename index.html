@@ -2494,7 +2494,7 @@ body.onboarding-open{overflow:hidden}
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="data-store.js?v=15"></script>
+<script src="data-store.js?v=16"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
 <script src="asset-model.js?v=4"></script>
@@ -5483,9 +5483,9 @@ function _linkedLoanRow(r,v,autoLoans){
 /* includeOnce: einmalige Zahlungen dieses Kalendermonats mitzählen (nicht für Ø-Werte des Plans) */
 function calcBudgetMonth(bd,monthIdx,includeOnce=false){
   const ym=(selectedMonth||currentYM()).slice(0,4)+'-'+String(monthIdx+1).padStart(2,'0');
-  const autoLoans=_automaticLoanRows(ym);
+  const autoLoans=_automaticLoanRows(ym),autoDepots=_automaticDepotRows(ym);
   const once=includeOnce&&bd?(bd.oneTime||[]).filter(o=>o.month===ym&&(+o.amount||0)>0):[];
-  if(!bd&&!autoLoans.length)return null;
+  if(!bd&&!autoLoans.length&&!autoDepots.length)return null;
   bd=bd||{einkommen:[],fixe:[],variable:[],sparen:[]};
   const mi=monthIdx;
   let einnahmen=0,fixkosten=0,variable=0,sparplaene=0,tilgung=0;
@@ -5530,6 +5530,7 @@ function calcBudgetMonth(bd,monthIdx,includeOnce=false){
   (bd.sparen||[]).forEach(r=>{
     const v=r.values[mi]||0;
     if(v<=0||autoLoans.some(l=>l.label.trim().toLowerCase()===r.name.trim().toLowerCase()))return;
+    if(_depotLinked(r))return;/* Beitrag kommt aus dem Altersvorsorgedepot */
     if(_isLoanPayment(r)&&loanRow(r,v))return;
     sparplaene+=v;sparItems.push(item(r));
   });
@@ -5544,6 +5545,14 @@ function calcBudgetMonth(bd,monthIdx,includeOnce=false){
     if(l.row.interest>0){fixkosten+=l.row.interest;fixItems.push({id:l.id,label:l.label+' – Zinsanteil',val:l.row.interest,subcat:'Kredite',automatic:true});}
     const value=l.row.principal+l.row.extra;
     if(value!==0){tilgung+=value;tilgItems.push({id:l.id,label:l.label+' – Tilgung'+(l.row.extra?' inkl. Sondertilgung':''),val:value,subcat:'Kredite',targetGroup:l.targetGroup,targetGroupId:l.targetGroupId,explicitTarget:true,automatic:true});}
+  });
+  autoDepots.forEach(d=>{
+    const base={subcat:'Altersvorsorge',automatic:true,depot:true};
+    sparplaene+=d.contrib;sparItems.push({...base,id:'avd-'+d.id,label:d.name+' – Beitrag',val:d.contrib});
+    if(d.subsidy>0){
+      einnahmen+=d.subsidy;einItems.push({...base,id:'avdz-'+d.id,label:'Zulage Ø · '+d.name,val:d.subsidy});
+      sparplaene+=d.subsidy;sparItems.push({...base,id:'avdz-'+d.id,label:d.name+' – Zulage Ø',val:d.subsidy});
+    }
   });
   const ausgaben=fixkosten+variable;
   const aufbau=sparplaene+tilgung;
@@ -6149,6 +6158,13 @@ function renderBudgetBreakdown(c){
   
   // ── Vermögensaufbau (Sparpläne + Tilgung) ──
   html+=_breakdownSimpleSection('aufbau','Vermögensaufbau',[...c.sparItems,...c.tilgItems],!isDark?[60,72,64]:[150,170,155],!isDark?[150,160,150]:[210,220,210],20);
+  /* Altersvorsorgedepots, die erst in einem späteren Jahr beginnen: kurze Vorschau */
+  if(_mod('pension')){
+    const s=getLifetimeSettings(),y=+selectedMonth.slice(0,4);
+    const later=getAvDepots().map(d=>{const q=_avdParams(s,d);return q.start>y&&avdYear(s,d,q.start,q);}).filter(Boolean);
+    const start=Math.min(...getAvDepots().map(d=>_avdParams(s,d).start).filter(x=>x>y));
+    if(later.length)html+=`<p style="font-size:13px;color:var(--muted);line-height:1.45;margin:10px 0 0">Ab ${start} kommen deine Altersvorsorgedepots dazu: ${fmt(later.reduce((a,z)=>a+z.own,0)/12)} Beitrag und Ø ${fmt(later.reduce((a,z)=>a+z.total,0)/12)} Zulage im Monat.</p>`;
+  }
   
   // ── Nicht verplant ──
   if(c.einnahmen>0){
@@ -6820,6 +6836,25 @@ function _automaticLoanRows(month){
     return {id:f.id,label:f.label,row:LoanModel.at(params[f.id],month),targetGroup:group?group.name:null,targetGroupId:group?group.id:null};
   });
 }
+/* Altersvorsorgedepots im Budget: Beitrag als Sparposten, Zulage als Monatsschnitt (Einnahme und Vermögensaufbau).
+   Gilt nur, solange der Bereich Altersvorsorge eingeschaltet ist. */
+function _automaticDepotRows(month){
+  if(!_mod('pension'))return[];
+  const s=getLifetimeSettings(),y=+month.slice(0,4);
+  return getAvDepots().filter(d=>d.id).map(d=>{
+    const z=avdYear(s,d,y);
+    return z&&{id:d.id,name:(d.name||'').trim()||'Altersvorsorgedepot',contrib:z.own/12,subsidy:z.total/12};
+  }).filter(Boolean);
+}
+/* Budgetposten, der durch ein Depot ersetzt wird (Verknüpfung „Beitrag für“) */
+function _depotLinked(r){return !!r.depotId&&_mod('pension')&&getAvDepots().some(d=>d.id===r.depotId);}
+function _depotBudgetHTML(month){
+  if(!_mod('pension'))return '';
+  const s=getLifetimeSettings(),y=+month.slice(0,4);
+  const rows=getAvDepots().filter(d=>d.id).map(d=>{const q=_avdParams(s,d),z=avdYear(s,d,Math.max(y,q.start),q);return z&&{name:(d.name||'').trim()||'Altersvorsorgedepot',z,from:q.start>y?q.start:null};}).filter(Boolean);
+  if(!rows.length)return '';
+  return `<div class="loan-budget"><h4>Altersvorsorgedepots · automatisch</h4>${rows.map(r=>`<div><span>${escHTML(r.name)}</span><strong>${fmt(r.z.own/12)}</strong></div><p>${r.from?'ab Januar '+r.from+' · ':''}+ Zulage Ø ${fmt(r.z.total/12)} pro Monat (${fmt(r.z.total)} im Jahr)</p>`).join('')}<p>Beitrag und Zulage stehen im Budget unter Vermögensaufbau, die Zulage zusätzlich als Einnahme. Sie wird einmal im Jahr gutgeschrieben, im Budget steht der Monatsschnitt. Einen eigenen Sparposten für den Beitrag verknüpfst du über „Beitrag für“, dann zählt er nicht doppelt.</p></div>`;
+}
 function _loanBudgetHTML(month){
   const loans=_automaticLoanRows(month);if(!loans.length)return '';
   return `<div class="loan-budget"><h4>Automatische Kreditraten · ${fmtMonth(month)}</h4>${loans.map(l=>`<div><span>${escHTML(l.label)}</span><strong>${_loanMoney(l.row.totalPayment)}</strong></div><p>Zins ${_loanMoney(l.row.interest)} · Tilgung ${_loanMoney(l.row.principal)}${l.row.extra?' · Sondertilgung '+_loanMoney(l.row.extra):''}</p>`).join('')}<p>Diese Beträge werden im Budget berücksichtigt. Gleichnamige manuelle Kreditposten werden durch die berechneten Werte ersetzt, um Doppelzählungen zu vermeiden.</p></div>`;
@@ -6906,7 +6941,7 @@ function _initSheet(){
   document.getElementById('dsSave').addEventListener('click',_submitSheet);
   document.getElementById('dsOverlay').addEventListener('click',()=>_closeSheet());
   document.addEventListener('keydown',e=>{if(_sheetOpen&&e.key==='Escape')_closeSheet();});
-  b.addEventListener('input',e=>{if(e.target.id==='b-loan'&&_sheetCtx.budget)_sheetCtx.budget.loanTouched=true;_sheetDirty=true;_dataInput(e);_monthSheetInput(e);_historyInput(e);_unitHint(e);if(_sheetCtx.budget)_budgetSheetUpdate();});
+  b.addEventListener('input',e=>{if(e.target.id==='b-loan'&&_sheetCtx.budget)_sheetCtx.budget.loanTouched=true;if(e.target.id==='b-depot'&&_sheetCtx.budget)_sheetCtx.budget.depotTouched=true;_sheetDirty=true;_dataInput(e);_monthSheetInput(e);_historyInput(e);_unitHint(e);if(_sheetCtx.budget)_budgetSheetUpdate();});
   b.addEventListener('click',e=>{
     const tog=e.target.closest('[data-dep-toggle]');if(tog){_depToggle(tog.dataset.depToggle);return;}
     const hist=e.target.closest('[data-ds-hist]');if(hist){openHistorySheet(hist.dataset.dsHist);return;}
@@ -7578,7 +7613,8 @@ function _budgetListHTML(){
       const rh=_budgetRhythm(r.values),val=rh.rhythm==='custom'?'Ø '+fmt(_yearSum(r.values)/12):fmt(rh.amount);
       const loan=r.loanId&&_fc.fields.find(f=>f.id===r.loanId);
       const loanText=loan?(LoanModel.configured(getLoanParams()[loan.id]||{})?'ersetzt durch Kreditvertrag':'Kredit: '+loan.label):'';
-      return _dsItem('budget',key+':'+r.id,r.name,[_rhythmText(rh),r.subcat,loanText].filter(Boolean).join(' · '),val,!_yearSum(r.values));
+      const depotText=_depotLinked(r)?'ersetzt durch Altersvorsorgedepot':'';
+      return _dsItem('budget',key+':'+r.id,r.name,[_rhythmText(rh),r.subcat,loanText,depotText].filter(Boolean).join(' · '),val,!_yearSum(r.values));
     }).join('')}</div>`;
   });
   const once=[...(bd.oneTime||[])].sort((a,b)=>b.month.localeCompare(a.month)),limit=LoanModel.addMonths(selectedMonth,-12);
@@ -7708,6 +7744,17 @@ function _guessLoan(name){
   if(hit.length===1)return hit[0].id;
   return liabs.length===1?liabs[0].id:'';
 }
+/* Passendes Depot zu einem Sparposten: nur bei Depot-Wörtern, über den Namen oder das einzige Depot */
+function _guessDepot(name){
+  const ds=_mod('pension')?getAvDepots().filter(d=>d.id):[],n=String(name||'').toLowerCase();
+  if(!ds.length||!/altersvorsorgedepot|vorsorgedepot|av-?depot/.test(n))return '';
+  /* Wörter des Depotnamens ohne Depot-Wörter: „AV-Depot Max (Demo)“ → max, demo; das Depot mit den meisten Treffern gewinnt */
+  const words=d=>String(d.name||'').toLowerCase().split(/[^a-zäöüß0-9]+/).filter(t=>t.length>=3&&!/^(depot|altersvorsorgedepot|vorsorgedepot)$/.test(t));
+  const score=ds.map(d=>words(d).filter(t=>n.includes(t)).length),best=Math.max(...score);
+  if(best>0&&score.filter(x=>x===best).length===1)return ds[score.indexOf(best)].id;
+  return ds.length===1?ds[0].id:'';
+}
+const _depotLinkHint=id=>id?'Beitrag und Zulage kommen automatisch aus dem Altersvorsorgedepot. Dieser Posten wird deshalb nicht zusätzlich gezählt.':'';
 function _loanLinkHint(id){
   if(!id)return '';
   if(id==='*')return 'Die Rate wird anteilig auf deine Kredite aufgeteilt.';
@@ -7716,11 +7763,11 @@ function _loanLinkHint(id){
 /* opts: {} neu, {ref:'kategorie:id'} wiederkehrend bearbeiten, {once:id} einmalig bearbeiten, {mode:'once'} neu einmalig */
 function openBudgetSheet(opts={}){
   const bd=loadBudgetData()||{};
-  let mode=opts.mode||'recurring',isNew=true,type='expense',cost='fixe',name='',amount=0,rhythm='month',start=+selectedMonth.slice(5)-1,month=selectedMonth,target=null,subcat='',values=Array(12).fill(0),origKind=null,loanId='';
+  let mode=opts.mode||'recurring',isNew=true,type='expense',cost='fixe',name='',amount=0,rhythm='month',start=+selectedMonth.slice(5)-1,month=selectedMonth,target=null,subcat='',values=Array(12).fill(0),origKind=null,loanId='',depotId='';
   if(opts.ref){
     const [key,rid]=opts.ref.split(':'),r=(bd[key]||[]).find(x=>x.id===rid);if(!r)return;
     isNew=false;mode='recurring';type=key==='einkommen'?'income':key==='sparen'?'saving':'expense';cost=key==='variable'?'variable':'fixe';
-    name=r.name;subcat=r.subcat||'';target=r.targetGroupId??null;origKind=r.kind||null;values=r.values.map(x=>+x||0);loanId=r.loanId||'';
+    name=r.name;subcat=r.subcat||'';target=r.targetGroupId??null;origKind=r.kind||null;values=r.values.map(x=>+x||0);loanId=r.loanId||'';depotId=r.depotId||'';
     const rh=_budgetRhythm(values);rhythm=rh.rhythm;amount=rh.amount;if(rh.rhythm!=='month')start=rh.start;
   }
   if(opts.once){
@@ -7731,7 +7778,9 @@ function openBudgetSheet(opts={}){
   /* Bestehende Ausgabe ohne Verknüpfung: passenden Kredit vorschlagen; Sammelposten aller Kredite bleibt anteilig */
   if(!loanId&&type==='expense')loanId=['principal','loanPayment'].includes(origKind)?'*':_guessLoan(name);
   const liabs=_mod('liab')?_fc.fields.filter(f=>f.category==='liab'):[];
-  _sheetCtx={budget:{isNew,mode,ref:opts.ref||null,once:opts.once||null,origKind,loanTouched:!isNew}};
+  const depots=_mod('pension')?getAvDepots().filter(d=>d.id):[];
+  if(!depotId&&type==='saving')depotId=_guessDepot(name);
+  _sheetCtx={budget:{isNew,mode,ref:opts.ref||null,once:opts.once||null,origKind,loanTouched:!isNew,depotTouched:!isNew}};
   const custom=rhythm==='custom',groups=appStorage.document().groups;
   const subcats=[...new Set(BUDGET_LIST.flatMap(([k])=>(bd[k]||[]).map(r=>r.subcat).filter(Boolean)))];
   const monthRows=values.map((v,i)=>`<label class="ds-row"><span class="ds-l">${MONTH_FULL[i]}</span><input class="ds-in ds-money" type="text" inputmode="decimal" id="b-m${i}" value="${v?_moneyInput(v):''}" placeholder="0"></label>`).join('');
@@ -7742,6 +7791,7 @@ function openBudgetSheet(opts={}){
     <div class="ds-row" id="b-costRow"><span class="ds-l">Kosten</span>${_seg('b-cost',[['fixe','Fix'],['variable','Variabel']],cost)}</div>
     <label class="ds-row" id="b-amountRow"><span class="ds-l">Betrag €</span><input class="ds-in ds-money" type="text" inputmode="decimal" id="b-amount" value="${amount?_moneyInput(amount):''}" placeholder="0"></label>
     ${liabs.length?`<label class="ds-row" id="b-loanRow"><span class="ds-l">Kreditrate für<small id="b-loanHint">${escHTML(_loanLinkHint(loanId))}</small></span><select class="ds-in ds-wide" id="b-loan"><option value="">Kein Kredit</option>${loanId==='*'?'<option value="*" selected>Mehrere Kredite (anteilig)</option>':''}${liabs.map(f=>`<option value="${escHTML(f.id)}"${f.id===loanId?' selected':''}>${escHTML(f.label)}</option>`).join('')}</select></label>`:''}
+    ${depots.length?`<label class="ds-row" id="b-depotRow"><span class="ds-l">Beitrag für<small id="b-depotHint">${escHTML(_depotLinkHint(depotId))}</small></span><select class="ds-in ds-wide" id="b-depot"><option value="">Kein Altersvorsorgedepot</option>${depots.map(d=>`<option value="${escHTML(d.id)}"${d.id===depotId?' selected':''}>${escHTML((d.name||'').trim()||'Altersvorsorgedepot')}</option>`).join('')}</select></label>`:''}
   </div>
   <div class="ds-group" id="b-recurring">
     <div class="ds-row" id="b-rhythmRow"><span class="ds-l">Rhythmus</span>${_seg('b-rhythm',[['month','Monatlich'],['quarter','Quartal'],['year','Jährlich']],custom?'month':rhythm)}</div>
@@ -7786,7 +7836,12 @@ function _budgetSheetUpdate(){
   const mode=ctx.isNew?v('b-mode'):ctx.mode,type=v('b-type'),rhythm=v('b-rhythm');
   const custom=mode==='recurring'&&_switchOn('b-customOn');
   show('b-recurring',mode==='recurring');show('b-once',mode==='once');show('b-customWrap',mode==='recurring');
-  show('b-costRow',type==='expense');show('b-targetRow',type==='saving');show('b-loanRow',type==='expense'&&mode==='recurring');
+  show('b-costRow',type==='expense');show('b-targetRow',type==='saving');show('b-loanRow',type==='expense'&&mode==='recurring');show('b-depotRow',type==='saving'&&mode==='recurring');
+  const depot=document.getElementById('b-depot');
+  if(depot){
+    if(ctx.isNew&&!ctx.depotTouched)depot.value=_guessDepot(v('b-name'));
+    const hint=document.getElementById('b-depotHint');if(hint)hint.textContent=_depotLinkHint(depot.value);
+  }
   const loan=document.getElementById('b-loan');
   if(loan){
     if(ctx.isNew&&!ctx.loanTouched)loan.value=_guessLoan(v('b-name'));
@@ -7826,7 +7881,8 @@ function _saveBudgetSheet(){
       const loanRow=document.getElementById('b-loanRow'),loanSel=loanRow&&!loanRow.hidden?v('b-loan'):null;
       let kind=type==='expense'&&['principal','loanPayment'].includes(ctx.origKind)?ctx.origKind:type;
       if(type==='expense'&&loanSel!==null&&loanSel!=='*')kind=loanSel?'loanPayment':'expense';
-      const row={id,name,subcat:v('b-subcat'),kind,targetGroupId:type==='saving'?target:(old&&kind!==type?old.targetGroupId??null:null),values,...(type==='expense'&&loanSel&&loanSel!=='*'?{loanId:loanSel}:{})};
+      const depotRow=document.getElementById('b-depotRow'),depotSel=depotRow&&!depotRow.hidden?v('b-depot'):'';
+      const row={id,name,subcat:v('b-subcat'),kind,targetGroupId:type==='saving'?target:(old&&kind!==type?old.targetGroupId??null:null),values,...(type==='expense'&&loanSel&&loanSel!=='*'?{loanId:loanSel}:{}),...(type==='saving'&&depotSel?{depotId:depotSel}:{})};
       bd[category]=bd[category]||[];
       if(pos>=0)bd[category].splice(pos,0,row);else bd[category].push(row);
     }
@@ -7919,7 +7975,7 @@ function buildDynamicForm(){
 
   /* Einnahmen & Ausgaben: wiederkehrende Posten und einmalige Zahlungen als Liste, Bearbeiten im Sheet */
   html+=`<div class="divider"></div>`;
-  html+=`<details class="input-collapsible" data-mod="budget">${_v2Sum('budget','Einnahmen & Ausgaben')}<div class="input-collapsible-body">${_loanBudgetHTML(selectedMonth)}${_budgetListHTML()}</div></details>`;
+  html+=`<details class="input-collapsible" data-mod="budget">${_v2Sum('budget','Einnahmen & Ausgaben')}<div class="input-collapsible-body">${_loanBudgetHTML(selectedMonth)}${_depotBudgetHTML(selectedMonth)}${_budgetListHTML()}</div></details>`;
   
   html+=`</div>`;/* /input-panel */
   container.innerHTML=html;
@@ -8354,33 +8410,46 @@ function avdSubsidy(own,kids){
   return{base,child,total:base+child};
 }
 const _avdNum=(v,def)=>v===''||v==null||!isFinite(+v)?def:+v;
-function calcAvDepot(s,d){
+/* Gemeinsame Angaben eines Depots: Person, Alter, Beitragsjahre (Standardwerte für leere Felder) */
+function _avdParams(s,d){
   const person=d.person?getDrvExtra().find(r=>r.id===d.person):null;
   const by=person&&+person.by>1900?+person.by:s.birthYear;
+  const from=Math.min(70,Math.max(65,_avdNum(d.from,0)>0?+d.from:regelaltersgrenze(by)));
+  const workUntil=person?(+person.until>0?+person.until:s.saveUntil):s.saveUntil;
+  const own=Math.max(0,_avdNum(d.contrib,0))*12;
+  const kids=(String(d.kids??'').match(/\d{4}/g)||[]).map(Number);
+  const start=Math.max(AVD_START,_avdNum(d.start,0)>0?Math.round(+d.start):AVD_START);
+  return{by,from,workUntil,own,kids,kidsBad:!kids.length&&/\S/.test(String(d.kids??'')),start,
+    kidsIn:y=>kids.filter(b=>y>=b&&y<=b+18).length,
+    payYear:by+from,/* Jahr, in dem die Auszahlung beginnt */
+    lastYear:Math.min(by+workUntil,by+from)-1/* letztes Beitragsjahr */};
+}
+/* Beitrag und Zulagen eines Kalenderjahres (null = in diesem Jahr kein Beitrag).
+   Der Berufseinsteigerbonus kommt einmalig im ersten Beitragsjahr. */
+function avdYear(s,d,y,q=_avdParams(s,d)){
+  if(!(q.own>0)||y<q.start||y>q.lastYear)return null;
+  const sub=avdSubsidy(q.own,q.kidsIn(y));
+  const bonus=y===q.start&&q.start-q.by<=25?200:0;
+  return{own:q.own,kids:q.kidsIn(y),base:sub.base,child:sub.child,bonus,total:sub.total+bonus};
+}
+function calcAvDepot(s,d){
+  const q=_avdParams(s,d),{by,from,own,payYear,lastYear}=q;
   const shift=by-s.birthYear;/* Alter dieser Person -> eigenes Alter */
   const now=new Date(),year=now.getFullYear();
   const ageNow=_ageAt(Object.assign({},s,{birthYear:by}),year,now.getMonth());
-  const from=Math.min(70,Math.max(65,_avdNum(d.from,0)>0?+d.from:regelaltersgrenze(by)));
-  const workUntil=person?(+person.until>0?+person.until:s.saveUntil):s.saveUntil;
   const ret=_avdNum(d.ret,AVD_DEFAULTS.ret)/100,infl=s.inflation/100;
   const deduct=Math.min(90,Math.max(0,_avdNum(d.deduct,AVD_DEFAULTS.deduct)))/100;
   const lumpPct=Math.min(30,Math.max(0,_avdNum(d.lump,0)))/100;
-  const own=Math.max(0,_avdNum(d.contrib,0))*12;
-  const kids=(String(d.kids??'').match(/\d{4}/g)||[]).map(Number),kidsBad=!kids.length&&/\S/.test(String(d.kids??''));
-  const kidsIn=y=>kids.filter(b=>y>=b&&y<=b+18).length;
-  const first=Math.max(AVD_START,_avdNum(d.start,0)>0?Math.round(+d.start):AVD_START,year);
-  const payYear=by+from;/* Jahr, in dem die Auszahlung beginnt */
-  const lastYear=Math.min(by+workUntil,payYear)-1;/* letztes Beitragsjahr */
+  const first=Math.max(q.start,year),kidsBad=q.kidsBad;
   const tPay=Math.max(0,from-ageNow);
   /* Beiträge und Zulagen am Jahresende eingezahlt, danach mit der Rendite bis zum Auszahlungsbeginn verzinst */
   let cap=Math.max(0,_avdNum(d.balance,0))*Math.pow(1+ret,tPay),ownSum=0,subSum=0,bonus=0,firstSub=null;
-  for(let y=first;own>0&&y<=lastYear;y++){
-    const sub=avdSubsidy(own,kidsIn(y));
-    let add=own+sub.total;
-    if(y===first&&first-by<=25){bonus=200;add+=bonus;}
-    if(!firstSub)firstSub=Object.assign({kids:kidsIn(y)},sub);
-    cap+=add*Math.pow(1+ret,Math.max(0,payYear-(y+1)));
-    ownSum+=own;subSum+=add-own;
+  for(let y=first;y<=lastYear;y++){
+    const z=avdYear(s,d,y,q);if(!z)continue;
+    bonus+=z.bonus;
+    if(!firstSub)firstSub={base:z.base,child:z.child,total:z.base+z.child,kids:z.kids};
+    cap+=(own+z.total)*Math.pow(1+ret,Math.max(0,payYear-(y+1)));
+    ownSum+=own;subSum+=z.total;
   }
   const capReal=cap/Math.pow(1+infl,tPay);
   const lumpNet=capReal*lumpPct*(1-deduct);
@@ -9021,7 +9090,7 @@ function deriveSavingsFromBudget(plan){
   const rows={};
   for(let m=0;m<12;m++){
     const c=calcBudgetMonth(bd,m);if(!c)continue;
-    [...c.sparItems,...c.tilgItems].forEach(it=>{const key=it.id||it.label;if(!rows[key])rows[key]={name:it.label,targetGroup:it.targetGroup,explicitTarget:it.explicitTarget,sum:0};rows[key].sum+=it.val;});
+    [...c.sparItems,...c.tilgItems].forEach(it=>{if(it.depot)return;/* eigenes Modell in der Prognose */const key=it.id||it.label;if(!rows[key])rows[key]={name:it.label,targetGroup:it.targetGroup,explicitTarget:it.explicitTarget,sum:0};rows[key].sum+=it.val;});
   }
   const byGroup={},unmatched=[];
   const find=pred=>plan.groups.find(pred);
@@ -10538,6 +10607,9 @@ function _nextSteps(){
   const bdLegacy=m.budget&&m.liab?loadBudgetData():null;
   const unlinked=bdLegacy&&['fixe','variable'].flatMap(k=>(bdLegacy[k]||[]).map(r=>({r,k}))).find(({r})=>!r.loanId&&!['loanPayment','principal'].includes(r.kind)&&_guessLoan(r.name));
   if(unlinked)out.push({id:'loanlink-'+unlinked.r.id,title:'„'+unlinked.r.name+'“ mit Kredit verknüpfen',text:'Dann trennt die App Zins und Tilgung und zählt die Rate nicht doppelt.',run:()=>openBudgetSheet({ref:unlinked.k+':'+unlinked.r.id})});
+  const bdDepot=m.budget&&m.pension&&(doc.retirement.pensionDepots||[]).length?loadBudgetData():null;
+  const depotRow=bdDepot&&(bdDepot.sparen||[]).find(r=>!r.depotId&&_guessDepot(r.name));
+  if(depotRow)out.push({id:'depotlink-'+depotRow.id,title:'„'+depotRow.name+'“ mit Altersvorsorgedepot verknüpfen',text:'Dann zählt der Beitrag nicht doppelt und die Zulage erscheint im Budget.',run:()=>openBudgetSheet({ref:'sparen:'+depotRow.id})});
   if(!m.budget&&!items.length)out.push({id:'budget',title:'Monatsbudget einrichten',text:'Vier grobe Zahlen zeigen dir, was jeden Monat übrig bleibt.',run:()=>startSetup('budget')});
   if(!m.forecast&&doc.retirement.primary.birthYear===undefined&&assets.length)out.push({id:'future',title:'Zukunft planen',text:'Mit drei Angaben siehst du, ob dein Vermögen für den Ruhestand reicht.',run:()=>startSetup('future')});
   const sp=doc.retirement.primary.statutoryPension;

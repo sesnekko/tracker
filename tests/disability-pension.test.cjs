@@ -41,7 +41,7 @@ test('version 8: other people store the same EM fields and they survive a backup
   const partner = { name: 'Anna', by: 1987, until: 67, points: 12.8, salary: 18000, age: 0, deduct: 20, emType: 2, em: 950, emUntil: 2031 };
   store.setItem('lt-drv-extra', JSON.stringify([partner]));
   const doc = store.document();
-  assert.equal(doc.schemaVersion, 8);
+  assert.equal(doc.schemaVersion, Data.VERSION);
   assert.deepEqual(doc.retirement.people[0].statutoryPension,
     { points: 12.8, annualSalary: 18000, retirementAge: 0, deductionPercent: 20, disabilityType: 2, disabilityPension: 950, disabilityUntilYear: 2031 });
   const target = Data.createStore(new MemoryStorage());
