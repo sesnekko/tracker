@@ -92,9 +92,9 @@ test('editing keeps the id, custom month values are stored as entered, and inval
   assert.equal(b.storage.getItem(Data.KEY),before);assert.equal(b.run('_sheetOpen'),true);
 });
 
-test('deleting a one-time payment removes only that entry',()=>{
-  const a=context();a.run('confirm=()=>true');
-  a.run("openBudgetSheet({once:'once-1'});_deleteBudgetEntry()");
+test('deleting a one-time payment removes only that entry',async()=>{
+  const a=context();a.run('_ask=async()=>true');
+  await a.run("openBudgetSheet({once:'once-1'});_deleteBudgetEntry()");
   const b=a.json('appStorage.document()').budget;
   assert.deepEqual(b.oneTime,[]);assert.equal(b.items.length,2);
 });
@@ -107,7 +107,7 @@ test('the Data page lists recurring entries with their rhythm and one-time payme
   assert.match(list,/data-ds-open="add-budget"/);
 });
 
-test('accounts and standing orders can be created, renamed and deleted; orders follow a renamed account',()=>{
+test('accounts and standing orders can be created, renamed and deleted; orders follow a renamed account',async()=>{
   const a=context();
   a.run('openAccountSheet()');fill(a,{'a-name':'Girokonto','a-iban':'de89 3704 0044 0532 0130 00'});a.run('_submitSheet()');
   a.run('openAccountSheet()');fill(a,{'a-name':'Haushalt','a-iban':''});a.run('_submitSheet()');
@@ -119,10 +119,10 @@ test('accounts and standing orders can be created, renamed and deleted; orders f
   a.run("openAccountSheet('Haushalt')");fill(a,{'a-name':'Haushaltskonto','a-iban':''});a.run('_submitSheet()');
   const legacy=a.json('loadBudgetData()');
   assert.equal(legacy.standingOrders[0].to,'Haushaltskonto');assert.ok('Haushaltskonto' in legacy.accounts);
-  a.run('confirm=()=>true');a.run("openAccountSheet('Girokonto');_deleteAccount()");
+  a.run('_ask=async()=>true');await a.run("openAccountSheet('Girokonto');_deleteAccount()");
   b=a.json('appStorage.document()').budget;
   assert.deepEqual(b.standingOrders[0].from,{type:'label',name:'Girokonto'},'order keeps the name as a label');
-  a.run(`openOrderSheet('${b.standingOrders[0].id}');_deleteOrder()`);
+  await a.run(`openOrderSheet('${b.standingOrders[0].id}');_deleteOrder()`);
   assert.deepEqual(a.json('appStorage.document()').budget.standingOrders,[]);
 });
 

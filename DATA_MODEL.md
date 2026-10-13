@@ -5,11 +5,11 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `vermoegen_YYYY-MM-DD.json`. Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 7
+## Struktur, Version 8
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `7`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `8`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
@@ -17,7 +17,7 @@ weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 | `accounts` | Konten mit ID, Name und IBAN |
 | `budget` | Zwölfmonatiger Plan ohne Jahresbezug, Budgetposten, Daueraufträge und einmalige Zahlungen (`oneTime`); `null`, wenn nicht eingerichtet |
 | `loans` | Darlehensparameter, über `positionId` einer Verbindlichkeit zugeordnet |
-| `retirement` | Eigene Person (gesetzliche Rente, optional laufende Erwerbsminderungsrente und Beamtenversorgung), weitere Personen mit gesetzlicher Rente und weitere Renteneinkünfte |
+| `retirement` | Eigene Person (gesetzliche Rente, optional laufende Erwerbsminderungsrente und Beamtenversorgung), weitere Personen mit gesetzlicher Rente (optional laufende Erwerbsminderungsrente), Altersvorsorgedepots und weitere Renteneinkünfte |
 | `forecast` | Lebensplanung, Bedarf, Inflation, Sicherheitsniveau und einmalige Ereignisse |
 | `preferences` | Theme, fünf Bereichsschalter, Aufklappzustände und Abschluss des Onboardings |
 
@@ -428,13 +428,46 @@ bis zur Regelaltersgrenze) und bei teilweiser Erwerbsminderung die persönliche
 Hinzuverdienstgrenze (`earningsLimit`, fehlt = Mindestgrenze). Der Hinzuverdienst ist
 das Bruttojahresgehalt (`annualSalary`); er bringt weiter Rentenpunkte. Liegt er über
 der Grenze (2026: voll 20.763,75 €, teilweise mindestens 41.527,50 €), werden 40 % des
-übersteigenden Betrags angerechnet. Weitere Personen haben keine EM-Felder.
+übersteigenden Betrags angerechnet.
 
 In der Prognose deckt die EM-Rente ab „Ruhestand ab Alter“ einen Teil des Bedarfs, bis
 sie endet. Vor dem Ruhestand wird angenommen, dass sie als Einnahme im Budget steht und
 in die Sparraten einfließt. Läuft sie bis zur Regelaltersgrenze, ist die anschließende
 Altersrente mindestens die volle Erwerbsminderungsrente (bei teilweiser also das
 Doppelte des Zahlbetrags), sonst gilt die normale Hochrechnung.
+
+## Erwerbsminderungsrente weiterer Personen (Version 8)
+
+Weitere Personen (`retirement.people`) können dieselben vier EM-Felder in ihrer
+`statutoryPension` tragen wie die eigene Person. Rentenwert, Durchschnittsentgelt und
+Beitragsbemessungsgrenze bleiben gemeinsame Werte der eigenen Person und werden bei
+weiteren Personen abgewiesen. `disabilityUntilYear` und die Regelaltersgrenze beziehen
+sich auf das Geburtsjahr der jeweiligen Person; die Prognose rechnet beides auf das
+eigene Alter um. Die EM-Rente einer weiteren Person deckt wie die eigene ab „Ruhestand
+ab Alter“ einen Teil des Bedarfs, bis sie endet. Dateien der Version 7 bleiben
+unverändert lesbar.
+
+## Altersvorsorgedepots (Version 8)
+
+`retirement.pensionDepots` enthält beliebig viele geförderte Altersvorsorgedepots
+(ab 2027, Altersvorsorgereformgesetz). Jedes Depot gehört über `personId` der eigenen
+Person oder einer weiteren Person und hat einen monatlichen Eigenbeitrag
+(`monthlyContribution`). Optional: Guthaben heute (`balance`), erstes Beitragsjahr
+(`startYear`, fehlt = 2027), Rendite (`returnPercent`, fehlt = 5 %), Auszahlungsbeginn
+(`payoutAge`, fehlt = Regelaltersgrenze, gerechnet wird mit 65 bis 70), Teilauszahlung zu
+Beginn (`lumpSumPercent`, 0 bis 30), Abzüge auf die Auszahlung (`deductionPercent`, fehlt =
+20 %) und Geburtsjahre der Kinder mit Kindergeld (`childBirthYears`). Das Feld fehlt in
+Dateien der Version 7; sie bleiben lesbar. Verweist ein Depot beim Speichern auf eine
+entfernte Person, gehört es danach der eigenen Person.
+
+Zulagen und Auszahlung werden berechnet, nicht gespeichert: Grundzulage 50 % auf die
+ersten 360 € Eigenbeitrag im Jahr und 25 % auf weitere Beiträge bis 1.800 € (höchstens
+540 €), Kinderzulage 100 % des Eigenbeitrags bis 300 € je Kind bis zum Jahr des 18.
+Geburtstags, einmalig 200 € Berufseinsteigerbonus, wer zu Beginn des ersten Beitragsjahres
+jünger als 25 ist. Beiträge laufen bis „Sparen bis Alter“ bzw. „Arbeiten bis Alter“ der
+Person, höchstens bis zur Auszahlung. Ausgezahlt wird als Auszahlplan bis 85 in heutiger
+Kaufkraft; die Prognose zählt ihn als Einkommen, eine Teilauszahlung fließt ins liquide
+Vermögen. Der steuerliche Sonderausgabenabzug in der Ansparphase wird nicht eingerechnet.
 
 Wird unter „Weitere Renten & Einkünfte“ ein Rürup- oder Basisrentenvertrag
 eingetragen, zeigt die Daten-Seite einen sachlichen Hinweis: Er ist nicht in ein
