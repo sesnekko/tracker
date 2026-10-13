@@ -75,7 +75,7 @@ test('version 8 stores several depots per person and they survive a backup', () 
   ];
   store.setItem('lt-av-depots', JSON.stringify(rows));
   const doc = store.document();
-  assert.equal(doc.schemaVersion, 8);
+  assert.equal(doc.schemaVersion, Data.VERSION);
   assert.deepEqual(doc.retirement.pensionDepots[0], { id: 'depot-1', name: 'AV-Depot', personId: 'person-main', monthlyContribution: 150 });
   assert.deepEqual(doc.retirement.pensionDepots[1], {
     id: 'depot-2', name: 'AV-Depot Anna', personId: 'person-1', monthlyContribution: 50, balance: 1200, startYear: 2028,
@@ -122,4 +122,71 @@ test('forecast: payouts count as income until 85, the partial lump sum flows int
   // Retirement module off: no depots in the forecast.
   a.run("appStorage.setItem('lt-av-depots',JSON.stringify([{name:'AV',contrib:150}]));appStorage.setItem('v2-modules',JSON.stringify({assets:true,liab:true,pension:false,budget:true,forecast:true}));_modsCache=null;");
   assert.deepEqual(a.json('buildPlan().avd'), []);
+});
+
+test('budget: from the start year the contribution counts as saving, the subsidy as income and saving', () => {
+  const a = app(html); a.csv(demoCSV);
+  a.run("appStorage.setItem('lt-av-depots',JSON.stringify([{id:'depot-1',name:'AV',contrib:150}]));");
+  const month = (ym, m) => a.json(`(()=>{selectedMonth='${ym}';const c=calcBudgetMonth(loadBudgetData(),${m});return{frei:c.frei,einnahmen:c.einnahmen,spar:c.sparplaene,sparItems:c.sparItems.filter(i=>i.depot),einItems:c.einItems.filter(i=>i.depot)};})()`);
+  const before = month('2026-10', 2);
+  assert.deepEqual(before.sparItems, []);
+  const after = month('2027-03', 2);
+  assert.deepEqual(after.sparItems.map(i => [i.label, i.val]), [['AV – Beitrag', 150], ['AV – Zulage Ø', 45]]);
+  assert.deepEqual(after.einItems.map(i => [i.label, i.val]), [['Zulage Ø · AV', 45]]);
+  // The subsidy is income and saving at once; only the own contribution lowers the free amount.
+  a.run("appStorage.setItem('lt-av-depots','[]');");
+  const without = month('2027-03', 2);
+  near(after.frei, without.frei - 150);
+  near(after.einnahmen, without.einnahmen + 45);
+});
+
+test('budget: a linked saving item is replaced by the depot and the forecast does not count it twice', () => {
+  const a = app(html); a.csv(demoCSV);
+  a.run("appStorage.setItem('lt-av-depots',JSON.stringify([{id:'depot-1',name:'AV',contrib:150}]));");
+  a.run("(()=>{const bd=loadBudgetData();bd.sparen.push({id:'budget-av',name:'AV-Depot',subcat:'',kind:'saving',targetGroupId:null,values:Array(12).fill(150),depotId:'depot-1'});saveBudgetData(bd);})()");
+  assert.equal(a.json("loadBudgetData().sparen.find(r=>r.id==='budget-av').depotId"), 'depot-1');
+  const spar = ym => a.json(`(()=>{selectedMonth='${ym}';return calcBudgetMonth(loadBudgetData(),2).sparItems.map(i=>i.label);})()`);
+  assert.ok(!spar('2027-03').includes('AV-Depot'), 'linked item replaced');
+  assert.ok(spar('2027-03').includes('AV – Beitrag'));
+  // Forecast savings from the budget skip depot rows; the depot has its own model.
+  const derived = () => a.json("(()=>{selectedMonth='2027-03';const r=deriveSavingsFromBudget(buildPlan());return{byGroup:r.byGroup,unmatched:r.unmatched};})()");
+  const withDepot = derived();
+  assert.ok(!withDepot.unmatched.some(n => /AV/.test(n)));
+  // Retirement module off: no depot rows, the linked item counts as an ordinary saving item again.
+  a.run("appStorage.setItem('v2-modules',JSON.stringify({assets:true,liab:true,pension:false,budget:true,forecast:true}));_modsCache=null;");
+  const off = spar('2027-03');
+  assert.ok(off.includes('AV-Depot'));
+  assert.ok(!off.includes('AV – Beitrag'));
+});
+
+test('version 9: budget items keep their depot link; a removed depot leaves an ordinary saving item', () => {
+  const store = Data.createStore(new MemoryStorage());
+  store.setItem('lt-av-depots', JSON.stringify([{ id: 'depot-1', name: 'AV', contrib: 150 }]));
+  store.setItem('budgetData', JSON.stringify({ einkommen: [], fixe: [], variable: [], sparen: [{ id: 'budget-av', name: 'AV-Depot', subcat: '', kind: 'saving', targetGroupId: null, values: Array(12).fill(150), depotId: 'depot-1' }] }));
+  const item = store.document().budget.items.find(i => i.id === 'budget-av');
+  assert.equal(item.depotId, 'depot-1');
+  const target = Data.createStore(new MemoryStorage());
+  target.importBackup(JSON.parse(JSON.stringify(store.exportBackup(new FixedDate()))));
+  assert.deepEqual(target.document(), store.document());
+  store.setItem('lt-av-depots', '[]');
+  assert.equal('depotId' in store.document().budget.items.find(i => i.id === 'budget-av'), false);
+  const v8 = Data.empty(); v8.schemaVersion = 8;
+  assert.doesNotThrow(() => Data.validate(v8));
+  const bad = JSON.parse(JSON.stringify(target.document()));
+  bad.budget.items[0].kind = 'expense'; bad.budget.items[0].category = 'fixe';
+  assert.throws(() => Data.validate(bad), /nur für Sparposten/);
+  const dangling = JSON.parse(JSON.stringify(target.document()));
+  dangling.retirement.pensionDepots = [];
+  assert.throws(() => Data.validate(dangling), /unbekannter Verweis/);
+});
+
+test('a saving item named like a depot is suggested for linking', () => {
+  const a = app(html);
+  a.run("appStorage.setItem('lt-av-depots',JSON.stringify([{id:'depot-1',name:'AV-Depot Max (Demo)',contrib:150},{id:'depot-2',name:'AV-Depot Anna (Demo)',contrib:50}]));");
+  assert.equal(a.run("_guessDepot('AV-Depot Max')"), 'depot-1');
+  assert.equal(a.run("_guessDepot('Altersvorsorgedepot Anna')"), 'depot-2');
+  assert.equal(a.run("_guessDepot('AV-Depot')"), '', 'ambiguous with two depots');
+  assert.equal(a.run("_guessDepot('ETF Sparplan Max')"), '', 'only for depot words');
+  a.run("appStorage.setItem('lt-av-depots',JSON.stringify([{id:'depot-1',name:'Mein Depot',contrib:150}]));");
+  assert.equal(a.run("_guessDepot('Altersvorsorgedepot')"), 'depot-1', 'the only depot');
 });

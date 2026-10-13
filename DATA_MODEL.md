@@ -5,11 +5,11 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `vermoegen_YYYY-MM-DD.json`. Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 8
+## Struktur, Version 9
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `8`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `9`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
@@ -468,6 +468,19 @@ jünger als 25 ist. Beiträge laufen bis „Sparen bis Alter“ bzw. „Arbeiten
 Person, höchstens bis zur Auszahlung. Ausgezahlt wird als Auszahlplan bis 85 in heutiger
 Kaufkraft; die Prognose zählt ihn als Einkommen, eine Teilauszahlung fließt ins liquide
 Vermögen. Der steuerliche Sonderausgabenabzug in der Ansparphase wird nicht eingerechnet.
+
+## Altersvorsorgedepots im Budget (Version 9)
+
+Ab dem ersten Beitragsjahr erscheint jedes Depot automatisch im Budget: der Eigenbeitrag
+als Sparposten unter Vermögensaufbau, die Zulage (inklusive Berufseinsteigerbonus im
+ersten Jahr) als Monatsschnitt des Jahresbetrags sowohl als Einnahme als auch unter
+Vermögensaufbau. „Nicht verplant“ sinkt dadurch nur um den Eigenbeitrag. Gezählt wird nur,
+solange der Bereich Altersvorsorge eingeschaltet ist; die Übernahme der Sparraten in die
+Prognose lässt diese Zeilen aus, weil das Depot dort ein eigenes Modell hat.
+
+Ein Sparposten kann mit `depotId` auf ein Depot zeigen („Beitrag für“). Er wird dann durch
+die automatischen Zeilen ersetzt und nie zusätzlich gezählt. Wird das Depot entfernt, bleibt
+der Posten ein gewöhnlicher Sparposten. Dateien der Version 8 bleiben lesbar.
 
 Wird unter „Weitere Renten & Einkünfte“ ein Rürup- oder Basisrentenvertrag
 eingetragen, zeigt die Daten-Seite einen sachlichen Hinweis: Er ist nicht in ein

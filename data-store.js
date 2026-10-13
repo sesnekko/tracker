@@ -4,7 +4,7 @@
   'use strict';
   const KEY = 'vermoegen-data-v1';
   const FORMAT = 'vermoegen-backup';
-  const VERSION = 8;
+  const VERSION = 9;
   const CATEGORIES = ['cash', 'etf', 'stock', 'bitcoin', 'crypto', 'metal', 'realEstate', 'vehicle', 'other', 'bav', 'illiquid', 'liab'];
   const BUDGET_CATEGORIES = ['einkommen', 'fixe', 'variable', 'sparen'];
   const MODULES = ['assets', 'liab', 'pension', 'budget', 'forecast'];
@@ -245,6 +245,8 @@
         const item = { id: itemId(row), name: row.name, category, subcategory: row.subcat || '', kind, targetGroupId, monthlyAmounts: row.values.map(v => number(v) ?? 0) };
         // Version 6: a loan payment may name its loan, so its rate is split and never counted twice.
         if (row.loanId) item.loanId = row.loanId;
+        // Version 9: a saving item may stand for an Altersvorsorgedepot, which then replaces it.
+        if (row.depotId && kind === 'saving') item.depotId = row.depotId;
         doc.budget.items.push(item);
       }
       const orderId = idsFor('order-', previous.budget ? previous.budget.standingOrders : []);
@@ -284,6 +286,9 @@
       if (kids.length) d.childBirthYears = kids;
       return d;
     });
+    // A removed depot leaves its budget item as an ordinary saving item.
+    const depotIds = new Set(doc.retirement.pensionDepots.map(d => d.id));
+    if (doc.budget) for (const item of doc.budget.items) if (own(item, 'depotId') && !depotIds.has(item.depotId)) delete item.depotId;
     const incomeId = idsFor('income-', previous.retirement.incomes);
     doc.retirement.incomes = parse(values, 'lt-pensions', []).map((r, i) => ({ id: incomeId(r, i), name: r.name || '', monthlyAmount: number(r.amount) ?? 0, fromAge: number(r.from) ?? 0 }));
     for (const [key, field] of Object.entries(SETTINGS)) {
@@ -337,7 +342,7 @@
       bd.accounts = Object.fromEntries(doc.accounts.map(a => [a.name, a.iban]));
       const endpoint = v => v.type === 'account' ? doc.accounts.find(a => a.id === v.accountId).name : v.name;
       bd.standingOrders = doc.budget.standingOrders.map(o => ({ id: o.id, from: endpoint(o.from), to: endpoint(o.to), amount: o.amount }));
-      for (const r of doc.budget.items) bd[r.category].push({ id: r.id, name: r.name, subcat: r.subcategory, kind: r.kind, targetGroupId: r.targetGroupId, targetGroup: r.targetGroupId ? groupName(r.targetGroupId) : null, ...(r.loanId ? { loanId: r.loanId } : {}), values: copy(r.monthlyAmounts) });
+      for (const r of doc.budget.items) bd[r.category].push({ id: r.id, name: r.name, subcat: r.subcategory, kind: r.kind, targetGroupId: r.targetGroupId, targetGroup: r.targetGroupId ? groupName(r.targetGroupId) : null, ...(r.loanId ? { loanId: r.loanId } : {}), ...(r.depotId ? { depotId: r.depotId } : {}), values: copy(r.monthlyAmounts) });
       bd.oneTime = copy(doc.budget.oneTime || []);
       put('budgetData', bd);
     }
@@ -403,7 +408,7 @@
     safeKeys(doc);
     object(doc, 'Datei', ['format', 'schemaVersion', 'currency', 'exportedAt', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences'], ['format', 'schemaVersion', 'currency', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences']);
     if (doc.format !== FORMAT) fail('format', 'keine Vermögen-Sicherung');
-    if (![1,2,3,4,5,6,7,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
+    if (![1,2,3,4,5,6,7,8,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
     if (doc.currency !== 'EUR') fail('currency', 'nur EUR wird unterstützt');
     if (own(doc, 'exportedAt') && (typeof doc.exportedAt !== 'string' || !Number.isFinite(Date.parse(doc.exportedAt)))) fail('exportedAt', 'ungültiges Datum');
     const groups = unique(doc.groups, 'groups');
@@ -481,7 +486,11 @@
         }
       }
       for (const b of doc.budget.items) {
-        object(b, 'Budgetposten', ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts', 'loanId'], ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts']);
+        object(b, 'Budgetposten', ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts', 'loanId', 'depotId'], ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts']);
+        if (own(b, 'depotId')) {
+          ref(b.depotId, 'Budgetposten.Altersvorsorgedepot', new Set((doc.retirement && doc.retirement.pensionDepots || []).map(d => d.id)));
+          if (b.kind !== 'saving') fail('Budgetposten.Altersvorsorgedepot', 'nur für Sparposten');
+        }
         if (own(b, 'loanId')) { ref(b.loanId, 'Budgetposten.Kredit', positions); if (doc.positions.find(p => p.id === b.loanId).category !== 'liab') fail('Budgetposten.Kredit', 'keine Verbindlichkeit'); }
         text(b.name, 'Budgetname', true); text(b.subcategory, 'Unterkategorie');
         if (!BUDGET_CATEGORIES.includes(b.category)) fail('Budgetkategorie', 'unbekannt');
