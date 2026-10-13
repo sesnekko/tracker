@@ -101,15 +101,15 @@ Versionen dürfen nicht stillschweigend gelesen oder heruntergestuft werden.
 ## Prüfung und Demo
 
 ```sh
-node --test tests/data-model.test.cjs
-node scripts/build-demo.cjs
+node --test .tests/data-model.test.cjs
+node .scripts/build-demo.cjs
 ```
 
 Die Tests vergleichen Monatswerte, Budget und Monte-Carlo-Ergebnisse mit dem
 Stand vor der Migration (`1f17a25`). Sie prüfen außerdem Gerätewechsel,
 Umbenennungen, archivierte Daten, ungültige Importe, Speicherfehler und die
 tatsächlichen Export-/Importfunktionen. `demo_backup.json` ist die neue Demo für
-die App; `demo_export.csv` bleibt eine Test- und Kompatibilitätsvorlage.
+die App; `.tests/demo_export.csv` bleibt eine Test- und Kompatibilitätsvorlage.
 
 Die JSON-Demo zeigt einen fiktiven Haushalt mit 34 Monatsständen von Januar 2024
 bis Oktober 2026: Konten, zwei ETFs, die Einzelaktien Apple, Amazon und Nestlé,

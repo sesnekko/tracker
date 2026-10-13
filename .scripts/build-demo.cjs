@@ -1,12 +1,12 @@
 // Fictional household: keep the legacy sample history, add current model features.
 const fs = require('node:fs');
 const path = require('node:path');
-const { app } = require('../tests/app-harness.cjs');
+const { app } = require('../.tests/app-harness.cjs');
 const Data = require('../data-store.js');
 const Loan = require('../loan-model.js');
 const root = path.resolve(__dirname, '..');
 const demo = app(fs.readFileSync(path.join(root, 'index.html'), 'utf8'));
-demo.csv(fs.readFileSync(path.join(root, 'demo_export.csv'), 'utf8'));
+demo.csv(fs.readFileSync(path.join(root, '.tests', 'demo_export.csv'), 'utf8'));
 const doc = JSON.parse(demo.storage.getItem(Data.KEY));
 // CSV import creates a synthetic live month. Keep the demo's actual history only;
 // the target device creates its live month when the app opens.
@@ -143,7 +143,7 @@ doc.forecast.settings.saveUntilAge = 67;
 doc.forecast.events[1] = {id: 'event-2', name: 'Renovierung', year: 2030, amount: 15000, from: {type: 'liquid'}, to: {type: 'external'}};
 Data.validate(doc);
 function demoScript(d) {
-  return '/* Demo-Daten für die lokal geöffnete App (file://), erzeugt von scripts/build-demo.cjs aus demo_backup.json. */\n'
+  return '/* Demo-Daten für die lokal geöffnete App (file://), erzeugt von .scripts/build-demo.cjs aus demo_backup.json. */\n'
     + 'window.ASSETS_DEMO_BACKUP=' + JSON.stringify(d) + ';\n';
 }
 fs.writeFileSync(path.join(root, 'demo_backup.json'), JSON.stringify(doc, null, 2) + '\n');
