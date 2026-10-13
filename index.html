@@ -8,7 +8,8 @@
 <meta name="theme-color" content="#eae8e3">
 <meta name="apple-mobile-web-app-title" content="Vermögen">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png?v=2">
+<link rel="icon" type="image/png" href="icon-192.png?v=2">
 <title>Vermögen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -421,6 +422,9 @@ details.lt-settings-panel[open]>.lt-settings-toggle::before{transform:rotate(45d
 .lt-result strong{font-weight:500;color:var(--ink)}
 .plan-row{display:grid;grid-template-columns:1fr 1fr 0.7fr 24px;gap:8px 12px;align-items:end;margin-bottom:8px}
 .plan-row .input-group{min-width:0}
+.plan-row .input-group[hidden]{display:none!important}
+/* Altersvorsorgedepot: Felder mit Standardwert nur beim Bearbeiten zeigen */
+body:not(.v2-editing) #page-import .plan-row.avd .avd-default{display:none}/* sonst gewinnt #page-import .input-group{display:grid} */
 .plan-del{background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;height:36px;padding:0}
 .plan-row.ev{grid-template-columns:1.3fr .7fr 1fr 24px;grid-template-areas:"name year amount del" "from from to to";padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid color-mix(in srgb,var(--border) 40%,transparent)}
 .plan-row.ev .pc-name{grid-area:name}.plan-row.ev .pc-year{grid-area:year}.plan-row.ev .pc-amount{grid-area:amount}
@@ -1593,6 +1597,19 @@ body.dark .ds-seg button.on{background:var(--bg3)}
 .budget-hint b{display:block;color:var(--ink);font-size:16px;font-weight:500;margin-bottom:6px}
 .budget-hint p{font-size:14px;line-height:1.5;color:var(--muted);margin:0 0 14px}
 .ds-anchor{scroll-margin-top:16px}
+.ask-overlay{position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.38);opacity:0;transition:opacity .18s;overscroll-behavior:contain}
+.ask-overlay.show{opacity:1}
+.ask{width:100%;max-width:320px;max-height:calc(100dvh - 48px);overflow-y:auto;background:var(--bg);color:var(--ink);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.3);padding:20px 18px 14px;text-align:center;transform:scale(.96);transition:transform .18s}
+.ask-overlay.show .ask{transform:none}
+body.dark .ask-overlay{background:rgba(0,0,0,.6)}
+body.dark .ask{background:var(--bg2);box-shadow:0 0 0 .5px var(--border),0 18px 50px rgba(0,0,0,.5)}
+.ask h2{font-size:17px;font-weight:600;line-height:1.3;margin:0 0 6px}
+.ask p{font-size:14px;line-height:1.45;color:var(--muted);margin:0}
+.ask-btns{display:flex;gap:8px;margin-top:16px}
+.ask-btns button{flex:1;min-height:44px;border:none;border-radius:11px;font:inherit;font-size:15px;font-weight:500;background:var(--fill);color:var(--ink);cursor:pointer}
+.ask-btns .primary{background:var(--ink);color:var(--bg)}
+.ask-btns .danger{background:var(--red);color:#fff}
+@media (prefers-reduced-motion:reduce){.ask-overlay,.ask{transition:none}}
 .ds-toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));z-index:450;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:999px;padding:9px 18px;font-size:14px;font-weight:500;transition:opacity .2s,transform .25s;white-space:nowrap}
 .ds-toast.show{opacity:1;transform:translate(-50%,0)}
 @media(min-width:768px){.ds-toast{bottom:32px}}
@@ -1761,7 +1778,7 @@ body.onboarding-open{overflow:hidden}
 .ob-field input:focus,.ob-field select:focus{outline:2px solid var(--green);outline-offset:2px}
 .ob-position-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .ob-add{width:100%;min-height:48px;font-size:14px;border-radius:12px}
-.ob-welcome-mark{width:60px;height:60px;border-radius:19px;display:grid;place-items:center;background:var(--card);color:var(--ink);font-size:32px;font-weight:300;margin-bottom:26px}
+.ob-welcome-mark{width:60px;height:60px;border-radius:14px;display:block;margin-bottom:26px;box-shadow:0 0 0 .5px var(--border),0 6px 18px rgba(0,0,0,.12)}
 .ob-welcome .ob-title{font-size:38px;line-height:1.2;margin-bottom:16px}
 .ob-welcome .ob-sub{font-size:16px;max-width:370px;line-height:1.6;margin-bottom:28px}
 .ob-welcome-actions{width:100%;max-width:340px;display:flex;flex-direction:column;gap:10px}
@@ -2016,7 +2033,7 @@ body.onboarding-open{overflow:hidden}
 
 <aside id="onboardingNextStep" class="ob-notif" role="status" aria-labelledby="onboardingNextTitle" hidden>
   <a href="#data" class="ob-notif-body" draggable="false" onclick="event.preventDefault();if(!_obNotifDragged){dismissOnboardingNext();navigateToPage('import')}">
-    <span class="ob-notif-icon"><img src="icon-192.png" alt="" draggable="false"></span>
+    <span class="ob-notif-icon"><img src="icon-192.png?v=2" alt="" draggable="false"></span>
     <span class="ob-notif-text">
       <span class="ob-notif-head"><b id="onboardingNextTitle" tabindex="-1">Dein nächster Schritt</b><time>jetzt</time></span>
       <span class="ob-notif-msg">Auf der Daten-Seite warten ein paar Vorschläge, mit denen du nach und nach genauer wirst.</span>
@@ -2168,6 +2185,8 @@ body.onboarding-open{overflow:hidden}
 </div>
 
 <template id="tpl-settings">
+<div class="ds-group-t st-t">Erscheinungsbild</div>
+<div id="themeSetting"></div>
 <div class="ds-group-t st-t">Darstellung der Charts</div>
 <div id="chartDefaults"></div>
 </template>
@@ -2458,7 +2477,7 @@ body.onboarding-open{overflow:hidden}
 <!-- Einmalige Mitteilung, sobald ein Kredit einen berechneten Verlauf ergänzt -->
 <aside id="loanHistoryNotif" class="ob-notif" role="status" aria-labelledby="loanHistoryNotifTitle" hidden>
   <a href="#" class="ob-notif-body" draggable="false" onclick="event.preventDefault();if(!_obNotifDragged)_notifOut(this.parentNode,'up')">
-    <span class="ob-notif-icon"><img src="icon-192.png" alt="" draggable="false"></span>
+    <span class="ob-notif-icon"><img src="icon-192.png?v=2" alt="" draggable="false"></span>
     <span class="ob-notif-text">
       <span class="ob-notif-head"><b id="loanHistoryNotifTitle">Kreditverlauf berechnet</b><time>jetzt</time></span>
       <span class="ob-notif-msg">Fehlende Monate stammen aus dem Tilgungsplan. Asset-Werte ohne eigenen Eintrag sind mit dem zuletzt bekannten Wert geschätzt.</span>
@@ -2475,7 +2494,7 @@ body.onboarding-open{overflow:hidden}
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="data-store.js?v=13"></script>
+<script src="data-store.js?v=15"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
 <script src="asset-model.js?v=4"></script>
@@ -2730,6 +2749,16 @@ const SUN='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><
 /* ── Info-Texte: Tippen auf einen Feldnamen mit data-info öffnet die Erklärung ── */
 const INFO={
   'drvx-name':['Weitere gesetzliche Rente','<p>Zum Beispiel die Rente deiner Partnerin oder deines Partners. Sie fließt ab ihrem Rentenbeginn in die Prognose ein.</p>'],
+  'avd-name':['Altersvorsorgedepot','<p>Das geförderte Depot ab 2027 (Nachfolger der Riester-Rente). Angelegt wird z. B. in ETFs, ohne Beitragsgarantie.</p><p>Der Staat legt auf deine Beiträge Zulagen obendrauf: 50 % auf die ersten 360 € im Jahr, 25 % auf weitere Beiträge bis 1.800 € – höchstens 540 €. Dazu kommen bis zu 300 € je Kind.</p><p>Jede Person braucht ein eigenes Depot. Du kannst mehrere anlegen, z. B. für dich und deine Partnerin oder deinen Partner.</p>'],
+  'avd-person':['Für','<p>Wem das Depot gehört. Bestimmt das Alter für Auszahlung und Berufseinsteigerbonus. Weitere Personen legst du oben unter „Weitere gesetzliche Renten“ an.</p>'],
+  'avd-contrib':['Beitrag pro Monat','<p>Dein eigener Beitrag ohne Zulagen. Gezahlt wird ab dem Beginn bis „Sparen bis Alter“ bzw. „Arbeiten bis Alter“ der Person.</p><p>Volle Grundzulage ab 150 € im Monat (1.800 € im Jahr). Mehr darfst du einzahlen, dafür gibt es aber keine Zulage.</p><p>Kommt der Beitrag aus deiner bisherigen Sparrate, senke diese unter Prognose & Annahmen, sonst zählt er doppelt.</p>'],
+  'avd-kids':['Kinder','<p>Geburtsjahre der Kinder, für die diese Person das Kindergeld bekommt, z. B. „2019, 2022“. Je Kind gibt es bis zu 300 € Kinderzulage im Jahr, so viel wie du selbst einzahlst.</p><p>Gerechnet wird bis zum Jahr des 18. Geburtstags. In Ausbildung oder Studium läuft das Kindergeld oft bis 25 – dann liegt die App auf der vorsichtigen Seite.</p>'],
+  'avd-balance':['Guthaben heute','<p>Aktueller Depotwert, z. B. nach einem Wechsel aus einem Riester-Vertrag oder ab 2027 der Stand laut Depotauszug. Leer = Start bei 0 €.</p>'],
+  'avd-start':['Beginn','<p>Ab welchem Jahr du einzahlst. Leer = 2027, früher geht es nicht.</p>'],
+  'avd-ret':['Rendite','<p>Erwartete Rendite pro Jahr nach Kosten. Leer = 5 % (breiter Aktien-ETF abzüglich Depotkosten).</p>'],
+  'avd-from':['Auszahlung ab Alter','<p>Die Auszahlung beginnt frühestens mit 65 und spätestens mit 70. Leer = Regelaltersgrenze der Person.</p><p>Gerechnet wird ein Auszahlplan bis 85. Alternativ kann man das Guthaben in eine lebenslange Rente umwandeln.</p>'],
+  'avd-lump':['Teilauszahlung','<p>Zu Beginn der Auszahlung dürfen einmalig bis zu 30 % des Guthabens auf einmal ausgezahlt werden. In der Prognose fließt der Betrag ins liquide Vermögen, der Rest wird monatlich bis 85 ausgezahlt.</p>'],
+  'avd-deduct':['Abzüge','<p>Die Auszahlungen sind voll einkommensteuerpflichtig. Leer = 20 % pauschal. Im Gegenzug sind die Beiträge in der Ansparphase steuerlich begünstigt; diesen Steuervorteil rechnet die App nicht ein.</p>'],
   'drvx-by':['Geburtsjahr','<p>Geburtsjahr dieser Person. Bestimmt ihre Regelaltersgrenze und wann ihre Rente beginnt.</p>'],
   'drvx-until':['Arbeiten bis Alter','<p>Bis zu diesem Alter sammelt diese Person mit ihrem Gehalt weitere Rentenpunkte. Leer = wie „Sparen bis Alter“ in deinen Annahmen.</p>'],
   'v2-at-retire':['Verfügbar bei Rentenbeginn','<p>Median des entnehmbaren Vermögens zum geplanten Ruhestand (ohne Sachwerte, Altersvorsorge erst ab „Verfügbar ab“), in heutiger Kaufkraft.</p><p><strong>Ziel</strong>: Vermögen, das zum Ruhestand nötig ist, um den Bedarf abzüglich Renten bis „Planen bis Alter“ zu decken.</p>'],
@@ -2749,7 +2778,7 @@ const INFO={
   'lt-safety':['Sicherheitsniveau','<p>In wie viel Prozent der 500 simulierten Marktverläufe das Geld bis „Planen bis Alter“ reichen muss. Bestimmt „Rente möglich ab“. 85–90 % sind ein gängiger Wert.</p>'],
   'drv-points':['Rentenpunkte heute','<p>Deine bisher gesammelten Entgeltpunkte. Stehen in der jährlichen Renteninformation bzw. Rentenauskunft der Deutschen Rentenversicherung.</p><p>Ein Jahr mit Durchschnittsverdienst ergibt 1 Punkt.</p>'],
   'drv-salary':['Bruttojahresgehalt','<p>Dein aktuelles rentenversicherungspflichtiges Bruttogehalt pro Jahr. Daraus werden die Punkte bis „Sparen bis Alter“ hochgerechnet (Gehalt ÷ Durchschnittsentgelt, höchstens bis zur Beitragsbemessungsgrenze).</p><p>Mit Erwerbsminderungsrente: dein Hinzuverdienst pro Jahr.</p><p>Annahme: Dein Gehalt wächst wie die Durchschnittslöhne.</p>'],
-  'drv-emType':['Erwerbsminderungsrente','<p>Nur ausfüllen, wenn du bereits eine Rente wegen Erwerbsminderung beziehst.</p><p><strong>Teilweise</strong>: Du kannst noch 3 bis unter 6 Stunden am Tag arbeiten, die Rente ist halb so hoch wie die volle. <strong>Voll</strong>: unter 3 Stunden. Bekommst du bei teilweiser Erwerbsminderung die volle Rente, weil du keine Teilzeitstelle findest (Arbeitsmarktrente), wähle „Voll“.</p><p>Ein Hinzuverdienst (z. B. Teilzeit) gehört ins Feld „Brutto/Jahr“: Er bringt weitere Rentenpunkte und wird mit der Hinzuverdienstgrenze verglichen.</p>'],
+  'drv-emType':['Erwerbsminderungsrente','<p>Nur ausfüllen, wenn bereits eine Rente wegen Erwerbsminderung bezogen wird – bei dir oder bei einer weiteren Person.</p><p><strong>Teilweise</strong>: Du kannst noch 3 bis unter 6 Stunden am Tag arbeiten, die Rente ist halb so hoch wie die volle. <strong>Voll</strong>: unter 3 Stunden. Bekommst du bei teilweiser Erwerbsminderung die volle Rente, weil du keine Teilzeitstelle findest (Arbeitsmarktrente), wähle „Voll“.</p><p>Ein Hinzuverdienst (z. B. Teilzeit) gehört ins Feld „Brutto/Jahr“: Er bringt weitere Rentenpunkte und wird mit der Hinzuverdienstgrenze verglichen.</p>'],
   'drv-em':['EM-Rente netto','<p>Monatlicher Zahlbetrag laut Rentenbescheid nach Kranken- und Pflegeversicherung, abzüglich geschätzter Einkommensteuer.</p><p>In der Prognose deckt sie ab „Ruhestand ab Alter“ einen Teil des Bedarfs. Vorher wird angenommen, dass sie als Einnahme im Budget steht und in die Sparraten einfließt.</p>'],
   'drv-emUntil':['Läuft bis Jahr','<p>Leer = bis zur Regelaltersgrenze. Dann wird sie zur Altersrente, die mindestens so hoch ist wie die volle Erwerbsminderungsrente.</p><p>Befristete Renten (meist 3 Jahre) werden oft verlängert. Trag ein Jahr nur ein, wenn du davon ausgehst, dass die Rente dann endet.</p>'],
   'drv-emLimit':['Hinzuverdienstgrenze','<p>Deine persönliche Grenze bei teilweiser Erwerbsminderung steht im Rentenbescheid. Sie liegt 2026 bei mindestens 41.527,50 € im Jahr. Leer = Mindestgrenze.</p><p>Bei voller Erwerbsminderung gilt 2026 einheitlich 20.763,75 €. Vom Betrag über der Grenze werden 40 % auf die Rente angerechnet.</p>'],
@@ -2963,7 +2992,8 @@ function buildPicker(){
           t.onPick(ym);
           return;
         }
-        _resolvePendingEdits();/* vor dem Monatswechsel, sonst landen Eingaben im falschen Monat */
+        /* vor dem Monatswechsel, sonst landen Eingaben im falschen Monat */
+        if(!_resolvePendingEdits(()=>cell.click()))return;
         selectedMonth=ym;
         updateBtn();
         closePickerPopup();
@@ -3700,11 +3730,18 @@ function resetLifetimeChart(){_applyChartDefaults('lifetime');renderLifetimePage
 const INFO_SHEETS={settings:'Einstellungen',data:'Daten',help:'Hilfe'};
 function openInfoSheet(kind){
   const tpl=document.getElementById('tpl-'+kind);if(!tpl)return;
-  if(!_openSheet(INFO_SHEETS[kind],tpl.innerHTML,()=>'quiet','Fertig'))return;
+  if(!_openSheet(INFO_SHEETS[kind],tpl.innerHTML,()=>'quiet','Fertig',()=>openInfoSheet(kind)))return;
   _sheetCtx={info:kind};
   document.getElementById('dsCancel').style.visibility='hidden';
-  _renderChartDefaults();_refreshBackupInfo();
+  _renderThemeSetting();_renderChartDefaults();_refreshBackupInfo();
 }
+/* Einstellungen → Erscheinungsbild: gleicher Schalter wie das Sonnen-/Mond-Symbol oben, Teil der Sicherung */
+function _renderThemeSetting(){
+  const el=document.getElementById('themeSetting');if(!el)return;
+  const opt=(dark,label)=>`<button type="button" data-theme-set="${dark?'dark':'light'}" class="${isDark===dark?'on':''}" aria-pressed="${isDark===dark}">${label}</button>`;
+  el.innerHTML=`<div class="ds-group"><div class="ds-row"><span class="ds-l">Modus</span><div class="ds-seg cd-seg" role="group">${opt(false,'Hell')}${opt(true,'Dunkel')}</div></div></div>`;
+}
+function setTheme(dark){if(isDark!==dark){toggleTheme();haptic('light');}}
 /* Aktionen, die selbst ein Fenster öffnen oder neu laden: Einstellungen vorher schließen */
 function _settingsRun(fn){_closeSheet(true);fn();}
 /* Daten-Seite → Darstellung: Standard je Seite wählen; die Änderung gilt sofort */
@@ -3838,7 +3875,7 @@ function parseCsvRows(text,sep){
 }
 function handleCsvUpload(ev){
   const f=ev.target.files[0];if(!f)return;
-  if(!_resolvePendingEdits())return;
+  if(!_resolvePendingEdits(()=>handleCsvUpload(ev)))return;
   const r=new FileReader();
   r.onload=e=>{
     let committed=false;
@@ -4303,8 +4340,41 @@ function showImportError(message){
 }
 function showCsvMsg(m,t){if(_sheetOpen&&t==='error'){_sheetError(m);return;}const el=document.getElementById('csvMsg');el.textContent=m;el.style.display='block';el.style.color=t==='error'?'var(--red)':'var(--green)';setTimeout(()=>el.style.display='none',5000);}
 
-function resetApp(){
-  if(!confirm('Alle Daten (Vermögen, Budget, Prognose-Einstellungen, Theme) werden unwiderruflich gelöscht.\nTipp: vorher per „Sicherung exportieren“ sichern.\n\nFortfahren?'))return;
+/* ── Rückfragen im App-Stil statt confirm()/alert() ──
+   Manche Browser (z. B. eingebettete Vorschauen) unterdrücken native Dialoge, confirm() liefert dort sofort false.
+   Löst mit true (OK), false (Abbrechen) oder null (daneben getippt, Escape) auf; cancel:null = nur ein Knopf. */
+function _ask({title='',text='',ok='OK',cancel='Abbrechen',danger=false}={}){
+  return new Promise(resolve=>{
+    /* Schon eine Rückfrage offen (z. B. doppelt getippt): keine zweite darüberlegen */
+    if(document.querySelector('.ask-overlay')){resolve(null);return;}
+    const prev=document.activeElement;
+    const wrap=document.createElement('div');wrap.className='ask-overlay';
+    const btn=(v,label,cls)=>`<button type="button" data-ask="${v}"${cls?` class="${cls}"`:''}>${escHTML(label)}</button>`;
+    wrap.innerHTML=`<div class="ask" role="alertdialog" aria-modal="true"${title?' aria-labelledby="askTitle"':''}${text?' aria-describedby="askText"':''}>`
+      +(title?`<h2 id="askTitle">${escHTML(title)}</h2>`:'')+(text?`<p id="askText">${escHTML(text).replace(/\n/g,'<br>')}</p>`:'')
+      +`<div class="ask-btns">${cancel===null?'':btn(0,cancel)}${btn(1,ok,danger?'danger':'primary')}</div></div>`;
+    const buttons=[...wrap.querySelectorAll('button')];
+    const done=v=>{
+      if(!wrap.isConnected)return;
+      wrap.remove();document.removeEventListener('keydown',key,true);
+      if(prev&&prev.focus)try{prev.focus({preventScroll:true});}catch(error){}
+      resolve(cancel===null&&v===null?true:v);
+    };
+    /* Escape schließt nur den Dialog (nicht das Sheet darunter); Tab bleibt bei den Knöpfen */
+    const key=e=>{
+      if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();done(null);}
+      else if(e.key==='Tab'){e.preventDefault();const i=buttons.indexOf(document.activeElement);buttons[(i+(e.shiftKey?-1:1)+buttons.length)%buttons.length].focus();}
+    };
+    wrap.addEventListener('click',e=>{const b=e.target.closest('[data-ask]');if(b)done(b.dataset.ask==='1');else if(e.target===wrap)done(null);});
+    document.addEventListener('keydown',key,true);
+    document.body.appendChild(wrap);
+    /* Bei Löschen o. Ä. liegt der Fokus auf „Abbrechen“, sonst auf OK */
+    (danger&&buttons.length>1?buttons[0]:buttons[buttons.length-1]).focus({preventScroll:true});
+    requestAnimationFrame(()=>wrap.classList.add('show'));
+  });
+}
+async function resetApp(){
+  if(!await _ask({title:'Alle Daten löschen?',text:'Vermögen, Budget, Prognose und Einstellungen werden unwiderruflich von diesem Gerät gelöscht.\nTipp: vorher unter „Daten“ eine Sicherung exportieren.',ok:'Alles löschen',danger:true}))return;
   appStorage.clear();
   location.reload();
 }
@@ -5014,6 +5084,7 @@ function toggleTheme(){
   document.body.classList.toggle('dark',isDark);
   appStorage.setItem('darkMode',isDark?'1':'0');
   document.getElementById('themeIcon').innerHTML=isDark?MOON:SUN;
+  _renderThemeSetting();
   /* Destroy all charts so they rebuild with new theme colors */
   Object.keys(charts).forEach(k=>destroyChart(k));
   render();
@@ -5361,7 +5432,7 @@ function setupBottomNav(){
 }
 
 function navigateToPage(page){
-  if(page!=='import'&&!_resolvePendingEdits())return;
+  if(page!=='import'&&!_resolvePendingEdits(()=>navigateToPage(page)))return;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   /* Sync both navs */
@@ -6148,12 +6219,18 @@ function setFormReadOnly(ro){
   }
 }
 
-/* Ungespeicherte Eingaben der Data-Seite nicht still verwerfen (Export, Import, Seiten- oder Monatswechsel) */
-function _resolvePendingEdits(){
-  if(_sheetOpen&&!_closeSheet())return false;
+/* Ungespeicherte Eingaben der Data-Seite nicht still verwerfen (Export, Import, Seiten- oder Monatswechsel).
+   Ist eine Rückfrage nötig, liefert die Funktion false; nach der Antwort läuft die Aktion über again() erneut. */
+function _resolvePendingEdits(again){
+  if(_sheetOpen&&!_closeSheet(false,again))return false;
   if(!_editMode)return true;
-  if(confirm('Auf der Data-Seite gibt es ungespeicherte Änderungen.\n\nOK = jetzt speichern\nAbbrechen = verwerfen'))return saveEntry();
-  setFormReadOnly(true);return true;
+  _ask({title:'Ungespeicherte Änderungen',text:'Auf der Daten-Seite gibt es Änderungen, die noch nicht gesichert sind.',ok:'Sichern',cancel:'Verwerfen'}).then(save=>{
+    if(save===null)return;
+    if(save){if(!saveEntry())return;}
+    else setFormReadOnly(true);
+    if(again)again();
+  });
+  return false;
 }
 
 function enterEditMode(){
@@ -6418,10 +6495,10 @@ function addCustomField(section='assets'){
   return true;
 }
 
-function removeCustomField(fieldId){
+async function removeCustomField(fieldId){
   const field=_fc.fields.find(f=>f.id===fieldId);
   if(!field)return false;
-  if(!confirm(`„${field.label}“ entfernen?\n\nDie Position zählt dann in keinem Monat mehr mit, auch nicht im bisherigen Verlauf. Die erfassten Werte bleiben in der Sicherung erhalten.\n\nKonto aufgelöst oder verkauft? Trage stattdessen 0 € ein, dann bleibt der Verlauf unverändert.`))return false;
+  if(!await _ask({title:`„${field.label}“ entfernen?`,text:'Die Position zählt dann in keinem Monat mehr mit, auch nicht im bisherigen Verlauf. Die erfassten Werte bleiben in der Sicherung erhalten.\n\nKonto aufgelöst oder verkauft? Trage stattdessen 0 € ein, dann bleibt der Verlauf unverändert.',ok:'Entfernen',danger:true}))return false;
   _fc.fields=_fc.fields.filter(f=>f.id!==fieldId);
   saveFieldConfig(_fc);
   const d=loadData();
@@ -6555,7 +6632,13 @@ function saveEntry(){
   const dpWrap=document.getElementById('dpPensions');
   if(dpWrap)appStorage.setItem('lt-pensions',JSON.stringify(_collectPlanRows(dpWrap,PENSION_COLS).filter(r=>r.name||r.amount)));
   const dxWrapS=document.getElementById('dpDrvExtra');
-  if(dxWrapS)appStorage.setItem('lt-drv-extra',JSON.stringify(_collectPlanRows(dxWrapS,DRV_EXTRA_COLS).filter(r=>r.name||r.points||r.salary)));
+  if(dxWrapS)appStorage.setItem('lt-drv-extra',JSON.stringify(_collectPlanRows(dxWrapS,DRV_EXTRA_COLS).map(_drvEmClean).filter(r=>r.name||r.points||r.salary||r.em)));
+  const avWrapS=document.getElementById('dpAvd');
+  if(avWrapS){
+    /* Depots einer gerade entfernten weiteren Person gehören danach zur eigenen Person */
+    const ids=new Set(getDrvExtra().map(r=>r.id).filter(Boolean));
+    appStorage.setItem('lt-av-depots',JSON.stringify(_collectAvd(avWrapS).map(_avdClean).filter(r=>r.contrib||r.balance).map(r=>Object.assign(r,{person:ids.has(r.person)?r.person:''}))));
+  }
   appStorage.commitTransaction();
   updateLifetimeInputs();
 
@@ -6620,7 +6703,7 @@ function _refreshBackupInfo(){
 function _backupDone(){try{localStorage.setItem(BACKUP_KEY,new Date().toISOString());}catch(error){}_refreshBackupInfo();_nsRefresh();_toast('Sicherung erstellt');}
 function exportBackup(){
   try{
-    if(!_resolvePendingEdits())return;
+    if(!_resolvePendingEdits(exportBackup))return;
     const now=new Date(),day=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
     const doc=appStorage.exportBackup(now),name='vermoegen_'+day+'.json';
     /* iPhone/iPad: Teilen-Menü (z. B. „In Dateien sichern“), sonst Download */
@@ -6641,7 +6724,7 @@ async function handleDataUpload(ev){
     const doc=JSON.parse((await file.text()).replace(/^\uFEFF/,''));
     AssetsData.validate(doc);
     const date=doc.exportedAt?new Date(doc.exportedAt).toLocaleString('de-DE'):'';
-    if(!confirm('Sicherung importieren'+(date?' vom '+date:'')+'?\n\n'+doc.snapshots.length+' Monatsstände · '+doc.positions.filter(p=>!p.archived).length+' Positionen\nAlle Daten und Einstellungen auf diesem Gerät werden durch die Sicherung ersetzt.\nTipp: vorher „Sicherung exportieren“ verwenden.'))return;
+    if(!await _ask({title:'Sicherung importieren?',text:(date?'Stand vom '+date+'\n':'')+doc.snapshots.length+' Monatsstände · '+doc.positions.filter(p=>!p.archived).length+' Positionen\n\nAlle Daten und Einstellungen auf diesem Gerät werden durch die Sicherung ersetzt. Tipp: vorher „Sicherung exportieren“ verwenden.',ok:'Importieren',danger:true}))return;
     appStorage.importBackup(doc);
     location.reload();
   }catch(error){showImportError('Import fehlgeschlagen: '+error.message+'. Deine gespeicherten Daten wurden nicht verändert.');}
@@ -6776,9 +6859,10 @@ function _sheetError(message){
   el.textContent=message||'';el.hidden=!message;
   if(message){const b=document.getElementById('dsBody');if(b&&b.scrollTo)b.scrollTo({top:0,behavior:'smooth'});}
 }
-function _openSheet(title,body,save,saveLabel='Sichern'){
-  if(_sheetOpen&&!_closeSheet())return false;
-  if(_editMode&&!_resolvePendingEdits())return false;
+/* again: öffnet das Sheet erneut, falls vorher eine Rückfrage (ungesicherte Änderungen) nötig war */
+function _openSheet(title,body,save,saveLabel='Sichern',again){
+  if(_sheetOpen&&!_closeSheet(false,again))return false;
+  if(_editMode&&!_resolvePendingEdits(again))return false;
   const b=document.getElementById('dsBody');
   document.getElementById('dsTitle').textContent=title;
   document.getElementById('dsSave').textContent=saveLabel;
@@ -6790,9 +6874,13 @@ function _openSheet(title,body,save,saveLabel='Sichern'){
   document.body.classList.add('ds-lock');
   return true;
 }
-function _closeSheet(force=false){
+function _closeSheet(force=false,again){
   if(!_sheetOpen)return true;
-  if(!force&&_sheetDirty&&!confirm('Änderungen verwerfen?'))return false;
+  if(!force&&_sheetDirty){
+    _ask({title:'Änderungen verwerfen?',text:'Deine Eingaben in diesem Fenster gehen verloren.',ok:'Verwerfen',cancel:'Weiter bearbeiten',danger:true})
+      .then(yes=>{if(yes&&_closeSheet(true)&&again)again();});
+    return false;
+  }
   _sheetOpen=false;_sheetSave=null;_sheetDirty=false;_sheetCtx={};
   document.getElementById('dsCancel').style.visibility='';
   _assetChecks.clear();_assetCheckRuns.clear();
@@ -6823,6 +6911,7 @@ function _initSheet(){
     const tog=e.target.closest('[data-dep-toggle]');if(tog){_depToggle(tog.dataset.depToggle);return;}
     const hist=e.target.closest('[data-ds-hist]');if(hist){openHistorySheet(hist.dataset.dsHist);return;}
     if(e.target.closest('[data-cd]')){_chartDefaultsClick(e);return;}
+    const theme=e.target.closest('[data-theme-set]');if(theme){setTheme(theme.dataset.themeSet==='dark');return;}
     if(e.target.closest('[data-hist-calc]')){_historyCalc();return;}
     const seg=e.target.closest('[data-seg-for] button');if(seg){_segPick(seg);return;}
     const custom=e.target.closest('[data-b-custom]');if(custom){_budgetToggleCustom();return;}
@@ -7006,7 +7095,7 @@ function openMonthSheet(){
   const rest=[...assets.filter(isZero),...liabs.filter(f=>isZero(f)&&!LoanModel.configured(lp[f.id]||{}))];
   if(rest.length)body+=`<details class="ds-more"><summary>Positionen ohne Wert (${rest.length})</summary><div class="ds-group">${rest.map(f=>f.category==='liab'?liabRow(f):assetRow(f)).join('')}</div></details>`;
   if(!assets.length&&!liabs.length)body+=`<p class="ds-note">Lege zuerst unter Vermögenswerte oder Verbindlichkeiten eine Position an.</p>`;
-  if(!_openSheet(_monthTitle(ym),body,_saveMonthSheet))return;
+  if(!_openSheet(_monthTitle(ym),body,_saveMonthSheet,undefined,openMonthSheet))return;
   document.querySelectorAll('#dsBody [data-ms-val]').forEach(i=>{const s=document.getElementById('ms-s-'+i.dataset.msVal);if(s)s.innerHTML=_msValSub(_parseDec(i.value)||0,i);});
   _msUpdateTotal();
 }
@@ -7049,11 +7138,11 @@ function _saveMonthSheet(){
 function _histCount(id){const data=loadData();return Object.keys(data).filter(m=>m<nextYM()&&(+((data[m]._details||{})[id])||0)>0).length;}
 function openHistorySheet(id){
   const f=_fc.fields.find(x=>x.id===id);if(!f)return;
-  if(_sheetOpen&&!_closeSheet())return;/* erst schließen: das Schließen räumt den Sheet-Kontext */
+  if(_sheetOpen&&!_closeSheet(false,()=>openHistorySheet(id)))return;/* erst schließen: das Schließen räumt den Sheet-Kontext */
   const inst=AssetModel.valuation(f)==='market'?AssetModel.instrument(f):null;
   const months=Object.keys(loadData()).filter(m=>m<nextYM()).sort().reverse();
   _sheetCtx={hist:{id,key:f.unitId||f.id,inst,unit:f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück',prices:null,months,added:[],calc:{month:'',year:'',mode:'once',plan:''}}};
-  if(!_openSheet('Verlauf · '+f.label,_historySheetBody(),_saveHistorySheet))return;
+  if(!_openSheet('Verlauf · '+f.label,_historySheetBody(),_saveHistorySheet,undefined,()=>openHistorySheet(id)))return;
   _historyPaint();
   if(inst)fetchMonthlyPricesEUR(_historySymbol(inst)).then(p=>{const c=_sheetCtx.hist;if(c&&c.id===id){c.prices=p;_historyPaint();}}).catch(()=>{const c=_sheetCtx.hist;if(c&&c.id===id){c.pricesFailed=true;_historyPaint();}});
 }
@@ -7304,7 +7393,7 @@ function openAssetSheet(id){
   const body=(note?`<p class="ds-note">${escHTML(note)}</p>`:'')+_assetSheetHTML('asset-'+id,f,{valueTitle:_monthTitle(ym),valueId:'f-'+id,qtyId:'fu-'+key,value:v?_moneyInput(v):'',qty:_qtyInput(q),valueHint:hint})
     +`<button type="button" class="ds-linkrow" data-ds-hist="${escHTML(id)}"><span>Verlauf bearbeiten</span><small>${(n=>n?n+(n===1?' früherer Monat':' frühere Monate'):'Noch kein Verlauf')(_histCount(id))}</small></button>`
     +`<button type="button" class="ds-danger" data-ds-remove="${escHTML(id)}">Position entfernen</button>`;
-  if(!_openSheet(f.label,body,()=>_saveAssetSheet(id)))return;
+  if(!_openSheet(f.label,body,()=>_saveAssetSheet(id),undefined,()=>openAssetSheet(id)))return;
   _assetMetadataChanged('asset-'+id,'valuation');_assetSheetRows('asset-'+id);
 }
 function _saveAssetSheet(id){
@@ -7349,7 +7438,7 @@ function openAddAssetSheet(){
   const ym=selectedMonth;
   const body=_assetSheetHTML('newAsset',{category:'cash',label:''},{valueTitle:_monthTitle(ym),valueId:'newAsset-value',qtyId:'newAsset-quantity',value:'',qty:'',valueHint:''})
     +`<p class="ds-help">Mit „Im Besitz seit“ wird der Wert ab diesem Monat in den Verlauf übernommen, damit der Chart die Entwicklung zeigt. Einzelne Monate kannst du später über „Aktualisieren“ anpassen. Neue Werte bekommen keine Sparrate; die kannst du unter Prognose &amp; Annahmen ergänzen.</p>`;
-  if(!_openSheet('Vermögenswert',body,_saveNewAsset,'Anlegen'))return;
+  if(!_openSheet('Vermögenswert',body,_saveNewAsset,'Anlegen',openAddAssetSheet))return;
   _assetMetadataChanged('newAsset','valuation');_assetSheetRows('newAsset');
 }
 function _saveNewAsset(){
@@ -7358,8 +7447,8 @@ function _saveNewAsset(){
   if(!addCustomField('assets'))return false;
   _afterDataChange();return true;
 }
-function _removeFromSheet(id){
-  if(!removeCustomField(id))return;
+async function _removeFromSheet(id){
+  if(!await removeCustomField(id))return;
   _closeSheet(true);_afterDataChange();_toast('Entfernt');
 }
 
@@ -7409,7 +7498,7 @@ function openLoanSheet(id){
   const note=e?'':`<p class="ds-note">Für ${fmtMonth(ym)} gibt es noch keinen Stand.${pk?' Eine geänderte Restschuld übernimmt die übrigen Werte aus '+fmtMonth(pk)+'.':''}</p>`;
   const body=note+_loanSheetHTML(id,f,p,{balanceTitle:_monthTitle(ym),balance:bal?_moneyInput(bal):''})
     +`<button type="button" class="ds-danger" data-ds-remove="${escHTML(id)}">Verbindlichkeit entfernen</button>`;
-  if(!_openSheet(f.label,body,()=>_saveLoanSheet(id)))return;
+  if(!_openSheet(f.label,body,()=>_saveLoanSheet(id),undefined,()=>openLoanSheet(id)))return;
   _updateLoanSummary(id);
 }
 function _saveLoanSheet(id){
@@ -7433,7 +7522,7 @@ function openAddLiabSheet(){
   _sheetCtx={balance:0};
   const body=_loanSheetHTML(NEW_LIAB_ID,{label:''},{},{isNew:true,balanceTitle:_monthTitle(selectedMonth),balance:''})
     +`<p class="ds-help">Für einen Kredit genügen Darlehensbetrag, Sollzins, Tilgung und erste Rate. Die Restschuld wird dann jeden Monat automatisch berechnet. Für andere Schulden reicht die Restschuld.</p>`;
-  if(!_openSheet('Verbindlichkeit',body,_saveNewLiab,'Anlegen'))return;
+  if(!_openSheet('Verbindlichkeit',body,_saveNewLiab,'Anlegen',openAddLiabSheet))return;
   _updateLoanSummary(NEW_LIAB_ID);
 }
 function _saveNewLiab(){
@@ -7530,7 +7619,7 @@ function openAccountSheet(name){
   </div>
   <p class="ds-help">Die IBAN erscheint im Geldfluss, wenn du ein Konto antippst.${used?' Umbenennen passt die Daueraufträge dieses Kontos mit an.':''}</p>
   ${isNew?'':'<button type="button" class="ds-danger" data-account-delete>Konto löschen</button>'}`;
-  _openSheet(isNew?'Neues Konto':name,body,_saveAccountSheet,isNew?'Anlegen':'Sichern');
+  _openSheet(isNew?'Neues Konto':name,body,_saveAccountSheet,isNew?'Anlegen':'Sichern',()=>openAccountSheet(name));
 }
 function _saveAccountSheet(){
   const old=_sheetCtx.account.name,name=(document.getElementById('a-name')?.value||'').trim().replace(/[;\r\n]/g,',');
@@ -7550,11 +7639,11 @@ function _saveAccountSheet(){
   }catch(error){_sheetError(error.message);return false;}
   _afterDataChange();return true;
 }
-function _deleteAccount(){
+async function _deleteAccount(){
   const name=_sheetCtx.account&&_sheetCtx.account.name;if(!name)return;
   const bd=loadBudgetData();if(!bd)return;
   const used=(bd.standingOrders||[]).filter(o=>o.from===name||o.to===name).length;
-  if(!confirm(`Konto „${name}“ löschen?`+(used?`\n\n${used===1?'Ein Dauerauftrag nutzt':used+' Daueraufträge nutzen'} dieses Konto. Sie bleiben mit der Bezeichnung „${name}“ erhalten.`:'')))return;
+  if(!await _ask({title:`Konto „${name}“ löschen?`,text:used?`${used===1?'Ein Dauerauftrag nutzt':used+' Daueraufträge nutzen'} dieses Konto. Sie bleiben mit der Bezeichnung „${name}“ erhalten.`:'',ok:'Löschen',danger:true}))return;
   delete bd.accounts[name];
   try{_storeBudget(bd);}catch(error){_sheetError(error.message);return;}
   _closeSheet(true);_afterDataChange();_toast('Gelöscht');
@@ -7572,7 +7661,7 @@ function openOrderSheet(id){
   </div>
   <p class="ds-help">${names.length?'Wähle ein Konto aus den Vorschlägen oder gib eine eigene Bezeichnung ein, z. B. Kindergeld.':'Lege zuerst deine Konten an, dann werden sie hier vorgeschlagen. Eigene Bezeichnungen gehen auch.'}</p>
   ${o?'<button type="button" class="ds-danger" data-order-delete>Dauerauftrag löschen</button>':''}`;
-  _openSheet(o?o.from+' → '+o.to:'Neuer Dauerauftrag',body,_saveOrderSheet,o?'Sichern':'Anlegen');
+  _openSheet(o?o.from+' → '+o.to:'Neuer Dauerauftrag',body,_saveOrderSheet,o?'Sichern':'Anlegen',()=>openOrderSheet(id));
 }
 function _saveOrderSheet(){
   const v=id=>(document.getElementById(id)?.value||'').trim().replace(/[;\r\n]/g,',');
@@ -7588,10 +7677,10 @@ function _saveOrderSheet(){
   }catch(error){_sheetError(error.message);return false;}
   _afterDataChange();return true;
 }
-function _deleteOrder(){
+async function _deleteOrder(){
   const id=_sheetCtx.order&&_sheetCtx.order.id;if(!id)return;
   const bd=loadBudgetData();if(!bd)return;
-  if(!confirm('Dauerauftrag löschen?'))return;
+  if(!await _ask({title:'Dauerauftrag löschen?',ok:'Löschen',danger:true}))return;
   bd.standingOrders=(bd.standingOrders||[]).filter(o=>o.id!==id);
   try{_storeBudget(bd);}catch(error){_sheetError(error.message);return;}
   _closeSheet(true);_afterDataChange();_toast('Gelöscht');
@@ -7671,7 +7760,7 @@ function openBudgetSheet(opts={}){
     </div>
   </details>
   ${isNew?'':`<button type="button" class="ds-danger" data-b-delete>${mode==='once'?'Zahlung':'Posten'} löschen</button>`}`;
-  if(!_openSheet(isNew?'Neuer Eintrag':name,body,_saveBudgetSheet,isNew?'Anlegen':'Sichern'))return;
+  if(!_openSheet(isNew?'Neuer Eintrag':name,body,_saveBudgetSheet,isNew?'Anlegen':'Sichern',()=>openBudgetSheet(opts)))return;
   _budgetSheetUpdate();
 }
 function _switchOn(id){const el=document.getElementById(id);return !!el&&typeof el.getAttribute==='function'&&el.getAttribute('aria-checked')==='true';}
@@ -7746,11 +7835,11 @@ function _saveBudgetSheet(){
   }catch(error){_sheetError(error.message);return false;}
   _afterDataChange();return true;
 }
-function _deleteBudgetEntry(){
+async function _deleteBudgetEntry(){
   const ctx=_sheetCtx.budget;if(!ctx)return;
   const bd=loadBudgetData();if(!bd)return;
   const label=(document.getElementById('b-name')?.value||'').trim()||'Eintrag';
-  if(!confirm(`„${label}“ löschen?`))return;
+  if(!await _ask({title:`„${label}“ löschen?`,ok:'Löschen',danger:true}))return;
   if(ctx.once)bd.oneTime=(bd.oneTime||[]).filter(o=>o.id!==ctx.once);
   else if(ctx.ref){const [key,rid]=ctx.ref.split(':');bd[key]=(bd[key]||[]).filter(r=>r.id!==rid);}
   try{saveBudgetData(bd);}catch(error){_sheetError(error.message);return;}
@@ -7821,6 +7910,9 @@ function buildDynamicForm(){
   const dx=getDrvExtra();
   html+=`<div class="lt-block-label${dx.length?'':' edit-only'}">Weitere gesetzliche Renten</div><div id="dpDrvExtra">${_v2DrvExtraRowsHTML(dx)}</div>`;
   html+=`<button class="btn btn-ghost plan-add edit-only" id="dpDrvExtraAdd">+ Gesetzliche Rente</button>`;
+  const avds=getAvDepots();
+  html+=`<div class="lt-block-label${avds.length?'':' edit-only'}" id="dpAvdLabel">Altersvorsorgedepots</div><div id="dpAvd">${_avdRowsHTML(avds)}</div>`;
+  html+=`<button class="btn btn-ghost plan-add edit-only" id="dpAvdAdd">+ Altersvorsorgedepot</button>`;
   html+=`<div class="lt-block-label">Weitere Renten & Einkünfte</div><div id="dpPensions">${_planRowsHTML(getLifetimeSettings().pensions,PENSION_COLS,'form')}</div>`;
   html+=`<button class="btn btn-ghost plan-add edit-only" id="dpPensionAdd">+ Rente / Einkommen</button>`;
   html+=`</div></details>`;
@@ -7868,15 +7960,35 @@ function buildDynamicForm(){
         b.closest('.plan-row').remove();
         dxWrap.innerHTML=_v2DrvExtraRowsHTML(_collectPlanRows(dxWrap,DRV_EXTRA_COLS));bindDx();setFormReadOnly(!_editMode);
       }));
-      dxWrap.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>_v2DrvExtraResults(dxWrap)));
+      dxWrap.querySelectorAll('input,select').forEach(inp=>inp.addEventListener(inp.tagName==='SELECT'?'change':'input',()=>_v2DrvExtraResults(dxWrap)));
       _v2DrvExtraResults(dxWrap);
     };
     bindDx();
     /* Gehalt mit Tausenderpunkt anzeigen (_parseDec liest "36.000" korrekt zurück) */
-    dxWrap.querySelectorAll('[data-k="salary"]').forEach(i=>{const n=_parseDec(i.value);if(isFinite(n)&&n>0)i.value=Math.round(n).toLocaleString('de-DE');});
+    dxWrap.querySelectorAll('[data-k="salary"],[data-k="emLimit"]').forEach(i=>{const n=_parseDec(i.value);if(isFinite(n)&&n>0)i.value=Math.round(n).toLocaleString('de-DE');});
     document.getElementById('dpDrvExtraAdd').addEventListener('click',()=>{
       const rows=_collectPlanRows(dxWrap,DRV_EXTRA_COLS);rows.push({name:'',by:'',until:'',points:0,salary:0,age:'',deduct:20});
       dxWrap.innerHTML=_v2DrvExtraRowsHTML(rows);bindDx();setFormReadOnly(!_editMode);
+    });
+  }
+  /* Altersvorsorgedepots: Zeilen hinzufügen/entfernen, Zulagen und Auszahlung live */
+  const avWrap=document.getElementById('dpAvd');
+  if(avWrap){
+    const bindAv=()=>{
+      avWrap.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
+        b.closest('.plan-row').remove();
+        avWrap.innerHTML=_avdRowsHTML(_collectAvd(avWrap));bindAv();setFormReadOnly(!_editMode);
+      }));
+      avWrap.querySelectorAll('input,select').forEach(inp=>inp.addEventListener(inp.tagName==='SELECT'?'change':'input',()=>_avdResults(avWrap)));
+      _avdResults(avWrap);
+    };
+    bindAv();
+    /* Guthaben mit Tausenderpunkt anzeigen (_parseDec liest "12.000" korrekt zurück) */
+    avWrap.querySelectorAll('[data-k="balance"]').forEach(i=>{const n=_parseDec(i.value);if(isFinite(n)&&n>0)i.value=Math.round(n).toLocaleString('de-DE');});
+    document.getElementById('dpAvdAdd').addEventListener('click',()=>{
+      const rows=_collectAvd(avWrap);rows.push({name:rows.length?'':'Altersvorsorgedepot',person:'',contrib:''});
+      avWrap.innerHTML=_avdRowsHTML(rows);bindAv();setFormReadOnly(!_editMode);
+      const last=avWrap.querySelector('.plan-row:last-child [data-k="contrib"]');if(last){last.scrollIntoView({block:'center',behavior:'smooth'});last.focus({preventScroll:true});}
     });
   }
   /* Darlehensparameter, Asset-Verknüpfung und einzelne Sondertilgungen. */
@@ -7925,18 +8037,57 @@ function _syncPensionHints(wrap){
 }
 /* Weitere gesetzliche Renten als Karten (leere Werte bleiben leer statt "0") */
 function _v2DrvExtraRowsHTML(rows){
-  const clean=rows.map(r=>Object.assign({},r,{by:+r.by||'',until:+r.until||'',age:+r.age||''}));
+  const clean=rows.map(r=>Object.assign({},r,{by:+r.by||'',until:+r.until||'',age:+r.age||'',em:+r.em||'',emUntil:+r.emUntil||'',emLimit:+r.emLimit||''}));
   return _planRowsHTML(clean,DRV_EXTRA_COLS,'form','drvx');
 }
 function _v2DrvExtraResults(wrap){
   const s=getLifetimeSettings();
   wrap.querySelectorAll('.plan-row').forEach(row=>{
     const p={};
-    DRV_EXTRA_COLS.forEach(c=>{const inp=row.querySelector(`[data-k="${c.key}"]`);if(!inp)return;p[c.key]=c.type==='text'?inp.value.trim():(()=>{const n=_parseDec(inp.value);return isFinite(n)?n:'';})();});
+    DRV_EXTRA_COLS.forEach(c=>{const inp=row.querySelector(`[data-k="${c.key}"]`);if(!inp)return;p[c.key]=c.type==='text'||c.type==='select'?inp.value.trim():(()=>{const n=_parseDec(inp.value);return isFinite(n)?n:'';})();});
+    /* Erwerbsminderung: Detailfelder wie bei der eigenen Rente nur bei teilweise/voll */
+    const t=+p.emType||0,show=(k,on)=>{const g=row.querySelector('.pc-'+k);if(g)g.hidden=!on;};
+    show('em',t);show('emUntil',t);show('emLimit',t===1);
     let el=row.querySelector('.drvx-res');
     if(!el){el=document.createElement('div');el.className='lt-result drvx-res';row.insertBefore(el,row.querySelector('.plan-del'));}
-    const r=calcDrvExtra(s,p);
-    el.innerHTML=r.epTotal>0?`≈ <strong>${r.epTotal.toLocaleString('de-DE',{maximumFractionDigits:1})} Punkte</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)}`:'Rentenpunkte und/oder Gehalt eintragen.';
+    _drvEmClean(p);
+    el.innerHTML=_drvResultHTML(p,calcDrvExtra(s,p),+p.until>0?+p.until:s.saveUntil);
+  });
+}
+/* Altersvorsorgedepots als Karten; leere Felder bleiben leer (= Standardwert der App) */
+function _avdRowsHTML(rows){
+  const clean=rows.map(r=>{const o=Object.assign({},r);['contrib','balance','start','from'].forEach(k=>{if(+o[k]===0)o[k]='';});return o;});
+  return _planRowsHTML(clean,AVD_COLS,'form','avd');
+}
+function _avdFromRow(row){
+  const o={};if(row.dataset.rowId)o.id=row.dataset.rowId;
+  AVD_COLS.forEach(c=>{
+    const inp=row.querySelector(`[data-k="${c.key}"]`);if(!inp)return;
+    if(c.type==='text'||c.type==='select')o[c.key]=inp.value.trim();
+    else{const n=_parseDec(inp.value);o[c.key]=inp.value.trim()===''||!isFinite(n)?'':n;}
+  });
+  return o;
+}
+function _collectAvd(wrap){return[...wrap.querySelectorAll('.plan-row')].map(_avdFromRow);}
+/* Für das Speichern: leere Angaben weglassen (Standardwerte), Teilauszahlung als Zahl */
+function _avdClean(r){
+  const o={};if(r.id)o.id=r.id;
+  o.name=r.name||'';o.person=r.person||'';o.contrib=+r.contrib>0?+r.contrib:0;
+  ['balance','start','ret','from','deduct'].forEach(k=>{if(r[k]!==''&&r[k]!=null&&isFinite(+r[k])&&+r[k]>=0)o[k]=+r[k];});
+  if(+r.lump>0)o.lump=Math.min(30,+r.lump);
+  if(String(r.kids||'').trim())o.kids=r.kids;
+  return o;
+}
+function _avdResults(wrap){
+  const s=getLifetimeSettings();
+  wrap.querySelectorAll('.plan-row').forEach(row=>{
+    const d=_avdFromRow(row),r=calcAvDepot(s,d);
+    ['kids','balance','start','ret','from','lump','deduct'].forEach(k=>{
+      const g=row.querySelector('.pc-'+k);if(g)g.classList.toggle('avd-default',d[k]===''||d[k]==null||(k==='lump'&&d[k]==='0')||(k==='balance'&&+d[k]===0));
+    });
+    let el=row.querySelector('.avd-res');
+    if(!el){el=document.createElement('div');el.className='lt-result avd-res';row.insertBefore(el,row.querySelector('.plan-del'));}
+    el.innerHTML=_avdResultHTML(r);
   });
 }
 function toggleBudgetFieldEditor(){
@@ -7958,14 +8109,14 @@ function addBudgetField(){
   const section=secEl.value;
   const subcat=(subcatEl?subcatEl.value.trim():'').replace(/[;\r\n]/g,',');
   const amount=parseNumberWithThousands(amountEl?amountEl.value:'0');
-  if(!name)return alert('Bitte eine Bezeichnung eingeben');
+  if(!name)return void _ask({title:'Bitte eine Bezeichnung eingeben',cancel:null});
   
   const bd=loadBudgetData()||{einkommen:[],fixe:[],variable:[],sparen:[]};
   if(!bd[section])bd[section]=[];
   
   /* Check if entry already exists */
   if(bd[section].find(r=>r.name===name)){
-    return alert('Ein Eintrag mit diesem Namen existiert bereits.');
+    return void _ask({title:'Ein Eintrag mit diesem Namen existiert bereits.',cancel:null});
   }
   
   /* Create values array: amount from selected month onwards */
@@ -8119,11 +8270,21 @@ function getDrv(){
   DRV_EM_KEYS.forEach(k=>{if(k in d)d[k]=isFinite(+d[k])?+d[k]:0;});
   return d;
 }
-/* Erwerbsminderungsrente (laufend, nur eigene Person): emType 1 = teilweise, 2 = voll; em = Zahlbetrag netto/Monat;
+/* Erwerbsminderungsrente (laufend, eigene und weitere Personen): emType 1 = teilweise, 2 = voll; em = Zahlbetrag netto/Monat;
    emUntil = letztes Jahr (leer = bis Regelalter); emLimit = persönliche Hinzuverdienstgrenze (nur teilweise).
    Hinzuverdienstgrenzen 2026: voll 3/8 × 14 × Bezugsgröße (3.955 €), teilweise mindestens 6/8 × 14 × Bezugsgröße. */
 const DRV_EM_KEYS=['emType','em','emUntil','emLimit'];
 const EM_LIMITS={1:41527.5,2:20763.75};
+/* EM-Werte nur behalten, wenn eine Erwerbsminderungsrente ausgewählt ist; Grenze nur bei teilweiser */
+function _drvEmClean(d){
+  const t=+d.emType;
+  if(t!==1&&t!==2){DRV_EM_KEYS.forEach(k=>delete d[k]);return d;}
+  d.emType=t;
+  d.em=+d.em>0?+d.em:0;
+  if(t===1&&+d.emLimit>0)d.emLimit=+d.emLimit;else delete d.emLimit;
+  if(+d.emUntil>0)d.emUntil=+d.emUntil;else delete d.emUntil;
+  return d;
+}
 function calcEm(s,drv,age){
   if(!(drv.emType===1||drv.emType===2)||!(drv.em>0))return null;
   const until=drv.emUntil>0?Math.min(age,_ageAt(s,drv.emUntil+1,0)):age;
@@ -8135,7 +8296,8 @@ function calcEm(s,drv,age){
   const full=until>=age-1e-9?drv.em*(drv.emType===1?2:1):0;
   return{type:drv.emType,gross:drv.em,amount:drv.em-cut,cut,limit,over,until,full};
 }
-/* Weitere gesetzliche Renten (z. B. Partner/in): eigene Person mit Geburtsjahr und "Arbeiten bis Alter".
+/* Weitere gesetzliche Renten (z. B. Partner/in): eigene Person mit Geburtsjahr und "Arbeiten bis Alter",
+   wie die eigene Rente optional mit laufender Erwerbsminderungsrente.
    Rentenwert, Durchschnittsentgelt und BBG gelten wie bei der eigenen gesetzlichen Rente. */
 const DRV_EXTRA_COLS=[
   {key:'name',label:'Name',info:'drvx-name',type:'text',ph:'z. B. Partnerin'},
@@ -8144,7 +8306,11 @@ const DRV_EXTRA_COLS=[
   {key:'points',label:'Rentenpunkte',info:'drv-points',ph:'0'},
   {key:'salary',label:'Brutto/Jahr €',info:'drv-salary',ph:'0'},
   {key:'age',label:'Regelalter',info:'drv-age',ph:'automatisch'},
-  {key:'deduct',label:'Abzüge %',info:'drv-deduct',ph:'20'}
+  {key:'deduct',label:'Abzüge %',info:'drv-deduct',ph:'20'},
+  {key:'emType',label:'Erwerbsminderung',info:'drv-emType',type:'select',options:()=>[['0','Keine'],['1','Teilweise'],['2','Voll']]},
+  {key:'em',label:'EM-Rente netto €',info:'drv-em',ph:'0'},
+  {key:'emUntil',label:'Läuft bis Jahr',info:'drv-emUntil',ph:'bis Regelalter'},
+  {key:'emLimit',label:'Hinzuverdienst­grenze €',info:'drv-emLimit',ph:'41.528'}
 ];
 function getDrvExtra(){const l=_lsJSON('lt-drv-extra',[]);return Array.isArray(l)?l:[];}
 function calcDrvExtra(s,p){
@@ -8152,11 +8318,97 @@ function calcDrvExtra(s,p){
   const by=+p.by>1900?+p.by:s.birthYear;
   const s2=Object.assign({},s,{birthYear:by,saveUntil:+p.until>0?+p.until:s.saveUntil});
   const d=Object.assign({},base,{points:+p.points||0,salary:+p.salary||0,age:+p.age||0,deduct:isFinite(+p.deduct)&&p.deduct!==''&&p.deduct!=null?+p.deduct:base.deduct});
-  DRV_EM_KEYS.forEach(k=>delete d[k]);
+  DRV_EM_KEYS.forEach(k=>{delete d[k];if(k in p)d[k]=p[k];});
+  _drvEmClean(d);
   const r=calcDrvPension(s2,d);
-  r.fromMain=r.age+(by-s.birthYear);/* Rentenbeginn auf das eigene Alter umgerechnet */
+  /* Rentenbeginn und Ende der EM-Rente auf das eigene Alter umgerechnet */
+  r.fromMain=r.age+(by-s.birthYear);
+  if(r.em)r.em.untilMain=r.em.until+(by-s.birthYear);
   r.name=(p.name||'').trim()||'Weitere Rente';
   return r;
+}
+/* ══ Altersvorsorgedepot (ab 2027, Altersvorsorgereformgesetz) ══
+   Grundzulage 50 % auf die ersten 360 € Eigenbeitrag im Jahr, 25 % auf weitere bis 1.800 € (höchstens 540 €).
+   Kinderzulage 100 % des Eigenbeitrags bis 300 € je Kind mit Kindergeld (gerechnet bis zum Jahr des 18. Geburtstags).
+   Berufseinsteigerbonus einmalig 200 €, wer zu Beginn des ersten Beitragsjahres jünger als 25 ist.
+   Auszahlung frühestens mit 65, spätestens ab 70, als Auszahlplan bis 85; zu Beginn optional bis 30 % auf einmal.
+   Auszahlungen sind voll steuerpflichtig (Abzüge %). Ergebnis in heutiger Kaufkraft. */
+const AVD_START=2027,AVD_UNTIL=85,AVD_DEFAULTS={ret:5,deduct:20};
+const AVD_COLS=[
+  {key:'name',label:'Name',info:'avd-name',type:'text',ph:'z. B. AV-Depot'},
+  {key:'person',label:'Für',info:'avd-person',type:'select',options:()=>[['','Mich'],...getDrvExtra().filter(r=>r.id).map(r=>[r.id,(r.name||'').trim()||'Weitere Person'])]},
+  {key:'contrib',label:'Beitrag €/Monat',info:'avd-contrib',ph:'0'},
+  {key:'kids',label:'Kinder (Jahrgang)',info:'avd-kids',type:'text',ph:'keine'},
+  {key:'balance',label:'Guthaben heute €',info:'avd-balance',ph:'0'},
+  {key:'start',label:'Beginn Jahr',info:'avd-start',ph:String(AVD_START)},
+  {key:'ret',label:'Rendite % p. a.',info:'avd-ret',ph:String(AVD_DEFAULTS.ret)},
+  {key:'from',label:'Auszahlung ab Alter',info:'avd-from',ph:'automatisch'},
+  {key:'lump',label:'Teilauszahlung',info:'avd-lump',type:'select',options:()=>[['0','Keine'],['30','30 % zu Beginn']]},
+  {key:'deduct',label:'Abzüge %',info:'avd-deduct',ph:String(AVD_DEFAULTS.deduct)}
+];
+function getAvDepots(){const l=_lsJSON('lt-av-depots',[]);return Array.isArray(l)?l:[];}
+/* Zulagen eines Beitragsjahres (own = Eigenbeitrag €/Jahr, kids = Kinder mit Kindergeld) */
+function avdSubsidy(own,kids){
+  const base=0.5*Math.min(own,360)+0.25*Math.max(0,Math.min(own,1800)-360);
+  const child=Math.min(own,300*kids);
+  return{base,child,total:base+child};
+}
+const _avdNum=(v,def)=>v===''||v==null||!isFinite(+v)?def:+v;
+function calcAvDepot(s,d){
+  const person=d.person?getDrvExtra().find(r=>r.id===d.person):null;
+  const by=person&&+person.by>1900?+person.by:s.birthYear;
+  const shift=by-s.birthYear;/* Alter dieser Person -> eigenes Alter */
+  const now=new Date(),year=now.getFullYear();
+  const ageNow=_ageAt(Object.assign({},s,{birthYear:by}),year,now.getMonth());
+  const from=Math.min(70,Math.max(65,_avdNum(d.from,0)>0?+d.from:regelaltersgrenze(by)));
+  const workUntil=person?(+person.until>0?+person.until:s.saveUntil):s.saveUntil;
+  const ret=_avdNum(d.ret,AVD_DEFAULTS.ret)/100,infl=s.inflation/100;
+  const deduct=Math.min(90,Math.max(0,_avdNum(d.deduct,AVD_DEFAULTS.deduct)))/100;
+  const lumpPct=Math.min(30,Math.max(0,_avdNum(d.lump,0)))/100;
+  const own=Math.max(0,_avdNum(d.contrib,0))*12;
+  const kids=(String(d.kids??'').match(/\d{4}/g)||[]).map(Number),kidsBad=!kids.length&&/\S/.test(String(d.kids??''));
+  const kidsIn=y=>kids.filter(b=>y>=b&&y<=b+18).length;
+  const first=Math.max(AVD_START,_avdNum(d.start,0)>0?Math.round(+d.start):AVD_START,year);
+  const payYear=by+from;/* Jahr, in dem die Auszahlung beginnt */
+  const lastYear=Math.min(by+workUntil,payYear)-1;/* letztes Beitragsjahr */
+  const tPay=Math.max(0,from-ageNow);
+  /* Beiträge und Zulagen am Jahresende eingezahlt, danach mit der Rendite bis zum Auszahlungsbeginn verzinst */
+  let cap=Math.max(0,_avdNum(d.balance,0))*Math.pow(1+ret,tPay),ownSum=0,subSum=0,bonus=0,firstSub=null;
+  for(let y=first;own>0&&y<=lastYear;y++){
+    const sub=avdSubsidy(own,kidsIn(y));
+    let add=own+sub.total;
+    if(y===first&&first-by<=25){bonus=200;add+=bonus;}
+    if(!firstSub)firstSub=Object.assign({kids:kidsIn(y)},sub);
+    cap+=add*Math.pow(1+ret,Math.max(0,payYear-(y+1)));
+    ownSum+=own;subSum+=add-own;
+  }
+  const capReal=cap/Math.pow(1+infl,tPay);
+  const lumpNet=capReal*lumpPct*(1-deduct);
+  /* Auszahlplan bis 85: gleichbleibende Rate in heutiger Kaufkraft, Restguthaben verzinst sich weiter */
+  const n=Math.max(1,AVD_UNTIL-from)*12,rr=Math.pow((1+ret)/(1+infl),1/12)-1,R=capReal*(1-lumpPct);
+  const pmt=Math.abs(rr)<1e-9?R/n:R*rr/(1-Math.pow(1+rr,-n));
+  const started=ageNow>=from;
+  return{name:(d.name||'').trim()||'Altersvorsorgedepot',by,from,until:AVD_UNTIL,fromMain:from+shift,untilMain:AVD_UNTIL+shift,
+    own,firstSub,ownSum,subSum,bonus,capReal,lumpNet,netto:started?0:pmt*(1-deduct),started,first,lastYear,kidsBad};
+}
+/* Ergebniszeile unter einer Depot-Karte, höchstens ein Tipp */
+function _avdResultHTML(r){
+  if(r.started)return 'Die Auszahlung hätte schon begonnen – Alter oder Person prüfen.';
+  if(!(r.capReal>0))return r.own>0?'Bis zum Auszahlungsbeginn bleibt kein Beitragsjahr – Beginn, Auszahlung ab Alter oder „Arbeiten bis“ prüfen.':'Beitrag pro Monat eintragen, um Zulagen und Auszahlung zu berechnen.';
+  const z=r.firstSub;
+  let h='';
+  if(z&&z.total>0){
+    const quote=Math.round(z.total/(r.own+z.total)*100);
+    h+=`≈ <strong>${fmt(z.total)}</strong> Zulagen/Jahr <span style="color:var(--muted)">(${z.child>0?fmt(z.base)+' + '+fmt(z.child)+' Kinder, ':''}Förderquote ${quote} %${r.bonus?', einmalig +200 € Bonus':''})</span><br>`;
+  }
+  h+=`→ mit ${fmtAge(r.from)} ≈ <strong>${fmt(Math.round(r.capReal/100)*100)}</strong> → `;
+  h+=r.lumpNet>0?`<strong>${fmt(Math.round(r.lumpNet/100)*100)}</strong> sofort, dann <strong>${fmt(r.netto)}</strong> netto/Monat bis ${r.until}`:`<strong>${fmt(r.netto)}</strong> netto/Monat bis ${r.until}`;
+  let tip='';
+  if(z&&r.own>0&&r.own<1800)tip=`Volle Grundzulage (540 €) ab 150 €/Monat${r.own<360?' – schon 30 €/Monat bringen 180 €':''}.`;
+  else if(r.own>1800)tip='Zulage gibt es nur auf 1.800 € im Jahr – der Rest wird ohne Zulage angelegt.';
+  if(z&&z.kids>0&&r.own<300*z.kids)tip=`Für die volle Kinderzulage mindestens ${fmt(25*z.kids)}/Monat einzahlen.`;
+  if(r.kidsBad)tip='Kinder bitte als Geburtsjahre eintragen, z. B. „2019, 2022“.';
+  return h+(tip?`<br><span style="color:var(--muted)">${tip}</span>`:'');
 }
 function regelaltersgrenze(by){
   if(by>=1964)return 67;
@@ -8295,9 +8547,18 @@ function buildPlan(){
   if(drv.em&&drv.em.amount>0)pensions.push({amount:drv.em.amount,from:0,until:drv.em.until,drv:true});
   const bv=penOn?calcBeamtePension(s,getBeamte()):{age:0,netto:0};
   if(bv.netto>0)pensions.push({amount:bv.netto,from:bv.age,drv:true});
-  const drvExtra=penOn?getDrvExtra().map(p=>calcDrvExtra(s,p)).filter(r=>r.netto>0):[];
-  drvExtra.forEach(r=>pensions.push({amount:r.netto,from:r.fromMain,drv:true}));
-  return{drv,bv,drvExtra,s,data,sorted,latestKey,latestNet:calc(data[latestKey]).net,currentAge,firstAge,horizonAge,nSteps,groups,lnr,vol,events,pensions,depositIdx};
+  /* Altersvorsorgedepots: Auszahlplan bis 85 als Einkommen, Teilauszahlung als Zufluss ins liquide Vermögen */
+  const avd=penOn?getAvDepots().map(d=>calcAvDepot(s,d)).filter(r=>r.netto>0):[];
+  avd.forEach(r=>{
+    pensions.push({amount:r.netto,from:r.fromMain,until:r.untilMain,drv:true});
+    if(r.lumpNet>0&&r.fromMain>currentAge)events.push({name:'Teilauszahlung '+r.name,amount:r.lumpNet,age:r.fromMain,fromIdx:-1,toIdx:-1,fromExt:true,toExt:false});
+  });
+  const drvExtra=penOn?getDrvExtra().map(p=>calcDrvExtra(s,p)).filter(r=>r.netto>0||(r.em&&r.em.amount>0)):[];
+  drvExtra.forEach(r=>{
+    if(r.netto>0)pensions.push({amount:r.netto,from:r.fromMain,drv:true});
+    if(r.em&&r.em.amount>0)pensions.push({amount:r.em.amount,from:0,until:r.em.untilMain,drv:true});
+  });
+  return{drv,bv,drvExtra,avd,s,data,sorted,latestKey,latestNet:calc(data[latestKey]).net,currentAge,firstAge,horizonAge,nSteps,groups,lnr,vol,events,pensions,depositIdx};
 }
 
 /* Ein Simulationslauf (jährliche Schritte). rnd = Standardnormal-Zufallszahlen (null = Median-/Erwartungspfad). */
@@ -8597,17 +8858,14 @@ function _drvFromInputs(prefix){
     const k=inp.dataset.drv,n=_parseDec(inp.value);
     d[k]=isFinite(n)?n:(k==='points'||k==='salary'||k==='age'||DRV_EM_KEYS.includes(k)?0:DRV_DEFAULTS[k]);
   });
-  /* EM-Werte nur speichern, wenn eine Erwerbsminderungsrente ausgewählt ist */
-  if(!(d.emType===1||d.emType===2))DRV_EM_KEYS.forEach(k=>delete d[k]);
-  else{
-    if(d.emType!==1||!(d.emLimit>0))delete d.emLimit;
-    if(!(d.emUntil>0))delete d.emUntil;
-    if(!(d.em>0))d.em=0;
-  }
-  return d;
+  return _drvEmClean(d);
 }
 function _drvResultText(d){
-  const s=getLifetimeSettings(),r=calcDrvPension(s,d);
+  const s=getLifetimeSettings();
+  return _drvResultHTML(d,calcDrvPension(s,d),s.saveUntil);
+}
+/* Ergebniszeile der gesetzlichen Rente (eigene und weitere Personen); saveUntil = Punkte sammeln bis Alter */
+function _drvResultHTML(d,r,saveUntil){
   let emTxt='';
   if(d.emType===1||d.emType===2){
     const e=r.em;
@@ -8622,7 +8880,7 @@ function _drvResultText(d){
   if(!(r.epTotal>0))return 'Rentenpunkte und/oder Gehalt eintragen, um die gesetzliche Rente hochzurechnen.';
   const ep=r.epTotal.toLocaleString('de-DE',{maximumFractionDigits:1});
   const add=r.epYear*r.years;
-  const pts=add>0?', +'+add.toLocaleString('de-DE',{maximumFractionDigits:1})+' Punkte bis '+Math.round(Math.min(s.saveUntil,r.age)):'';
+  const pts=add>0?', +'+add.toLocaleString('de-DE',{maximumFractionDigits:1})+' Punkte bis '+Math.round(Math.min(saveUntil,r.age)):'';
   /* Greift die Mindesthöhe aus der EM-Rente, die Hochrechnung nur zum Vergleich zeigen */
   const detail=r.em&&r.netto>r.calcNetto?`mindestens volle EM-Rente; aus Punkten ${fmt(r.calcNetto)} netto${pts}`:`${fmt(r.brutto)} brutto${pts}`;
   return `≈ <strong>${ep} Punkte</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)} <span style="color:var(--muted)">(${detail})</span>`+emTxt;
@@ -8857,9 +9115,9 @@ function buildAssetParamsTable(force){
     inp.addEventListener('blur',()=>setTimeout(()=>{if(!wrap.contains(document.activeElement))buildAssetParamsTable();},0));
   });
   const fb=document.getElementById('apFromBudget');
-  if(fb)fb.addEventListener('click',()=>{
-    const msg='Sparraten aus dem Budget übernehmen?\n\n'+Object.entries(bud.byGroup).map(([k,v])=>k+': '+fmt(Math.round(v))).join('\n')+(bud.unmatched.length?'\n\nNicht zugeordnet: '+bud.unmatched.join(', '):'');
-    if(!confirm(msg))return;
+  if(fb)fb.addEventListener('click',async()=>{
+    const msg=Object.entries(bud.byGroup).map(([k,v])=>k+': '+fmt(Math.round(v))).join('\n')+(bud.unmatched.length?'\n\nNicht zugeordnet: '+bud.unmatched.join(', '):'');
+    if(!await _ask({title:'Sparraten aus dem Budget übernehmen?',text:msg,ok:'Übernehmen'}))return;
     const cur=_lsJSON('lt-asset-params',{});
     Object.entries(bud.byGroup).forEach(([k,v])=>{if(!cur[k])cur[k]={};cur[k].saving=Math.round(v);});
     appStorage.setItem('lt-asset-params',JSON.stringify(cur));
@@ -8946,10 +9204,14 @@ function renderLifetimePageCalcs(){
   const pc=v=>(v*100).toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})+' %';
   /* Einkommen im Ruhestand: einzelne Renten (heutige Kaufkraft) im Verhältnis zum Bedarf */
   const inc=[];
-  if(plan.drv&&plan.drv.em&&plan.drv.em.amount>0&&plan.drv.em.until>currentAge)inc.push({n:'Erwerbsminderungsrente',v:plan.drv.em.amount,until:plan.drv.em.until,temp:true});
+  if(plan.drv&&plan.drv.em&&plan.drv.em.amount>0&&plan.drv.em.until>currentAge)inc.push({n:'Erwerbsminderungsrente',v:plan.drv.em.amount,until:plan.drv.em.until,temp:true,then:plan.drv.em.full>0});
   if(plan.drv&&plan.drv.netto>0)inc.push({n:'Gesetzliche Rente',v:plan.drv.netto,a:plan.drv.age});
   if(plan.bv&&plan.bv.netto>0)inc.push({n:'Beamtenpension',v:plan.bv.netto,a:plan.bv.age});
-  (plan.drvExtra||[]).forEach(r=>inc.push({n:'Rente '+r.name,v:r.netto,a:r.age}));
+  (plan.drvExtra||[]).forEach(r=>{
+    if(r.em&&r.em.amount>0&&r.em.untilMain>currentAge)inc.push({n:'EM-Rente '+r.name,v:r.em.amount,until:r.em.until,temp:true,then:r.em.full>0});
+    if(r.netto>0)inc.push({n:'Rente '+r.name,v:r.netto,a:r.age});
+  });
+  (plan.avd||[]).forEach(r=>inc.push({n:r.name,v:r.netto,a:r.from,end:r.until}));
   if(_mod('pension'))(s.pensions||[]).filter(p=>(+p.amount||0)>0).forEach(p=>inc.push({n:p.name||'Weitere Rente',v:+p.amount,a:+p.from||67}));
   /* Kreditfrei: erstes Alter, ab dem im Erwartungspfad keine Kreditrate mehr anfällt */
   const lpAll=getLoanParams(),detL=(plan.data[plan.latestKey]._details)||{};
@@ -8969,7 +9231,7 @@ function renderLifetimePageCalcs(){
       h+=`<div class="v2-inc"><div class="v2-inc-t">Einkommen im Ruhestand</div><div class="v2-inc-v">${Math.round(tot).toLocaleString('de-DE')}<small>€ / Monat</small></div>`;
       h+=`<div class="v2-inc-bar">${steady.map((x,i)=>`<i style="width:${(x.v/base*100).toFixed(2)}%;background:${shade(i)}"></i>`).join('')}</div>`;
       if(need>0)h+=`<div class="v2-inc-cap">${cov>=1?'Deckt deinen Bedarf von '+fmt(need):'Deckt '+Math.round(cov*100)+' % deines Bedarfs von '+fmt(need)}</div>`;
-      h+=`<div class="v2-inc-rows">${inc.map((x,i)=>`<div class="v2-inc-row"><i style="background:${shade(i)}"></i><span class="n">${escHTML(x.n)}<small>${x.temp?'bis '+fmtAge(x.until)+', danach Altersrente':'ab '+fmtAge(x.a)}</small></span><span class="v">${fmt(Math.round(x.v))}</span></div>`).join('')}</div></div>`;
+      h+=`<div class="v2-inc-rows">${inc.map((x,i)=>`<div class="v2-inc-row"><i style="background:${shade(i)}"></i><span class="n">${escHTML(x.n)}<small>${x.temp?'bis '+fmtAge(x.until)+(x.then?', danach Altersrente':''):'ab '+fmtAge(x.a)+(x.end?' bis '+x.end:'')}</small></span><span class="v">${fmt(Math.round(x.v))}</span></div>`).join('')}</div></div>`;
     }
     const facts=[[fmtCompact(mc.p50[endIdx]/defl(plan.horizonAge)),'Vermögen mit '+plan.horizonAge,'Median'],[pc(pr),'Ø Rendite p. a.','real '+pc((1+pr)/(1+infl)-1)]];
     if(lastPayoff)facts.push([fmtMonth(lastPayoff),'Schuldenfrei','mit '+Math.floor(_ageAt(s,+lastPayoff.slice(0,4),+lastPayoff.slice(5)-1))]);
@@ -9163,7 +9425,7 @@ function _v2SubText(mod){
     const data=loadData(),e=data[selectedMonth]||data[Object.keys(data).sort().pop()];
     if(mod==='assets'){if(!e)return'';const n=_fc.fields.filter(f=>f.category!=='liab'&&(+((e._details||{})[f.id])||0)>0).length;return n+(n===1?' Position · ':' Positionen · ')+fmt(calc(e).assets);}
     if(mod==='liab'){if(!e)return'';const b=_fc.fields.filter(f=>f.category==='liab').reduce((a,f)=>a+(+((e._details||{})[f.id])||0),0);return 'Restschuld '+fmt(b);}
-    if(mod==='pension'){const s=getLifetimeSettings();const r=calcDrvPension(s,getDrv());const x=getDrvExtra().map(p=>calcDrvExtra(s,p)).reduce((a,q)=>a+q.netto,0);const bv=calcBeamtePension(s,getBeamte()).netto;const n=s.pensions.length;return [r.em&&r.em.amount>0?'EM-Rente ≈ '+fmt(r.em.amount)+'/Mon.':'',r.netto+x>0?'Gesetzlich ≈ '+fmt(r.netto+x)+'/Mon.':(bv>0?'':'Gesetzliche Rente'),bv>0?'Pension ≈ '+fmt(bv)+'/Mon.':''].filter(Boolean).join(' · ')+(n?' · '+n+' weitere':'');}
+    if(mod==='pension'){const s=getLifetimeSettings();const r=calcDrvPension(s,getDrv());const xs=getDrvExtra().map(p=>calcDrvExtra(s,p)),x=xs.reduce((a,q)=>a+q.netto,0),em=[r,...xs].reduce((a,q)=>a+(q.em?q.em.amount:0),0);const bv=calcBeamtePension(s,getBeamte()).netto;const n=s.pensions.length;const av=getAvDepots().map(d=>calcAvDepot(s,d)).reduce((a,q)=>a+q.netto,0);return [em>0?'EM-Rente ≈ '+fmt(em)+'/Mon.':'',r.netto+x>0?'Gesetzlich ≈ '+fmt(r.netto+x)+'/Mon.':(bv>0?'':'Gesetzliche Rente'),bv>0?'Pension ≈ '+fmt(bv)+'/Mon.':'',av>0?'AV-Depot ≈ '+fmt(av)+'/Mon.':''].filter(Boolean).join(' · ')+(n?' · '+n+' weitere':'');}
     if(mod==='budget'){const bd=loadBudgetData();return bd?'Ø Einnahmen '+fmt(calcAvgHaushaltsnetto(bd)):'';}
     if(mod==='forecast'){const pv=document.getElementById('v2-prev-pct');return pv&&pv.textContent!=='—'?'Erfolgschance '+pv.textContent:'Annahmen, Ereignisse, Renditen';}
   }catch(err){}
@@ -9409,7 +9671,7 @@ function showOnboarding(){
   _openOnboardingOverlay();guideRender();
 }
 function startOnboarding(origin='data'){
-  if(!_resolvePendingEdits())return;
+  if(!_resolvePendingEdits(()=>startOnboarding(origin)))return;
   _guideOrigin=origin;_guideNew=!hasOnboardingData(appStorage.document());
   _guideDraft={positions:[]};
   _guideStep=0;_guideActive=true;
@@ -9597,7 +9859,7 @@ function _bindGuideStory(screen,last){
   screen.addEventListener('pointercancel',()=>{active=false;clearTimeout(hold);screen.style.transform='';screen.style.opacity='';pause(false);});
 }
 function guideWelcome(){
-  return `<div class="ob-screen ob-welcome"><span class="ob-welcome-mark" aria-hidden="true">V</span><h1 class="ob-title">Vermögen</h1><p class="ob-sub">Dein Vermögen, dein Monat, deine Zukunft.<br>Starte mit ein paar Schätzwerten – genauer werden kannst du später.</p><div class="ob-welcome-actions"><button class="btn btn-primary" onclick="startSetup()">Geführt einrichten</button><label class="btn btn-ghost ob-import" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">Bestehende Daten laden<input type="file" accept=".json,.csv,application/json,text/csv" style="display:none" onchange="hideOnboarding();document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label><button class="ob-skip" onclick="_v2LoadDemo()">Mit Demo-Daten ausprobieren</button></div><p class="ob-tip">Etwa drei Minuten, ohne Unterlagen. Jeder Schritt lässt sich überspringen.</p></div>`;
+  return `<div class="ob-screen ob-welcome"><img class="ob-welcome-mark" src="icon-192.png?v=2" alt="" draggable="false"><h1 class="ob-title">Vermögen</h1><p class="ob-sub">Dein Vermögen, dein Monat, deine Zukunft.<br>Starte mit ein paar Schätzwerten – genauer werden kannst du später.</p><div class="ob-welcome-actions"><button class="btn btn-primary" onclick="startSetup()">Geführt einrichten</button><label class="btn btn-ghost ob-import" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">Bestehende Daten laden<input type="file" accept=".json,.csv,application/json,text/csv" style="display:none" onchange="hideOnboarding();document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label><button class="ob-skip" onclick="_v2LoadDemo()">Mit Demo-Daten ausprobieren</button></div><p class="ob-tip">Etwa drei Minuten, ohne Unterlagen. Jeder Schritt lässt sich überspringen.</p></div>`;
 }
 /* ── Einrichtung: eine Frage je Screen, Schätzwerte genügen, jeder Schritt ist optional.
    Erfasst wird nur das Nötigste; Stückzahlen, Kurse, Darlehensverträge und Einzelposten
@@ -9620,7 +9882,7 @@ function _setupSteps(s=_setup){
   return ['focus','assets',...(_setupHistoryRows(s).length?['history']:[]),'debts',...(s.focus.budget?['budget']:[]),...(s.focus.future?['future',...(s.futureSkipped?[]:['pension'])]:[]),'done'];
 }
 function startSetup(mode='full'){
-  if(mode!=='full'&&!_resolvePendingEdits())return;
+  if(mode!=='full'&&!_resolvePendingEdits(()=>startSetup(mode)))return;
   _guideActive=false;
   _setup=_setupState(mode);
   if(mode!=='full'){
@@ -10280,6 +10542,7 @@ function _nextSteps(){
   if(!m.forecast&&doc.retirement.primary.birthYear===undefined&&assets.length)out.push({id:'future',title:'Zukunft planen',text:'Mit drei Angaben siehst du, ob dein Vermögen für den Ruhestand reicht.',run:()=>startSetup('future')});
   const sp=doc.retirement.primary.statutoryPension;
   if(assets.length&&m.forecast&&!m.pension&&!(sp.points>0)&&!(sp.annualSalary>0)&&!doc.retirement.primary.civilServicePension&&!doc.retirement.incomes.length&&!doc.retirement.people.length)out.push({id:'pension',title:'Rente ergänzen',text:'Ein Betrag aus deiner Renteninformation macht die Prognose deutlich genauer.',run:()=>startSetup('pension')});
+  if(assets.length&&m.pension&&m.forecast&&!(doc.retirement.pensionDepots||[]).length&&new Date().getFullYear()<=2028)out.push({id:'av-depot',title:'Altersvorsorgedepot planen',text:'Ab 2027 legt der Staat bis zu 540 € im Jahr auf deine Beiträge, dazu bis zu 300 € je Kind.',run:_nsAvDepot});
   const quote=assets.find(p=>SETUP_MARKET_CATS.includes(p.category)&&!p.instrument);
   if(quote)out.push({id:'quotes-'+quote.id,title:'Live-Kurs für „'+quote.name+'“',text:'Mit Ticker und Stückzahl hält sich der Wert von selbst aktuell.',run:()=>_nsQuote(quote.id)});
   if(m.budget&&items.some(r=>/^setup-(fixed|living)/.test(r.id)))out.push({id:'budget-split',title:'Budget genauer aufteilen',text:'Ersetze Fixkosten und Lebenshaltung nach und nach durch Posten wie Miete oder Versicherungen.',run:()=>_openDataSection('budget','ds-budget-items')});
@@ -10300,6 +10563,12 @@ function _nsQuote(id){
   sel.value='market';_assetMetadataChanged(prefix,'valuation');_assetSheetRows(prefix);
   const sym=_assetEl(prefix,'symbol');if(sym){sym.scrollIntoView({block:'center'});sym.focus({preventScroll:true});}
 }
+/* Vorschlag „Altersvorsorgedepot planen“: Altersvorsorge öffnen, bearbeiten, erstes Depot anlegen */
+function _nsAvDepot(){
+  _openDataSection('pension');
+  if(!_editMode)enterEditMode();
+  const add=document.getElementById('dpAvdAdd');if(add)add.click();
+}
 function _nsRefresh(){const el=document.getElementById('nextSteps');if(el)el.outerHTML=_nextStepsHTML();}
 function _nsRun(id){const t=_nextSteps().find(t=>t.id===id);if(t)t.run();}
 function _nsDismiss(id){
@@ -10315,7 +10584,7 @@ async function _loadDemoBackup(){
   const doc=await response.json();AssetsData.validate(doc);return doc;
 }
 async function _v2RestoreDemo(){
-  if(!confirm('Alle aktuellen Daten (Vermögen, Budget, Prognose) werden durch die Demo-Daten ersetzt.\n\nTipp: vorher per „Sicherung exportieren“ sichern.\n\nFortfahren?'))return;
+  if(!await _ask({title:'Demo-Daten laden?',text:'Alle aktuellen Daten (Vermögen, Budget, Prognose) werden durch die Demo-Daten ersetzt.\nTipp: vorher eine Sicherung exportieren.',ok:'Demo laden',danger:true}))return;
   try{
     const doc=await _loadDemoBackup();
     doc.preferences.theme=appStorage.document().preferences.theme;

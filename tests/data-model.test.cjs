@@ -172,11 +172,11 @@ test('actual export and JSON upload handlers support settings-only backups and c
   assert.equal(captured.doc.preferences.theme, 'light');
   const b = imported(html);
   b.context.upload = { target: { files: [{ name: captured.name, text: async () => JSON.stringify(captured.doc) }], value: captured.name } };
-  b.run('confirm=()=>false');
+  b.run('_ask=async()=>false');
   const before = b.storage.getItem(Data.KEY);
   await b.run('handleDataUpload(upload)');
   assert.equal(b.storage.getItem(Data.KEY), before);
-  b.run('confirm=()=>true');
+  b.run('_ask=async()=>true');
   await b.run('handleDataUpload(upload)');
   assert.deepEqual(b.json('appStorage.document().preferences'), captured.doc.preferences);
   assert.equal(b.json('Object.keys(loadData()).length'), 0);

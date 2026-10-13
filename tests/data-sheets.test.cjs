@@ -116,9 +116,9 @@ test('a new liability with only a balance is created in its own section without 
   const s=snapshot(a,'2026-10');assert.equal(value(s,p.id),4000);assert.equal(value(s,'konto'),1200);
 });
 
-test('removing a position from its sheet archives it and keeps its history in the backup',()=>{
-  const a=context();a.run('confirm=()=>true');
-  a.run("openAssetSheet('depot');_removeFromSheet('depot')");
+test('removing a position from its sheet archives it and keeps its history in the backup',async()=>{
+  const a=context();a.run('_ask=async()=>true');
+  await a.run("openAssetSheet('depot');_removeFromSheet('depot')");
   const doc=a.json('appStorage.document()');
   assert.equal(doc.positions.find(p=>p.id==='depot').archived,true);
   assert.equal(value(doc.snapshots[0],'depot'),5000);

@@ -1,13 +1,14 @@
-const CACHE='verm-v104';
+const CACHE='verm-v107';
 const ASSETS=[
   './index.html',
-  './data-store.js?v=13',
+  './data-store.js?v=15',
   './loan-model.js?v=2',
   './loan-history.js?v=1',
   './asset-model.js?v=4',
   './demo_backup.json',
   './manifest.json',
-  './icon-192.png',
+  './icon-192.png?v=2',
+  './icon-512.png?v=2',
   './demo_export.csv',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',
   'https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js',

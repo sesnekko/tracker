@@ -115,6 +115,12 @@ doc.retirement.primary.name = 'Max (Demo)';
 doc.retirement.primary.statutoryPension.retirementAge = 67;
 doc.retirement.people[0].name = 'Anna (Demo)';
 doc.retirement.people[0].workUntilAge = 67;
+// Altersvorsorgedepots ab 2027: Max mit voller Grundzulage, Anna mit kleinem Beitrag und Kinderzulage
+// (ein Kind laut Kindergeld im Budget).
+doc.retirement.pensionDepots = [
+  {id: 'depot-1', name: 'AV-Depot Max (Demo)', personId: doc.retirement.primary.id, monthlyContribution: 150},
+  {id: 'depot-2', name: 'AV-Depot Anna (Demo)', personId: doc.retirement.people[0].id, monthlyContribution: 50, childBirthYears: [2019]}
+];
 doc.forecast.settings.retirementAge = 67;
 doc.forecast.settings.saveUntilAge = 67;
 doc.forecast.events[1] = {id: 'event-2', name: 'Renovierung', year: 2030, amount: 15000, from: {type: 'liquid'}, to: {type: 'external'}};

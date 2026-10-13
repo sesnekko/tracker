@@ -33,7 +33,7 @@ function app(html, storage = new MemoryStorage()) {
   });
   const script = html.split('<script>').at(-1).split('</script>')[0];
   vm.runInContext(script, context);
-  vm.runInContext("buildDynamicFormForTest=buildDynamicForm;picker={setVal(){}};render=()=>{};buildAssetParamsTable=()=>{};updateLifetimeInputs=()=>{};buildDynamicForm=()=>{};navigateToPage=()=>{};", context);
+  vm.runInContext("buildDynamicFormForTest=buildDynamicForm;picker={setVal(){}};render=()=>{};buildAssetParamsTable=()=>{};updateLifetimeInputs=()=>{};buildDynamicForm=()=>{};navigateToPage=()=>{};_ask=async()=>true;", context);
   return {
     context, storage, el,
     run(code) { return vm.runInContext(code, context); },

@@ -4,7 +4,7 @@
   'use strict';
   const KEY = 'vermoegen-data-v1';
   const FORMAT = 'vermoegen-backup';
-  const VERSION = 7;
+  const VERSION = 8;
   const CATEGORIES = ['cash', 'etf', 'stock', 'bitcoin', 'crypto', 'metal', 'realEstate', 'vehicle', 'other', 'bav', 'illiquid', 'liab'];
   const BUDGET_CATEGORIES = ['einkommen', 'fixe', 'variable', 'sparen'];
   const MODULES = ['assets', 'liab', 'pension', 'budget', 'forecast'];
@@ -32,17 +32,25 @@
     points: 'points', salary: 'annualSalary', age: 'retirementAge',
     deduct: 'deductionPercent', rw: 'pensionPointValue', de: 'averageSalary',
     bbg: 'contributionCeiling',
-    // Version 7: laufende Erwerbsminderungsrente (1 = teilweise, 2 = voll), nur eigene Person.
+    // Version 7: laufende Erwerbsminderungsrente (1 = teilweise, 2 = voll) der eigenen Person,
+    // seit Version 8 auch für weitere Personen.
     emType: 'disabilityType', em: 'disabilityPension', emUntil: 'disabilityUntilYear', emLimit: 'earningsLimit'
   };
-  const DRV_PRIMARY = ['pensionPointValue', 'averageSalary', 'contributionCeiling', 'disabilityType', 'disabilityPension', 'disabilityUntilYear', 'earningsLimit'];
+  // Gemeinsame Rechengrößen stehen nur bei der eigenen Person und gelten für alle.
+  const DRV_PRIMARY = ['pensionPointValue', 'averageSalary', 'contributionCeiling'];
+  // Version 8: Altersvorsorgedepots (ab 2027) je Person; fehlende Felder = Standardwerte der App.
+  const AV_DEPOT = {
+    contrib: 'monthlyContribution', balance: 'balance', start: 'startYear', ret: 'returnPercent',
+    from: 'payoutAge', lump: 'lumpSumPercent', deduct: 'deductionPercent'
+  };
+  const birthYears = value => (String(value ?? '').match(/\d{4}/g) || []).map(Number);
   // Version 7: Beamtenversorgung der eigenen Person (Ruhegehalt aus Bezügen und Dienstjahren).
   const CIVIL = {
     pay: 'pensionableSalary', years: 'serviceYears', age: 'retirementAge',
     from: 'startAge', deduct: 'deductionPercent'
   };
   const LEGACY_KEYS = ['fieldConfig', 'finData', 'budgetData', 'loanParams',
-    'lt-drv', 'lt-drv-extra', 'lt-beamte', 'lt-pensions', 'lt-events', 'lt-asset-params',
+    'lt-drv', 'lt-drv-extra', 'lt-av-depots', 'lt-beamte', 'lt-pensions', 'lt-events', 'lt-asset-params',
     'lt-birth-year', 'lt-birth-month', 'v2-modules', 'darkMode', 'customFields',
     ...Object.keys(SETTINGS)];
   const copy = value => JSON.parse(JSON.stringify(value));
@@ -266,6 +274,16 @@
       if (until !== undefined) p.workUntilAge = until;
       return p;
     });
+    const depotId = idsFor('depot-', previous.retirement.pensionDepots || []);
+    const personIds = [primary.id, ...doc.retirement.people.map(p => p.id)];
+    doc.retirement.pensionDepots = parse(values, 'lt-av-depots', []).map((r, i) => {
+      // Ohne gültige Person (z. B. weitere Rente gelöscht) gehört das Depot zur eigenen Person.
+      const d = { id: depotId(r, i), name: r.name || '', personId: personIds.includes(r.person) ? r.person : primary.id, ...mapped(r, AV_DEPOT) };
+      if (d.monthlyContribution === undefined) d.monthlyContribution = 0;
+      const kids = birthYears(r.kids);
+      if (kids.length) d.childBirthYears = kids;
+      return d;
+    });
     const incomeId = idsFor('income-', previous.retirement.incomes);
     doc.retirement.incomes = parse(values, 'lt-pensions', []).map((r, i) => ({ id: incomeId(r, i), name: r.name || '', monthlyAmount: number(r.amount) ?? 0, fromAge: number(r.from) ?? 0 }));
     for (const [key, field] of Object.entries(SETTINGS)) {
@@ -338,6 +356,10 @@
     put('lt-drv', unmapped(primary.statutoryPension, DRV));
     if (own(primary, 'civilServicePension')) put('lt-beamte', unmapped(primary.civilServicePension, CIVIL));
     put('lt-drv-extra', doc.retirement.people.map(p => ({ id: p.id, name: p.name, by: p.birthYear ?? '', until: p.workUntilAge ?? '', ...unmapped(p.statutoryPension, DRV) })));
+    put('lt-av-depots', (doc.retirement.pensionDepots || []).map(d => ({
+      id: d.id, name: d.name, person: d.personId === primary.id ? '' : d.personId,
+      ...unmapped(d, AV_DEPOT), ...(d.childBirthYears ? { kids: d.childBirthYears.join(', ') } : {})
+    })));
     put('lt-pensions', doc.retirement.incomes.map(p => ({ id: p.id, name: p.name, amount: p.monthlyAmount, from: p.fromAge })));
     for (const [key, field] of Object.entries(SETTINGS)) if (own(doc.forecast.settings, field)) values[key] = String(doc.forecast.settings[field]);
     const endpoint = ref => ref.type === 'external' ? '' : ref.type === 'liquid' ? '*' : groupName(ref.groupId);
@@ -381,7 +403,7 @@
     safeKeys(doc);
     object(doc, 'Datei', ['format', 'schemaVersion', 'currency', 'exportedAt', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences'], ['format', 'schemaVersion', 'currency', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences']);
     if (doc.format !== FORMAT) fail('format', 'keine Vermögen-Sicherung');
-    if (![1,2,3,4,5,6,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
+    if (![1,2,3,4,5,6,7,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
     if (doc.currency !== 'EUR') fail('currency', 'nur EUR wird unterstützt');
     if (own(doc, 'exportedAt') && (typeof doc.exportedAt !== 'string' || !Number.isFinite(Date.parse(doc.exportedAt)))) fail('exportedAt', 'ungültiges Datum');
     const groups = unique(doc.groups, 'groups');
@@ -494,17 +516,29 @@
         }
       }
     }
-    object(doc.retirement, 'Altersvorsorge', ['primary', 'people', 'incomes']);
+    object(doc.retirement, 'Altersvorsorge', ['primary', 'people', 'incomes', 'pensionDepots'], ['primary', 'people', 'incomes']);
     const person = (p, primary) => {
       object(p, 'Person', ['id', 'name', 'birthYear', ...(primary ? ['birthMonth', 'civilServicePension'] : ['workUntilAge']), 'statutoryPension'], ['id', 'name', 'statutoryPension']);
       text(p.name, 'Personenname');
       for (const k of ['birthYear', 'birthMonth', 'workUntilAge']) if (own(p, k)) num(p[k], k);
       numericObject(p.statutoryPension, 'Gesetzliche Rente', Object.values(DRV));
       if (own(p, 'civilServicePension')) numericObject(p.civilServicePension, 'Beamtenversorgung', Object.values(CIVIL));
-      if (!primary && DRV_PRIMARY.some(k => own(p.statutoryPension, k))) fail('Gesetzliche Rente', 'Gemeinsame Rentenwerte und Erwerbsminderungsrente gehören zur eigenen Person');
+      if (!primary && DRV_PRIMARY.some(k => own(p.statutoryPension, k))) fail('Gesetzliche Rente', 'Gemeinsame Rentenwerte gehören zur eigenen Person');
       if (own(p.statutoryPension, 'disabilityType') && ![1, 2].includes(p.statutoryPension.disabilityType)) fail('Erwerbsminderungsrente', 'teilweise (1) oder voll (2) erwartet');
     };
     unique([doc.retirement.primary, ...doc.retirement.people], 'Personen'); person(doc.retirement.primary, true); doc.retirement.people.forEach(p => person(p, false));
+    if (own(doc.retirement, 'pensionDepots')) {
+      unique(doc.retirement.pensionDepots, 'Altersvorsorgedepots');
+      const personIds = new Set([doc.retirement.primary.id, ...doc.retirement.people.map(p => p.id)]);
+      for (const d of doc.retirement.pensionDepots) {
+        object(d, 'Altersvorsorgedepot', ['id', 'name', 'personId', 'childBirthYears', ...Object.values(AV_DEPOT)], ['id', 'name', 'personId', 'monthlyContribution']);
+        text(d.name, 'Depotname');
+        ref(d.personId, 'Altersvorsorgedepot.personId', personIds);
+        for (const k of Object.values(AV_DEPOT)) if (own(d, k)) num(d[k], 'Altersvorsorgedepot.' + k, 0);
+        if (own(d, 'lumpSumPercent') && d.lumpSumPercent > 30) fail('Altersvorsorgedepot', 'Teilauszahlung höchstens 30 %');
+        if (own(d, 'childBirthYears')) { array(d.childBirthYears, 'Kinder'); d.childBirthYears.forEach(y => num(y, 'Geburtsjahr Kind', 1900)); }
+      }
+    }
     unique(doc.retirement.incomes, 'Weitere Renten');
     for (const p of doc.retirement.incomes) { object(p, 'Weitere Rente', ['id', 'name', 'monthlyAmount', 'fromAge']); text(p.name, 'Rentenname'); num(p.monthlyAmount, 'Rentenbetrag'); num(p.fromAge, 'Rentenbeginn'); }
     object(doc.forecast, 'Prognose', ['settings', 'events']); numericObject(doc.forecast.settings, 'Prognose-Annahmen', Object.values(SETTINGS));

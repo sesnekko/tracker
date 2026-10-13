@@ -13,7 +13,7 @@ test('Beamtenversorgung is stored on the own person and survives backup and rest
   const store = Data.createStore(storage);
   store.setItem('lt-beamte', JSON.stringify({ pay: 4200, years: 12.5, age: 0, from: 64, deduct: 28 }));
   const doc = store.document();
-  assert.equal(doc.schemaVersion, 7);
+  assert.equal(doc.schemaVersion, Data.VERSION);
   assert.deepEqual(doc.retirement.primary.civilServicePension,
     { pensionableSalary: 4200, serviceYears: 12.5, retirementAge: 0, startAge: 64, deductionPercent: 28 });
   const target = Data.createStore(new MemoryStorage());

@@ -1,6 +1,6 @@
 {
   "format": "vermoegen-backup",
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "currency": "EUR",
   "groups": [
     {
@@ -3893,6 +3893,23 @@
         "name": "Betriebsrente",
         "monthlyAmount": 180,
         "fromAge": 67
+      }
+    ],
+    "pensionDepots": [
+      {
+        "id": "depot-1",
+        "name": "AV-Depot Max (Demo)",
+        "personId": "person-main",
+        "monthlyContribution": 150
+      },
+      {
+        "id": "depot-2",
+        "name": "AV-Depot Anna (Demo)",
+        "personId": "person-1",
+        "monthlyContribution": 50,
+        "childBirthYears": [
+          2019
+        ]
       }
     ]
   },
