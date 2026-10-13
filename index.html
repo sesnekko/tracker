@@ -10886,11 +10886,30 @@ function _nsDismiss(id){
 }
 
 
-/* Fetch and validate before replacement, keeping the current data on failure. */
+/* Fetch and validate before replacement, keeping the current data on failure.
+   Lokal geöffnet (file://, z. B. als Chrome-App aus einem Ordner) blockt Chrome fetch() auf Dateien
+   im selben Ordner; dann kommt dieselbe Demo aus demo_backup.js, das als Script-Tag geladen werden darf. */
 async function _loadDemoBackup(){
-  const response=await fetch('demo_backup.json',{cache:'no-cache'});
-  if(!response.ok)throw new Error('Demo-Datei konnte nicht geladen werden');
-  const doc=await response.json();AssetsData.validate(doc);return doc;
+  let doc;
+  if(location.protocol==='file:')doc=await _loadDemoScript();
+  else{
+    const response=await fetch('demo_backup.json',{cache:'no-cache'});
+    if(!response.ok)throw new Error('Demo-Datei konnte nicht geladen werden');
+    doc=await response.json();
+  }
+  AssetsData.validate(doc);return doc;
+}
+function _loadDemoScript(){
+  return new Promise((resolve,reject)=>{
+    const s=document.createElement('script');
+    s.src='demo_backup.js?t='+Date.now();
+    s.onload=()=>{
+      const d=window.ASSETS_DEMO_BACKUP;s.remove();delete window.ASSETS_DEMO_BACKUP;
+      d?resolve(JSON.parse(JSON.stringify(d))):reject(new Error('demo_backup.js enthält keine Demo'));
+    };
+    s.onerror=()=>{s.remove();reject(new Error('demo_backup.js fehlt im App-Ordner'));};
+    document.head.appendChild(s);
+  });
 }
 async function _v2RestoreDemo(){
   if(!await _ask({title:'Demo-Daten laden?',text:'Alle aktuellen Daten (Vermögen, Budget, Prognose) werden durch die Demo-Daten ersetzt.\nTipp: vorher eine Sicherung exportieren.',ok:'Demo laden',danger:true}))return;
