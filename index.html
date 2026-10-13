@@ -2744,12 +2744,12 @@ const INFO={
   'lt-withdraw-from':['Weiterarbeiten bis Alter','<p>Ende der Erwerbstätigkeit. Ab diesem Alter wird der Bedarf (abzüglich Renten) aus dem verfügbaren Vermögen entnommen. Liegt es vor dem Rentenbeginn, trägt das Vermögen die Lücke (Vorruhestand).</p>'],
   'lt-monthly-withdraw':['Bedarf €/Monat','<p>Monatliche Ausgaben im Vorruhestand, netto und in heutiger Kaufkraft. Ohne eigenen Wert gilt er auch in der Rente. Renten und Einkünfte werden davon abgezogen, nur der Rest wird entnommen.</p>'],
   'lt-safety':['Sicherheitsniveau','<p>In wie viel Prozent der 500 simulierten Marktverläufe das Geld bis „Planen bis Alter“ reichen muss. Bestimmt „Rente möglich ab“. 85–90 % sind ein gängiger Wert.</p>'],
-  'drv-points':['Rentenpunkte heute','<p>Deine bisher gesammelten Entgeltpunkte. Stehen in der jährlichen Renteninformation bzw. Rentenauskunft der Deutschen Rentenversicherung.</p><p>Ein Jahr mit Durchschnittsverdienst ergibt 1 Punkt.</p>'],
+  'drv-points':['Rentenpunkte heute','<p>Deine bisher gesammelten Entgeltpunkte. Stehen in der jährlichen Renteninformation bzw. Rentenauskunft der Deutschen Rentenversicherung.</p><p>Ein Jahr mit Durchschnittsverdienst ergibt 1 Punkt.</p><p>Mit Erwerbsminderungsrente: die Punkte aus deinem Versicherungsverlauf <strong>ohne Zurechnungszeit</strong>. Die Zurechnungszeit steckt schon in der EM-Rente und wirkt später über die Mindesthöhe der Altersrente – sonst würde sie doppelt zählen.</p>'],
   'drv-salary':['Bruttojahresgehalt','<p>Dein aktuelles rentenversicherungspflichtiges Bruttogehalt pro Jahr. Daraus werden die Punkte bis zum Ende der Arbeit hochgerechnet, beim Weiterarbeiten anteilig zur Arbeitszeit (Gehalt ÷ Durchschnittsentgelt, höchstens bis zur Beitragsbemessungsgrenze).</p><p>Mit Erwerbsminderungsrente: dein Hinzuverdienst pro Jahr.</p><p>Annahme: Dein Gehalt wächst wie die Durchschnittslöhne.</p>'],
   'drv-emType':['Erwerbsminderungsrente','<p>Nur ausfüllen, wenn bereits eine Rente wegen Erwerbsminderung bezogen wird – bei dir oder bei einer weiteren Person.</p><p><strong>Teilweise</strong>: Du kannst noch 3 bis unter 6 Stunden am Tag arbeiten, die Rente ist halb so hoch wie die volle. <strong>Voll</strong>: unter 3 Stunden. Bekommst du bei teilweiser Erwerbsminderung die volle Rente, weil du keine Teilzeitstelle findest (Arbeitsmarktrente), wähle „Voll“.</p><p>Ein Hinzuverdienst (z. B. Teilzeit) gehört ins Feld „Brutto/Jahr“: Er bringt weitere Rentenpunkte und wird mit der Hinzuverdienstgrenze verglichen.</p>'],
-  'drv-em':['EM-Rente netto','<p>Monatlicher Zahlbetrag laut Rentenbescheid nach Kranken- und Pflegeversicherung, abzüglich geschätzter Einkommensteuer.</p><p>In der Prognose deckt sie ab dem Vorruhestand einen Teil des Bedarfs. Vorher wird angenommen, dass sie als Einnahme im Budget steht und in die Sparraten einfließt.</p>'],
-  'drv-emUntil':['Läuft bis Jahr','<p>Leer = bis zur Regelaltersgrenze. Dann wird sie zur Altersrente, die mindestens so hoch ist wie die volle Erwerbsminderungsrente.</p><p>Befristete Renten (meist 3 Jahre) werden oft verlängert. Trag ein Jahr nur ein, wenn du davon ausgehst, dass die Rente dann endet.</p>'],
-  'drv-emLimit':['Hinzuverdienstgrenze','<p>Deine persönliche Grenze bei teilweiser Erwerbsminderung steht im Rentenbescheid. Sie liegt 2026 bei mindestens 41.527,50 € im Jahr. Leer = Mindestgrenze.</p><p>Bei voller Erwerbsminderung gilt 2026 einheitlich 20.763,75 €. Vom Betrag über der Grenze werden 40 % auf die Rente angerechnet.</p>'],
+  'drv-em':['EM-Rente netto','<p>Monatlicher Zahlbetrag laut Rentenbescheid nach Kranken- und Pflegeversicherung, abzüglich geschätzter Einkommensteuer.</p><p>Trag den Betrag ohne Anrechnung eines Hinzuverdiensts ein; die Anrechnung rechnet die App selbst aus „Brutto/Jahr“.</p><p>In der Prognose deckt sie ab dem Ende der Arbeit (Vorruhestand) einen Teil des Bedarfs, dann ohne Anrechnung, weil kein Hinzuverdienst mehr fließt. Vorher wird angenommen, dass sie als Einnahme im Budget steht und in die Sparraten einfließt.</p>'],
+  'drv-emUntil':['Läuft bis Jahr','<p>Leer = bis zur Regelaltersgrenze. Dann wird sie automatisch zur Altersrente, auch wenn deine Rentenphase später beginnt. Die Altersrente ist mindestens so hoch wie die volle Erwerbsminderungsrente (bei teilweiser also das Doppelte), weil die Entgeltpunkte der EM-Rente geschützt sind. Bringen Rentenpunkte und Hinzuverdienst mehr, zählt der höhere Betrag.</p><p>Befristete Renten (meist 3 Jahre) werden oft verlängert. Trag ein Jahr nur ein, wenn du davon ausgehst, dass die Rente dann endet.</p>'],
+  'drv-emLimit':['Hinzuverdienstgrenze','<p>Deine persönliche Grenze bei teilweiser Erwerbsminderung steht im Rentenbescheid. Sie liegt 2026 bei mindestens 41.527,50 € im Jahr. Leer = Mindestgrenze.</p><p>Bei voller Erwerbsminderung gilt 2026 einheitlich 20.763,75 €. Vom Betrag über der Grenze werden 40 % auf die Bruttorente angerechnet; netto ist der Abzug um Kranken-/Pflegeversicherung und Steuer (Abzüge %) geringer.</p>'],
   'drv-age':['Regelaltersgrenze','<p>Ab diesem Alter wird die gesetzliche Rente ohne Abschläge gezahlt. Wird aus dem Geburtsjahr berechnet (ab Jahrgang 1964: 67) und kann überschrieben werden.</p>'],
   'drv-deduct':['Abzüge %','<p>Pauschaler Abzug von der Bruttorente für Kranken- und Pflegeversicherung (ca. 11–13 %) und Einkommensteuer. 15–25 % sind ein üblicher Richtwert.</p>'],
   'drv-rw':['Aktueller Rentenwert','<p>Monatsrente pro Entgeltpunkt. Ab 1. Juli 2026: 42,52 €. Wird jährlich zum 1. Juli angepasst; die Prognose nimmt an, dass er mit der Inflation steigt.</p>'],
@@ -8636,7 +8636,9 @@ function calcEm(s,drv,age){
   const until=drv.emUntil>0?Math.min(age,_ageAt(s,drv.emUntil+1,0)):age;
   const limit=drv.emType===1?Math.max(drv.emLimit||0,EM_LIMITS[1]):EM_LIMITS[2];
   const over=Math.max(0,(drv.salary||0)-limit);
-  const cut=Math.min(drv.em,0.4*over/12);
+  /* 40 % des Überschusses mindern die Bruttorente; der Zahlbetrag sinkt um diesen Betrag abzüglich der
+     pauschalen Abzüge (Kranken-/Pflegeversicherung, Steuer), mit denen auch die Altersrente gerechnet wird */
+  const cut=Math.min(drv.em,0.4*over/12*(1-Math.min(90,Math.max(0,drv.deduct||0))/100));
   /* Altersrente danach mindestens die volle EM-Rente (gleiche Entgeltpunkte, Rentenartfaktor 1 statt 0,5),
      sofern die EM-Rente bis zur Altersrente läuft */
   const full=until>=age-1e-9?drv.em*(drv.emType===1?2:1):0;
@@ -8672,6 +8674,7 @@ function calcDrvExtra(s,p){
   /* Rentenbeginn und Ende der EM-Rente auf das eigene Alter umgerechnet */
   r.fromMain=r.age+(by-s.birthYear);
   if(r.em)r.em.untilMain=r.em.until+(by-s.birthYear);
+  r.workEndMain=until+(by-s.birthYear);
   r.name=(p.name||'').trim()||'Weitere Rente';
   return r;
 }
@@ -8780,7 +8783,11 @@ function regelaltersgrenze(by){
   return 65;
 }
 function calcDrvPension(s,drv){
-  const age=drv.age>0?drv.age:(s.pensionAge??regelaltersgrenze(s.birthYear));
+  let age=drv.age>0?drv.age:(s.pensionAge??regelaltersgrenze(s.birthYear));
+  /* Eine Erwerbsminderungsrente läuft höchstens bis zur Regelaltersgrenze und wird dort automatisch zur
+     Altersrente. Läuft sie bis dahin, beginnt die Altersrente also spätestens mit der Regelaltersgrenze. */
+  const rag=regelaltersgrenze(s.birthYear);
+  if((drv.emType===1||drv.emType===2)&&drv.em>0&&!(drv.emUntil>0&&_ageAt(s,drv.emUntil+1,0)<rag-1e-9))age=Math.min(age,rag);
   const now=new Date();
   const curAge=_ageAt(s,now.getFullYear(),now.getMonth());
   /* Punkte bis zum Ende der Arbeit (Beginn Vorruhestand), beim Weiterarbeiten anteilig zur Arbeitszeit */
@@ -8910,8 +8917,9 @@ function buildPlan(sIn,opt={}){
   /* Gesetzliche Rente aus Rentenpunkten + Gehalt hochgerechnet (Altersvorsorge aus: keine Renten) */
   const drv=penOn?calcDrvPension(s,opt.drv||getDrv()):{age:0,years:0,epYear:0,epTotal:0,brutto:0,netto:0};
   if(drv.netto>0)pensions.push({amount:drv.netto,from:drv.age,drv:true});
-  /* laufende EM-Rente: wirkt im Ruhestand bis zur Altersrente (vorher steckt sie in den Sparraten) */
-  if(drv.em&&drv.em.amount>0)pensions.push({amount:drv.em.amount,from:0,until:drv.em.until,drv:true});
+  /* laufende EM-Rente: wirkt ab dem Ende der Arbeit bis zur Altersrente (vorher steckt sie in den Sparraten).
+     Ohne Arbeit gibt es keinen Hinzuverdienst mehr, also auch keine Anrechnung: es zählt der volle Zahlbetrag. */
+  if(drv.em&&drv.em.gross>0)pensions.push({amount:drv.em.gross,from:0,until:drv.em.until,drv:true});
   const bv=penOn?calcBeamtePension(s,opt.bv||getBeamte()):{age:0,netto:0};
   if(bv.netto>0)pensions.push({amount:bv.netto,from:bv.age,drv:true});
   /* Altersvorsorgedepots: Auszahlplan bis 85 als Einkommen, Teilauszahlung als Zufluss ins liquide Vermögen */
@@ -8920,10 +8928,15 @@ function buildPlan(sIn,opt={}){
     pensions.push({amount:r.netto,from:r.fromMain,until:r.untilMain,drv:true});
     if(r.lumpNet>0&&r.fromMain>currentAge)events.push({name:'Teilauszahlung '+r.name,amount:r.lumpNet,age:r.fromMain,fromIdx:-1,toIdx:-1,fromExt:true,toExt:false});
   });
-  const drvExtra=penOn?getDrvExtra().map(p=>calcDrvExtra(s,p)).filter(r=>r.netto>0||(r.em&&r.em.amount>0)):[];
+  const drvExtra=penOn?getDrvExtra().map(p=>calcDrvExtra(s,p)).filter(r=>r.netto>0||(r.em&&r.em.gross>0)):[];
   drvExtra.forEach(r=>{
     if(r.netto>0)pensions.push({amount:r.netto,from:r.fromMain,drv:true});
-    if(r.em&&r.em.amount>0)pensions.push({amount:r.em.amount,from:0,until:r.em.untilMain,drv:true});
+    /* EM-Rente weiterer Personen: mit Anrechnung, solange die Person noch arbeitet, danach voll */
+    if(r.em&&r.em.gross>0){
+      const w=Math.min(r.workEndMain,r.em.untilMain);
+      if(r.em.cut>0&&w>0)pensions.push({amount:r.em.amount,from:0,until:w,drv:true});
+      if(!(r.em.cut>0)||w<r.em.untilMain)pensions.push({amount:r.em.gross,from:r.em.cut>0?w:0,until:r.em.untilMain,drv:true});
+    }
   });
   return{drv,bv,drvExtra,avd,s,data,sorted,latestKey,latestNet:calc(data[latestKey]).net,currentAge,firstAge,horizonAge,nSteps,groups,lnr,vol,events,pensions,depositIdx};
 }
@@ -9254,7 +9267,7 @@ function _drvResultHTML(d,r,saveUntil){
     if(!e)emTxt='Zahlbetrag der Erwerbsminderungsrente eintragen.';
     else{
       emTxt=`EM-Rente <strong>${fmt(e.amount)}</strong> netto/Monat bis ${fmtAge(e.until)}`+(e.full>0?`, danach Altersrente`:', danach keine EM-Rente mehr')+'.';
-      if(e.over>0)emTxt+=` <span style="color:var(--red)">Hinzuverdienst liegt ${fmt(e.over)} über der Grenze von ${fmt(e.limit)}/Jahr – rund ${fmt(e.cut)}/Monat werden angerechnet.</span>`;
+      if(e.over>0)emTxt+=` <span style="color:var(--red)">Hinzuverdienst liegt ${fmt(e.over)} über der Grenze von ${fmt(e.limit)}/Jahr – netto rund ${fmt(e.cut)}/Monat weniger.</span> <span style="color:var(--muted)">Ohne Hinzuverdienst (ab dem Ende der Arbeit) rechnet die Prognose mit ${fmt(e.gross)}.</span>`;
     }
     emTxt='<br>'+emTxt;
     if(!(r.epTotal>0))return emTxt.slice(4);
@@ -9587,11 +9600,11 @@ function renderLifetimePageCalcs(){
   const pc=v=>(v*100).toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})+' %';
   /* Einkommen im Ruhestand: einzelne Renten (heutige Kaufkraft) im Verhältnis zum Bedarf */
   const inc=[];
-  if(plan.drv&&plan.drv.em&&plan.drv.em.amount>0&&plan.drv.em.until>currentAge)inc.push({n:'Erwerbsminderungsrente',v:plan.drv.em.amount,until:plan.drv.em.until,temp:true,then:plan.drv.em.full>0});
+  if(plan.drv&&plan.drv.em&&plan.drv.em.gross>0&&plan.drv.em.until>currentAge)inc.push({n:'Erwerbsminderungsrente',v:plan.drv.em.gross,until:plan.drv.em.until,temp:true,then:plan.drv.em.full>0});
   if(plan.drv&&plan.drv.netto>0)inc.push({n:'Gesetzliche Rente',v:plan.drv.netto,a:plan.drv.age});
   if(plan.bv&&plan.bv.netto>0)inc.push({n:'Beamtenpension',v:plan.bv.netto,a:plan.bv.age});
   (plan.drvExtra||[]).forEach(r=>{
-    if(r.em&&r.em.amount>0&&r.em.untilMain>currentAge)inc.push({n:'EM-Rente '+r.name,v:r.em.amount,until:r.em.until,temp:true,then:r.em.full>0});
+    if(r.em&&r.em.gross>0&&r.em.untilMain>currentAge)inc.push({n:'EM-Rente '+r.name,v:r.workEndMain>s.workEnd?r.em.amount:r.em.gross,until:r.em.until,temp:true,then:r.em.full>0});
     if(r.netto>0)inc.push({n:'Rente '+r.name,v:r.netto,a:r.age});
   });
   (plan.avd||[]).forEach(r=>inc.push({n:r.name,v:r.netto,a:r.from,end:r.until}));
