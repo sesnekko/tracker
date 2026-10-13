@@ -142,5 +142,11 @@ doc.forecast.settings.retirementAge = 67;
 doc.forecast.settings.saveUntilAge = 67;
 doc.forecast.events[1] = {id: 'event-2', name: 'Renovierung', year: 2030, amount: 15000, from: {type: 'liquid'}, to: {type: 'external'}};
 Data.validate(doc);
+function demoScript(d) {
+  return '/* Demo-Daten für die lokal geöffnete App (file://), erzeugt von scripts/build-demo.cjs aus demo_backup.json. */\n'
+    + 'window.ASSETS_DEMO_BACKUP=' + JSON.stringify(d) + ';\n';
+}
 fs.writeFileSync(path.join(root, 'demo_backup.json'), JSON.stringify(doc, null, 2) + '\n');
-console.log('demo_backup.json:', doc.snapshots.length, 'months,', doc.positions.length, 'positions');
+// Dieselbe Demo als Skript: Lokal geöffnet (file://) blockt Chrome fetch(), ein <script> darf aber geladen werden.
+fs.writeFileSync(path.join(root, 'demo_backup.js'), demoScript(doc));
+console.log('demo_backup.json + demo_backup.js:', doc.snapshots.length, 'months,', doc.positions.length, 'positions');
