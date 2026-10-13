@@ -5,11 +5,11 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `master_export_YYYY-MM-DD.json` (bis Oktober 2026 `vermoegen_YYYY-MM-DD.json`). Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 10
+## Struktur, Version 11
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `10`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `11`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
@@ -485,8 +485,8 @@ Die Prognose rechnet in vier Phasen. Ihre Grenzen und Annahmen stehen in
 | Phase | beginnt mit | Annahmen |
 | --- | --- | --- |
 | 1 Ansparen | heute | Sparraten je Anlage, `savingsGrowthPercent` |
-| 2 Weiterarbeiten | `saveUntilAge` | `phase2WorkPercent` (Arbeitszeit, Standard 100), `phase2SavingPercent` (Anteil der heutigen Sparrate, Standard 0), `phase2MonthlyWithdrawal` (€/Monat, Standard 0) |
-| 3 Vorruhestand | `retirementAge` | `monthlySpending` aus dem liquiden Vermögen, keine Einzahlungen |
+| 2 Weiterarbeiten | `saveUntilAge` | `phase2WorkPercent` (Arbeitszeit, Standard 100), `phase2SavingPercent` (private Vermögensbildung in % der heutigen Sparraten, Standard 0), `phase2PensionPercent` (Altersvorsorge in % der heutigen Beiträge, Standard 100, ab Version 11), `phase2MonthlyWithdrawal` (€/Monat, Standard 0) |
+| 3 Vorruhestand | `retirementAge` | `monthlySpending` aus dem liquiden Vermögen; ab Version 11 optional `phase3SavingPercent` und `phase3PensionPercent` (Standard 0) |
 | 4 Rente | `pensionStartAge` | `pensionSpending` (Standard: wie `monthlySpending`) |
 
 - Die Grenzen folgen aufeinander: Phase 2 beginnt bei `min(saveUntilAge, retirementAge)`,
@@ -495,13 +495,31 @@ Die Prognose rechnet in vier Phasen. Ihre Grenzen und Annahmen stehen in
   bzw. die Regelaltersgrenze. Eine gesetzliche Rente ohne eigenes Alter beginnt mit Phase 4;
   stimmt ihr Alter mit Phase 4 überein, zieht das Phasen-Sheet es beim Verschieben mit
   (ebenso das Antragsalter der Beamtenversorgung).
-- Rentenpunkte, Dienstzeit und die betriebliche Altersvorsorge wachsen in Phase 1 voll und in
-  Phase 2 anteilig zur Arbeitszeit; Altersvorsorgedepots bekommen Beiträge bis zum Ende der
-  Arbeit (`retirementAge`). Kreditraten zahlt bis dahin das Einkommen.
-- Mit `phase2WorkPercent: 0` entspricht die Rechnung genau dem Modell bis Version 9
+- Rentenpunkte und Dienstzeit wachsen in Phase 1 voll und in Phase 2 anteilig zur Arbeitszeit.
+  Altersvorsorge (Sparraten der Gruppen mit Kategorie `bav` und Beiträge eigener
+  Altersvorsorgedepots) läuft in Phase 1 voll, in Phase 2 und 3 mit dem jeweiligen Prozentsatz,
+  danach nicht mehr; die Depot-Hochrechnung rechnet das Jahr für Jahr (Alter zur Jahresmitte).
+  Private Vermögensbildung (übrige Sparraten) entsprechend mit den Spar-Prozentsätzen.
+  Kreditraten zahlt bis zum Ende der Arbeit das Einkommen.
+- Mit `phase2WorkPercent: 0` und `phase2PensionPercent: 0` entspricht die Rechnung genau dem Modell bis Version 9
   (zwischen „Sparen bis“ und „Ruhestand ab“ weder Sparen noch Rentenpunkte); die Tests
   vergleichen das mit dem Stand `1f17a25`.
 - Dateien der Version 9 bleiben lesbar und erhalten die Standardwerte.
+
+## Einkommen im Ruhestand, Depots im Vermögen, Erscheinungsbild (Version 11)
+
+- **Budget-Einnahmen im Ruhestand**: `retirementIncome: true` an einem Budgetposten der Art
+  `income` (nur dort erlaubt). Der Monatsschnitt zählt ab dem Ende der Arbeit als Einkommen
+  im Ruhestand, in heutiger Kaufkraft. Ist die Einnahme schon unter Altersvorsorge erfasst
+  (Erwerbsminderungsrente, gesetzliche Rente, Pension, Altersvorsorgedepot, gleichnamige
+  weitere Rente), zählt sie nicht doppelt; das Budget-Sheet zeigt das an. Eine so markierte
+  Erwerbsminderungsrente ohne Eintrag unter Altersvorsorge endet an der Regelaltersgrenze.
+- **Altersvorsorgedepot im Vermögen**: optional `positionId` am Depot, verweist auf eine
+  Vermögensposition (nicht `liab`). Angelegt über die Depot-Karte mit Kurssuche, in der Gruppe
+  „Altersvorsorgedepots“, gebunden (`illiquid`). Der aktuelle Wert der Position ersetzt das
+  eingetragene Guthaben. In der Prognose zählt die Gruppe bis zum Auszahlungsbeginn zum
+  Vermögen, danach steckt das Kapital in der monatlichen Auszahlung (nicht doppelt).
+- **Erscheinungsbild**: `preferences.theme` kann zusätzlich `system` sein (folgt dem Gerät).
 
 ## Altersvorsorgedepots im Budget (Version 9)
 

@@ -50,11 +50,14 @@ test('pension points and service years: full until the saving phase ends, then i
   const bv = a.json(`calcBeamtePension(getLifetimeSettings(),Object.assign({},BV_DEFAULTS,{pay:4000,years:10}))`);
   near(bv.years, 13.25 + 7 * 0.6);
   assert.equal(bv.age, 67);
-  // Altersvorsorgedepot contributions continue while working in phase 2.
-  assert.equal(a.json(`_avdParams(getLifetimeSettings(),{contrib:100})`).lastYear, 1985 + 62 - 1);
+  // Altersvorsorgedepot contributions follow the phases: full while working, then the Vorruhestand share (default none).
+  const factor = y => a.run(`_avdParams(getLifetimeSettings(),{contrib:100}).factor(${y})`);
+  assert.deepEqual([factor(2030), factor(2046), factor(2047)], [1, 1, 0]);
+  set(a, { 'lt-p2-pension': 50, 'lt-p3-pension': 25 });
+  assert.deepEqual([factor(2041), factor(2047)], [0.5, 0.25]);
 });
 
-test('simulation: phase 2 keeps the bAV with working time, private saving by its own share, and may draw on assets', () => {
+test('simulation: phase 2 keeps the bAV by the pension share, private saving by its own share, and may draw on assets', () => {
   const a = app(html); a.csv(demoCSV);
   set(a, { 'lt-birth-year': 1985, 'lt-save-until': 50, 'lt-withdraw-from': 60, 'lt-inflation': 0 });
   const at60 = () => a.json('(()=>{const p=buildPlan();const d=simulatePlan(p,p.s.withdrawFrom,{record:true});const y=60-p.firstAge;const b=p.groups.findIndex(g=>g.cat==="bav");return{total:d.total[y],bav:b<0?null:d.per[b][y],short:d.shortfallAge};})()');
@@ -65,9 +68,9 @@ test('simulation: phase 2 keeps the bAV with working time, private saving by its
   set(a, { 'lt-p2-saving': 0, 'lt-p2-withdraw': 1000 });
   const drawing = at60();
   assert.ok(drawing.total < none.total, 'a withdrawal in phase 2 reduces wealth');
-  set(a, { 'lt-p2-withdraw': 0, 'lt-p2-work': 0 });
+  set(a, { 'lt-p2-withdraw': 0, 'lt-p2-pension': 0 });
   const stopped = at60();
-  if (none.bav !== null) assert.ok(stopped.bav < none.bav, 'the bAV stops growing without work');
+  if (none.bav !== null) assert.ok(stopped.bav < none.bav, 'the bAV stops growing without pension contributions');
 });
 
 test('Vorruhestand and Rente each use their own need', () => {
@@ -118,7 +121,7 @@ test('schema 10 keeps the phases in a backup; a version 9 backup reads with the 
   const a = app(html); a.csv(demoCSV);
   set(a, { 'lt-save-until': 55, 'lt-withdraw-from': 60, 'lt-pension-age': 66, 'lt-pension-spending': 2400, 'lt-p2-saving': 25, 'lt-p2-work': 80, 'lt-p2-withdraw': 300 });
   const backup = a.json('appStorage.exportBackup(new Date("2026-10-08"))');
-  assert.equal(backup.schemaVersion, 10);
+  assert.equal(backup.schemaVersion, Data.VERSION);
   assert.deepEqual(
     ['pensionStartAge', 'pensionSpending', 'phase2SavingPercent', 'phase2WorkPercent', 'phase2MonthlyWithdrawal'].map(k => backup.forecast.settings[k]),
     [66, 2400, 25, 80, 300]);
@@ -132,8 +135,8 @@ test('schema 10 keeps the phases in a backup; a version 9 backup reads with the 
   c.run('appStorage.importBackup(backup)');
   const s = c.json('getLifetimeSettings()');
   assert.deepEqual([s.p2Work, s.p2Saving, s.pensionSpending], [1, 0, s.monthlyWithdraw]);
-  assert.equal(c.json('appStorage.document()').schemaVersion, 10);
+  assert.equal(c.json('appStorage.document()').schemaVersion, Data.VERSION);
   // Unknown future versions are still rejected.
-  const future = JSON.parse(JSON.stringify(backup)); future.schemaVersion = 11;
+  const future = JSON.parse(JSON.stringify(backup)); future.schemaVersion = Data.VERSION + 1;
   assert.throws(() => Data.validate(future), /nicht unterstützte Version/);
 });
