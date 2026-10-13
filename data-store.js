@@ -4,7 +4,7 @@
   'use strict';
   const KEY = 'vermoegen-data-v1';
   const FORMAT = 'vermoegen-backup';
-  const VERSION = 9;
+  const VERSION = 10;
   const CATEGORIES = ['cash', 'etf', 'stock', 'bitcoin', 'crypto', 'metal', 'realEstate', 'vehicle', 'other', 'bav', 'illiquid', 'liab'];
   const BUDGET_CATEGORIES = ['einkommen', 'fixe', 'variable', 'sparen'];
   const MODULES = ['assets', 'liab', 'pension', 'budget', 'forecast'];
@@ -16,7 +16,11 @@
     'lt-life-expect': 'lifeExpectancyAge', 'lt-plan-horizon': 'planningHorizonAge',
     'lt-inflation': 'inflationPercent', 'lt-save-until': 'saveUntilAge',
     'lt-savings-growth': 'savingsGrowthPercent', 'lt-withdraw-from': 'retirementAge',
-    'lt-monthly-withdraw': 'monthlySpending', 'lt-safety': 'safetyPercent'
+    'lt-monthly-withdraw': 'monthlySpending', 'lt-safety': 'safetyPercent',
+    // Version 10: Lebensphasen. saveUntilAge beendet das Ansparen (Phase 2 beginnt), retirementAge die Arbeit
+    // (Vorruhestand), pensionStartAge beginnt die Rente (Phase 4). Fehlende Felder = bisheriges Verhalten.
+    'lt-pension-age': 'pensionStartAge', 'lt-pension-spending': 'pensionSpending',
+    'lt-p2-saving': 'phase2SavingPercent', 'lt-p2-work': 'phase2WorkPercent', 'lt-p2-withdraw': 'phase2MonthlyWithdrawal'
   };
   const ASSUMPTIONS = {
     ret: 'returnPercent', vol: 'volatilityPercent', saving: 'monthlySaving',
@@ -408,7 +412,7 @@
     safeKeys(doc);
     object(doc, 'Datei', ['format', 'schemaVersion', 'currency', 'exportedAt', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences'], ['format', 'schemaVersion', 'currency', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences']);
     if (doc.format !== FORMAT) fail('format', 'keine Assets-Sicherung');
-    if (![1,2,3,4,5,6,7,8,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
+    if (![1,2,3,4,5,6,7,8,9,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
     if (doc.currency !== 'EUR') fail('currency', 'nur EUR wird unterstützt');
     if (own(doc, 'exportedAt') && (typeof doc.exportedAt !== 'string' || !Number.isFinite(Date.parse(doc.exportedAt)))) fail('exportedAt', 'ungültiges Datum');
     const groups = unique(doc.groups, 'groups');

@@ -138,8 +138,12 @@ doc.retirement.pensionDepots = [
   {id: 'depot-1', name: 'AV-Depot Max (Demo)', personId: doc.retirement.primary.id, monthlyContribution: 150},
   {id: 'depot-2', name: 'AV-Depot Anna (Demo)', personId: doc.retirement.people[0].id, monthlyContribution: 50, childBirthYears: [2019]}
 ];
-doc.forecast.settings.retirementAge = 67;
-doc.forecast.settings.saveUntilAge = 67;
+// Lebensphasen (Schema 10): bis 55 ansparen, bis 62 mit 70 % weiterarbeiten (ohne privates Sparen),
+// Vorruhestand bis zur Rente mit 67; im Vorruhestand etwas höherer Bedarf (Krankenversicherung, Reisen).
+Object.assign(doc.forecast.settings, {
+  saveUntilAge: 55, retirementAge: 62, pensionStartAge: 67,
+  phase2WorkPercent: 70, monthlySpending: 3200, pensionSpending: 2900
+});
 doc.forecast.events[1] = {id: 'event-2', name: 'Renovierung', year: 2030, amount: 15000, from: {type: 'liquid'}, to: {type: 'external'}};
 Data.validate(doc);
 function demoScript(d) {

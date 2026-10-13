@@ -1,7 +1,7 @@
-const CACHE='verm-v111';
+const CACHE='verm-v112';
 const ASSETS=[
   './index.html',
-  './data-store.js?v=17',
+  './data-store.js?v=18',
   './loan-model.js?v=2',
   './loan-history.js?v=1',
   './asset-model.js?v=4',
