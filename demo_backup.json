@@ -380,7 +380,14 @@
       "ticker": null,
       "unit": null,
       "liquidity": "illiquid",
-      "valuation": "manual"
+      "valuation": "manual",
+      "depreciation": {
+        "method": "percent",
+        "amount": 1,
+        "interval": "month",
+        "startMonth": "2025-01",
+        "startValue": 28000
+      }
     },
     {
       "id": "kredit-auto",

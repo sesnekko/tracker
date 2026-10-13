@@ -497,12 +497,41 @@ Vertrag wird die Rate in Zins (Restschuld des letzten Monats × Sollzins / 12) u
 Tilgung (Vermögensaufbau der Gruppe des Kredits) getrennt. Unverknüpfte Ausgaben,
 die nach einer Kreditrate klingen, schlägt die Daten-Seite zum Verknüpfen vor.
 
+## Monatsabschluss
+
+„Aktualisieren“ öffnet den Monatsstand. Jede Position wird in ihrer Einheit erfasst: mit
+Stückzahl (Kursposition oder erfasste Einheit wie oz) als Stückzahl, sonst in Euro. Der Wert
+einer Stückzahl ist Stückzahl × Kurs; ohne automatischen Kurs gilt der bisherige Kurs (Wert ÷
+Stückzahl), „Kurs ändern“ blendet ein eigenes Kursfeld ein. Bleiben Stückzahl und Kurs einer
+Position ohne Kursquelle unverändert, bleibt der gespeicherte Wert exakt erhalten.
+
+Abschnitte: „Bitte prüfen“ (mit dem Vormonat vorbelegt, Konten zuerst), „Selten geändert“
+(Wert bzw. Stückzahl seit mindestens drei Monaten gleich, eingeklappt) und „Läuft
+automatisch“ (Kreditverträge und Abschreibungen mit Rate und Veränderung zum Vormonat,
+eingeklappt). Abschreibungen werden für jeden Monat berechnet und nicht gespeichert, ein neuer
+Monat setzt sie also selbst fort. Ein Vorschlag erscheint, solange Wert bzw. Stückzahl noch dem
+Vormonat entspricht: der Ø-Sparplan aus dem Budget, wenn seine Gruppe genau eine Position hat
+(bei Stückzahlen umgerechnet mit dem Kurs), sonst bei Konten und Vorsorgeverträgen der Ø der
+letzten drei Veränderungen, wenn sie alle in dieselbe Richtung gingen. „+250“ bzw. „−80“
+rechnet mit dem Wert beim Antippen; ein Ergebnis unter null ist ungültig. Große Sprünge
+(Euro: über 25 % und über 5.000 €; Stückzahl oder eigener Kurs: über 50 %) zeigen einen
+Hinweis, blockieren aber nicht. Unten stehen Nettovermögen, Veränderung zum Vormonat (davon
+Kurse) und „Übernehmen“.
+
+In der ersten Woche eines Monats erinnert eine Mitteilung samt Punkt am Daten-Tab an den
+Monatsstand, bis er für den laufenden Monat übernommen wurde. Danach bietet die App eine
+Sicherung an, wenn noch keine existiert oder die letzte älter als 30 Tage ist. Erledigt
+und weggeklickt werden je Gerät unter `vermoegen-month-done` und
+`vermoegen-month-reminder` gemerkt und sind nicht Teil der Sicherung.
+
 ## Darstellung der Charts
 
-Unter den Datenbereichen der Daten-Seite stehen drei Kacheln: „Einstellungen“
-(Darstellung der Charts), „Daten“ (Sicherung exportieren, wiederherstellen, alle
-Daten löschen) und „Hilfe“ (Rundgang, Demo-Daten). Ein roter Punkt an „Daten“
-erinnert an eine fällige Sicherung (noch nie oder vor mehr als 30 Tagen). Unter
+Unter den Bereichen der Daten-Seite stehen drei Kacheln: „Einstellungen“
+(Bereiche ein- und ausschalten, Erscheinungsbild, Darstellung der Charts),
+„Sicherung“ (Sicherung exportieren, wiederherstellen, alle Daten löschen) und „Hilfe“
+(Rundgang, Demo-Daten). Ein ausgeschalteter Bereich bleibt auf der Daten-Seite als
+Zeile sichtbar; ein Tipp darauf öffnet die Einstellungen. Ein roter Punkt an
+„Sicherung“ erinnert an eine fällige Sicherung (noch nie oder vor mehr als 30 Tagen). Unter
 „Einstellungen“ wählt man je Seite (Vermögen, Prognose), wie der Chart
 startet: Zeitraum, Ansicht (mit Asset-Flächen oder nur Linie) und Skala (linear oder
 logarithmisch). Ein Tipp auf den Gesamtwert oben auf der Seite entfernt alle Filter
