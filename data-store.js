@@ -4,7 +4,7 @@
   'use strict';
   const KEY = 'vermoegen-data-v1';
   const FORMAT = 'vermoegen-backup';
-  const VERSION = 10;
+  const VERSION = 11;
   const CATEGORIES = ['cash', 'etf', 'stock', 'bitcoin', 'crypto', 'metal', 'realEstate', 'vehicle', 'other', 'bav', 'illiquid', 'liab'];
   const BUDGET_CATEGORIES = ['einkommen', 'fixe', 'variable', 'sparen'];
   const MODULES = ['assets', 'liab', 'pension', 'budget', 'forecast'];
@@ -20,7 +20,10 @@
     // Version 10: Lebensphasen. saveUntilAge beendet das Ansparen (Phase 2 beginnt), retirementAge die Arbeit
     // (Vorruhestand), pensionStartAge beginnt die Rente (Phase 4). Fehlende Felder = bisheriges Verhalten.
     'lt-pension-age': 'pensionStartAge', 'lt-pension-spending': 'pensionSpending',
-    'lt-p2-saving': 'phase2SavingPercent', 'lt-p2-work': 'phase2WorkPercent', 'lt-p2-withdraw': 'phase2MonthlyWithdrawal'
+    'lt-p2-saving': 'phase2SavingPercent', 'lt-p2-work': 'phase2WorkPercent', 'lt-p2-withdraw': 'phase2MonthlyWithdrawal',
+    // Version 11: Altersvorsorge (Betriebsrente, Altersvorsorgedepots) getrennt vom privaten Sparen,
+    // im Weiterarbeiten und im Vorruhestand je in % der heutigen Beiträge.
+    'lt-p2-pension': 'phase2PensionPercent', 'lt-p3-saving': 'phase3SavingPercent', 'lt-p3-pension': 'phase3PensionPercent'
   };
   const ASSUMPTIONS = {
     ret: 'returnPercent', vol: 'volatilityPercent', saving: 'monthlySaving',
@@ -251,6 +254,8 @@
         if (row.loanId) item.loanId = row.loanId;
         // Version 9: a saving item may stand for an Altersvorsorgedepot, which then replaces it.
         if (row.depotId && kind === 'saving') item.depotId = row.depotId;
+        // Version 11: an income may continue in retirement and then counts as retirement income.
+        if (row.retirement && kind === 'income') item.retirementIncome = true;
         doc.budget.items.push(item);
       }
       const orderId = idsFor('order-', previous.budget ? previous.budget.standingOrders : []);
@@ -288,6 +293,8 @@
       if (d.monthlyContribution === undefined) d.monthlyContribution = 0;
       const kids = birthYears(r.kids);
       if (kids.length) d.childBirthYears = kids;
+      // Version 11: the depot's value can come from an asset position (with quotes) in the overview.
+      if (r.pos && doc.positions.some(p => p.id === r.pos && p.category !== 'liab')) d.positionId = r.pos;
       return d;
     });
     // A removed depot leaves its budget item as an ordinary saving item.
@@ -312,7 +319,8 @@
     const mods = parse(values, 'v2-modules', {});
     doc.preferences.onboardingCompleted = previous.preferences.onboardingCompleted === true;
     for (const k of MODULES) doc.preferences.modules[k] = mods[k] !== false;
-    doc.preferences.theme = values.darkMode === '0' ? 'light' : values.darkMode === '1' ? 'dark' : null;
+    // Version 11: 'system' follows the device setting.
+    doc.preferences.theme = values.darkMode === '0' ? 'light' : values.darkMode === '1' ? 'dark' : values.darkMode === '2' ? 'system' : null;
     for (const key of Object.keys(values)) if (key.startsWith('ui-open-')) doc.preferences.expandedSections[key.slice(8)] = values[key] === '1';
     validate(doc);
     return doc;
@@ -346,7 +354,7 @@
       bd.accounts = Object.fromEntries(doc.accounts.map(a => [a.name, a.iban]));
       const endpoint = v => v.type === 'account' ? doc.accounts.find(a => a.id === v.accountId).name : v.name;
       bd.standingOrders = doc.budget.standingOrders.map(o => ({ id: o.id, from: endpoint(o.from), to: endpoint(o.to), amount: o.amount }));
-      for (const r of doc.budget.items) bd[r.category].push({ id: r.id, name: r.name, subcat: r.subcategory, kind: r.kind, targetGroupId: r.targetGroupId, targetGroup: r.targetGroupId ? groupName(r.targetGroupId) : null, ...(r.loanId ? { loanId: r.loanId } : {}), ...(r.depotId ? { depotId: r.depotId } : {}), values: copy(r.monthlyAmounts) });
+      for (const r of doc.budget.items) bd[r.category].push({ id: r.id, name: r.name, subcat: r.subcategory, kind: r.kind, targetGroupId: r.targetGroupId, targetGroup: r.targetGroupId ? groupName(r.targetGroupId) : null, ...(r.loanId ? { loanId: r.loanId } : {}), ...(r.depotId ? { depotId: r.depotId } : {}), ...(r.retirementIncome ? { retirement: true } : {}), values: copy(r.monthlyAmounts) });
       bd.oneTime = copy(doc.budget.oneTime || []);
       put('budgetData', bd);
     }
@@ -367,7 +375,8 @@
     put('lt-drv-extra', doc.retirement.people.map(p => ({ id: p.id, name: p.name, by: p.birthYear ?? '', until: p.workUntilAge ?? '', ...unmapped(p.statutoryPension, DRV) })));
     put('lt-av-depots', (doc.retirement.pensionDepots || []).map(d => ({
       id: d.id, name: d.name, person: d.personId === primary.id ? '' : d.personId,
-      ...unmapped(d, AV_DEPOT), ...(d.childBirthYears ? { kids: d.childBirthYears.join(', ') } : {})
+      ...unmapped(d, AV_DEPOT), ...(d.childBirthYears ? { kids: d.childBirthYears.join(', ') } : {}),
+      ...(d.positionId ? { pos: d.positionId } : {})
     })));
     put('lt-pensions', doc.retirement.incomes.map(p => ({ id: p.id, name: p.name, amount: p.monthlyAmount, from: p.fromAge })));
     for (const [key, field] of Object.entries(SETTINGS)) if (own(doc.forecast.settings, field)) values[key] = String(doc.forecast.settings[field]);
@@ -377,7 +386,7 @@
     for (const g of doc.groups) if (Object.keys(g.assumptions).length) ap[g.name] = unmapped(g.assumptions, ASSUMPTIONS);
     put('lt-asset-params', ap);
     put('v2-modules', doc.preferences.modules);
-    if (doc.preferences.theme !== null) values.darkMode = doc.preferences.theme === 'dark' ? '1' : '0';
+    if (doc.preferences.theme !== null) values.darkMode = doc.preferences.theme === 'dark' ? '1' : doc.preferences.theme === 'system' ? '2' : '0';
     for (const [key, value] of Object.entries(doc.preferences.expandedSections)) values['ui-open-' + key] = value ? '1' : '0';
     return values;
   }
@@ -412,7 +421,7 @@
     safeKeys(doc);
     object(doc, 'Datei', ['format', 'schemaVersion', 'currency', 'exportedAt', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences'], ['format', 'schemaVersion', 'currency', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences']);
     if (doc.format !== FORMAT) fail('format', 'keine Assets-Sicherung');
-    if (![1,2,3,4,5,6,7,8,9,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
+    if (![1,2,3,4,5,6,7,8,9,10,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
     if (doc.currency !== 'EUR') fail('currency', 'nur EUR wird unterstützt');
     if (own(doc, 'exportedAt') && (typeof doc.exportedAt !== 'string' || !Number.isFinite(Date.parse(doc.exportedAt)))) fail('exportedAt', 'ungültiges Datum');
     const groups = unique(doc.groups, 'groups');
@@ -490,7 +499,8 @@
         }
       }
       for (const b of doc.budget.items) {
-        object(b, 'Budgetposten', ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts', 'loanId', 'depotId'], ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts']);
+        object(b, 'Budgetposten', ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts', 'loanId', 'depotId', 'retirementIncome'], ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts']);
+        if (own(b, 'retirementIncome') && (b.retirementIncome !== true || b.kind !== 'income')) fail('Budgetposten.Ruhestand', 'nur für Einnahmen');
         if (own(b, 'depotId')) {
           ref(b.depotId, 'Budgetposten.Altersvorsorgedepot', new Set((doc.retirement && doc.retirement.pensionDepots || []).map(d => d.id)));
           if (b.kind !== 'saving') fail('Budgetposten.Altersvorsorgedepot', 'nur für Sparposten');
@@ -544,7 +554,8 @@
       unique(doc.retirement.pensionDepots, 'Altersvorsorgedepots');
       const personIds = new Set([doc.retirement.primary.id, ...doc.retirement.people.map(p => p.id)]);
       for (const d of doc.retirement.pensionDepots) {
-        object(d, 'Altersvorsorgedepot', ['id', 'name', 'personId', 'childBirthYears', ...Object.values(AV_DEPOT)], ['id', 'name', 'personId', 'monthlyContribution']);
+        object(d, 'Altersvorsorgedepot', ['id', 'name', 'personId', 'childBirthYears', 'positionId', ...Object.values(AV_DEPOT)], ['id', 'name', 'personId', 'monthlyContribution']);
+        if (own(d, 'positionId')) { const pos = doc.positions.find(p => p.id === d.positionId); if (!pos || pos.category === 'liab') fail('Altersvorsorgedepot.positionId', 'unbekannte Position ' + d.positionId); }
         text(d.name, 'Depotname');
         ref(d.personId, 'Altersvorsorgedepot.personId', personIds);
         for (const k of Object.values(AV_DEPOT)) if (own(d, k)) num(d[k], 'Altersvorsorgedepot.' + k, 0);
@@ -564,7 +575,7 @@
     for (const e of doc.forecast.events) { object(e, 'Ereignis', ['id', 'name', 'year', 'amount', 'from', 'to']); text(e.name, 'Ereignisname'); num(e.year, 'Ereignisjahr'); num(e.amount, 'Ereignisbetrag', 0); eventRef(e.from, true); eventRef(e.to, false); }
     object(doc.preferences, 'Einstellungen', ['theme', 'modules', 'expandedSections', 'onboardingCompleted'], ['theme', 'modules', 'expandedSections']);
     if (own(doc.preferences, 'onboardingCompleted')) bool(doc.preferences.onboardingCompleted, 'onboardingCompleted');
-    if (![null, 'light', 'dark'].includes(doc.preferences.theme)) fail('theme', 'ungültig');
+    if (![null, 'light', 'dark', 'system'].includes(doc.preferences.theme)) fail('theme', 'ungültig');
     object(doc.preferences.modules, 'Bereiche', MODULES); MODULES.forEach(k => bool(doc.preferences.modules[k], k));
     const expanded = doc.preferences.expandedSections;
     if (!expanded || typeof expanded !== 'object' || Array.isArray(expanded)) fail('expandedSections', 'Objekt erwartet');

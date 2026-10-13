@@ -17,15 +17,15 @@ const legacyValues = { ...legacyApp.storage.values };
 function totals(a) {
   return a.json('Object.fromEntries(Object.entries(loadData()).map(([m,e])=>[m,calc(e)]))');
 }
-// Lebensphasen (Schema 10): Mit „Arbeitszeit 0 %“ beim Weiterarbeiten entspricht die Rechnung dem früheren Modell
+// Lebensphasen (Schema 10/11): Mit „Arbeitszeit 0 %“ und „Altersvorsorge 0 %“ beim Weiterarbeiten entspricht die Rechnung dem früheren Modell
 // (zwischen „Sparen bis“ und „Ruhestand ab“ weder Sparen noch Rentenpunkte). Neue Phasenfelder fehlen im Vergleichsstand.
-const PHASE_FIELDS = "['pensionAge','pensionSpending','p2Saving','p2Work','p2Withdraw','phase2From','workEnd','phase4From']";
+const PHASE_FIELDS = "['pensionAge','pensionSpending','p2Saving','p2Work','p2Withdraw','p2Pension','p3Saving','p3Pension','phase2From','workEnd','phase4From']";
 function forecast(a) {
-  return a.json('(()=>{const p=buildPlan();return {settings:Object.fromEntries(Object.entries(p.s).filter(([k])=>!'+PHASE_FIELDS+'.includes(k))),drv:p.drv,extra:p.drvExtra.map(r=>{const x=Object.assign({},r);delete x.workEndMain;return x;}),groups:p.groups,det:simulatePlan(p,p.s.withdrawFrom,{record:true}),mc:runMonteCarlo(p,p.s.withdrawFrom,true),retire:findRetireAge(p),target:targetCapital(p,p.s.withdrawFrom,simulatePlan(p,p.s.withdrawFrom,{record:true}))};})()');
+  return a.json('(()=>{const p=buildPlan();return {settings:Object.fromEntries(Object.entries(p.s).filter(([k])=>!'+PHASE_FIELDS+'.includes(k))),drv:(d=>{d=Object.assign({},d);delete d.inp;return d;})(p.drv),extra:p.drvExtra.map(r=>{const x=Object.assign({},r);delete x.workEndMain;delete x.inp;return x;}),groups:p.groups.map(g=>{const x=Object.assign({},g);delete x.convertAt;return x;}),det:simulatePlan(p,p.s.withdrawFrom,{record:true}),mc:runMonteCarlo(p,p.s.withdrawFrom,true),retire:findRetireAge(p),target:targetCapital(p,p.s.withdrawFrom,simulatePlan(p,p.s.withdrawFrom,{record:true}))};})()');
 }
 test('migration retains every month, value, quantity, budget and forecast result', () => {
   const a = app(html, new MemoryStorage(legacyValues));
-  a.run("appStorage.setItem('lt-p2-work','0')");
+  a.run("appStorage.setItem('lt-p2-work','0');appStorage.setItem('lt-p2-pension','0')");
   assert.deepEqual(totals(a), totals(legacyApp));
   assert.deepEqual(a.json('loadData()'), legacyApp.json('loadData()'));
   for (let m = 0; m < 12; m++) {
@@ -40,7 +40,7 @@ test('migration retains every month, value, quantity, budget and forecast result
 });
 test('actual CSV importer produces the same results in the new store', () => {
   const a = imported(html);
-  a.run("appStorage.setItem('lt-p2-work','0')");
+  a.run("appStorage.setItem('lt-p2-work','0');appStorage.setItem('lt-p2-pension','0')");
   assert.deepEqual(totals(a), totals(legacyApp));
   const stripIds = x => JSON.parse(JSON.stringify(x, (k, v) => k === 'id' ? undefined : v));
   assert.deepEqual(stripIds(forecast(a)), stripIds(forecast(legacyApp)));
