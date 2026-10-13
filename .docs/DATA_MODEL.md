@@ -5,11 +5,11 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `master_export_YYYY-MM-DD.json` (bis Oktober 2026 `vermoegen_YYYY-MM-DD.json`). Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 11
+## Struktur, Version 12
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `11`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `12`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
@@ -19,7 +19,7 @@ weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 | `loans` | Darlehensparameter, über `positionId` einer Verbindlichkeit zugeordnet |
 | `retirement` | Eigene Person (gesetzliche Rente, optional laufende Erwerbsminderungsrente und Beamtenversorgung), weitere Personen mit gesetzlicher Rente (optional laufende Erwerbsminderungsrente), Altersvorsorgedepots und weitere Renteneinkünfte |
 | `forecast` | Lebensplanung, Lebensphasen mit Bedarf je Phase, Inflation, Sicherheitsniveau und einmalige Ereignisse |
-| `preferences` | Theme, fünf Bereichsschalter, Aufklappzustände und Abschluss des Onboardings |
+| `preferences` | Theme, Sprache, fünf Bereichsschalter, Aufklappzustände und Abschluss des Onboardings |
 
 Beispiel einer Verbindung (Auszug, keine vollständige Sicherung):
 
@@ -520,6 +520,35 @@ Die Prognose rechnet in vier Phasen. Ihre Grenzen und Annahmen stehen in
   eingetragene Guthaben. In der Prognose zählt die Gruppe bis zum Auszahlungsbeginn zum
   Vermögen, danach steckt das Kapital in der monatlichen Auszahlung (nicht doppelt).
 - **Erscheinungsbild**: `preferences.theme` kann zusätzlich `system` sein (folgt dem Gerät).
+
+## Sprache (Version 12)
+
+- `preferences.language`: `de` (Standard, auch wenn das Feld fehlt) oder `en`; Legacy-Schlüssel
+  `appLang`. Andere Werte lehnt die Prüfung ab. Umgestellt wird unter Daten → Einstellungen →
+  Sprache; die App lädt danach neu. Dateien der Version 11 bleiben lesbar (Deutsch).
+- **Übersetzung**: Die App ist auf Deutsch geschrieben. Im englischen Modus übersetzt
+  `_tr()` jeden angezeigten Text (Textknoten sowie `placeholder`, `title`, `aria-label`,
+  `data-date-ph`, `data-date-title`) über `window.I18N_EN` aus `i18n-en.js`, auch später
+  eingefügte Inhalte (MutationObserver). Reihenfolge: exakter Text → Vorlage, in der Zahlen
+  und Monatsnamen zu `{0}`, `{1}` … werden (Monatsnamen sind zu diesem Zeitpunkt schon
+  englisch) → Regeln (`[RegExp, Ersetzung]`) für Texte mit Namen. Was nicht passt, bleibt
+  stehen – so bleiben eigene Bezeichnungen der Nutzer unverändert.
+- Lange, aus vielen Teilen gebaute Texte (Rechenwege der Renten, Phasen, Partner-Story)
+  stehen direkt zweisprachig im Code: `L('deutsch','english')`. `data-no-tr` schließt ein
+  Element von der Übersetzung aus (z. B. der Sprachschalter selbst).
+- Monatsnamen, Phasennamen und die Info-Texte (`INFO`) werden beim Start ersetzt. Zahlen,
+  Beträge und Datumsangaben behalten das deutsche Format.
+- **Neue Texte**: deutschen Text wie gewohnt schreiben und die englische Fassung in
+  `i18n-en.js` ergänzen (Schlüssel getrimmt, Zahlen als Platzhalter). `.tests/i18n.test.cjs`
+  prüft Platzhalter und Vollständigkeit der Info-Texte.
+
+## Partner-Story
+
+Am Ende der Prognose-Seite (`#psOpen`) erklärt eine Folge von Story-Seiten den ganzen Plan
+ohne Fachbegriffe: heutiges Vermögen, monatliches Sparen, die vier Lebensphasen, die
+Marktsimulation, große Ereignisse und ein Fazit. Alle Werte kommen aus `buildPlan()` und der
+Monte-Carlo-Simulation, in heutiger Kaufkraft. Bedienung: Tippen rechts/links, Halten pausiert,
+nach unten wischen, Esc oder × schließt. Es werden keine Daten gespeichert.
 
 ## Altersvorsorgedepots im Budget (Version 9)
 

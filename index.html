@@ -1181,7 +1181,12 @@ body.v2-editing .v2-form-head>span:first-child{color:var(--ink)}
 .v2-switch[aria-checked="true"]{background:var(--green)}
 .v2-switch[aria-checked="true"] i{transform:translateX(19px)}
 .v2-switch:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-#page-import .input-collapsible-body{padding:0 16px 14px;box-shadow:inset 0 .5px 0 var(--sep)}
+#page-import .input-collapsible-body{padding:16px 16px 14px;box-shadow:inset 0 .5px 0 var(--sep)}
+/* Gleicher Abstand unter der Überschrift in jedem Bereich, egal ob zuerst eine Box, eine Liste oder ein Titel folgt */
+#page-import .input-collapsible-body>:first-child,#page-import .input-collapsible-body>.ds-anchor:first-child+*,#page-import .input-collapsible-body>.ds-anchor:first-child+.ds-anchor+*,
+body.v2-editing #page-import .input-collapsible-body>.ds-sec-actions:first-child+*{margin-top:0}
+#page-import .input-collapsible-body>.ds-sec-actions:first-child{padding-top:0}
+#page-import .input-collapsible-body>.ds-list-t:first-child,#page-import .input-collapsible-body>.ds-anchor:first-child+.ds-list-t{padding-top:0}
 #page-import .cat-grid{display:block}
 #page-import .cat-label{display:block;writing-mode:horizontal-tb;background:none;color:var(--muted);font-size:13px;font-weight:400;letter-spacing:0;text-transform:none;padding:16px 0 2px;margin:0!important;border-radius:0}
 #page-import .cat-label.red{color:var(--red)}
@@ -1215,7 +1220,6 @@ details.tut-section[open]>.tut-toggle::after{transform:rotate(45deg)}
 #page-import .v2-ap-head{padding:11px 12px}
 #page-import .v2-ap-body{background:transparent;padding:0 12px 6px;box-shadow:inset 0 .5px 0 var(--sep)}
 #page-import .v2-preview{margin-top:0}
-#v2-forecast-sec>.input-collapsible-body{padding-top:16px}
 #page-import .plan-row .pc-from,#page-import .plan-row .pc-to{grid-template-columns:auto minmax(0,1fr)}
 #page-import .plan-row select.num-input{text-align:right;text-align-last:right}
 .v2-empty-state{background:var(--card);border-radius:16px;padding:18px 16px;margin-top:12px;text-align:center}
@@ -1441,6 +1445,70 @@ body.dark{--lp1:#7aaa82;--lp2:#a9c3ad;--lp3:#c07058;--lp4:#8d887c}
 .ds-group-t.lp-t>span:first-child{display:flex;align-items:center;gap:8px;color:var(--ink);font-weight:500}
 .ds-group-t.lp-t i{width:10px;height:10px;border-radius:3px}
 .ds-group-t.lp-t .lp-range{font-variant-numeric:tabular-nums}
+
+/* Partner-Story: Einstieg am Ende der Prognose und Stories im Vollbild (auf großen Bildschirmen als Hochformat-Rahmen) */
+.ps-open{display:flex;align-items:center;gap:14px;width:100%;margin:22px 0 6px;padding:14px 16px;border:none;border-radius:16px;cursor:pointer;text-align:left;font:inherit;color:#f6f2ec;
+  background:linear-gradient(120deg,#2a4a34,#a3624f 70%,#8d887c)}
+.ps-open[hidden]{display:none}
+.ps-open-i{flex:0 0 auto;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center}
+.ps-open-i svg{width:18px;height:18px;fill:#f6f2ec;margin-left:2px}
+.ps-open-t{display:flex;flex-direction:column}
+.ps-open-t b{font-weight:500;font-size:16px}
+.ps-open-t small{font-size:13px;opacity:.82;margin-top:2px}
+.ps{position:fixed;inset:0;z-index:12000;background:rgba(8,8,7,.86);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .25s}
+.ps.show{opacity:1}
+.ps-frame{position:relative;width:100%;height:100%;overflow:hidden;color:#f6f2ec;touch-action:none;-webkit-user-select:none;user-select:none;background:#121211}
+@media (min-width:600px){.ps-frame{height:min(92vh,860px);width:auto;aspect-ratio:9/16;border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.5)}}
+.ps-prog{position:absolute;z-index:3;top:max(12px,env(safe-area-inset-top));left:12px;right:12px;display:flex;gap:4px}
+.ps-prog i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.28);overflow:hidden}
+.ps-prog i b{display:block;height:100%;width:0;background:#f6f2ec}
+.ps-prog i.done b{width:100%}
+.ps-prog i.run b{animation:psFill 7s linear forwards}
+.ps.paused .ps-prog i.run b{animation-play-state:paused}
+@keyframes psFill{from{width:0}to{width:100%}}
+.ps-top{position:absolute;z-index:3;top:calc(max(12px,env(safe-area-inset-top)) + 12px);left:14px;right:8px;display:flex;align-items:center;justify-content:space-between}
+.ps-brand{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;opacity:.92}
+.ps-brand img{width:22px;height:22px;border-radius:6px}
+.ps-close{width:40px;height:40px;border:none;background:none;color:#f6f2ec;font-size:28px;line-height:1;cursor:pointer;opacity:.9}
+.ps-slides{position:absolute;inset:0}
+.ps-s{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:96px 28px calc(64px + env(safe-area-inset-bottom));
+  background:radial-gradient(120% 80% at 20% 10%,var(--c2),var(--c1) 70%);opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
+.ps-s.on{opacity:1;visibility:visible}
+.ps-k{font-size:14px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;opacity:.8;margin:0}
+.ps-big{font-size:clamp(40px,12vw,60px);font-weight:300;line-height:1.08;letter-spacing:-.02em;margin:12px 0 0;font-variant-numeric:tabular-nums}
+.ps-t{font-size:18px;line-height:1.45;margin:18px 0 0;opacity:.92;max-width:30em}
+.ps-viz{margin-top:28px}
+.ps-s.on .ps-k,.ps-s.on .ps-big,.ps-s.on .ps-t,.ps-s.on .ps-viz{animation:psIn .6s cubic-bezier(.2,.7,.2,1) both}
+.ps-s.on .ps-big{animation-delay:.08s}.ps-s.on .ps-t{animation-delay:.18s}.ps-s.on .ps-viz{animation-delay:.3s}
+@keyframes psIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.ps-hint{position:absolute;z-index:3;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));text-align:center;font-size:12px;opacity:.55;margin:0}
+.ps-logo{width:120px;height:auto;filter:drop-shadow(0 14px 22px rgba(0,0,0,.35))}
+.ps-bars{display:flex;flex-direction:column;gap:12px}
+.ps-bar{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:15px}
+.ps-bar i{grid-column:1/-1;height:10px;border-radius:5px;background:rgba(246,242,236,.85);order:3}
+.ps-bar b{font-weight:400;font-variant-numeric:tabular-nums}
+.ps-ring{width:130px;height:130px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#f6f2ec calc(var(--p)*1%),rgba(255,255,255,.18) 0)}
+.ps-ring b{width:100px;height:100px;border-radius:50%;display:grid;place-items:center;background:var(--c1);font-weight:400;font-size:24px}
+.ps-time .lp-bar{height:14px;gap:4px}
+.ps-time .lp-bar i{opacity:.35}
+.ps-time .lp-ticks{color:rgba(246,242,236,.75);font-size:13px}
+.ps-hl-1 i:nth-child(1),.ps-hl-2 i:nth-child(2),.ps-hl-3 i:nth-child(3),.ps-hl-4 i:nth-child(4){opacity:1!important;box-shadow:0 0 0 2px rgba(246,242,236,.9)}
+.ps-split{display:flex;height:18px;border-radius:9px;overflow:hidden;gap:3px}
+.ps-split i{background:#f6f2ec}.ps-split b{background:rgba(246,242,236,.32)}
+.ps-legend{display:flex;gap:18px;margin-top:10px;font-size:14px;opacity:.9}
+.ps-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.ps-legend i.a{background:#f6f2ec}.ps-legend i.b{background:rgba(246,242,236,.32)}
+.ps-dots{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;max-width:260px}
+.ps-dots i{aspect-ratio:1;border-radius:50%;background:rgba(246,242,236,.2)}
+.ps-dots i.y{background:#f6f2ec}
+.ps-s.on .ps-dots i{animation:psDot .35s ease both;animation-delay:calc(.3s + var(--i)*12ms)}
+@keyframes psDot{from{transform:scale(0)}to{transform:none}}
+.ps-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px}
+.ps-list li{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline;font-size:17px;padding-bottom:10px;border-bottom:1px solid rgba(246,242,236,.18)}
+.ps-list b{font-weight:500;font-variant-numeric:tabular-nums}
+.ps-list em{font-style:normal;opacity:.85;font-variant-numeric:tabular-nums}
+.ps-again{border:none;border-radius:999px;padding:12px 20px;font:inherit;font-size:15px;font-weight:500;background:#f6f2ec;color:#121211;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.ps-s.on .ps-k,.ps-s.on .ps-big,.ps-s.on .ps-t,.ps-s.on .ps-viz,.ps-s.on .ps-dots i{animation:none}}
 
 /* Prognose */
 #page-lifetime>.app-content{display:block}
@@ -2144,6 +2212,8 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 <p class="ds-help">Ausgeschaltete Bereiche werden ausgeblendet und nicht berechnet. Deine Daten bleiben erhalten.</p>
 <div class="ds-group-t st-t">Erscheinungsbild</div>
 <div id="themeSetting"></div>
+<div class="ds-group-t st-t" data-no-tr>Sprache · Language</div>
+<div id="langSetting"></div>
 <div class="ds-group-t st-t">Darstellung der Charts</div>
 <div id="chartDefaults"></div>
 </template>
@@ -2382,6 +2452,7 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 <!-- Weitere Kennzahlen (aufklappbar) -->
 <div class="v2-kzw" id="lt-more-list"></div>
 <button class="v2-kz-link" data-info="lt-method">So wird gerechnet</button>
+<button type="button" class="ps-open" id="psOpen" onclick="openPartnerStory()" hidden><span class="ps-open-i" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span><span class="ps-open-t"><b>Partner-Story</b><small>Euer Lebensplan in Bildern – einfach erklärt</small></span></button>
 </div>
 
 </div><!-- /app-content -->
@@ -2466,7 +2537,8 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="data-store.js?v=19"></script>
+<script src="i18n-en.js?v=2"></script>
+<script src="data-store.js?v=20"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
 <script src="asset-model.js?v=4"></script>
@@ -2723,7 +2795,7 @@ const INFO={
   'drvx-name':['Weitere gesetzliche Rente','<p>Zum Beispiel die Rente deiner Partnerin oder deines Partners. Sie fließt ab ihrem Rentenbeginn in die Prognose ein.</p>'],
   'avd-name':['Altersvorsorgedepot','<p>Das geförderte Depot ab 2027 (Nachfolger der Riester-Rente). Angelegt wird z. B. in ETFs, ohne Beitragsgarantie.</p><p>Der Staat legt auf deine Beiträge Zulagen obendrauf: 50 % auf die ersten 360 € im Jahr, 25 % auf weitere Beiträge bis 1.800 € – höchstens 540 €. Dazu kommen bis zu 300 € je Kind.</p><p>Jede Person braucht ein eigenes Depot. Du kannst mehrere anlegen, z. B. für dich und deine Partnerin oder deinen Partner.</p>'],
   'avd-person':['Für','<p>Wem das Depot gehört. Bestimmt das Alter für Auszahlung und Berufseinsteigerbonus. Weitere Personen legst du oben unter „Weitere gesetzliche Renten“ an.</p>'],
-  'avd-contrib':['Beitrag pro Monat','<p>Dein eigener Beitrag ohne Zulagen. Gezahlt wird ab dem Beginn bis „Sparen bis Alter“ bzw. „Arbeiten bis Alter“ der Person.</p><p>Volle Grundzulage ab 150 € im Monat (1.800 € im Jahr). Mehr darfst du einzahlen, dafür gibt es aber keine Zulage.</p><p>Kommt der Beitrag aus deiner bisherigen Sparrate, senke diese unter Prognose & Annahmen, sonst zählt er doppelt.</p>'],
+  'avd-contrib':['Beitrag pro Monat','<p>Dein eigener Beitrag ohne Zulagen. Gezahlt wird ab dem Beginn bis zum Ende der Arbeit (in den Lebensphasen mit dem Anteil für Altersvorsorge) bzw. bis „Arbeiten bis Alter“ einer weiteren Person.</p><p>Volle Grundzulage ab 150 € im Monat (1.800 € im Jahr). Mehr darfst du einzahlen, dafür gibt es aber keine Zulage.</p><p>Kommt der Beitrag aus deiner bisherigen Sparrate, senke diese unter Prognose & Annahmen, sonst zählt er doppelt.</p>'],
   'avd-kids':['Kinder','<p>Geburtsjahre der Kinder, für die diese Person das Kindergeld bekommt, z. B. „2019, 2022“. Je Kind gibt es bis zu 300 € Kinderzulage im Jahr, so viel wie du selbst einzahlst.</p><p>Gerechnet wird bis zum Jahr des 18. Geburtstags. In Ausbildung oder Studium läuft das Kindergeld oft bis 25 – dann liegt die App auf der vorsichtigen Seite.</p>'],
   'avd-balance':['Guthaben heute','<p>Aktueller Depotwert, z. B. nach einem Wechsel aus einem Riester-Vertrag oder ab 2027 der Stand laut Depotauszug. Leer = Start bei 0 €.</p>'],
   'avd-start':['Beginn','<p>Ab welchem Jahr du einzahlst. Leer = 2027, früher geht es nicht.</p>'],
@@ -2732,7 +2804,7 @@ const INFO={
   'avd-lump':['Teilauszahlung','<p>Zu Beginn der Auszahlung dürfen einmalig bis zu 30 % des Guthabens auf einmal ausgezahlt werden. In der Prognose fließt der Betrag ins liquide Vermögen, der Rest wird monatlich bis 85 ausgezahlt.</p>'],
   'avd-deduct':['Abzüge','<p>Die Auszahlungen sind voll einkommensteuerpflichtig. Leer = 20 % pauschal. Im Gegenzug sind die Beiträge in der Ansparphase steuerlich begünstigt; diesen Steuervorteil rechnet die App nicht ein.</p>'],
   'drvx-by':['Geburtsjahr','<p>Geburtsjahr dieser Person. Bestimmt ihre Regelaltersgrenze und wann ihre Rente beginnt.</p>'],
-  'drvx-until':['Arbeiten bis Alter','<p>Bis zu diesem Alter sammelt diese Person mit ihrem Gehalt weitere Rentenpunkte. Leer = wie „Sparen bis Alter“ in deinen Annahmen.</p>'],
+  'drvx-until':['Arbeiten bis Alter','<p>Bis zu diesem Alter sammelt diese Person mit ihrem Gehalt weitere Rentenpunkte. Leer = wie dein eigenes Ende der Arbeit („Weiterarbeiten bis Alter“).</p>'],
   'v2-at-retire':['Verfügbar bei Rentenbeginn','<p>Median des entnehmbaren Vermögens zum geplanten Ruhestand (ohne Sachwerte, Altersvorsorge erst ab „Verfügbar ab“), in heutiger Kaufkraft.</p><p><strong>Ziel</strong>: Vermögen, das zum Ruhestand nötig ist, um den Bedarf abzüglich Renten bis „Planen bis Alter“ zu decken.</p>'],
   'v2-retire-age':['Rente sicher möglich ab','<p>Frühestes Alter, ab dem die Erfolgschance mindestens das Sicherheitsniveau erreicht.</p>'],
   'flow-in':['Einzahlungen','<p>Geld, das neu ins Vermögen geflossen ist: mehr Cash, Zukäufe von Wertpapieren/Krypto (Stückzahl steigt), Einzahlungen in die Altersvorsorge und Tilgung von Krediten.</p><p>Wird je Monat saldiert – Umschichtungen (z. B. ETF verkauft, Erlös auf dem Tagesgeld) zählen nicht.</p>'],
@@ -2743,7 +2815,7 @@ const INFO={
   'lt-life-expect':['Lebenserwartung','<p>Nur zur Orientierung im Lebensbalken. Die Prognose rechnet bis „Planen bis Alter“, weil etwa die Hälfte der Menschen älter wird als die durchschnittliche Lebenserwartung.</p>'],
   'lt-plan-horizon':['Planen bis Alter','<p>Bis zu diesem Alter muss das Vermögen reichen. Standard 95 – ein Puffer für ein langes Leben.</p>'],
   'lt-inflation':['Inflation','<p>Jährliche Preissteigerung. Alle Beträge in den Einstellungen sind in heutiger Kaufkraft; Bedarf, Renten und Ereignisse steigen mit der Inflation. Alle Ergebnisse werden in heutiger Kaufkraft angezeigt.</p>'],
-  'lt-phases':['Lebensphasen','<p>Die Prognose rechnet in vier Phasen:</p><p><strong>1 Ansparen</strong>: Du arbeitest und sparst wie heute (Sparraten je Anlage).</p><p><strong>2 Weiterarbeiten</strong>: Du arbeitest weiter, ggf. in Teilzeit, und stellst das private Sparen ein oder reduzierst es. Rentenpunkte, Dienstzeit und Betriebsrente wachsen anteilig zur Arbeitszeit, Altersvorsorgedepots laufen weiter. Optional entnimmst du einen Zuschuss aus dem Vermögen.</p><p><strong>3 Vorruhestand</strong>: Kein Arbeitseinkommen, keine Einzahlungen mehr. Der Bedarf kommt aus dem liquiden Vermögen, abzüglich Renten, die schon laufen.</p><p><strong>4 Rente</strong>: Ab dem Rentenbeginn decken Renten und Pensionen einen Teil des Bedarfs, den Rest trägt das Vermögen.</p><p>Eine Phase entfällt, wenn sie dasselbe Alter hat wie die vorige.</p>'],
+  'lt-phases':['Lebensphasen','<p>Die Prognose rechnet in vier Phasen:</p><p><strong>1 Ansparen</strong>: Du arbeitest und sparst wie heute (Sparraten je Anlage).</p><p><strong>2 Weiterarbeiten</strong>: Du arbeitest weiter, ggf. in Teilzeit, und stellst das private Sparen ein oder reduzierst es. Rentenpunkte und Dienstzeit wachsen anteilig zur Arbeitszeit, Altersvorsorge (Betriebsrente, Altersvorsorgedepots) mit eigenem Anteil. Optional entnimmst du einen Zuschuss aus dem Vermögen.</p><p><strong>3 Vorruhestand</strong>: Kein Arbeitseinkommen. Private Vermögensbildung und Altersvorsorge laufen nur mit dem Anteil, den du festlegst (Standard: keine). Der Bedarf kommt aus dem liquiden Vermögen, abzüglich Renten, die schon laufen.</p><p><strong>4 Rente</strong>: Ab dem Rentenbeginn decken Renten und Pensionen einen Teil des Bedarfs, den Rest trägt das Vermögen.</p><p>Eine Phase entfällt, wenn sie dasselbe Alter hat wie die vorige.</p>'],
   'lt-save-until':['Ansparen bis Alter','<p>Bis zu diesem Alter fließen die Sparraten aus den Asset-Parametern voll. Danach beginnt das Weiterarbeiten (Phase 2).</p>'],
   'lt-savings-growth':['Sparraten-Steigerung','<p>Um wie viel Prozent die Sparraten jährlich steigen, z. B. mit Gehaltserhöhungen. 0 = gleichbleibende Beträge.</p>'],
   'lt-withdraw-from':['Weiterarbeiten bis Alter','<p>Ende der Erwerbstätigkeit. Ab diesem Alter wird der Bedarf (abzüglich Renten) aus dem verfügbaren Vermögen entnommen. Liegt es vor dem Rentenbeginn, trägt das Vermögen die Lücke (Vorruhestand).</p>'],
@@ -2761,7 +2833,7 @@ const INFO={
   'drv-de':['Durchschnittsentgelt','<p>Vorläufiges Durchschnittsentgelt der Rentenversicherung. 2026: 51.944 €. Wer so viel verdient, erhält 1 Entgeltpunkt pro Jahr.</p>'],
   'drv-bbg':['Beitragsbemessungsgrenze','<p>Gehalt oberhalb dieser Grenze bringt keine weiteren Rentenpunkte. 2026: 101.400 € pro Jahr.</p>'],
   'bv-pay':['Ruhegehaltfähige Bezüge','<p>Brutto pro Monat: Grundgehalt deiner Besoldungsstufe plus ruhegehaltfähige Zulagen und Familienzuschlag Stufe 1. Steht auf der Bezügemitteilung.</p><p>Erwartest du noch Beförderungen, trag die Bezüge des Amts ein, das du voraussichtlich zuletzt mindestens zwei Jahre innehast. Annahme: Die Besoldung wächst mit der Inflation.</p>'],
-  'bv-years':['Dienstjahre bisher','<p>Deine bisherige ruhegehaltfähige Dienstzeit in Jahren, Teilzeit anteilig (20 Jahre mit halber Stelle = 10). Steht in der Versorgungsauskunft deines Dienstherrn.</p><p>Bis „Sparen bis Alter“ bzw. Pensionsbeginn werden weitere volle Jahre hochgerechnet.</p>'],
+  'bv-years':['Dienstjahre bisher','<p>Deine bisherige ruhegehaltfähige Dienstzeit in Jahren, Teilzeit anteilig (20 Jahre mit halber Stelle = 10). Steht in der Versorgungsauskunft deines Dienstherrn.</p><p>Bis zum Ende der Arbeit bzw. Pensionsbeginn werden weitere Jahre hochgerechnet, beim Weiterarbeiten anteilig zur Arbeitszeit.</p>'],
   'bv-age':['Altersgrenze','<p>Ab diesem Alter gibt es das Ruhegehalt ohne Abschlag. Bund und die meisten Länder: 67, schrittweise angehoben (Jahrgang 1964 und jünger). Für Polizei, Feuerwehr und Justizvollzug gelten oft frühere Grenzen. Leer = wie die gesetzliche Regelaltersgrenze.</p>'],
   'bv-from':['Pension ab Alter','<p>Optional, wenn du vor der Altersgrenze in den Ruhestand gehen willst (Antragsruhestand meist ab 63). Pro Jahr vor der Altersgrenze werden 3,6 % abgezogen, höchstens 10,8 %. Leer = ab Altersgrenze.</p>'],
   'bv-deduct':['Abzüge %','<p>Pauschaler Abzug vom Ruhegehalt. Die Pension ist voll steuerpflichtig, dazu kommt die private Krankenversicherung (mit Beihilfe von meist 70 %). 20–30 % sind ein üblicher Richtwert.</p>'],
@@ -2774,7 +2846,7 @@ const INFO={
   'ev-from':['Von','<p>Woher das Geld kommt:</p><p>• <strong>Extern</strong> – Zufluss von außen, z. B. Erbschaft, Abfindung<br>• <strong>Liquide (anteilig)</strong> – aus allen verfügbaren liquiden Anlagen im Verhältnis ihres Werts<br>• <strong>Asset</strong> – gezielt aus dieser Gruppe (inkl. Abzug bei Entnahme). Reicht sie nicht, kommt der Rest anteilig aus den liquiden Anlagen.</p>'],
   'ev-to':['Nach','<p>Wohin das Geld fließt:</p><p>• <strong>Extern</strong> – Ausgabe, z. B. Sanierung, Autokauf, Ausbildung<br>• <strong>Asset</strong> – in diese Gruppe, z. B. Erbschaft → ETF oder Immobilienkauf aus ETF → Immobilien.</p>'],
   'ap-value':['Wert','<p>Aktueller Wert der Gruppe (bei Krediten: Marktwert minus Restschuld). Beim Fahren über den Chart: Wert im gewählten Alter.</p>'],
-  'ap-saving':['Spar/M','<p>Monatliche Sparrate in diese Gruppe bis „Sparen bis Alter“.</p><p>Bei Gruppen mit Kredit ohne hinterlegte Kreditdaten wirkt sie als Tilgung. Sind unter Data → Kredite Zins und Rate hinterlegt, ergibt sich die Tilgung automatisch.</p>'],
+  'ap-saving':['Spar/M','<p>Monatliche Sparrate in diese Gruppe. Sie gilt voll bis „Ansparen bis Alter“, danach mit dem Anteil der jeweiligen Lebensphase.</p><p>Bei Gruppen mit Kredit ohne hinterlegte Kreditdaten wirkt sie als Tilgung. Sind unter Data → Kredite Zins und Rate hinterlegt, ergibt sich die Tilgung automatisch.</p>'],
   'ap-ret':['Ret %','<p>Langfristig erwartete Rendite pro Jahr (geometrisches Mittel), z. B. 6–7 % für weltweite Aktien-ETFs, 0–2 % für Cash, 1–3 % Wertsteigerung für Immobilien.</p>'],
   'ap-retDyn':['Ret Δ','<p>Relative Änderung der Rendite pro Jahr. −2 bedeutet: die Rendite sinkt jedes Jahr um 2 % ihres Vorjahreswerts (z. B. 15 % → 14,7 % → …). Sinnvoll für Anlagen, deren Rendite langfristig abflachen dürfte.</p>'],
   'ap-vol':['Vol %','<p>Jährliche Schwankung (Volatilität). Bestimmt, wie stark die 500 simulierten Verläufe streuen, z. B. ≈ 15 % für Aktien-ETFs, 50 %+ für Bitcoin.</p>'],
@@ -2787,7 +2859,7 @@ const INFO={
   'loan-extra':['Sondertilgung €/Jahr','<p>Zusätzliche jährliche Tilgung, solange du arbeitest.</p>'],
   'loan-fixed':['Zinsbindung bis','<p>Jahr, in dem die Zinsbindung endet. Danach rechnet die Prognose mit dem Anschlusszins.</p>'],
   'loan-follow':['Anschlusszins %','<p>Erwarteter Zins nach Ende der Zinsbindung. Leer = gleicher Zins wie bisher.</p>'],
-  'lt-method':['So wird gerechnet','<p>Die Prognose simuliert dein Vermögen Jahr für Jahr in 500 zufälligen Marktverläufen. Die Linie zeigt den Median, das Band das 10. bis 90. Perzentil. Alle Werte sind in heutiger Kaufkraft.</p><p>Ablauf je Jahr: Wertentwicklung nach Rendite und Schwankung (Korrelation 0,3) → Kreditzins und Tilgung → Sparraten je Lebensphase (Ansparen voll, Weiterarbeiten anteilig) → einmalige Ereignisse → im Vorruhestand und in der Rente Entnahme von Bedarf minus Renten (plus laufende Kreditraten), anteilig aus den verfügbaren Anlagen, inkl. pauschalem Abzug.</p><p>Sachwerte werden nicht verkauft. Steuern sind pauschal abgebildet. Die Prognose ist eine Modellrechnung und keine Anlageberatung.</p>']
+  'lt-method':['So wird gerechnet','<p>Die Prognose simuliert dein Vermögen Jahr für Jahr in 500 zufälligen Marktverläufen. Die Linie zeigt den Median, das Band das 10. bis 90. Perzentil. Alle Werte sind in heutiger Kaufkraft.</p><p>Ablauf je Jahr: Wertentwicklung nach Rendite und Schwankung (Korrelation 0,3) → Kreditzins und Tilgung → Sparraten je Lebensphase (Ansparen voll, Weiterarbeiten und Vorruhestand mit dem jeweiligen Anteil) → einmalige Ereignisse → im Vorruhestand und in der Rente Entnahme von Bedarf minus Renten (plus laufende Kreditraten), anteilig aus den verfügbaren Anlagen, inkl. pauschalem Abzug.</p><p>Sachwerte werden nicht verkauft. Steuern sind pauschal abgebildet. Die Prognose ist eine Modellrechnung und keine Anlageberatung.</p>']
 };
 function showInfo(key){
   const it=INFO[key];
@@ -2824,7 +2896,7 @@ function _monthLabel(ym){return ym===nextYM()?'Heute':fmtMonth(ym);}
 function _inMonth(ym){return ym===nextYM()?'heute':'in '+fmtMonth(ym);}
 function fmt(n){if(n==null||isNaN(n))return'—';return n.toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:0})+' €';}
 /* Kompakt für enge Tabellen: 102 Tsd. €, 1,2 Mio € */
-function fmtCompact(n){if(n==null||isNaN(n))return'—';const a=Math.abs(n);if(a>=1e6)return(n/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})+' Mio €';if(a>=1e4)return Math.round(n/1e3).toLocaleString('de-DE')+' Tsd. €';if(a>=1e3)return(n/1e3).toLocaleString('de-DE',{maximumFractionDigits:1})+' Tsd. €';return Math.round(n).toLocaleString('de-DE')+' €';}
+function fmtCompact(n){if(n==null||isNaN(n))return'—';const a=Math.abs(n);if(a>=1e6)return(n/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})+L(' Mio €',' M €');if(a>=1e4)return Math.round(n/1e3).toLocaleString('de-DE')+L(' Tsd. €','k €');if(a>=1e3)return(n/1e3).toLocaleString('de-DE',{maximumFractionDigits:1})+L(' Tsd. €','k €');return Math.round(n).toLocaleString('de-DE')+' €';}
 function fmtAxis(n){if(n==null||isNaN(n))return'';if(Math.abs(n)>=1e6)return(n/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})+'M';if(Math.abs(n)>=1e3)return(n/1e3).toLocaleString('de-DE',{maximumFractionDigits:0})+'k';return n.toLocaleString('de-DE',{minimumFractionDigits:0});}
 function fmtIban(s){if(!s)return'';const clean=escHTML(s.replace(/\s/g,''));const spaced=clean.replace(/(.{4})/g,'$1 ').trim();if(clean.length>12){return spaced.slice(0,14)+'<br>'+spaced.slice(14).trim();}return spaced;}
 function loadStoredData(){try{const l=appStorage.getItem('finData');return l?JSON.parse(l):{};}catch{return{};}}
@@ -3791,7 +3863,7 @@ function openInfoSheet(kind){
   if(!_openSheet(INFO_SHEETS[kind],tpl.innerHTML,()=>'quiet','Fertig',()=>openInfoSheet(kind)))return;
   _sheetCtx={info:kind};
   document.getElementById('dsCancel').style.visibility='hidden';
-  _renderModuleSettings();_renderThemeSetting();_renderChartDefaults();_refreshBackupInfo();
+  _renderModuleSettings();_renderThemeSetting();_renderLangSetting();_renderChartDefaults();_refreshBackupInfo();
 }
 /* Einstellungen → Bereiche: dieselben Schalter wie früher in den Zeilen der Daten-Seite */
 const MODULE_LABELS=[['assets','Vermögenswerte'],['liab','Verbindlichkeiten'],['pension','Altersvorsorge'],['budget','Einnahmen & Ausgaben'],['forecast','Prognose & Annahmen']];
@@ -3805,6 +3877,12 @@ function _renderThemeSetting(){
   const el=document.getElementById('themeSetting');if(!el)return;
   const opt=(mode,label)=>`<button type="button" data-theme-set="${mode}" class="${themeMode===mode?'on':''}" aria-pressed="${themeMode===mode}">${label}</button>`;
   el.innerHTML=`<div class="ds-group"><div class="ds-row"><span class="ds-l">Modus${themeMode==='system'?'<small>folgt der Einstellung des Geräts</small>':''}</span><div class="ds-seg cd-seg" role="group">${opt('light','Hell')}${opt('dark','Dunkel')}${opt('system','System')}</div></div></div>`;
+}
+/* Einstellungen → Sprache: Deutsch oder Englisch, jeweils in der eigenen Sprache beschriftet; Teil der Sicherung */
+function _renderLangSetting(){
+  const el=document.getElementById('langSetting');if(!el)return;
+  const opt=(l,label)=>`<button type="button" data-lang-set="${l}" class="${_lang===l?'on':''}" aria-pressed="${_lang===l}">${label}</button>`;
+  el.innerHTML=`<div class="ds-group" data-no-tr><div class="ds-row"><span class="ds-l">${_lang==='en'?'Language':'Sprache'}<small>${_lang==='en'?'Numbers keep the German format':'Wechselt die gesamte App'}</small></span><div class="ds-seg cd-seg" role="group">${opt('de','Deutsch')}${opt('en','English')}</div></div></div>`;
 }
 /* Statusleiste (iOS) und Browser-Leiste in der Farbe des aktuellen Modus */
 function _syncThemeColor(){const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',isDark?'#111110':'#eae8e3');}
@@ -6082,10 +6160,12 @@ function renderBudgetBreakdown(c){
     html+=`<div class="breakdown-details" id="breakdown-ausgaben" style="display:none">`;
     
     // Hauptkategorien definieren
+    /* Alles der Größe nach absteigend: Kategorien, Unterkategorien und Einzelposten */
+    const _sum=items=>items.reduce((s,i)=>s+i.val,0),_desc=items=>[...items].sort((a,b)=>b.val-a.val);
     const categories=[
-      {name:'Fixe Ausgaben',items:c.fixItems,key:'fixe'},
-      {name:'Variable Ausgaben',items:c.varItems,key:'variable'}
-    ];
+      {name:'Fixe Ausgaben',items:_desc(c.fixItems),key:'fixe'},
+      {name:'Variable Ausgaben',items:_desc(c.varItems),key:'variable'}
+    ].sort((a,b)=>_sum(b.items)-_sum(a.items));
     
     // Unterkategorien für Fixe Ausgaben
     const fixeSubcats={
@@ -6198,8 +6278,8 @@ function renderBudgetBreakdown(c){
       // Unterkategorien für Fixe Ausgaben
       if(cat.key==='fixe'){
         html+=`<div class="breakdown-details" id="breakdown-${cat.key}" style="display:none;padding-left:0">`;
-        Object.keys(fixeSubcats).forEach(subcatName=>{
-          const subcatItems=fixeSubcats[subcatName];
+        Object.keys(fixeSubcats).sort((a,b)=>_sum(fixeSubcats[b])-_sum(fixeSubcats[a])).forEach(subcatName=>{
+          const subcatItems=_desc(fixeSubcats[subcatName]);
           if(subcatItems.length===0)return;
           
           const subcatTotal=subcatItems.reduce((s,i)=>s+i.val,0);
@@ -6251,14 +6331,6 @@ function renderBudgetBreakdown(c){
   
   // ── Vermögensaufbau (Sparpläne + Tilgung) ──
   html+=_breakdownSimpleSection('aufbau','Vermögensaufbau',[...c.sparItems,...c.tilgItems],!isDark?[60,72,64]:[150,170,155],!isDark?[150,160,150]:[210,220,210],20);
-  /* Altersvorsorgedepots, die erst in einem späteren Jahr beginnen: kurze Vorschau */
-  if(_mod('pension')){
-    const s=getLifetimeSettings(),y=+selectedMonth.slice(0,4);
-    const later=getAvDepots().map(d=>{const q=_avdParams(s,d);return q.start>y&&avdYear(s,d,q.start,q);}).filter(Boolean);
-    const start=Math.min(...getAvDepots().map(d=>_avdParams(s,d).start).filter(x=>x>y));
-    if(later.length)html+=`<p style="font-size:13px;color:var(--muted);line-height:1.45;margin:10px 0 0">Ab ${start} kommen deine Altersvorsorgedepots dazu: ${fmt(later.reduce((a,z)=>a+z.own,0)/12)} Beitrag und Ø ${fmt(later.reduce((a,z)=>a+z.total,0)/12)} Zulage im Monat.</p>`;
-  }
-  
   // ── Nicht verplant ──
   if(c.einnahmen>0){
     const frei=Math.round(c.frei),neg=frei<0;/* Zins/Tilgung-Aufteilung erzeugt Cent-Reste */
@@ -6949,7 +7021,7 @@ function _depotBudgetHTML(month){
   const s=getLifetimeSettings(),y=+month.slice(0,4);
   const rows=getAvDepots().filter(d=>d.id).map(d=>{const q=_avdParams(s,d),z=avdYear(s,d,Math.max(y,q.start),q);return z&&{name:(d.name||'').trim()||'Altersvorsorgedepot',z,from:q.start>y?q.start:null};}).filter(Boolean);
   if(!rows.length)return '';
-  return `<div class="loan-budget"><h4>Altersvorsorgedepots · automatisch</h4>${rows.map(r=>`<div><span>${escHTML(r.name)}</span><strong>${fmt(r.z.own/12)}</strong></div><p>${r.from?'ab Januar '+r.from+' · ':''}+ Zulage Ø ${fmt(r.z.total/12)} pro Monat (${fmt(r.z.total)} im Jahr)</p>`).join('')}<p>Beitrag und Zulage stehen im Budget unter Vermögensaufbau, die Zulage zusätzlich als Einnahme. Sie wird einmal im Jahr gutgeschrieben, im Budget steht der Monatsschnitt. Einen eigenen Sparposten für den Beitrag verknüpfst du über „Beitrag für“, dann zählt er nicht doppelt.</p></div>`;
+  return `<div class="loan-budget"><h4>Altersvorsorgedepots · automatisch</h4>${rows.map(r=>`<div><span>${escHTML(r.name)}</span><strong>${fmt(r.z.own/12)}</strong></div><p>${r.from?'ab '+MONTH_FULL[0]+' '+r.from+' · ':''}+ Zulage Ø ${fmt(r.z.total/12)} pro Monat (${fmt(r.z.total)} im Jahr)</p>`).join('')}<p>Beitrag und Zulage stehen im Budget unter Vermögensaufbau, die Zulage zusätzlich als Einnahme. Sie wird einmal im Jahr gutgeschrieben, im Budget steht der Monatsschnitt. Einen eigenen Sparposten für den Beitrag verknüpfst du über „Beitrag für“, dann zählt er nicht doppelt.</p></div>`;
 }
 function _loanBudgetHTML(month){
   const loans=_automaticLoanRows(month);if(!loans.length)return '';
@@ -7047,6 +7119,7 @@ function _initSheet(){
     const hist=e.target.closest('[data-ds-hist]');if(hist){openHistorySheet(hist.dataset.dsHist);return;}
     if(e.target.closest('[data-cd]')){_chartDefaultsClick(e);return;}
     const theme=e.target.closest('[data-theme-set]');if(theme){setThemeMode(theme.dataset.themeSet);return;}
+    const lang=e.target.closest('[data-lang-set]');if(lang){setLanguage(lang.dataset.langSet);return;}
     const sugg=e.target.closest('[data-ms-sugg]');if(sugg){e.preventDefault();_monthSheetSuggest(sugg);return;}
     const priceShow=e.target.closest('[data-ms-price-show]');if(priceShow){e.preventDefault();_monthSheetPriceShow(priceShow);return;}
     if(e.target.closest('#msSubmit')){_submitSheet();return;}
@@ -7181,7 +7254,7 @@ function _liabListHTML(e){
   const value=f=>+((e&&e._details||{})[f.id])||0;
   const item=f=>_dsItem('liab',f.id,f.label,_liabSub(f,lp[f.id]||{}),e?fmt(value(f)):'—',!value(f));
   const open=fields.filter(f=>value(f)!==0),done=fields.filter(f=>value(f)===0);
-  let html=open.length?`<div class="ds-list" style="margin-top:14px">${open.map(item).join('')}</div>`:'';
+  let html=open.length?`<div class="ds-list">${open.map(item).join('')}</div>`:'';
   if(done.length)html+=`<details class="ds-zero"${open.length?'':' open'}><summary>Ohne Restschuld ${_inMonth(selectedMonth)} (${done.length})</summary><div class="ds-list">${done.map(item).join('')}</div></details>`;
   return html+add;
 }
@@ -7907,7 +7980,7 @@ function _budgetListHTML(){
   if(!hasAny)return `<div id="ds-budget-items" class="ds-anchor"></div><p class="ds-empty">Noch keine Einnahmen oder Ausgaben. Lege Gehalt, Miete, Verträge und Sparpläne als wiederkehrende Posten an, besondere Ausgaben als einmalige Zahlung.</p>`+add+_moneyFlowHTML(bd);
   let html='<div id="ds-budget-items" class="ds-anchor"></div>';
   BUDGET_LIST.forEach(([key,title])=>{
-    const rows=bd[key]||[];if(!rows.length)return;
+    const rows=[...(bd[key]||[])].sort((a,b)=>_yearSum(b.values)-_yearSum(a.values));if(!rows.length)return;/* der Größe nach absteigend */
     html+=`<div class="ds-list-t ds-list-sum"><span>${title}</span><span>Ø ${fmt(rows.reduce((s,r)=>s+_yearSum(r.values),0)/12)} / Monat</span></div><div class="ds-list">${rows.map(r=>{
       const rh=_budgetRhythm(r.values),val=rh.rhythm==='custom'?'Ø '+fmt(_yearSum(r.values)/12):fmt(rh.amount);
       const loan=r.loanId&&_fc.fields.find(f=>f.id===r.loanId);
@@ -8850,21 +8923,21 @@ function calcAvDepot(s,d){
 }
 /* Ergebniszeile unter einer Depot-Karte, höchstens ein Tipp */
 function _avdResultHTML(r){
-  if(r.started)return 'Die Auszahlung hätte schon begonnen – Alter oder Person prüfen.';
-  if(!(r.capReal>0))return r.own>0?'Bis zum Auszahlungsbeginn bleibt kein Beitragsjahr – Beginn, Auszahlung ab Alter oder „Arbeiten bis“ prüfen.':'Beitrag pro Monat eintragen, um Zulagen und Auszahlung zu berechnen.';
+  if(r.started)return L('Die Auszahlung hätte schon begonnen – Alter oder Person prüfen.','The payout would already have started – check age or person.');
+  if(!(r.capReal>0))return r.own>0?L('Bis zum Auszahlungsbeginn bleibt kein Beitragsjahr – Beginn, Auszahlung ab Alter oder „Arbeiten bis“ prüfen.','No contribution year is left before the payout – check start, payout age or "Work until".'):L('Beitrag pro Monat eintragen, um Zulagen und Auszahlung zu berechnen.','Enter a monthly contribution to calculate subsidies and payout.');
   const z=r.firstSub;
   let h='';
   if(z&&z.total>0){
     const quote=Math.round(z.total/(r.own+z.total)*100);
-    h+=`≈ <strong>${fmt(z.total)}</strong> Zulagen/Jahr <span style="color:var(--muted)">(${z.child>0?fmt(z.base)+' + '+fmt(z.child)+' Kinder, ':''}Förderquote ${quote} %${r.bonus?', einmalig +200 € Bonus':''})</span><br>`;
+    h+=L(`≈ <strong>${fmt(z.total)}</strong> Zulagen/Jahr <span style="color:var(--muted)">(${z.child>0?fmt(z.base)+' + '+fmt(z.child)+' Kinder, ':''}Förderquote ${quote} %${r.bonus?', einmalig +200 € Bonus':''})</span><br>`,`≈ <strong>${fmt(z.total)}</strong> subsidies/year <span style="color:var(--muted)">(${z.child>0?fmt(z.base)+' + '+fmt(z.child)+' children, ':''}subsidy rate ${quote} %${r.bonus?', once +200 € bonus':''})</span><br>`);
   }
-  h+=`→ mit ${fmtAge(r.from)} ≈ <strong>${fmt(Math.round(r.capReal/100)*100)}</strong> → `;
-  h+=r.lumpNet>0?`<strong>${fmt(Math.round(r.lumpNet/100)*100)}</strong> sofort, dann <strong>${fmt(r.netto)}</strong> netto/Monat bis ${r.until}`:`<strong>${fmt(r.netto)}</strong> netto/Monat bis ${r.until}`;
+  h+=L(`→ mit ${fmtAge(r.from)} ≈ `,`→ at ${fmtAge(r.from)} ≈ `)+`<strong>${fmt(Math.round(r.capReal/100)*100)}</strong> → `;
+  h+=(r.lumpNet>0?L(`<strong>${fmt(Math.round(r.lumpNet/100)*100)}</strong> sofort, dann `,`<strong>${fmt(Math.round(r.lumpNet/100)*100)}</strong> at once, then `):'')+L(`<strong>${fmt(r.netto)}</strong> netto/Monat bis ${r.until}`,`<strong>${fmt(r.netto)}</strong> net/month until ${r.until}`);
   let tip='';
-  if(z&&r.own>0&&r.own<1800)tip=`Volle Grundzulage (540 €) ab 150 €/Monat${r.own<360?' – schon 30 €/Monat bringen 180 €':''}.`;
-  else if(r.own>1800)tip='Zulage gibt es nur auf 1.800 € im Jahr – der Rest wird ohne Zulage angelegt.';
-  if(z&&z.kids>0&&r.own<300*z.kids)tip=`Für die volle Kinderzulage mindestens ${fmt(25*z.kids)}/Monat einzahlen.`;
-  if(r.kidsBad)tip='Kinder bitte als Geburtsjahre eintragen, z. B. „2019, 2022“.';
+  if(z&&r.own>0&&r.own<1800)tip=L(`Volle Grundzulage (540 €) ab 150 €/Monat${r.own<360?' – schon 30 €/Monat bringen 180 €':''}.`,`Full basic subsidy (540 €) from 150 €/month${r.own<360?' – even 30 €/month bring 180 €':''}.`);
+  else if(r.own>1800)tip=L('Zulage gibt es nur auf 1.800 € im Jahr – der Rest wird ohne Zulage angelegt.','Subsidies only apply to 1,800 € a year – the rest is invested without subsidy.');
+  if(z&&z.kids>0&&r.own<300*z.kids)tip=L(`Für die volle Kinderzulage mindestens ${fmt(25*z.kids)}/Monat einzahlen.`,`Pay in at least ${fmt(25*z.kids)}/month for the full child subsidy.`);
+  if(r.kidsBad)tip=L('Kinder bitte als Geburtsjahre eintragen, z. B. „2019, 2022“.','Please enter children as years of birth, e.g. "2019, 2022".');
   return h+(tip?`<br><span style="color:var(--muted)">${tip}</span>`:'');
 }
 function regelaltersgrenze(by){
@@ -8920,7 +8993,7 @@ function calcBeamtePension(s,b){
   const netto=brutto*(1-Math.min(90,Math.max(0,b.deduct))/100);
   return{age,limit,years,total,rate,cut,brutto,netto,inp:{pay:b.pay,years:Math.max(0,b.years),deduct:b.deduct}};
 }
-function fmtAge(a){const y=Math.floor(a),m=Math.round((a-y)*12);return m?y+' J. '+m+' M.':String(y);}
+function fmtAge(a){const y=Math.floor(a),m=Math.round((a-y)*12);return m?y+L(' J. ',' y ')+m+L(' M.',' m'):String(y);}
 
 /* ══ Einnahmen im Ruhestand aus dem Budget ══
    Eine wiederkehrende Einnahme kann als „Auch im Ruhestand“ markiert werden (z. B. Mieteinnahmen). Ist sie schon
@@ -9395,36 +9468,39 @@ let _incExplain=[];
 const _pts=n=>(+n||0).toLocaleString('de-DE',{maximumFractionDigits:2});
 function _explainDrv(r,name){
   const i=r.inp||{},gross=Math.min(i.salary||0,i.bbg||Infinity),net=r.calcNetto??r.netto;
-  let h=`<p><strong>Rentenpunkte</strong>: ${_pts(i.points)} heute`;
-  if(r.epYear>0)h+=` + ${_pts(r.epYear)} je Jahr (${fmt(gross)} Brutto ÷ ${fmt(i.de)} Durchschnittsentgelt) × ${_pts(r.years)} Jahre bis zum Ende der Arbeit`;
-  h+=` = <strong>${_pts(r.epTotal)} Punkte</strong>.</p>`;
-  if(r.epYear>0&&!name)h+=`<p>Beim Weiterarbeiten zählen die Jahre anteilig zur Arbeitszeit, im Vorruhestand kommen keine Punkte mehr dazu.</p>`;
-  h+=`<p><strong>Rente</strong>: ${_pts(r.epTotal)} × ${_pts(i.rw)} € Rentenwert = ${fmt(r.brutto)} brutto − ${_pts(i.deduct)} % Abzüge (Kranken-/Pflegeversicherung, Steuer) = <strong>${fmt(net)} netto</strong>.</p>`;
-  if(r.em&&r.em.full>0)h+=`<p><strong>Nach der Erwerbsminderungsrente</strong>: Die Altersrente ist mindestens die volle EM-Rente von ${fmt(r.em.full)}. Angesetzt wird der höhere Wert: <strong>${fmt(r.netto)}</strong>.</p>`;
-  h+=`<p>Beginn mit ${fmtAge(r.age)}${name?' (Alter von '+escHTML(name)+')':''}. Alle Beträge in heutiger Kaufkraft: Gehalt und Rentenwert wachsen wie die Löhne.</p>`;
+  let h=L(`<p><strong>Rentenpunkte</strong>: ${_pts(i.points)} heute`,`<p><strong>Pension points</strong>: ${_pts(i.points)} today`);
+  if(r.epYear>0)h+=L(` + ${_pts(r.epYear)} je Jahr (${fmt(gross)} Brutto ÷ ${fmt(i.de)} Durchschnittsentgelt) × ${_pts(r.years)} Jahre bis zum Ende der Arbeit`,` + ${_pts(r.epYear)} per year (${fmt(gross)} gross ÷ ${fmt(i.de)} average salary) × ${_pts(r.years)} years until the end of work`);
+  h+=L(` = <strong>${_pts(r.epTotal)} Punkte</strong>.</p>`,` = <strong>${_pts(r.epTotal)} points</strong>.</p>`);
+  if(r.epYear>0&&!name)h+=L(`<p>Beim Weiterarbeiten zählen die Jahre anteilig zur Arbeitszeit, im Vorruhestand kommen keine Punkte mehr dazu.</p>`,`<p>When working on, the years count in proportion to working time; in early retirement no more points are added.</p>`);
+  h+=L(`<p><strong>Rente</strong>: ${_pts(r.epTotal)} × ${_pts(i.rw)} € Rentenwert = ${fmt(r.brutto)} brutto − ${_pts(i.deduct)} % Abzüge (Kranken-/Pflegeversicherung, Steuer) = <strong>${fmt(net)} netto</strong>.</p>`,`<p><strong>Pension</strong>: ${_pts(r.epTotal)} × ${_pts(i.rw)} € pension value = ${fmt(r.brutto)} gross − ${_pts(i.deduct)} % deductions (health/care insurance, tax) = <strong>${fmt(net)} net</strong>.</p>`);
+  if(r.em&&r.em.full>0)h+=L(`<p><strong>Nach der Erwerbsminderungsrente</strong>: Die Altersrente ist mindestens die volle EM-Rente von ${fmt(r.em.full)}. Angesetzt wird der höhere Wert: <strong>${fmt(r.netto)}</strong>.</p>`,`<p><strong>After the disability pension</strong>: the old-age pension is at least the full disability pension of ${fmt(r.em.full)}. The higher value is used: <strong>${fmt(r.netto)}</strong>.</p>`);
+  h+=L(`<p>Beginn mit ${fmtAge(r.age)}${name?' (Alter von '+escHTML(name)+')':''}. Alle Beträge in heutiger Kaufkraft: Gehalt und Rentenwert wachsen wie die Löhne.</p>`,`<p>Starts at ${fmtAge(r.age)}${name?' ('+escHTML(name)+'’s age)':''}. All amounts in today's money: salary and pension value grow like wages.</p>`);
   return h;
 }
 function _explainEm(r,name,afterWork){
   const e=r.em,i=r.inp||{};
-  let h=`<p><strong>Zahlbetrag</strong>: ${fmt(e.gross)} netto/Monat laut Bescheid (${e.type===1?'teilweise':'volle'} Erwerbsminderung${name?', '+escHTML(name):''}).</p>`;
-  if(e.cut>0)h+=`<p><strong>Mit Hinzuverdienst</strong>: ${fmt(i.salary)} im Jahr liegen ${fmt(e.over)} über der Grenze von ${fmt(e.limit)}. 40 % davon mindern die Bruttorente, netto rund ${fmt(e.cut)}/Monat → ${fmt(e.amount)}.</p>`;
-  h+=`<p><strong>In der Prognose</strong>: ${afterWork||!(e.cut>0)?fmt(e.gross)+'/Monat ab dem Ende der Arbeit, ohne Anrechnung':fmt(e.amount)+'/Monat, solange noch gearbeitet wird, danach '+fmt(e.gross)} bis ${fmtAge(e.until)}${name?' (Alter von '+escHTML(name)+')':''}.</p>`;
-  h+=e.full>0?`<p>Danach wird sie automatisch zur Altersrente, mindestens ${fmt(e.full)}. Deshalb steht sie nicht in der Summe: Sie wird durch die Altersrente ersetzt, nicht zusätzlich gezahlt.</p>`:`<p>Sie endet vor der Altersrente und steht deshalb nicht in der Summe.</p>`;
+  let h=L(`<p><strong>Zahlbetrag</strong>: ${fmt(e.gross)} netto/Monat laut Bescheid (${e.type===1?'teilweise':'volle'} Erwerbsminderung${name?', '+escHTML(name):''}).</p>`,`<p><strong>Payment</strong>: ${fmt(e.gross)} net/month per notice (${e.type===1?'partial':'full'} reduced earning capacity${name?', '+escHTML(name):''}).</p>`);
+  if(e.cut>0)h+=L(`<p><strong>Mit Hinzuverdienst</strong>: ${fmt(i.salary)} im Jahr liegen ${fmt(e.over)} über der Grenze von ${fmt(e.limit)}. 40 % davon mindern die Bruttorente, netto rund ${fmt(e.cut)}/Monat → ${fmt(e.amount)}.</p>`,`<p><strong>With additional earnings</strong>: ${fmt(i.salary)} a year are ${fmt(e.over)} above the limit of ${fmt(e.limit)}. 40 % of that reduces the gross pension, net about ${fmt(e.cut)}/month → ${fmt(e.amount)}.</p>`);
+  const who=name?L(' (Alter von '+escHTML(name)+')',' ('+escHTML(name)+'’s age)'):'';
+  h+=afterWork||!(e.cut>0)?L(`<p><strong>In der Prognose</strong>: ${fmt(e.gross)}/Monat ab dem Ende der Arbeit, ohne Anrechnung bis ${fmtAge(e.until)}${who}.</p>`,`<p><strong>In the forecast</strong>: ${fmt(e.gross)}/month from the end of work, without offset, until ${fmtAge(e.until)}${who}.</p>`)
+    :L(`<p><strong>In der Prognose</strong>: ${fmt(e.amount)}/Monat, solange noch gearbeitet wird, danach ${fmt(e.gross)} bis ${fmtAge(e.until)}${who}.</p>`,`<p><strong>In the forecast</strong>: ${fmt(e.amount)}/month while still working, then ${fmt(e.gross)} until ${fmtAge(e.until)}${who}.</p>`);
+  h+=e.full>0?L(`<p>Danach wird sie automatisch zur Altersrente, mindestens ${fmt(e.full)}. Deshalb steht sie nicht in der Summe: Sie wird durch die Altersrente ersetzt, nicht zusätzlich gezahlt.</p>`,`<p>After that it automatically becomes the old-age pension, at least ${fmt(e.full)}. That is why it is not in the total: it is replaced by the old-age pension, not paid on top.</p>`)
+    :L(`<p>Sie endet vor der Altersrente und steht deshalb nicht in der Summe.</p>`,`<p>It ends before the old-age pension and is therefore not in the total.</p>`);
   return h;
 }
 function _explainBv(r){
   const i=r.inp||{};
-  let h=`<p><strong>Dienstzeit</strong>: ${_pts(i.years)} Jahre bisher + ${_pts(r.years)} bis zum Ende der Arbeit = ${_pts(r.total)} Jahre (Teilzeit anteilig).</p>`;
-  h+=`<p><strong>Ruhegehaltssatz</strong>: ${_pts(r.total)} × 1,79375 %, höchstens 71,75 %, ab 5 Jahren mindestens 35 % → <strong>${_pts(r.rate)} %</strong>.</p>`;
-  if(r.cut>0)h+=`<p><strong>Abschlag</strong>: ${_pts(r.cut)} % für den Beginn vor der Altersgrenze (${fmtAge(r.limit)}).</p>`;
-  h+=`<p><strong>Pension</strong>: ${fmt(i.pay)} Bezüge × ${_pts(r.rate)} %${r.cut>0?' − Abschlag':''} = ${fmt(r.brutto)} brutto − ${_pts(i.deduct)} % Abzüge = <strong>${fmt(r.netto)} netto</strong>, ab ${fmtAge(r.age)}.</p>`;
+  let h=L(`<p><strong>Dienstzeit</strong>: ${_pts(i.years)} Jahre bisher + ${_pts(r.years)} bis zum Ende der Arbeit = ${_pts(r.total)} Jahre (Teilzeit anteilig).</p>`,`<p><strong>Service time</strong>: ${_pts(i.years)} years so far + ${_pts(r.years)} until the end of work = ${_pts(r.total)} years (part time pro rata).</p>`);
+  h+=L(`<p><strong>Ruhegehaltssatz</strong>: ${_pts(r.total)} × 1,79375 %, höchstens 71,75 %, ab 5 Jahren mindestens 35 % → <strong>${_pts(r.rate)} %</strong>.</p>`,`<p><strong>Pension rate</strong>: ${_pts(r.total)} × 1.79375 %, at most 71.75 %, from 5 years at least 35 % → <strong>${_pts(r.rate)} %</strong>.</p>`);
+  if(r.cut>0)h+=L(`<p><strong>Abschlag</strong>: ${_pts(r.cut)} % für den Beginn vor der Altersgrenze (${fmtAge(r.limit)}).</p>`,`<p><strong>Reduction</strong>: ${_pts(r.cut)} % for starting before the age limit (${fmtAge(r.limit)}).</p>`);
+  h+=L(`<p><strong>Pension</strong>: ${fmt(i.pay)} Bezüge × ${_pts(r.rate)} %${r.cut>0?' − Abschlag':''} = ${fmt(r.brutto)} brutto − ${_pts(i.deduct)} % Abzüge = <strong>${fmt(r.netto)} netto</strong>, ab ${fmtAge(r.age)}.</p>`,`<p><strong>Pension</strong>: ${fmt(i.pay)} salary × ${_pts(r.rate)} %${r.cut>0?' − reduction':''} = ${fmt(r.brutto)} gross − ${_pts(i.deduct)} % deductions = <strong>${fmt(r.netto)} net</strong>, from ${fmtAge(r.age)}.</p>`);
   return h;
 }
 function _explainAvd(r){
-  let h=`<p><strong>Beiträge</strong>: ${fmt(r.own/12)}/Monat eigener Beitrag${r.firstSub?' + '+fmt(r.firstSub.total)+' Zulagen im Jahr':''}. Bis zur Auszahlung ${fmt(r.ownSum)} eigene Beiträge und ${fmt(r.subSum)} Zulagen${r.bonus?' (inkl. 200 € Berufseinsteigerbonus)':''}. Die Beiträge folgen deinen Lebensphasen.</p>`;
-  h+=`<p><strong>Kapital</strong> mit ${fmtAge(r.from)}: ${fmt(Math.round(r.capReal))} in heutiger Kaufkraft (${_pts(r.ret*100)} % Rendite p. a.${r.balance>0?', inkl. heutigem Guthaben von '+fmt(r.balance):''}).</p>`;
-  if(r.lumpNet>0)h+=`<p><strong>Teilauszahlung</strong> zu Beginn: ${fmt(Math.round(r.lumpNet))} netto, fließt ins liquide Vermögen.</p>`;
-  h+=`<p><strong>Auszahlplan</strong> bis ${r.until}: <strong>${fmt(r.netto)} netto/Monat</strong> nach ${_pts(r.deduct*100)} % Abzügen.</p>`;
+  let h=L(`<p><strong>Beiträge</strong>: ${fmt(r.own/12)}/Monat eigener Beitrag${r.firstSub?' + '+fmt(r.firstSub.total)+' Zulagen im Jahr':''}. Bis zur Auszahlung ${fmt(r.ownSum)} eigene Beiträge und ${fmt(r.subSum)} Zulagen${r.bonus?' (inkl. 200 € Berufseinsteigerbonus)':''}. Die Beiträge folgen deinen Lebensphasen.</p>`,`<p><strong>Contributions</strong>: ${fmt(r.own/12)}/month own contribution${r.firstSub?' + '+fmt(r.firstSub.total)+' subsidies a year':''}. Until payout ${fmt(r.ownSum)} own contributions and ${fmt(r.subSum)} subsidies${r.bonus?' (incl. 200 € career-starter bonus)':''}. Contributions follow your life phases.</p>`);
+  h+=L(`<p><strong>Kapital</strong> mit ${fmtAge(r.from)}: ${fmt(Math.round(r.capReal))} in heutiger Kaufkraft (${_pts(r.ret*100)} % Rendite p. a.${r.balance>0?', inkl. heutigem Guthaben von '+fmt(r.balance):''}).</p>`,`<p><strong>Capital</strong> at ${fmtAge(r.from)}: ${fmt(Math.round(r.capReal))} in today's money (${_pts(r.ret*100)} % return p.a.${r.balance>0?', incl. today\'s balance of '+fmt(r.balance):''}).</p>`);
+  if(r.lumpNet>0)h+=L(`<p><strong>Teilauszahlung</strong> zu Beginn: ${fmt(Math.round(r.lumpNet))} netto, fließt ins liquide Vermögen.</p>`,`<p><strong>Partial lump sum</strong> at the start: ${fmt(Math.round(r.lumpNet))} net, goes to liquid assets.</p>`);
+  h+=L(`<p><strong>Auszahlplan</strong> bis ${r.until}: <strong>${fmt(r.netto)} netto/Monat</strong> nach ${_pts(r.deduct*100)} % Abzügen.</p>`,`<p><strong>Payout plan</strong> until ${r.until}: <strong>${fmt(r.netto)} net/month</strong> after ${_pts(r.deduct*100)} % deductions.</p>`);
   return h;
 }
 /* Ergebniszeile der gesetzlichen Rente (eigene und weitere Personen); saveUntil = Punkte sammeln bis Alter (Ende der Arbeit) */
@@ -9432,21 +9508,21 @@ function _drvResultHTML(d,r,saveUntil){
   let emTxt='';
   if(d.emType===1||d.emType===2){
     const e=r.em;
-    if(!e)emTxt='Zahlbetrag der Erwerbsminderungsrente eintragen.';
+    if(!e)emTxt=L('Zahlbetrag der Erwerbsminderungsrente eintragen.','Enter the payment of the disability pension.');
     else{
-      emTxt=`EM-Rente <strong>${fmt(e.amount)}</strong> netto/Monat bis ${fmtAge(e.until)}`+(e.full>0?`, danach Altersrente`:', danach keine EM-Rente mehr')+'.';
-      if(e.over>0)emTxt+=` <span style="color:var(--red)">Hinzuverdienst liegt ${fmt(e.over)} über der Grenze von ${fmt(e.limit)}/Jahr – netto rund ${fmt(e.cut)}/Monat weniger.</span> <span style="color:var(--muted)">Ohne Hinzuverdienst (ab dem Ende der Arbeit) rechnet die Prognose mit ${fmt(e.gross)}.</span>`;
+      emTxt=L(`EM-Rente <strong>${fmt(e.amount)}</strong> netto/Monat bis ${fmtAge(e.until)}`+(e.full>0?`, danach Altersrente`:', danach keine EM-Rente mehr')+'.',`Disability pension <strong>${fmt(e.amount)}</strong> net/month until ${fmtAge(e.until)}`+(e.full>0?`, then old-age pension`:', then no more disability pension')+'.');
+      if(e.over>0)emTxt+=L(` <span style="color:var(--red)">Hinzuverdienst liegt ${fmt(e.over)} über der Grenze von ${fmt(e.limit)}/Jahr – netto rund ${fmt(e.cut)}/Monat weniger.</span> <span style="color:var(--muted)">Ohne Hinzuverdienst (ab dem Ende der Arbeit) rechnet die Prognose mit ${fmt(e.gross)}.</span>`,` <span style="color:var(--red)">Additional earnings are ${fmt(e.over)} above the limit of ${fmt(e.limit)}/year – about ${fmt(e.cut)}/month less net.</span> <span style="color:var(--muted)">Without additional earnings (from the end of work) the forecast uses ${fmt(e.gross)}.</span>`);
     }
     emTxt='<br>'+emTxt;
     if(!(r.epTotal>0))return emTxt.slice(4);
   }
-  if(!(r.epTotal>0))return 'Rentenpunkte und/oder Gehalt eintragen, um die gesetzliche Rente hochzurechnen.';
+  if(!(r.epTotal>0))return L('Rentenpunkte und/oder Gehalt eintragen, um die gesetzliche Rente hochzurechnen.','Enter pension points and/or salary to project the state pension.');
   const ep=r.epTotal.toLocaleString('de-DE',{maximumFractionDigits:1});
   const add=r.epYear*r.years;
-  const pts=add>0?', +'+add.toLocaleString('de-DE',{maximumFractionDigits:1})+' Punkte bis '+Math.round(Math.min(saveUntil,r.age)):'';
+  const pts=add>0?', +'+add.toLocaleString('de-DE',{maximumFractionDigits:1})+L(' Punkte bis ',' points until ')+Math.round(Math.min(saveUntil,r.age)):'';
   /* Greift die Mindesthöhe aus der EM-Rente, die Hochrechnung nur zum Vergleich zeigen */
-  const detail=r.em&&r.netto>r.calcNetto?`mindestens volle EM-Rente; aus Punkten ${fmt(r.calcNetto)} netto${pts}`:`${fmt(r.brutto)} brutto${pts}`;
-  return `≈ <strong>${ep} Punkte</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)} <span style="color:var(--muted)">(${detail})</span>`+emTxt;
+  const detail=r.em&&r.netto>r.calcNetto?L(`mindestens volle EM-Rente; aus Punkten ${fmt(r.calcNetto)} netto${pts}`,`at least the full disability pension; from points ${fmt(r.calcNetto)} net${pts}`):`${fmt(r.brutto)} ${L('brutto','gross')}${pts}`;
+  return L(`≈ <strong>${ep} Punkte</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)}`,`≈ <strong>${ep} points</strong> → <strong>${fmt(r.netto)}</strong> net/month from ${fmtAge(r.age)}`)+` <span style="color:var(--muted)">(${detail})</span>`+emTxt;
 }
 function renderDrvEditor(){
   const el=document.getElementById('lt-drv');
@@ -9490,10 +9566,10 @@ function _bvFromInputs(){
 }
 function _bvResultText(b){
   const s=getLifetimeSettings(),r=calcBeamtePension(s,b);
-  if(!(b.pay>0))return 'Bezüge und Dienstjahre eintragen, um die Pension hochzurechnen.';
+  if(!(b.pay>0))return L('Bezüge und Dienstjahre eintragen, um die Pension hochzurechnen.','Enter salary and years of service to project the pension.');
   const pc=v=>v.toLocaleString('de-DE',{maximumFractionDigits:2})+' %';
   const yrs=r.total.toLocaleString('de-DE',{maximumFractionDigits:1});
-  return `≈ <strong>${yrs} Dienstjahre</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)} <span style="color:var(--muted)">(${pc(r.rate)} Ruhegehaltssatz${r.cut>0?', −'+pc(r.cut)+' Abschlag':''}, ${fmt(r.brutto)} brutto)</span>`;
+  return L(`≈ <strong>${yrs} Dienstjahre</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)} <span style="color:var(--muted)">(${pc(r.rate)} Ruhegehaltssatz${r.cut>0?', −'+pc(r.cut)+' Abschlag':''}, ${fmt(r.brutto)} brutto)</span>`,`≈ <strong>${yrs} years of service</strong> → <strong>${fmt(r.netto)}</strong> net/month from ${fmtAge(r.age)} <span style="color:var(--muted)">(${pc(r.rate)} pension rate${r.cut>0?', −'+pc(r.cut)+' reduction':''}, ${fmt(r.brutto)} gross)</span>`);
 }
 function _updateBvResult(){
   const el=document.getElementById('dp-bv-result');
@@ -9712,6 +9788,7 @@ function renderLifetimePageCalcs(){
     ['lt-target-sub','lt-success-sub','lt-retire-sub','lt-at-retire-sub'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
     const ml=document.getElementById('lt-more-list');if(ml)ml.innerHTML='';
     const ph=document.getElementById('v2-lt-phases');if(ph)ph.innerHTML='';
+    const psBtn=document.getElementById('psOpen');if(psBtn)psBtn.hidden=true;
   };
   if(!hasData&&!hasSettings){clearKpis();return;}
 
@@ -9773,12 +9850,12 @@ function renderLifetimePageCalcs(){
   if(plan.drv&&plan.drv.netto>0)inc.push({n:'Gesetzliche Rente',v:plan.drv.netto,a:plan.drv.age,ex:_explainDrv(plan.drv)});
   if(plan.bv&&plan.bv.netto>0)inc.push({n:'Beamtenpension',v:plan.bv.netto,a:plan.bv.age,ex:_explainBv(plan.bv)});
   (plan.drvExtra||[]).forEach(r=>{
-    if(r.em&&r.em.gross>0&&r.em.untilMain>currentAge)inc.push({n:'EM-Rente '+r.name,v:r.workEndMain>s.workEnd?r.em.amount:r.em.gross,until:r.em.until,temp:true,then:r.em.full>0,ex:_explainEm(r,r.name,r.workEndMain<=s.workEnd)});
-    if(r.netto>0)inc.push({n:'Rente '+r.name,v:r.netto,a:r.age,ex:_explainDrv(r,r.name)});
+    if(r.em&&r.em.gross>0&&r.em.untilMain>currentAge)inc.push({n:L('EM-Rente ','Disability pension ')+r.name,v:r.workEndMain>s.workEnd?r.em.amount:r.em.gross,until:r.em.until,temp:true,then:r.em.full>0,ex:_explainEm(r,r.name,r.workEndMain<=s.workEnd)});
+    if(r.netto>0)inc.push({n:L('Rente ','Pension ')+r.name,v:r.netto,a:r.age,ex:_explainDrv(r,r.name)});
   });
   (plan.avd||[]).forEach(r=>inc.push({n:r.name,v:r.netto,a:r.from,end:r.until,ex:_explainAvd(r)}));
-  if(_mod('pension'))(s.pensions||[]).filter(p=>(+p.amount||0)>0).forEach(p=>inc.push({n:p.name||'Weitere Rente',v:+p.amount,a:+p.from||67,ex:`<p>Eingetragen unter Daten → Altersvorsorge → Weitere Renten &amp; Einkünfte: <strong>${fmt(+p.amount)}</strong> netto/Monat ab ${fmtAge(+p.from||67)}.</p><p>Der Betrag gilt in heutiger Kaufkraft und steigt in der Prognose mit der Inflation.</p>`}));
-  (plan.retInc||[]).filter(r=>!r.duplicate).forEach(r=>inc.push({n:r.name,v:r.amount,budget:true,until:r.until,ex:`<p>Aus dem Budget: Ø <strong>${fmt(Math.round(r.amount))}</strong>/Monat (Summe der zwölf Planmonate ÷ 12), markiert als „Auch im Ruhestand“.</p><p>Zählt in der Prognose ab dem Ende der Arbeit${r.until?' bis '+fmtAge(r.until):''}, in heutiger Kaufkraft. Was schon unter Altersvorsorge erfasst ist, zählt nicht doppelt.</p>`}));
+  if(_mod('pension'))(s.pensions||[]).filter(p=>(+p.amount||0)>0).forEach(p=>inc.push({n:p.name||'Weitere Rente',v:+p.amount,a:+p.from||67,ex:L(`<p>Eingetragen unter Daten → Altersvorsorge → Weitere Renten &amp; Einkünfte: <strong>${fmt(+p.amount)}</strong> netto/Monat ab ${fmtAge(+p.from||67)}.</p><p>Der Betrag gilt in heutiger Kaufkraft und steigt in der Prognose mit der Inflation.</p>`,`<p>Entered under Data → Pensions → Other pensions &amp; income: <strong>${fmt(+p.amount)}</strong> net/month from ${fmtAge(+p.from||67)}.</p><p>The amount is in today's money and rises with inflation in the forecast.</p>`)}));
+  (plan.retInc||[]).filter(r=>!r.duplicate).forEach(r=>inc.push({n:r.name,v:r.amount,budget:true,until:r.until,ex:L(`<p>Aus dem Budget: Ø <strong>${fmt(Math.round(r.amount))}</strong>/Monat (Summe der zwölf Planmonate ÷ 12), markiert als „Auch im Ruhestand“.</p><p>Zählt in der Prognose ab dem Ende der Arbeit${r.until?' bis '+fmtAge(r.until):''}, in heutiger Kaufkraft. Was schon unter Altersvorsorge erfasst ist, zählt nicht doppelt.</p>`,`<p>From the budget: avg <strong>${fmt(Math.round(r.amount))}</strong>/month (sum of the twelve plan months ÷ 12), marked as "Also in retirement".</p><p>Counts in the forecast from the end of work${r.until?' until '+fmtAge(r.until):''}, in today's money. Anything already recorded under Pensions is not counted twice.</p>`)}));
   /* Kreditfrei: erstes Alter, ab dem im Erwartungspfad keine Kreditrate mehr anfällt */
   const lpAll=getLoanParams(),detL=(plan.data[plan.latestKey]._details)||{};
   let lastPayoff=null;
@@ -9797,7 +9874,7 @@ function renderLifetimePageCalcs(){
       h+=`<div class="v2-inc"><div class="v2-inc-t">Einkommen im Ruhestand</div><div class="v2-inc-v">${Math.round(tot).toLocaleString('de-DE')}<small>€ / Monat</small></div>`;
       h+=`<div class="v2-inc-bar">${steady.map((x,i)=>`<i style="width:${(x.v/base*100).toFixed(2)}%;background:${shade(i)}"></i>`).join('')}</div>`;
       if(need>0)h+=`<div class="v2-inc-cap">${cov>=1?'Deckt deinen Bedarf von '+fmt(need):'Deckt '+Math.round(cov*100)+' % deines Bedarfs von '+fmt(need)}</div>`;
-      const when=x=>x.temp?'bis '+fmtAge(x.until)+(x.then?', danach Altersrente':'')+' · nicht in der Summe':x.budget?'aus dem Budget'+(x.until?' · bis '+fmtAge(x.until):''):'ab '+fmtAge(x.a)+(x.end?' bis '+x.end:'');
+      const when=x=>x.temp?L('bis ','until ')+fmtAge(x.until)+(x.then?L(', danach Altersrente',', then old-age pension'):'')+L(' · nicht in der Summe',' · not in the total'):x.budget?L('aus dem Budget','from the budget')+(x.until?L(' · bis ',' · until ')+fmtAge(x.until):''):L('ab ','from ')+fmtAge(x.a)+(x.end?L(' bis ',' to ')+x.end:'');
       h+=`<div class="v2-inc-rows">${inc.map((x,i)=>`<button type="button" class="v2-inc-row" data-inc="${i}"><i style="background:${x.temp?'var(--fill)':shade(i)}"></i><span class="n">${escHTML(x.n)}<small>${escHTML(when(x))}</small></span><span class="v">${fmt(Math.round(x.v))}</span></button>`).join('')}</div>`;
       if(inc.some(x=>x.temp))h+=`<p class="v2-inc-note">Die Summe enthält nur dauerhafte Einkommen. Eine Erwerbsminderungsrente endet mit Beginn der Altersrente und wird nicht zusätzlich gezählt.</p>`;
       h+=`</div>`;
@@ -9937,6 +10014,7 @@ function renderLifetimePageCalcs(){
   _ltState={plan,det,mc,tc,real,infl,currentAge,allAges,histLine,projLine,projHi,projLo,histAssetMaps,availAtR,coverage,R};
   _v2LtSummary({s,plan,mc,tc,retireAge,availAtR,coverage,R,currentAge});
   _v2LtPhases({s,plan,mc,currentAge,infl});
+  const psBtn=document.getElementById('psOpen');if(psBtn)psBtn.hidden=false;
   setupLifetimeInteraction();
 }
 /* ── Design 2: Prognose-Hero und Ergebnisliste ── */
@@ -9999,6 +10077,150 @@ const _ltMarkerPlugin={
   }
 };
 
+/* ══ Partner-Story: der Lebensplan als Folge kurzer Stories (wie ein Jahresrückblick), für jemanden ohne Finanzwissen ══
+   Tippen rechts = weiter, links = zurück, gedrückt halten = Pause, nach unten wischen oder × = schließen. */
+const PS_DUR=7000;
+let _ps=null;
+function _psData(){
+  if(!_ltState)renderLifetimePageCalcs();
+  const S=_ltState;if(!S)return null;
+  const{plan,mc,infl,currentAge}=S,s=plan.s;
+  const real=(arr,age)=>{const a=Math.round(age),yi=a-plan.firstAge;return yi>=0&&yi<plan.nSteps?arr[yi]/Math.pow(1+infl,a-currentAge):null;};
+  const b=_phaseBounds(s,currentAge,plan.horizonAge);
+  const yearAt=a=>Math.round(s.birthYear+a);
+  const bd=_mod('budget')?loadBudgetData():null;
+  const income=bd?_avgBudget(bd,'einnahmen'):0,build=bd?_avgBudget(bd,'aufbau'):0;
+  const save=build>0?build:_phaseSaving(plan);
+  const data=plan.data[plan.latestKey]||{},c=calc(data);
+  /* größte Bausteine des Vermögens */
+  const parts=plan.groups.map(g=>({name:g.key,v:g.gross})).filter(x=>x.v>0).sort((x,y)=>y.v-x.v);
+  const events=(s.events||[]).map(_normEvent).filter(e=>+e.year>=new Date().getFullYear()&&e.amount>0).sort((x,y)=>x.year-y.year).slice(0,4);
+  let payoff=null;const lpAll=getLoanParams(),det=data._details||{};
+  _vf().filter(f=>f.category==='liab').forEach(f=>{const v=+det[f.id]||0;if(v<=0||!hasLoanModel(lpAll[f.id]))return;const st=loanStatus(v,lpAll[f.id]);if(st.payoff&&(!payoff||st.payoff>payoff))payoff=st.payoff;});
+  let empty=null;for(let a=Math.ceil(b[2]);a<=plan.horizonAge;a++){const v=real(mc.avail50,a);if(v!=null&&v<1000){empty=a;break;}}
+  return{s,plan,mc,b,real,yearAt,income,save,net:plan.latestNet,liab:c.liab||0,parts,events,payoff,empty,
+    retireAge:_ltCalcCache?_ltCalcCache.retireAge:null,pct:Math.round(mc.success*100)};
+}
+function _psSlides(){
+  const d=_psData();if(!d)return[];
+  /* Beträge nicht umbrechen (geschützte Leerzeichen) */
+  const{s,plan,b,real,yearAt}=d,nb=t=>String(t).replace(/ /g,'\u00a0'),fm=v=>nb(fmt(Math.round(v))),fc=v=>nb(fmtCompact(v)),ag=_ageTxt;
+  const off=i=>b[i+1]-b[i]<=0.01;
+  const bar=hl=>`<div class="ps-time">${_phaseBarHTML(b).replace('class="lp-bar"','class="lp-bar ps-hl-'+hl+'"')}</div>`;
+  const slides=[];
+  slides.push({bg:['#16301f','#3a5e42'],kicker:L('Partner-Story','Partner story'),big:L('Euer Plan bis ','Your plan until ')+plan.horizonAge,
+    text:L('In ein paar Bildern: wo ihr heute steht, wie es weitergeht und warum das Geld reicht. Ohne Fachbegriffe – alle Beträge in heutigem Geld.','In a few pictures: where you stand today, what comes next and why the money lasts. No jargon – all amounts in today\'s money.'),
+    viz:`<img class="ps-logo" src="logo-a.png?v=1" alt="">`});
+  const top=d.parts.slice(0,3),max=Math.max(1,...top.map(x=>x.v));
+  slides.push({bg:['#24201b','#5a4c3a'],kicker:L('Heute','Today'),big:`<span data-ps-count="${Math.round(d.net)}"></span>`,
+    text:L('So viel gehört euch heute: Konten, Depots, Immobilien und alles andere'+(d.liab>0?' – abzüglich '+fm(d.liab)+' Kredite.':'.'),'This is what you own today: accounts, investments, property and everything else'+(d.liab>0?' – minus '+fm(d.liab)+' in loans.':'.')),
+    viz:top.length?`<div class="ps-bars">${top.map(x=>`<div class="ps-bar"><span>${escHTML(x.name)}</span><i style="width:${(x.v/max*100).toFixed(1)}%"></i><b>${fc(x.v)}</b></div>`).join('')}</div>`:''});
+  if(d.save>0){
+    const q=d.income>0?Math.round(d.save/d.income*100):null;
+    slides.push({bg:['#1b2b2f','#3f6b6f'],kicker:L('Jeden Monat','Every month'),big:`<span data-ps-count="${Math.round(d.save)}"></span>`,
+      text:L('legt ihr zur Seite'+(q!=null?' – '+q+' % von '+fm(d.income)+' Einnahmen':'')+'. Das ist der Motor für alles, was jetzt kommt.','is what you put aside'+(q!=null?' – '+q+' % of '+fm(d.income)+' income':'')+'. This is the engine for everything that follows.'),
+      viz:q!=null?`<div class="ps-ring" style="--p:${Math.min(100,q)}"><b>${q} %</b></div>`:''});
+  }
+  if(!off(0)){const v=real(d.mc.p50,b[1]);
+    slides.push({bg:['#16301f','#4f7a58'],kicker:L('Phase 1 · Ansparen','Phase 1 · Saving'),big:L('bis ','until ')+yearAt(b[1]),
+      text:L(`Bis ${yearAt(b[1])} (mit ${ag(b[1])}) wird gearbeitet und gespart wie heute.`+(v!=null?` So wächst das Vermögen auf etwa ${fc(v)}.`:''),`Until ${yearAt(b[1])} (at ${ag(b[1])}) life goes on with work and saving as today.`+(v!=null?` That grows your wealth to about ${fc(v)}.`:'')),viz:bar(1)});}
+  if(!off(1)){const v=real(d.mc.p50,b[2]);
+    const work=s.p2Work<1?L(`in Teilzeit (${Math.round(s.p2Work*100)} %)`,`part-time (${Math.round(s.p2Work*100)} %)`):L('weiter in Vollzeit','still full-time');
+    const sav=s.p2Saving>0?L(`Gespart wird noch ${Math.round(s.p2Saving*100)} % von heute`,`Saving continues at ${Math.round(s.p2Saving*100)} % of today`):L('Extra gespart wird nicht mehr','No more extra saving');
+    slides.push({bg:['#26352a','#84a088'],kicker:L('Phase 2 · Weiterarbeiten','Phase 2 · Working on'),big:`${yearAt(b[1])}–${yearAt(b[2])}`,
+      text:L(`Ab ${yearAt(b[1])} wird ${work} gearbeitet. ${sav}, die Altersvorsorge läuft weiter.`+(v!=null?` Mit ${ag(b[2])} sind es etwa ${fc(v)}.`:''),`From ${yearAt(b[1])} work continues ${work}. ${sav}; pension savings continue.`+(v!=null?` At ${ag(b[2])} that's about ${fc(v)}.`:'')),viz:bar(2)});}
+  if(!off(2)){const v=real(d.mc.p50,b[3]),pens=_pensionsAt(plan,b[2]);
+    slides.push({bg:['#3b1d16','#a3624f'],kicker:L('Phase 3 · Vorruhestand','Phase 3 · Early retirement'),big:`${yearAt(b[2])}–${yearAt(b[3])}`,
+      text:L(`Ab ${yearAt(b[2])} ist Schluss mit Arbeit. Ihr lebt von eurem Ersparten: ${fm(s.monthlyWithdraw)} im Monat`+(pens>0?`, davon ${fm(pens)} aus Renten`:'')+'.'+(v!=null?` Mit ${ag(b[3])} sind noch etwa ${fc(v)} da.`:''),`From ${yearAt(b[2])} work stops. You live on your savings: ${fm(s.monthlyWithdraw)} a month`+(pens>0?`, ${fm(pens)} of it from pensions`:'')+'.'+(v!=null?` At ${ag(b[3])} about ${fc(v)} is still there.`:'')),viz:bar(3)});}
+  {const pens=_pensionsAt(plan,b[3]),need=s.pensionSpending,draw=Math.max(0,need-pens),pPct=need>0?Math.min(100,pens/need*100):0;
+    slides.push({bg:['#1f2326','#5d656b'],kicker:L('Phase 4 · Rente','Phase 4 · Retirement'),big:L('ab ','from ')+yearAt(b[3]),
+      text:pens>0?L(`Dann kommen die Renten: ${fm(pens)} im Monat.`+(draw>0?` Den Rest von ${fm(draw)} nehmt ihr aus dem Vermögen.`:' Sie decken euren Bedarf.'),`Then the pensions start: ${fm(pens)} a month.`+(draw>0?` The remaining ${fm(draw)} comes from your savings.`:' They cover what you need.'))
+        :L(`Ihr lebt weiter von eurem Vermögen: ${fm(need)} im Monat.`,`You keep living on your savings: ${fm(need)} a month.`),
+      viz:pens>0?`<div class="ps-split"><i style="width:${pPct.toFixed(1)}%"></i><b style="width:${(100-pPct).toFixed(1)}%"></b></div><div class="ps-legend"><span><i class="a"></i>${L('Renten','Pensions')}</span><span><i class="b"></i>${L('aus dem Vermögen','from savings')}</span></div>`:''});}
+  {const ok=d.mc.success>=s.safety/100;
+    const dots=Array.from({length:100},(_,i)=>`<i class="${i<d.pct?'y':'n'}" style="--i:${i}"></i>`).join('');
+    slides.push({bg:ok?['#14261b','#2f5a3c']:['#2e1712','#7a3d2f'],kicker:L('Und wenn die Börse schwächelt?','And if markets stumble?'),big:`<span data-ps-count="${d.pct}" data-ps-unit="%"></span>`,
+      text:L(`Wir haben 500 mögliche Zukünfte durchgespielt – mit guten und schlechten Börsenjahren. In ${d.pct} von 100 reicht das Geld bis ${plan.horizonAge}.`,`We played through 500 possible futures – with good and bad market years. In ${d.pct} out of 100 the money lasts until ${plan.horizonAge}.`),
+      viz:`<div class="ps-dots">${dots}</div>`});}
+  const moments=d.events.map(e=>`<li><b>${e.year}</b><span>${escHTML(e.name||L('Ereignis','Event'))}</span><em>${e.from===''?'+':'−'}${fc(e.amount)}</em></li>`);
+  if(d.payoff)moments.push(`<li><b>${d.payoff.slice(0,4)}</b><span>${L('Schuldenfrei','Debt-free')}</span><em>✓</em></li>`);
+  if(moments.length)slides.push({bg:['#2b2617','#6b6438'],kicker:L('Große Momente','Big moments'),big:L('Schon eingeplant','Already planned'),
+    text:L('Diese Dinge sind im Plan berücksichtigt:','These things are already part of the plan:'),viz:`<ul class="ps-list">${moments.join('')}</ul>`});
+  {const ok=d.mc.success>=s.safety/100,early=b[3]>b[2]+0.01;
+    slides.push({bg:['#121211','#2c2b27'],kicker:L('Kurz gesagt','In short'),
+      big:ok?L(`Mit ${ag(b[2])} aufhören – und es reicht bis ${plan.horizonAge}.`,`Stop working at ${ag(b[2])} – and it lasts until ${plan.horizonAge}.`)
+        :L('Der Plan braucht noch etwas Feinschliff.','The plan still needs some fine-tuning.'),
+      text:ok?L((early?'Erst Vorruhestand, dann Rente. ':'')+'Wenn ihr Fragen habt: einfach zusammen anschauen.',(early?'First early retirement, then the pension. ':'')+'Questions? Just look at it together.')
+        :L('Sicher möglich wäre es '+(d.retireAge?'ab '+d.retireAge:'später')+'. Schaut euch gemeinsam an, welche Stellschraube passt: etwas länger arbeiten, mehr sparen oder weniger ausgeben.','It would be safe '+(d.retireAge?'from '+d.retireAge:'later')+'. Look together at which lever fits: work a little longer, save more or spend less.'),
+      viz:`<button type="button" class="ps-again" data-ps-again>${L('Nochmal ansehen','Watch again')}</button>`});}
+  return slides;
+}
+function openPartnerStory(){
+  const slides=_psSlides();if(!slides.length)return;
+  closePartnerStory();
+  const el=document.createElement('div');
+  el.className='ps';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label',L('Partner-Story','Partner story'));
+  el.innerHTML=`<div class="ps-frame"><div class="ps-prog">${slides.map(()=>'<i><b></b></i>').join('')}</div>
+    <div class="ps-top"><span class="ps-brand"><img src="icon-192.png?v=2" alt="">${L('Euer Plan','Your plan')}</span><button type="button" class="ps-close" aria-label="${L('Schließen','Close')}">×</button></div>
+    <div class="ps-slides">${slides.map((x,i)=>`<section class="ps-s" style="--c1:${x.bg[0]};--c2:${x.bg[1]}" aria-hidden="true"><p class="ps-k">${x.kicker}</p><h2 class="ps-big">${x.big}</h2><p class="ps-t">${x.text}</p>${x.viz?`<div class="ps-viz">${x.viz}</div>`:''}</section>`).join('')}</div>
+    <p class="ps-hint">${L('Tippen: weiter · links: zurück · halten: Pause','Tap: next · left: back · hold: pause')}</p></div>`;
+  document.body.appendChild(el);lockBodyScroll();
+  _ps={el,i:-1,n:slides.length,paused:false,down:null,hold:null};
+  const frame=el.querySelector('.ps-frame');
+  el.querySelector('.ps-close').addEventListener('click',e=>{e.stopPropagation();closePartnerStory();});
+  el.addEventListener('click',e=>{if(e.target===el)closePartnerStory();});
+  frame.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;_ps.down={x:e.clientX,y:e.clientY,t:Date.now()};_ps.hold=setTimeout(()=>_psPause(true),220);});
+  frame.addEventListener('pointerup',e=>{
+    if(!_ps||!_ps.down||e.target.closest('button'))return;
+    clearTimeout(_ps.hold);const d=_ps.down;_ps.down=null;
+    if(e.clientY-d.y>90){closePartnerStory();return;}
+    if(_ps.paused){_psPause(false);return;}
+    const r=frame.getBoundingClientRect();
+    _psGo(_ps.i+(e.clientX-r.left<r.width/3?-1:1));
+  });
+  frame.addEventListener('pointercancel',()=>{if(!_ps)return;clearTimeout(_ps.hold);_ps.down=null;_psPause(false);});
+  el.addEventListener('click',e=>{if(e.target.closest('[data-ps-again]')){e.stopPropagation();_psGo(0);}});
+  el.querySelectorAll('.ps-prog b').forEach(b=>b.addEventListener('animationend',()=>{if(_ps&&b===_ps.el.querySelectorAll('.ps-prog b')[_ps.i])_psGo(_ps.i+1);}));
+  document.addEventListener('keydown',_psKey);
+  requestAnimationFrame(()=>{el.classList.add('show');_psGo(0);});
+}
+function _psKey(e){
+  if(!_ps)return;
+  if(e.key==='Escape'){closePartnerStory();return;}
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();_psGo(_ps.i+1);}
+  if(e.key==='ArrowLeft'){e.preventDefault();_psGo(_ps.i-1);}
+}
+function _psPause(on){if(!_ps)return;_ps.paused=on;_ps.el.classList.toggle('paused',on);}
+function _psGo(i){
+  if(!_ps)return;
+  if(i<0)i=0;
+  if(i>=_ps.n){_psPause(true);return;}/* letzte Story bleibt stehen */
+  _ps.i=i;_psPause(false);
+  const secs=_ps.el.querySelectorAll('.ps-s'),bars=_ps.el.querySelectorAll('.ps-prog i');
+  secs.forEach((s,k)=>{s.classList.toggle('on',k===i);s.setAttribute('aria-hidden',k===i?'false':'true');});
+  bars.forEach((b,k)=>{b.className=k<i?'done':k===i?'run':'';});
+  /* Story-Dauer neu starten */
+  const cur=bars[i].querySelector('b');cur.style.animation='none';void cur.offsetWidth;cur.style.animation='';
+  if(i===_ps.n-1)cur.style.animationDuration=PS_DUR+'ms';
+  /* Zahlen zählen hoch */
+  secs[i].querySelectorAll('[data-ps-count]').forEach(el=>{
+    const to=+el.dataset.psCount,unit=el.dataset.psUnit,t0=performance.now(),dur=1100;
+    const show=v=>{el.textContent=unit?Math.round(v)+' '+unit:fmt(Math.round(v));};
+    const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce){show(to);return;}
+    const step=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,3);show(to*e);if(k<1&&_ps)requestAnimationFrame(step);};
+    show(0);requestAnimationFrame(step);
+  });
+  haptic('light');
+}
+function closePartnerStory(){
+  if(!_ps)return;
+  const el=_ps.el;clearTimeout(_ps.hold);_ps=null;
+  document.removeEventListener('keydown',_psKey);
+  el.classList.remove('show');unlockBodyScroll();
+  setTimeout(()=>el.remove(),250);
+}
+
 /* ══ Lebensphasen: Zeitstrahl, Karte auf der Prognose-Seite, Zeile auf der Daten-Seite, Bearbeiten-Sheet ══ */
 function _ageTxt(a){return Math.abs(a-Math.round(a))<1/24?String(Math.round(a)):fmtAge(a);}
 /* Grenzen der vier Phasen ab heute: [heute, Weiterarbeiten, Vorruhestand, Rente, Planungsende] */
@@ -10031,22 +10253,22 @@ function _phaseSavingSplit(plan,s){
 }
 /* Kurzbeschreibung je Phase (Karte und Sheet) */
 function _phaseText(s,plan,i,b){
-  const save=_phaseSaving(plan);
-  if(i===0)return save>0?fmt(Math.round(save))+'/Mon. sparen'+(s.savingsGrowth>0?', +'+_numStr(s.savingsGrowth)+' % p. a.':''):'Sparraten unter Annahmen eintragen';
+  const save=_phaseSaving(plan),mo=L('/Mon.','/mo.');
+  if(i===0)return save>0?fmt(Math.round(save))+mo+L(' sparen',' saved')+(s.savingsGrowth>0?', +'+_numStr(s.savingsGrowth)+' % p. a.':''):L('Sparraten unter Annahmen eintragen','Enter savings under assumptions');
   const pc=v=>Math.round(v*100)+' %';
   if(i===1){
-    const parts=[s.p2Work<1?'Teilzeit '+pc(s.p2Work):'Vollzeit'];
-    parts.push(s.p2Saving>0?'Sparen '+pc(s.p2Saving):'kein privates Sparen');
-    parts.push('Vorsorge '+pc(s.p2Pension??1));
-    if(s.p2Withdraw>0)parts.push(fmt(s.p2Withdraw)+'/Mon. entnehmen');
+    const parts=[s.p2Work<1?L('Teilzeit ','Part time ')+pc(s.p2Work):L('Vollzeit','Full time')];
+    parts.push(s.p2Saving>0?L('Sparen ','Saving ')+pc(s.p2Saving):L('kein privates Sparen','no private saving'));
+    parts.push(L('Vorsorge ','Pension ')+pc(s.p2Pension??1));
+    if(s.p2Withdraw>0)parts.push(fmt(s.p2Withdraw)+mo+L(' entnehmen',' withdrawn'));
     return parts.join(' · ');
   }
   if(i===2){
     const pens=_pensionsAt(plan,b[2]),draw=Math.max(0,s.monthlyWithdraw-pens);
-    return fmt(Math.round(draw))+'/Mon. aus dem Vermögen'+(pens>0?' · '+fmt(Math.round(pens))+' Rente':'')+(s.p3Saving>0?' · Sparen '+pc(s.p3Saving):'')+(s.p3Pension>0?' · Vorsorge '+pc(s.p3Pension):'');
+    return fmt(Math.round(draw))+mo+L(' aus dem Vermögen',' from wealth')+(pens>0?' · '+fmt(Math.round(pens))+L(' Rente',' pension'):'')+(s.p3Saving>0?L(' · Sparen ',' · saving ')+pc(s.p3Saving):'')+(s.p3Pension>0?L(' · Vorsorge ',' · pension ')+pc(s.p3Pension):'');
   }
   const pens=_pensionsAt(plan,b[3]),draw=Math.max(0,s.pensionSpending-pens);
-  return pens>0?(draw>0?fmt(Math.round(pens))+' Renten + '+fmt(Math.round(draw))+' aus dem Vermögen':'Renten '+fmt(Math.round(pens))+' decken den Bedarf'):fmt(Math.round(s.pensionSpending))+'/Mon. aus dem Vermögen';
+  return pens>0?(draw>0?fmt(Math.round(pens))+L(' Renten + ',' pensions + ')+fmt(Math.round(draw))+L(' aus dem Vermögen',' from wealth'):L('Renten ','Pensions ')+fmt(Math.round(pens))+L(' decken den Bedarf',' cover the need')):fmt(Math.round(s.pensionSpending))+mo+L(' aus dem Vermögen',' from wealth');
 }
 function _v2LtPhases(o){
   const el=document.getElementById('v2-lt-phases');if(!el)return;
@@ -10058,13 +10280,13 @@ function _v2LtPhases(o){
   for(let a=Math.ceil(b[2]);a<=plan.horizonAge;a++){const v=real(mc.avail50,a);if(v!=null&&v<1000){empty=a;break;}}
   const rows=LT_PHASE_NAMES.map((name,i)=>{
     const off=b[i+1]-b[i]<=0.01&&i<3;
-    const range=i===0?'heute bis '+_ageTxt(b[1]):i===3?'ab '+_ageTxt(b[3]):_ageTxt(b[i])+' bis '+_ageTxt(b[i+1]);
+    const range=i===0?L('heute bis ','today to ')+_ageTxt(b[1]):i===3?L('ab ','from ')+_ageTxt(b[3]):_ageTxt(b[i])+L(' bis ',' to ')+_ageTxt(b[i+1]);
     let v='',cls=off?' off':'';
     if(off)v='<b>—</b><small>entfällt</small>';
     else if(i<3){const val=real(mc.p50,b[i+1]);v=`<b>${val==null?'—':fmtCompact(val)}</b><small>mit ${_ageTxt(b[i+1])}</small>`;}
     else if(empty!=null&&empty<plan.horizonAge){cls+=' warn';v=`<b>aufgebraucht</b><small>mit ${empty}</small>`;}
     else{const val=real(mc.p50,plan.horizonAge);v=`<b>${val==null?'—':fmtCompact(val)}</b><small>mit ${plan.horizonAge}</small>`;}
-    return `<button type="button" class="v2-lp-row${cls}" onclick="openPhasesSheet(${i+1})"><i class="lp-p${i+1}"></i><span class="t"><b>${name}</b><small>${escHTML(range+' · '+(off?'Phase entfällt':_phaseText(s,plan,i,b)))}</small></span><span class="v">${v}</span></button>`;
+    return `<button type="button" class="v2-lp-row${cls}" onclick="openPhasesSheet(${i+1})"><i class="lp-p${i+1}"></i><span class="t"><b>${name}</b><small>${escHTML(range+' · '+(off?L('Phase entfällt','Phase skipped'):_phaseText(s,plan,i,b)))}</small></span><span class="v">${v}</span></button>`;
   }).join('');
   el.innerHTML=`<div class="v2-lp-head"><span class="v2-ret-title" data-info="lt-phases">Lebensphasen</span><button type="button" class="v2-lp-btn" onclick="openPhasesSheet()">Bearbeiten</button></div>${_phaseBarHTML(b)}<div class="v2-lp-rows">${rows}</div>`;
 }
@@ -10074,10 +10296,10 @@ function _renderPhaseSummary(){
   const s=getLifetimeSettings(),now=new Date(),cur=_ageAt(s,now.getFullYear(),now.getMonth());
   const b=_phaseBounds(s,cur,Math.max(Math.round(s.planHorizon),Math.ceil(cur)+1));
   const parts=[];
-  if(b[1]>b[0]+0.01)parts.push('Ansparen bis '+_ageTxt(b[1]));
-  if(b[2]>b[1]+0.01)parts.push('Weiterarbeiten bis '+_ageTxt(b[2]));
-  if(b[3]>b[2]+0.01)parts.push('Vorruhestand ab '+_ageTxt(b[2]));
-  parts.push('Rente ab '+_ageTxt(b[3]));
+  if(b[1]>b[0]+0.01)parts.push(L('Ansparen bis ','Saving until ')+_ageTxt(b[1]));
+  if(b[2]>b[1]+0.01)parts.push(L('Weiterarbeiten bis ','working on until ')+_ageTxt(b[2]));
+  if(b[3]>b[2]+0.01)parts.push(L('Vorruhestand ab ','early retirement from ')+_ageTxt(b[2]));
+  parts.push(L('Rente ab ','retirement from ')+_ageTxt(b[3]));
   el.innerHTML=`<span class="lp-edit-t"><span>${escHTML(parts.join(' · '))}</span><small>Bearbeiten ›</small></span>${_phaseBarHTML(b)}`;
 }
 
@@ -11522,7 +11744,66 @@ function _handleMonthRollover(){
 }
 
 /* ── Init ── */
+/* ══ Sprache: Deutsch (Standard) oder Englisch ══
+   Die App entsteht auf Deutsch. Bei Englisch übersetzt eine Ebene alle angezeigten Texte, Platzhalter und
+   Beschriftungen beim Einfügen (I18N_EN aus i18n-en.js): exakte Texte, Vorlagen mit {0} für Zahlen und Regeln
+   für Sätze mit Namen. Erklärtexte (INFO), Monatsnamen und auf Charts gezeichnete Texte werden direkt ersetzt.
+   Neue Texte, die beide Sprachen kennen, nutzen L('deutsch','english'). Zahlen behalten das deutsche Format. */
+let _lang='de';
+const L=(de,en)=>_lang==='en'?en:de;
+function _readLang(){try{return appStorage.getItem('appLang')==='en'?'en':'de';}catch(e){return 'de';}}
+function setLanguage(lang){
+  if(lang!=='de'&&lang!=='en'||lang===_lang)return;
+  appStorage.setItem('appLang',lang);
+  location.reload();
+}
+/* Platzhalter beim Nachschlagen: Zahlen und (bereits englische) Monatsnamen, in der Reihenfolge ihres Auftretens */
+const _TR_LETTERS=/[A-Za-zÄÖÜäöüß]/,_TR_NUM=/\b(?:January|February|March|April|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b|[+−-]?\d+(?:[.,]\d+)*/g;
+function _tr(text){
+  if(!text||!_TR_LETTERS.test(text))return null;
+  const D=window.I18N_EN;if(!D)return null;
+  const t=text.replace(/\s+/g,' ').trim();if(!t)return null;
+  let en=Object.prototype.hasOwnProperty.call(D.exact,t)?D.exact[t]:null;
+  if(en==null){
+    const nums=[],key=t.replace(_TR_NUM,m=>{nums.push(m);return '{'+(nums.length-1)+'}';});
+    if(nums.length&&Object.prototype.hasOwnProperty.call(D.exact,key))en=D.exact[key].replace(/\{(\d+)\}/g,(_,i)=>nums[+i]??'');
+  }
+  if(en==null)for(const [re,rep] of D.rules){if(re.test(t)){en=t.replace(re,rep);break;}}
+  if(en==null||en===t)return null;
+  return text.match(/^\s*/)[0]+en+text.match(/\s*$/)[0];
+}
+const _TR_SKIP=new Set(['SCRIPT','STYLE','TEXTAREA','CODE']),_TR_ATTRS=['placeholder','title','aria-label','data-date-ph','data-date-title'];
+function _trNode(n){
+  const p=n.parentNode;if(!p||_TR_SKIP.has(p.nodeName)||(p.closest&&p.closest('[data-no-tr]')))return;
+  const v=_tr(n.nodeValue);if(v!=null&&v!==n.nodeValue)n.nodeValue=v;
+}
+function _trEl(el){
+  if(!el.getAttribute||(el.closest&&el.closest('[data-no-tr]')))return;
+  for(const a of _TR_ATTRS){const v=el.getAttribute(a);if(v){const t=_tr(v);if(t!=null&&t!==v)el.setAttribute(a,t);}}
+}
+function _trTree(root){
+  if(root.nodeType===3){_trNode(root);return;}
+  if(root.nodeType!==1||_TR_SKIP.has(root.nodeName))return;
+  _trEl(root);
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);
+  let n;while((n=w.nextNode()))if(n.nodeType===3)_trNode(n);else _trEl(n);
+}
+function _i18nStart(){
+  const D=window.I18N_EN;if(!D)return;
+  document.documentElement.lang='en';
+  MONTH_NAMES.splice(0,12,...D.months);MONTH_FULL.splice(0,12,...D.monthsFull);
+  LT_PHASE_NAMES.splice(0,4,...D.phases);
+  for(const [k,v] of Object.entries(D.info||{}))if(INFO[k])INFO[k]=v;
+  _trTree(document.body);
+  new MutationObserver(muts=>{for(const m of muts){
+    if(m.type==='characterData')_trNode(m.target);
+    else if(m.type==='attributes')_trEl(m.target);
+    else m.addedNodes.forEach(_trTree);
+  }}).observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:_TR_ATTRS});
+}
 function initApp(){
+  _lang=_readLang();
+  if(_lang==='en')_i18nStart();
   try{
     try{const regrouped=regroupByCategory(appStorage.document());if(regrouped){appStorage.importBackup(regrouped);_fc=loadFieldConfig();}}
     catch(error){console.warn('Gruppierung nach Art übersprungen:',error);}

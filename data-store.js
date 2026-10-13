@@ -4,7 +4,7 @@
   'use strict';
   const KEY = 'vermoegen-data-v1';
   const FORMAT = 'vermoegen-backup';
-  const VERSION = 11;
+  const VERSION = 12;
   const CATEGORIES = ['cash', 'etf', 'stock', 'bitcoin', 'crypto', 'metal', 'realEstate', 'vehicle', 'other', 'bav', 'illiquid', 'liab'];
   const BUDGET_CATEGORIES = ['einkommen', 'fixe', 'variable', 'sparen'];
   const MODULES = ['assets', 'liab', 'pension', 'budget', 'forecast'];
@@ -58,7 +58,7 @@
   };
   const LEGACY_KEYS = ['fieldConfig', 'finData', 'budgetData', 'loanParams',
     'lt-drv', 'lt-drv-extra', 'lt-av-depots', 'lt-beamte', 'lt-pensions', 'lt-events', 'lt-asset-params',
-    'lt-birth-year', 'lt-birth-month', 'v2-modules', 'darkMode', 'customFields',
+    'lt-birth-year', 'lt-birth-month', 'v2-modules', 'darkMode', 'appLang', 'customFields',
     ...Object.keys(SETTINGS)];
   const copy = value => JSON.parse(JSON.stringify(value));
   const record = () => Object.create(null);
@@ -321,6 +321,8 @@
     for (const k of MODULES) doc.preferences.modules[k] = mods[k] !== false;
     // Version 11: 'system' follows the device setting.
     doc.preferences.theme = values.darkMode === '0' ? 'light' : values.darkMode === '1' ? 'dark' : values.darkMode === '2' ? 'system' : null;
+    // Version 12: language of the app (German by default).
+    if (values.appLang === 'en' || values.appLang === 'de') doc.preferences.language = values.appLang;
     for (const key of Object.keys(values)) if (key.startsWith('ui-open-')) doc.preferences.expandedSections[key.slice(8)] = values[key] === '1';
     validate(doc);
     return doc;
@@ -387,6 +389,7 @@
     put('lt-asset-params', ap);
     put('v2-modules', doc.preferences.modules);
     if (doc.preferences.theme !== null) values.darkMode = doc.preferences.theme === 'dark' ? '1' : doc.preferences.theme === 'system' ? '2' : '0';
+    if (doc.preferences.language) values.appLang = doc.preferences.language;
     for (const [key, value] of Object.entries(doc.preferences.expandedSections)) values['ui-open-' + key] = value ? '1' : '0';
     return values;
   }
@@ -421,7 +424,7 @@
     safeKeys(doc);
     object(doc, 'Datei', ['format', 'schemaVersion', 'currency', 'exportedAt', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences'], ['format', 'schemaVersion', 'currency', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences']);
     if (doc.format !== FORMAT) fail('format', 'keine Assets-Sicherung');
-    if (![1,2,3,4,5,6,7,8,9,10,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
+    if (![1,2,3,4,5,6,7,8,9,10,11,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
     if (doc.currency !== 'EUR') fail('currency', 'nur EUR wird unterstützt');
     if (own(doc, 'exportedAt') && (typeof doc.exportedAt !== 'string' || !Number.isFinite(Date.parse(doc.exportedAt)))) fail('exportedAt', 'ungültiges Datum');
     const groups = unique(doc.groups, 'groups');
@@ -573,7 +576,8 @@
       if (e.type === 'group') ref(e.groupId, 'Ereignisgruppe', groups);
     };
     for (const e of doc.forecast.events) { object(e, 'Ereignis', ['id', 'name', 'year', 'amount', 'from', 'to']); text(e.name, 'Ereignisname'); num(e.year, 'Ereignisjahr'); num(e.amount, 'Ereignisbetrag', 0); eventRef(e.from, true); eventRef(e.to, false); }
-    object(doc.preferences, 'Einstellungen', ['theme', 'modules', 'expandedSections', 'onboardingCompleted'], ['theme', 'modules', 'expandedSections']);
+    object(doc.preferences, 'Einstellungen', ['theme', 'modules', 'expandedSections', 'onboardingCompleted', 'language'], ['theme', 'modules', 'expandedSections']);
+    if (own(doc.preferences, 'language') && !['de', 'en'].includes(doc.preferences.language)) fail('language', 'de oder en erwartet');
     if (own(doc.preferences, 'onboardingCompleted')) bool(doc.preferences.onboardingCompleted, 'onboardingCompleted');
     if (![null, 'light', 'dark', 'system'].includes(doc.preferences.theme)) fail('theme', 'ungültig');
     object(doc.preferences.modules, 'Bereiche', MODULES); MODULES.forEach(k => bool(doc.preferences.modules[k], k));
