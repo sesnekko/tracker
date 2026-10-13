@@ -16,12 +16,12 @@
 <style>
 :root {
   --bg:#eae8e3;--bg2:#f4f2ed;--bg3:#edebe6;--border:#d2cec6;
-  --ink:#1a1a18;--ink-soft:#3a3832;--text:#2a2926;--muted:#8a8578;
+  --ink:#1a1a18;--ink-soft:#3a3832;--text:#2a2926;--muted:#6b665b;
   --red:#6e3b30;--green:#3a5e42;--red-rgb:110,59,48;--green-rgb:58,94,66;
 }
 body.dark {
   --bg:#111110;--bg2:#1c1c1a;--bg3:#252420;--border:#3a3830;
-  --ink:#e8e4de;--ink-soft:#c8c4ba;--text:#d8d4ca;--muted:#7a7568;
+  --ink:#e8e4de;--ink-soft:#c8c4ba;--text:#d8d4ca;--muted:#959083;
   --red:#c07058;--green:#7aaa82;--red-rgb:192,112,88;--green-rgb:122,170,130;
 }
 </style>
@@ -272,7 +272,7 @@ body.dark .range-btn.active{background:color-mix(in srgb,var(--bg3) 90%,transpar
 .flow-kpis { padding-top:16px; }
 @media (min-width:768px){ .kpi-grid.flow-kpis { grid-column:auto;grid-template-columns:repeat(4,1fr); } }
 @media (min-width:1280px){ #page-home .flow-section { grid-column:1 / -1; } #page-home .kpi-grid.flow-kpis { grid-column:auto;grid-template-columns:repeat(4,1fr); } }
-.date-btn.is-current::after { content:' · aktuell';color:var(--muted);font-weight:400; }
+.date-btn.is-current::after { content:none; }
 .legend-pct { font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:28px;text-align:right; }
 .legend-row.iso-active .legend-name { color:var(--ink); }
 .legend-row.iso-active .legend-track { box-shadow:0 0 0 1px var(--ink-soft); }
@@ -1610,6 +1610,28 @@ body.dark .ask{background:var(--bg2);box-shadow:0 0 0 .5px var(--border),0 18px 
 .ask-btns .primary{background:var(--ink);color:var(--bg)}
 .ask-btns .danger{background:var(--red);color:#fff}
 @media (prefers-reduced-motion:reduce){.ask-overlay,.ask{transition:none}}
+.ms-foot{position:sticky;bottom:calc(-28px - env(safe-area-inset-bottom));z-index:2;display:flex;align-items:center;gap:12px;margin:18px -16px calc(-28px - env(safe-area-inset-bottom));padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:var(--bg);box-shadow:0 -.5px 0 var(--sep)}
+.ms-sum{flex:1;min-width:0;display:flex;flex-direction:column}
+.ms-sum span{font-size:12.5px;color:var(--muted)}
+.ms-sum strong{font-size:19px;font-weight:600;color:var(--ink);white-space:nowrap}
+.ms-sum small{font-size:12.5px;color:var(--muted);line-height:1.35}
+.ms-submit{flex:0 0 auto;max-width:58%;min-height:44px;border-radius:12px;padding:0 14px;font-size:14.5px;white-space:normal;line-height:1.2}
+.ms-sugg{display:inline-block;margin-top:4px;padding:3px 9px;border:none;border-radius:8px;background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--green);font:inherit;font-size:12.5px;text-align:left;cursor:pointer}
+.ms-sugg span{opacity:.8}
+.ms-sugg[hidden]{display:none}
+.ms-warn{color:var(--red)}
+.ms-field{display:flex;align-items:center;gap:5px;cursor:text}
+.ms-field:focus-within{box-shadow:0 0 0 2px color-mix(in srgb,var(--ink) 22%,transparent)}
+.ms-input{flex:1;min-width:0;width:100%;border:none;background:none;padding:0;margin:0;font:inherit;font-size:16px;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;outline:none;-webkit-appearance:none;appearance:none}
+.ms-input::placeholder{color:var(--muted)}
+.ms-unit{flex:0 0 auto;font-size:14px;color:var(--muted)}
+.ms-link{display:inline-block;margin:4px 0 0 6px;padding:3px 2px;border:none;background:none;color:var(--ink);font:inherit;font-size:12.5px;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.ms-link[hidden]{display:none}
+#dsBody .ms-price-row[hidden]{display:none}
+#dsBody .ms-price-row .ds-l{padding-left:14px;font-size:14px;color:var(--muted)}
+.nav-btn,.sidebar-item{position:relative}
+.nav-btn.has-dot::after{content:'';position:absolute;top:7px;left:calc(50% + 9px);width:8px;height:8px;border-radius:50%;background:var(--red)}
+.sidebar-item.has-dot::after{content:'';position:absolute;top:50%;right:12px;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--red)}
 .ds-toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));z-index:450;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:999px;padding:9px 18px;font-size:14px;font-weight:500;transition:opacity .2s,transform .25s;white-space:nowrap}
 .ds-toast.show{opacity:1;transform:translate(-50%,0)}
 @media(min-width:768px){.ds-toast{bottom:32px}}
@@ -1981,7 +2003,7 @@ body.onboarding-open{overflow:hidden}
     <button class="date-btn" id="dateBtn">Apr 2026</button>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
-    <div class="live-status"><span class="live-dot" id="liveDot"></span></div>
+    <div class="live-status" role="button" tabindex="0" aria-label="Kursstatus"><span class="live-dot" id="liveDot"></span></div>
     <button class="icon-btn" id="themeToggle" title="Dark/Light Mode">
       <svg id="themeIcon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
     </button>
@@ -2085,12 +2107,12 @@ body.onboarding-open{overflow:hidden}
     <div class="kpi-item" data-kpi="liquid">
       <div class="kpi-flip-inner">
         <div class="kpi-face-front">
-          <div class="kpi-label">Liquide Assets</div>
+          <div class="kpi-label">Liquides Vermögen</div>
           <div class="kpi-val" id="kpi-liquid">—</div>
           <div class="kpi-delta" id="kpi-liquid-delta"></div>
         </div>
         <div class="kpi-face-back">
-          <div class="kpi-back-label">Liquide Assets</div>
+          <div class="kpi-back-label">Liquides Vermögen</div>
           <div class="kpi-back-text">Frei verfügbar: Cash, ETFs, Aktien, Krypto, Edelmetalle</div>
         </div>
       </div>
@@ -2098,12 +2120,12 @@ body.onboarding-open{overflow:hidden}
     <div class="kpi-item" data-kpi="illiquid">
       <div class="kpi-flip-inner">
         <div class="kpi-face-front">
-          <div class="kpi-label">Illiquide Assets</div>
+          <div class="kpi-label">Illiquides Vermögen</div>
           <div class="kpi-val" id="kpi-illiquid">—</div>
           <div class="kpi-delta" id="kpi-illiquid-delta"></div>
         </div>
         <div class="kpi-face-back">
-          <div class="kpi-back-label">Illiquide Assets</div>
+          <div class="kpi-back-label">Illiquides Vermögen</div>
           <div class="kpi-back-text">Altersvorsorge, Immobilien und Sachwerte abzüglich Verbindlichkeiten</div>
         </div>
       </div>
@@ -2152,7 +2174,7 @@ body.onboarding-open{overflow:hidden}
 
 <!-- Prognose-Annahmen: werden sofort gespeichert (kein Bearbeiten-Modus) -->
 <details class="input-collapsible v2-live" data-mod="forecast" id="v2-forecast-sec">
-  <summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="v2-sum-t"><span class="section-title">Prognose &amp; Annahmen</span><span class="v2-sum-sub" data-sub="forecast"></span></span><span class="v2-switch" data-mod="forecast" role="switch" tabindex="0" aria-label="Prognose ein/aus"><i></i></span></summary>
+  <summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="v2-sum-t"><span class="section-title">Prognose &amp; Annahmen</span><span class="v2-sum-sub" data-sub="forecast"></span></span></summary>
   <div class="input-collapsible-body">
     <div class="v2-preview"><b id="v2-prev-pct">—</b><span><span id="v2-prev-txt">Erfolgschance</span><br>Änderungen werden sofort übernommen</span></div>
     <span class="cat-label">Lebensplanung &amp; Bedarf</span>
@@ -2177,14 +2199,17 @@ body.onboarding-open{overflow:hidden}
 </details>
 
 
-<!-- Einstellungen, Daten, Hilfe: drei Kacheln unter den Datenbereichen -->
+<!-- Einstellungen, Sicherung, Hilfe: drei Kacheln unter den Datenbereichen -->
 <div class="dp-tiles">
   <button type="button" class="dp-tile" onclick="openInfoSheet('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Einstellungen</span></button>
-  <button type="button" class="dp-tile" id="dataTile" onclick="openInfoSheet('data')"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.5"/><path d="M4.5 5.5v6c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5v-6"/><path d="M4.5 11.5v6c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5v-6"/></svg><span>Daten</span></button>
+  <button type="button" class="dp-tile" id="dataTile" onclick="openInfoSheet('data')"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.5"/><path d="M4.5 5.5v6c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5v-6"/><path d="M4.5 11.5v6c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5v-6"/></svg><span>Sicherung</span></button>
   <button type="button" class="dp-tile" onclick="openInfoSheet('help')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.8 9.6a2.3 2.3 0 1 1 3.2 2.1c-.6.3-1 .8-1 1.5v.3"/><path d="M12 16.6v.1"/></svg><span>Hilfe</span></button>
 </div>
 
 <template id="tpl-settings">
+<div class="ds-group-t st-t">Bereiche</div>
+<div id="moduleSettings"></div>
+<p class="ds-help">Ausgeschaltete Bereiche werden ausgeblendet und nicht berechnet. Deine Daten bleiben erhalten.</p>
 <div class="ds-group-t st-t">Erscheinungsbild</div>
 <div id="themeSetting"></div>
 <div class="ds-group-t st-t">Darstellung der Charts</div>
@@ -2474,6 +2499,18 @@ body.onboarding-open{overflow:hidden}
 <!-- Onboarding Overlay -->
 <div class="ob-overlay" id="onboardingOverlay" role="dialog" aria-modal="true" aria-label="Willkommen und geführter Einstieg" style="display:none"></div>
 
+<!-- Erinnerung in der ersten Woche eines Monats: Monatsstand übernehmen -->
+<aside id="monthNotif" class="ob-notif" role="status" aria-labelledby="monthNotifTitle" hidden>
+  <a href="#" class="ob-notif-body" draggable="false" onclick="event.preventDefault();if(!_obNotifDragged)_monthNotifOpen()">
+    <span class="ob-notif-icon"><img src="icon-192.png?v=2" alt="" draggable="false"></span>
+    <span class="ob-notif-text">
+      <span class="ob-notif-head"><b id="monthNotifTitle">Neuer Monat</b><time>jetzt</time></span>
+      <span class="ob-notif-msg">Zeit für deinen Monatsstand. Du änderst nur, was sich bewegt hat – dauert etwa eine Minute.</span>
+    </span>
+  </a>
+  <button type="button" class="ob-notif-close" onclick="_monthNotifDismiss()" aria-label="Erinnerung schließen">×</button>
+</aside>
+
 <!-- Einmalige Mitteilung, sobald ein Kredit einen berechneten Verlauf ergänzt -->
 <aside id="loanHistoryNotif" class="ob-notif" role="status" aria-labelledby="loanHistoryNotifTitle" hidden>
   <a href="#" class="ob-notif-body" draggable="false" onclick="event.preventDefault();if(!_obNotifDragged)_notifOut(this.parentNode,'up')">
@@ -2486,10 +2523,10 @@ body.onboarding-open{overflow:hidden}
   <button type="button" class="ob-notif-close" onclick="_notifOut(this.parentNode,'up')" aria-label="Mitteilung schließen">×</button>
 </aside>
 
-<!-- Daten-Sheet: eine Position, ein Kredit oder ein Monatsstand, jeweils mit eigenem Sichern -->
+<!-- Daten-Sheet: eine Position, ein Kredit oder ein Monatsstand, jeweils mit eigenem Speichern -->
 <div class="ds-overlay" id="dsOverlay"></div>
 <div class="ds-sheet" id="dsSheet" role="dialog" aria-modal="true" aria-labelledby="dsTitle">
-  <div class="ds-head"><button type="button" class="v2-textbtn v2-muted" id="dsCancel">Abbrechen</button><h2 id="dsTitle"></h2><button type="button" class="v2-textbtn v2-strong" id="dsSave">Sichern</button></div>
+  <div class="ds-head"><button type="button" class="v2-textbtn v2-muted" id="dsCancel">Abbrechen</button><h2 id="dsTitle"></h2><button type="button" class="v2-textbtn v2-strong" id="dsSave">Speichern</button></div>
   <div class="ds-body" id="dsBody"></div>
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
@@ -2585,7 +2622,7 @@ const livePrices={}, netLineHidden={0:false,1:true,2:true};
 let isolatedAsset=null, isolatedAssetLabel=null;
 /* KPI-Kachel-Filter für den Netto-Chart: null | 'assets' | 'liquid' | 'illiquid' | 'liab' */
 let kpiChartFilter=null;
-const KPI_FILTER_LABELS={assets:'Bruttovermögen',liquid:'Liquide Assets',illiquid:'Illiquide Assets',liab:'Verbindlichkeiten'};
+const KPI_FILTER_LABELS={assets:'Bruttovermögen',liquid:'Liquides Vermögen',illiquid:'Illiquides Vermögen',liab:'Verbindlichkeiten'};
 /* Hero-Wert formatieren: Verbindlichkeiten mit Minus (wie die Kachel) */
 function _heroFmt(v){return kpiChartFilter==='liab'?'−'+fmt(v):fmt(v);}
 function _heroDefaultLabel(){return kpiChartFilter?KPI_FILTER_LABELS[kpiChartFilter]:(_mod('liab')?'Nettovermögen':'Bruttovermögen');}
@@ -2836,9 +2873,13 @@ function closeInfo(){
 function currentYM(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
 function nextYM(){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
 function fmtMonth(ym){const[y,m]=ym.split('-');return MONTH_NAMES[+m-1]+' '+y;}
+/* Anzeige: der laufend aktualisierte Folgemonat heißt „Heute“ */
+const _unitName=u=>u==='Stk'?'Stück':u;
+function _monthLabel(ym){return ym===nextYM()?'Heute':fmtMonth(ym);}
+function _inMonth(ym){return ym===nextYM()?'heute':'in '+fmtMonth(ym);}
 function fmt(n){if(n==null||isNaN(n))return'—';return n.toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:0})+' €';}
-/* Kompakt für enge Tabellen: 102 T€, 1,2 Mio € */
-function fmtCompact(n){if(n==null||isNaN(n))return'—';const a=Math.abs(n);if(a>=1e6)return(n/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})+' Mio €';if(a>=1e4)return Math.round(n/1e3).toLocaleString('de-DE')+' T€';if(a>=1e3)return(n/1e3).toLocaleString('de-DE',{maximumFractionDigits:1})+' T€';return Math.round(n).toLocaleString('de-DE')+' €';}
+/* Kompakt für enge Tabellen: 102 Tsd. €, 1,2 Mio € */
+function fmtCompact(n){if(n==null||isNaN(n))return'—';const a=Math.abs(n);if(a>=1e6)return(n/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})+' Mio €';if(a>=1e4)return Math.round(n/1e3).toLocaleString('de-DE')+' Tsd. €';if(a>=1e3)return(n/1e3).toLocaleString('de-DE',{maximumFractionDigits:1})+' Tsd. €';return Math.round(n).toLocaleString('de-DE')+' €';}
 function fmtAxis(n){if(n==null||isNaN(n))return'';if(Math.abs(n)>=1e6)return(n/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})+'M';if(Math.abs(n)>=1e3)return(n/1e3).toLocaleString('de-DE',{maximumFractionDigits:0})+'k';return n.toLocaleString('de-DE',{minimumFractionDigits:0});}
 function fmtIban(s){if(!s)return'';const clean=escHTML(s.replace(/\s/g,''));const spaced=clean.replace(/(.{4})/g,'$1 ').trim();if(clean.length>12){return spaced.slice(0,14)+'<br>'+spaced.slice(14).trim();}return spaced;}
 function loadStoredData(){try{const l=appStorage.getItem('finData');return l?JSON.parse(l):{};}catch{return{};}}
@@ -2948,8 +2989,8 @@ function buildPicker(){
   
   function updateBtn(){
     const[y,m]=selectedMonth.split('-');
-    btn.textContent=MONTH_NAMES[parseInt(m)-1]+' '+y;
-    /* Der Folgemonat ist der laufend (live) aktualisierte Stand -> kennzeichnen */
+    /* Der Folgemonat ist der laufend (live) aktualisierte Stand -> „Heute“ */
+    btn.textContent=selectedMonth===nextYM()?'Heute':MONTH_NAMES[parseInt(m)-1]+' '+y;
     btn.classList.toggle('is-current',selectedMonth===nextYM());
   }
   
@@ -3260,7 +3301,7 @@ function renderNetChart(){
   /* Always load ALL data; range is controlled via x-axis min/max */
   const ns=sorted;
   const cs=ns.map(k=>calc(data[k]));
-  const nv=cs.map(c=>c.net),av=cs.map(c=>c.assets),lv=cs.map(c=>-c.liab),lb=ns.map(fmtMonth);
+  const nv=cs.map(c=>c.net),av=cs.map(c=>c.assets),lv=cs.map(c=>-c.liab),lb=ns.map(_monthLabel);
   const ctx=document.getElementById('chartNet').getContext('2d');
   const ink=getComputedStyle(document.body).getPropertyValue('--ink').trim();
   const grn=getComputedStyle(document.body).getPropertyValue('--green').trim();
@@ -3590,7 +3631,7 @@ function renderFlowSection(){
     chartEl.classList.toggle('has-sel',_flowSel!=null);
     chartEl.querySelectorAll('.v2-fc-col').forEach((c2,i)=>c2.classList.toggle('sel',i===_flowSel));
     const b=_flowSel!=null?buckets[_flowSel]:null,d=b||r;
-    document.getElementById('v2FlowPeriod').textContent=b?b.title:fmtMonth(r.from)+' – '+fmtMonth(r.to);
+    document.getElementById('v2FlowPeriod').textContent=b?b.title:_monthLabel(r.from)+' – '+_monthLabel(r.to);
     setNum('v2FlowTotal',d.inflow+d.outflow+d.market+d.other);
     setNum('v2FlowSaved',d.inflow+d.outflow);
     setNum('v2FlowValue',d.market+d.other);
@@ -3727,13 +3768,20 @@ function resetHomeChart(){
 }
 function resetLifetimeChart(){_applyChartDefaults('lifetime');renderLifetimePageCalcs();}
 /* ── Kacheln unter den Datenbereichen: Einstellungen (Darstellung), Daten (Sicherung), Hilfe ── */
-const INFO_SHEETS={settings:'Einstellungen',data:'Daten',help:'Hilfe'};
+const INFO_SHEETS={settings:'Einstellungen',data:'Sicherung',help:'Hilfe'};
 function openInfoSheet(kind){
   const tpl=document.getElementById('tpl-'+kind);if(!tpl)return;
   if(!_openSheet(INFO_SHEETS[kind],tpl.innerHTML,()=>'quiet','Fertig',()=>openInfoSheet(kind)))return;
   _sheetCtx={info:kind};
   document.getElementById('dsCancel').style.visibility='hidden';
-  _renderThemeSetting();_renderChartDefaults();_refreshBackupInfo();
+  _renderModuleSettings();_renderThemeSetting();_renderChartDefaults();_refreshBackupInfo();
+}
+/* Einstellungen → Bereiche: dieselben Schalter wie früher in den Zeilen der Daten-Seite */
+const MODULE_LABELS=[['assets','Vermögenswerte'],['liab','Verbindlichkeiten'],['pension','Altersvorsorge'],['budget','Einnahmen & Ausgaben'],['forecast','Prognose & Annahmen']];
+function _renderModuleSettings(){
+  const el=document.getElementById('moduleSettings');if(!el)return;
+  const m=_mods();
+  el.innerHTML=`<div class="ds-group">${MODULE_LABELS.map(([k,label])=>`<div class="ds-row"><span class="ds-l">${label}</span><span class="v2-switch" data-mod-set="${k}" role="switch" tabindex="0" aria-checked="${m[k]?'true':'false'}" aria-label="${label}"><i></i></span></div>`).join('')}</div>`;
 }
 /* Einstellungen → Erscheinungsbild: gleicher Schalter wie das Sonnen-/Mond-Symbol oben, Teil der Sicherung */
 function _renderThemeSetting(){
@@ -3763,7 +3811,7 @@ function _chartDefaultsClick(e){
   if(page==='home')resetHomeChart();else if(_mod('forecast'))resetLifetimeChart();
   _renderChartDefaults();
 }
-function render(){_clearIsolationState();renderKPIs();renderNetChart();renderPieChart();renderFlowSection();_initLegendListHover();const ltP=document.getElementById('page-lifetime');if(ltP&&ltP.classList.contains('active'))renderLifetimePage();}
+function render(){_syncLiveStatus();_clearIsolationState();renderKPIs();renderNetChart();renderPieChart();renderFlowSection();_initLegendListHover();const ltP=document.getElementById('page-lifetime');if(ltP&&ltP.classList.contains('active'))renderLifetimePage();}
 
 /* ── Chart Line Highlight on Legend Hover ── */
 let _hlActive=null;
@@ -4537,12 +4585,18 @@ async function etfPriceTick(){
   return _refreshAssetQuotes(_fc.fields.filter(f=>AssetModel.instrument(f)?.provider==='yahoo'));
 }
 
+/* Positionen mit automatischem Kurs vorhanden? Sonst gibt es keinen Kursstatus. */
+function _usesLiveQuotes(){return _fc.fields.some(f=>f.category!=='liab'&&AssetModel.valuation(f)==='market'&&!!AssetModel.instrument(f));}
+function _syncLiveStatus(){
+  const el=document.querySelector('.live-status');if(el)el.style.display=_usesLiveQuotes()?'':'none';
+}
 function updateLiveDot(ok){
+  _syncLiveStatus();
   const dot=document.getElementById('liveDot');
   if(!dot)return;
-  const n=Object.keys(livePrices).length;
-  if(ok&&n>0){dot.style.background='var(--green)';}
-  else{dot.style.background='var(--red)';}
+  const n=Object.keys(livePrices).length,live=ok&&n>0;
+  dot.style.background=live?'var(--green)':'var(--red)';
+  const box=dot.closest&&dot.closest('.live-status');if(box){box.setAttribute('aria-label',live?'Kurse live':'Kurse nicht aktuell');box.title=live?'Kurse live':'Kurse nicht aktuell';}
 }
 
 let _scrollY=0;
@@ -4693,7 +4747,7 @@ function showAssetDetail(assetKey){
     const unitCount=item.unit?units[item.unit]||0:null;
     if(val!==0||unitCount){
       if(item.negative){liabTotal+=val;}else{assetTotal+=val;}
-      const sub=unitCount?unitCount.toLocaleString('de-DE',{maximumFractionDigits:4})+' '+item.unitLabel:'';
+      const sub=unitCount?unitCount.toLocaleString('de-DE',{maximumFractionDigits:4})+' '+_unitName(item.unitLabel):'';
       pos+=row(item.label,item.negative?'−'+fmt(val):fmt(val),{sub,cls:item.negative?'down':''});
     }
   });
@@ -6240,7 +6294,7 @@ function setFormReadOnly(ro){
 function _resolvePendingEdits(again){
   if(_sheetOpen&&!_closeSheet(false,again))return false;
   if(!_editMode)return true;
-  _ask({title:'Ungespeicherte Änderungen',text:'Auf der Daten-Seite gibt es Änderungen, die noch nicht gesichert sind.',ok:'Sichern',cancel:'Verwerfen'}).then(save=>{
+  _ask({title:'Ungespeicherte Änderungen',text:'Auf der Daten-Seite gibt es Änderungen, die noch nicht gespeichert sind.',ok:'Speichern',cancel:'Verwerfen'}).then(save=>{
     if(save===null)return;
     if(save){if(!saveEntry())return;}
     else setFormReadOnly(true);
@@ -6713,7 +6767,7 @@ function _refreshBackupInfo(){
   const t=_lastBackup(),days=t?Math.floor((Date.now()-t.getTime())/864e5):null;
   const tile=document.getElementById('dataTile');if(tile)tile.classList.toggle('has-badge',(!t||days>30)&&hasOnboardingData(appStorage.document()));
   const el=document.getElementById('backupSub');if(!el)return;
-  el.textContent=!t?'Noch nie gesichert · empfohlen':'Zuletzt '+(days<1?'heute':days===1?'gestern':'vor '+days+' Tagen');
+  el.textContent=!t?'Noch keine Sicherung · empfohlen':'Zuletzt '+(days<1?'heute':days===1?'gestern':'vor '+days+' Tagen');
   el.classList.toggle('ds-warn',!t||days>30);
 }
 function _backupDone(){try{localStorage.setItem(BACKUP_KEY,new Date().toISOString());}catch(error){}_refreshBackupInfo();_nsRefresh();_toast('Sicherung erstellt');}
@@ -6895,7 +6949,7 @@ function _sheetError(message){
   if(message){const b=document.getElementById('dsBody');if(b&&b.scrollTo)b.scrollTo({top:0,behavior:'smooth'});}
 }
 /* again: öffnet das Sheet erneut, falls vorher eine Rückfrage (ungesicherte Änderungen) nötig war */
-function _openSheet(title,body,save,saveLabel='Sichern',again){
+function _openSheet(title,body,save,saveLabel='Speichern',again){
   if(_sheetOpen&&!_closeSheet(false,again))return false;
   if(_editMode&&!_resolvePendingEdits(again))return false;
   const b=document.getElementById('dsBody');
@@ -6941,12 +6995,19 @@ function _initSheet(){
   document.getElementById('dsSave').addEventListener('click',_submitSheet);
   document.getElementById('dsOverlay').addEventListener('click',()=>_closeSheet());
   document.addEventListener('keydown',e=>{if(_sheetOpen&&e.key==='Escape')_closeSheet();});
+  b.addEventListener('keydown',e=>{const sw=e.target.closest&&e.target.closest('[data-mod-set]');if(sw&&(e.key===' '||e.key==='Enter')){e.preventDefault();sw.click();return;}_monthSheetKey(e);});
+  b.addEventListener('focusin',_monthSheetFocus);
+  b.addEventListener('change',_monthSheetChange);
   b.addEventListener('input',e=>{if(e.target.id==='b-loan'&&_sheetCtx.budget)_sheetCtx.budget.loanTouched=true;if(e.target.id==='b-depot'&&_sheetCtx.budget)_sheetCtx.budget.depotTouched=true;_sheetDirty=true;_dataInput(e);_monthSheetInput(e);_historyInput(e);_unitHint(e);if(_sheetCtx.budget)_budgetSheetUpdate();});
   b.addEventListener('click',e=>{
     const tog=e.target.closest('[data-dep-toggle]');if(tog){_depToggle(tog.dataset.depToggle);return;}
     const hist=e.target.closest('[data-ds-hist]');if(hist){openHistorySheet(hist.dataset.dsHist);return;}
     if(e.target.closest('[data-cd]')){_chartDefaultsClick(e);return;}
     const theme=e.target.closest('[data-theme-set]');if(theme){setTheme(theme.dataset.themeSet==='dark');return;}
+    const sugg=e.target.closest('[data-ms-sugg]');if(sugg){e.preventDefault();_monthSheetSuggest(sugg);return;}
+    const priceShow=e.target.closest('[data-ms-price-show]');if(priceShow){e.preventDefault();_monthSheetPriceShow(priceShow);return;}
+    if(e.target.closest('#msSubmit')){_submitSheet();return;}
+    const modSw=e.target.closest('[data-mod-set]');if(modSw){const k=modSw.dataset.modSet;_v2SetMod(k,!_mod(k));haptic('medium');return;}
     if(e.target.closest('[data-hist-calc]')){_historyCalc();return;}
     const seg=e.target.closest('[data-seg-for] button');if(seg){_segPick(seg);return;}
     const custom=e.target.closest('[data-b-custom]');if(custom){_budgetToggleCustom();return;}
@@ -7032,7 +7093,7 @@ function _syncDateButtons(root=document){
 /* ── Listen auf der Daten-Seite ── */
 function _monthCardHTML(data){
   const ym=selectedMonth,e=data[ym],live=ym===nextYM(),generated=!!(e&&e._loanHistory&&e._loanHistory.generated);
-  const sub=!e?'Für '+fmtMonth(ym)+' ist noch nichts erfasst.':generated?'Aus dem Tilgungsplan ergänzt, noch nicht bestätigt.':e._estimated?'Aus Kursverlauf berechnet, noch nicht bestätigt.':live?fmtMonth(ym)+' · Kurse live':'Werte zum Monatsende';
+  const sub=!e?'Für '+fmtMonth(ym)+' ist noch nichts erfasst.':generated?'Aus dem Tilgungsplan ergänzt, noch nicht bestätigt.':e._estimated?'Aus Kursverlauf berechnet, noch nicht bestätigt.':live?(_usesLiveQuotes()?'Heute · Kurse live':'Heute'):'Werte zum Monatsende';
   return `<div class="ds-month"><div class="ds-month-l"><button type="button" class="ds-month-t" onclick="document.getElementById('dateBtn').click()" aria-label="Anderen Monat wählen">${_monthTitle(ym)}</button><span class="ds-month-s">${escHTML(sub)}</span></div><button type="button" class="v2-textbtn v2-strong" data-ds-open="month">${!e||generated?'Erfassen':'Aktualisieren'}</button></div>`;
 }
 function _dsItem(kind,id,label,sub,value,zero){
@@ -7040,7 +7101,7 @@ function _dsItem(kind,id,label,sub,value,zero){
 }
 function _assetSub(f,e){
   const parts=[],key=f.unitId||f.id,q=+((e&&e._units||{})[key])||0;
-  if(q>0)parts.push(q.toLocaleString('de-DE',{maximumFractionDigits:8})+' '+(f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück'));
+  if(q>0)parts.push(q.toLocaleString('de-DE',{maximumFractionDigits:8})+' '+_unitName(f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück'));
   if(AssetModel.valuation(f)==='market')parts.push(_quoteErrors.has(f.id)?'Kursabruf fehlgeschlagen':'Kurs automatisch');
   if(AssetModel.depreciationValid(f.depreciation))parts.push(_depText(f.depreciation));
   if(e&&e._loanHistory&&(e._loanHistory.estimatedAssetIds||[]).includes(f.id))parts.push('geschätzt');
@@ -7057,7 +7118,7 @@ function _assetListHTML(e){
   const cats=[...Object.keys(AssetModel.categories),...new Set(shown.map(f=>f.category).filter(c=>!AssetModel.categories[c]))];
   let html='';
   cats.forEach(cat=>{const rows=shown.filter(f=>f.category===cat);if(rows.length)html+=`<div class="ds-list-t">${escHTML(CAT_NAMES[cat]||cat)}</div><div class="ds-list">${rows.map(item).join('')}</div>`;});
-  if(zero.length)html+=`<details class="ds-zero"${shown.length?'':' open'}><summary>Ohne Wert in ${fmtMonth(selectedMonth)} (${zero.length})</summary><div class="ds-list">${zero.map(item).join('')}</div></details>`;
+  if(zero.length)html+=`<details class="ds-zero"${shown.length?'':' open'}><summary>Ohne Wert ${_inMonth(selectedMonth)} (${zero.length})</summary><div class="ds-list">${zero.map(item).join('')}</div></details>`;
   return html+add;
 }
 function _liabSub(f,p){
@@ -7077,94 +7138,288 @@ function _liabListHTML(e){
   const item=f=>_dsItem('liab',f.id,f.label,_liabSub(f,lp[f.id]||{}),e?fmt(value(f)):'—',!value(f));
   const open=fields.filter(f=>value(f)!==0),done=fields.filter(f=>value(f)===0);
   let html=open.length?`<div class="ds-list" style="margin-top:14px">${open.map(item).join('')}</div>`:'';
-  if(done.length)html+=`<details class="ds-zero"${open.length?'':' open'}><summary>Ohne Restschuld in ${fmtMonth(selectedMonth)} (${done.length})</summary><div class="ds-list">${done.map(item).join('')}</div></details>`;
+  if(done.length)html+=`<details class="ds-zero"${open.length?'':' open'}><summary>Ohne Restschuld ${_inMonth(selectedMonth)} (${done.length})</summary><div class="ds-list">${done.map(item).join('')}</div></details>`;
   return html+add;
 }
 
-/* ── Monatsstand: alle Werte eines Monats in einer Liste ── */
-function _msQtySub(q,price){return fmt(q*price)+' · Kurs '+price.toLocaleString('de-DE',{maximumFractionDigits:2})+' €';}
+/* ── Monatsabschluss: alle Werte eines Monats in einem Sheet ──
+   Jede Position wird in ihrer Einheit erfasst: mit Stückzahl (Kurs oder erfasste Einheit wie oz) als Stückzahl,
+   sonst in Euro. „Bitte prüfen“ ist mit dem Vormonat vorbelegt, Vorschläge kommen aus Budget oder Trend.
+   „Selten geändert“: seit mindestens drei Monaten gleich (eingeklappt).
+   „Läuft automatisch“: Kreditverträge und Abschreibungen, die sich zum Monatswechsel selbst fortschreiben.
+   Unten: Nettovermögen, Veränderung zum Vormonat und Übernehmen. „+250“ / „−80“ rechnen mit dem bisherigen Wert. */
+const MONTH_DONE_KEY='vermoegen-month-done',MONTH_REMINDER_KEY='vermoegen-month-reminder';
+const _qtyFmt=n=>(+n||0).toLocaleString('de-DE',{maximumFractionDigits:8});
+/* Eingabefeld mit Einheit im Feld (€, Stk, oz, BTC …), damit klar ist, was eingetragen wird */
+const _unitShort=u=>u==='Stück'||u==='Stk'?'Stk':u;
+const _msWrap=(input,unit)=>`<span class="ds-in ms-field">${input}<span class="ms-unit" aria-hidden="true">${escHTML(unit)}</span></span>`;
+const _priceFmt=n=>(+n||0).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+/* Eingabe auswerten: „+250“/„−80“ relativ zum Wert beim Antippen, sonst Zahl (Betrag, Kurs oder Stückzahl) */
+function _msNum(i){
+  const raw=String(i.value||'').trim().replace(/\s/g,'');if(!raw)return 0;
+  const qty=!!i.dataset.msQty,num=t=>qty?(()=>{try{return _assetNumber(t,true)??0;}catch(error){return NaN;}})():_parseDec(t);
+  const rel=raw.match(/^([+\-−])(.+)$/);
+  if(rel){const base=+(i.dataset.before??i.dataset.orig??0)||0,n=num(rel[2]),r=AssetModel.money(rel[1]==='+'?base+n:base-n);return isFinite(n)&&r>=0?r:NaN;}/* unter null: ungültig, nicht still auf 0 */
+  return num(raw);
+}
+/* Relative Eingabe beim Verlassen des Felds in den Ergebniswert umwandeln */
+function _msResolve(i){
+  if(!/^[+\-−]/.test(String(i.value||'').trim()))return;
+  const n=_msNum(i);if(!isFinite(n))return;
+  i.value=i.dataset.msQty?_qtyInput(n):(n?_moneyInput(n):'');
+}
+/* Eigener Kurs einer Stückzahl-Zeile (nur ohne automatischen Kurs) */
+function _msPriceInput(id){return document.querySelector('#dsBody [data-ms-price="'+(window.CSS&&CSS.escape?CSS.escape(id):id)+'"]');}
+function _msPriceChanged(i){const pi=_msPriceInput(i.dataset.msQty);return !!pi&&String(pi.value).trim()!==pi.dataset.origText;}
+function _msPrice(i){
+  const pi=_msPriceInput(i.dataset.msQty);
+  if(pi&&_msPriceChanged(i)){const n=_msNum(pi);return isFinite(n)?n:NaN;}
+  return +i.dataset.price||0;
+}
+function _msQtySub(i){
+  const q=_msNum(i);if(!isFinite(q))return 'Bitte eine gültige Stückzahl eingeben';
+  const p=_msPrice(i),parts=[p>0?'≈ '+fmt(q*p)+' · Kurs '+_priceFmt(p):'Kurs fehlt'];
+  if(i.dataset.stable)parts.push(escHTML(i.dataset.stable));
+  if(i.dataset.prevLabel){
+    const pq=+i.dataset.prevQty||0,d=q-pq;
+    parts.push(escHTML(i.dataset.prevLabel)+': '+_qtyFmt(pq)+(Math.abs(d)>1e-9?` · <span class="ds-delta ${d>0?'up':'down'}">${d>0?'+':'−'}${_qtyFmt(Math.abs(d))}</span>`:''));
+    if(pq>0&&Math.abs(d)>pq*0.5)parts.push('<span class="ms-warn">Große Änderung – Tippfehler?</span>');
+  }
+  /* eigener Kurs: großer Sprung gegenüber dem bisherigen Kurs */
+  const base=+i.dataset.price||0;
+  if(_msPriceChanged(i)&&base>0&&isFinite(p)&&Math.abs(p-base)>base*0.5)parts.push('<span class="ms-warn">Kurs stark verändert – Tippfehler?</span>');
+  return parts.join(' · ');
+}
 function _msValSub(v,input){
   const parts=[];
   if(input.dataset.est==='1')parts.push('geschätzt');
+  if(input.dataset.stable)parts.push(escHTML(input.dataset.stable));
   if(input.dataset.prev!==undefined){
     const pv=+input.dataset.prev,d=AssetModel.money(v-pv);
     parts.push(escHTML(input.dataset.prevLabel)+': '+fmt(pv)+(Math.abs(d)>=0.5?` · <span class="ds-delta ${d>0?'up':'down'}">${d>0?'+':'−'}${fmt(Math.abs(d))}</span>`:''));
+    /* Plausibilität: großer Sprung zum Vormonat, nur als Hinweis */
+    if(pv>0&&Math.abs(d)>Math.max(5000,pv*0.25))parts.push('<span class="ms-warn">Große Änderung – Tippfehler?</span>');
   }
   return parts.join(' · ');
 }
+/* Wie viele Monate vor ym ein Wert (oder mit unitKey die Stückzahl) gleich geblieben ist */
+function _msStableMonths(keys,data,id,unitKey){
+  if(keys.length<2)return{n:0,since:null};
+  const val=k=>unitKey?+(((data[k]||{})._units||{})[unitKey])||0:+(((data[k]||{})._details||{})[id])||0,last=val(keys[keys.length-1]);
+  let n=0;for(let i=keys.length-2;i>=0&&Math.abs(val(keys[i])-last)<(unitKey?1e-9:0.5);i--)n++;
+  return{n,since:keys[keys.length-1-n]};
+}
+/* Vorschläge in Euro: Ø Sparplan aus dem Budget für eine Gruppe mit genau einer Position,
+   sonst bei Konten und Vorsorgeverträgen der Ø der letzten drei Veränderungen in dieselbe Richtung.
+   Nur solange unchanged(f) gilt, also Wert bzw. Stückzahl noch dem Vormonat entspricht. */
+function _msSuggestions(data,ym,fields,unchanged){
+  const out={};if(!fields.length)return out;
+  if(_mod('budget')){
+    const bd=loadBudgetData(),byGroup={};
+    if(bd)for(let m=0;m<12;m++){const c=calcBudgetMonth(bd,m);if(c)c.sparItems.forEach(it=>{if(!it.depot&&it.targetGroup)byGroup[it.targetGroup]=(byGroup[it.targetGroup]||0)+it.val/12;});}
+    Object.entries(byGroup).forEach(([g,amt])=>{
+      const inGroup=_fc.fields.filter(f=>f.category!=='liab'&&(f.displayGroup||f.category)===g);
+      if(inGroup.length===1&&fields.some(f=>f.id===inGroup[0].id)&&amt>=1)out[inGroup[0].id]={delta:amt,why:'Sparplan'};
+    });
+  }
+  /* Trend nur, wo regelmäßig eingezahlt wird (Konten, Vorsorgeverträge) – bei Kurswerten sagt er nichts voraus */
+  const keys=Object.keys(data).filter(k=>k<ym).sort().slice(-4);
+  if(keys.length===4)fields.forEach(f=>{
+    if(out[f.id]||!['cash','bav'].includes(f.category))return;
+    const v=keys.map(k=>+(((data[k]||{})._details||{})[f.id])||0),d=v.slice(1).map((x,i)=>x-v[i]);
+    if(d.every(x=>x>=1)||d.every(x=>x<=-1))out[f.id]={delta:Math.round(d.reduce((a,b)=>a+b,0)/3),why:'Trend'};
+  });
+  Object.keys(out).forEach(id=>{const f=fields.find(x=>x.id===id);if(!f||!unchanged(f))delete out[id];});
+  return out;
+}
 function openMonthSheet(){
   const ym=selectedMonth,data=loadData(),e=data[ym],pk=_prevKey(data,ym),prev=pk?data[pk]:null,src=e||prev||{};
-  const live=ym===nextYM(),lp=getLoanParams(),det=src._details||{},units=src._units||{},pdet=(prev&&prev._details)||{};
+  const live=ym===nextYM(),lp=getLoanParams(),det=src._details||{},units=src._units||{},pdet=(prev&&prev._details)||{},punits=(prev&&prev._units)||{};
   const est=new Set((e&&e._loanHistory&&e._loanHistory.estimatedAssetIds)||[]);
   const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
   const assets=_mod('assets')?_fc.fields.filter(f=>f.category!=='liab'):[];
   const liabs=_mod('liab')?_fc.fields.filter(f=>f.category==='liab'):[];
-  const valueRow=(f,kind)=>{
-    const v=+det[f.id]||0,prevAttrs=pk&&own(pdet,f.id)?` data-prev="${+pdet[f.id]||0}" data-prev-label="${escHTML(fmtMonth(pk))}"`:'';
-    return `<label class="ds-row"><span class="ds-l">${escHTML(f.label)}<small id="ms-s-${escHTML(f.id)}"></small></span><input class="ds-in ds-money" type="text" inputmode="decimal" data-ms-val="${escHTML(f.id)}" data-kind="${kind}"${est.has(f.id)?' data-est="1"':''}${prevAttrs} value="${v?_moneyInput(v):''}" placeholder="0" aria-label="${escHTML(f.label)} in Euro"></label>`;
+  const pastKeys=Object.keys(data).filter(k=>k<ym).sort();
+  const ukey=f=>f.unitId||f.id,market=f=>AssetModel.valuation(f)==='market';
+  const isZero=f=>!(+det[f.id])&&!(+pdet[f.id])&&!(+units[ukey(f)]);
+  /* Kurs: bei Kurspositionen live bzw. zuletzt bekannt, sonst Wert ÷ Stückzahl (dieser Monat, sonst Vormonat) */
+  const priceInfo=f=>{
+    const k=ukey(f),q=+units[k]||0,v=+det[f.id]||0,pq=+punits[k]||0,pv=+pdet[f.id]||0;
+    const implied=q>0&&v>0?v/q:pq>0&&pv>0?pv/pq:0,quote=(f.lastQuote&&f.lastQuote.priceEUR)||0;
+    if(market(f)){const pr=live?(livePrices[k]||quote||implied):(implied||quote);return{price:pr||0,editable:!pr};}
+    return{price:implied,editable:true};
   };
-  const assetRow=f=>{
-    if(AssetModel.depreciationValid(f.depreciation)){
-      const v=AssetModel.depreciatedValue(f.depreciation,ym)??0;
-      return `<div class="ds-row" data-ms-fixed-asset="${v}"><span class="ds-l">${escHTML(f.label)}<small>automatisch aus der Abschreibung</small></span><span class="ds-static">${fmt(v)}</span></div>`;
-    }
-    const key=f.unitId||f.id,market=AssetModel.valuation(f)==='market';
-    const price=market&&live?(livePrices[key]||(f.lastQuote&&f.lastQuote.priceEUR)):market&&+units[key]>0&&+det[f.id]>0?+det[f.id]/+units[key]:0;
-    if(!price)return valueRow(f,'a');
-    const q=+units[key]||0,unit=f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück';
-    return `<label class="ds-row"><span class="ds-l">${escHTML(f.label)} <span style="color:var(--muted)">(${escHTML(unit)})</span><small id="ms-s-${escHTML(f.id)}">${_msQtySub(q,price)}</small></span><input class="ds-in" type="text" inputmode="decimal" data-ms-qty="${escHTML(f.id)}" data-price="${price}" value="${_qtyInput(q)}" placeholder="Stückzahl" aria-label="${escHTML(f.label)}: Stückzahl in ${escHTML(unit)}"></label>`;
+  /* Art jeder Zeile: Kredit mit Vertrag, Abschreibung, Stückzahl (Kurs oder erfasste Einheit), Euro */
+  const kindOf=f=>{
+    if(f.category==='liab')return LoanModel.configured(lp[f.id]||{})?'loan':'value';
+    if(AssetModel.depreciationValid(f.depreciation))return 'dep';
+    if(market(f)||(f.hasUnits&&(+units[ukey(f)]>0||+punits[ukey(f)]>0)))return 'qty';
+    return 'value';
   };
-  const liabRow=f=>{
-    const p=lp[f.id]||{};
-    if(!LoanModel.configured(p))return valueRow(f,'l');
-    const b=LoanModel.at(p,ym).balance;
-    return `<div class="ds-row" data-ms-fixed="${b}"><span class="ds-l">${escHTML(f.label)}<small>automatisch aus dem Tilgungsplan</small></span><span class="ds-static">${fmt(b)}</span></div>`;
+  const inputs=[...assets,...liabs].filter(f=>['value','qty'].includes(kindOf(f))&&!isZero(f));
+  const unchanged=f=>kindOf(f)==='qty'?Math.abs((+units[ukey(f)]||0)-(+punits[ukey(f)]||0))<1e-9:Math.abs((+det[f.id]||0)-(+pdet[f.id]||0))<0.5;
+  const sugg=live&&pk?_msSuggestions(data,ym,inputs.filter(f=>f.category!=='liab'),unchanged):{};
+  const valueRow=(f,stable)=>{
+    const id=escHTML(f.id),v=+det[f.id]||0,prevAttrs=pk&&own(pdet,f.id)?` data-prev="${+pdet[f.id]||0}" data-prev-label="${escHTML(fmtMonth(pk))}"`:'';
+    const pv=+pdet[f.id]||0,sg=sugg[f.id],delta=sg?Math.round(sg.delta):0;
+    const chip=delta&&pv+delta>=0?`<button type="button" class="ms-sugg" data-ms-sugg="${id}" data-val="${pv+delta}" aria-label="Vorschlag übernehmen: ${fmt(pv+delta)} (${sg.why==='Trend'?'Durchschnitt der letzten drei Monate':'Sparplan laut Budget'})">${delta>0?'+':'−'}${fmt(Math.abs(delta))} · ${escHTML(sg.why)}</button>`:'';
+    return `<label class="ds-row"><span class="ds-l">${escHTML(f.label)}<small id="ms-s-${id}"></small>${chip}</span>${_msWrap(`<input class="ms-input ds-money" type="text" inputmode="decimal" enterkeyhint="next" data-ms-val="${id}" data-kind="${f.category==='liab'?'l':'a'}" data-orig="${v}"${stable?` data-stable="${escHTML(stable)}"`:''}${est.has(f.id)?' data-est="1"':''}${prevAttrs} value="${v?_moneyInput(v):''}" placeholder="0" aria-label="${escHTML(f.label)} in Euro">`,'€')}</label>`;
   };
-  const isZero=f=>!(+det[f.id])&&!(+pdet[f.id])&&!(+units[f.unitId||f.id]);
-  let body=`<p class="ds-note">${live?'Trage deine aktuellen Stände ein. Bei Positionen mit Kurs genügt die Stückzahl.':'Werte zum Ende von '+fmtMonth(ym)+'.'}${!e&&pk?' Vorausgefüllt mit den Werten aus '+fmtMonth(pk)+'.':''}${e&&e._loanHistory&&e._loanHistory.generated?' Dieser Monat wurde aus dem Tilgungsplan ergänzt. Mit „Sichern“ bestätigst du die Werte.':''}${e&&e._estimated?' Dieser Monat wurde aus Kursverläufen und deinen Angaben bei der Einrichtung berechnet. Mit „Sichern“ bestätigst du die Werte.':''}</p>`;
-  body+=`<div class="ds-group"><div class="ds-row"><span class="ds-l">Nettovermögen</span><strong class="ds-static" id="msTotal"></strong></div></div>`;
-  const cats=[...Object.keys(AssetModel.categories),...new Set(assets.map(f=>f.category).filter(c=>!AssetModel.categories[c]))];
-  cats.forEach(cat=>{const rows=assets.filter(f=>f.category===cat&&!isZero(f));if(rows.length)body+=`<div class="ds-group-t">${escHTML(CAT_NAMES[cat]||cat)}</div><div class="ds-group">${rows.map(assetRow).join('')}</div>`;});
-  const openLiabs=liabs.filter(f=>!isZero(f)||LoanModel.configured(lp[f.id]||{}));
-  if(openLiabs.length)body+=`<div class="ds-group-t">Verbindlichkeiten</div><div class="ds-group">${openLiabs.map(liabRow).join('')}</div>`;
-  const rest=[...assets.filter(isZero),...liabs.filter(f=>isZero(f)&&!LoanModel.configured(lp[f.id]||{}))];
-  if(rest.length)body+=`<details class="ds-more"><summary>Positionen ohne Wert (${rest.length})</summary><div class="ds-group">${rest.map(f=>f.category==='liab'?liabRow(f):assetRow(f)).join('')}</div></details>`;
+  const qtyRow=(f,stable)=>{
+    const id=escHTML(f.id),k=ukey(f),{price,editable}=priceInfo(f),q=+units[k]||0,pq=+punits[k]||0;
+    const unit=_unitName(f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück'),pp=pq>0&&+pdet[f.id]>0?+pdet[f.id]/pq:price;
+    const sg=sugg[f.id],dq=sg&&price>0?Math.round(sg.delta/price*1e6)/1e6:0;/* Bruchteile wie bei Sparplänen, bis 6 Nachkommastellen */
+    const chip=dq&&pq+dq>=0?`<button type="button" class="ms-sugg" data-ms-sugg="${id}" data-val="${pq+dq}" aria-label="Vorschlag übernehmen: ${_qtyFmt(pq+dq)} ${escHTML(unit)} (Sparplan laut Budget)">${dq>0?'+':'−'}${_qtyFmt(Math.abs(dq))} ${escHTML(unit)} · ${escHTML(sg.why)}</button>`:'';
+    const link=editable&&price>0?`<button type="button" class="ms-link" data-ms-price-show="${id}">Kurs ändern</button>`:'';
+    let h=`<label class="ds-row"><span class="ds-l">${escHTML(f.label)}<small id="ms-s-${id}"></small>${chip}${link}</span>${_msWrap(`<input class="ms-input" type="text" inputmode="decimal" enterkeyhint="next" data-ms-qty="${id}" data-price="${price}" data-market="${market(f)?1:0}" data-orig="${q}" data-orig-value="${+det[f.id]||0}" data-prev-qty="${pq}" data-prev-price="${pp}"${pk?` data-prev-label="${escHTML(fmtMonth(pk))}"`:''}${stable?` data-stable="${escHTML(stable)}"`:''} value="${_qtyInput(q)}" placeholder="0" aria-label="${escHTML(f.label)}: Stückzahl in ${escHTML(unit)}">`,_unitShort(unit))}</label>`;
+    if(editable){const shown=price?_moneyInput(Math.round(price*100)/100):'';h+=`<label class="ds-row ms-price-row" data-ms-price-row="${id}"${price>0?' hidden':''}><span class="ds-l">Kurs je ${escHTML(_unitShort(unit))}<small>${price>0?'bisher '+_priceFmt(price):'Kurs fehlt – bitte eintragen'}</small></span>${_msWrap(`<input class="ms-input ds-money" type="text" inputmode="decimal" enterkeyhint="next" data-ms-price="${id}" data-orig-text="${shown}" value="${shown}" placeholder="0" aria-label="${escHTML(f.label)}: Kurs je ${escHTML(unit)} in Euro">`,'€')}</label>`;}
+    return h;
+  };
+  /* Automatisch: Kreditvertrag bzw. Abschreibung schreiben sich zum Monatswechsel selbst fort */
+  const autoRow=f=>{
+    const k=kindOf(f),v=k==='dep'?(AssetModel.depreciatedValue(f.depreciation,ym)??0):LoanModel.at(lp[f.id],ym).balance;
+    const pv=pk?(k==='dep'?(AssetModel.depreciatedValue(f.depreciation,pk)??0):LoanModel.at(lp[f.id],pk).balance):null,d=pv===null?0:Math.round(v-pv);
+    const sub=(k==='dep'?_depText(f.depreciation):'aus dem Tilgungsplan')+(d?` · <span class="ds-delta ${(k==='dep'?d>0:d<0)?'up':'down'}">${d>0?'+':'−'}${fmt(Math.abs(d))}</span> seit ${escHTML(fmtMonth(pk))}`:'');
+    return `<div class="ds-row" ${k==='dep'?'data-ms-fixed-asset':'data-ms-fixed'}="${v}"><span class="ds-l">${escHTML(f.label)}<small>${sub}</small></span><span class="ds-static">${fmt(v)}</span></div>`;
+  };
+  const rowOf=(f,stable)=>{const k=kindOf(f);return k==='qty'?qtyRow(f,stable):k==='value'?valueRow(f,stable):autoRow(f);};
+  /* Bitte prüfen: Konten zuerst, dann nach Art, Verbindlichkeiten zuletzt; selten geänderte Werte separat */
+  const order=Object.keys(AssetModel.categories),rank=f=>f.category==='liab'?99:f.category==='cash'?-1:order.indexOf(f.category);
+  const check=[],rare=[];
+  inputs.slice().sort((a,b)=>rank(a)-rank(b)).forEach(f=>{
+    const st=_msStableMonths(pastKeys,data,f.id,kindOf(f)==='qty'?ukey(f):null),changedNow=e&&pk&&!unchanged(f);
+    if(st.n>=3&&!changedNow&&!sugg[f.id])rare.push(rowOf(f,'seit '+fmtMonth(st.since)+' gleich'));
+    else check.push(rowOf(f));
+  });
+  const autos=[...assets,...liabs].filter(f=>['dep','loan'].includes(kindOf(f))&&(!isZero(f)||kindOf(f)==='loan'));
+  const count=k=>autos.filter(f=>kindOf(f)===k).length,plural=(n,one,many)=>n+' '+(n===1?one:many);
+  const autoText=[count('loan')?plural(count('loan'),'Kredit','Kredite'):'',count('dep')?plural(count('dep'),'Abschreibung','Abschreibungen'):''].filter(Boolean).join(' · ');
+  let body=`<p class="ds-note">${live?'Ändere nur, was sich bewegt hat – alles andere bleibt wie im Vormonat. „+250“ oder „−80“ rechnet mit dem bisherigen Wert.':'Werte zum Ende von '+fmtMonth(ym)+'.'}${!e&&pk?' Vorausgefüllt mit den Werten aus '+fmtMonth(pk)+'.':''}${e&&e._loanHistory&&e._loanHistory.generated?' Dieser Monat wurde aus dem Tilgungsplan ergänzt. Mit „Speichern“ bestätigst du die Werte.':''}${e&&e._estimated?' Dieser Monat wurde aus Kursverläufen und deinen Angaben bei der Einrichtung berechnet. Mit „Speichern“ bestätigst du die Werte.':''}</p>`;
+  if(check.length)body+=`<div class="ds-group-t">Bitte prüfen</div><div class="ds-group">${check.join('')}</div>`;
+  if(rare.length)body+=`<details class="ds-more"${check.length?'':' open'}><summary>Selten geändert (${rare.length})</summary><div class="ds-group">${rare.join('')}</div></details>`;
+  if(autos.length)body+=`<details class="ds-more"${check.length||rare.length?'':' open'}><summary>Läuft automatisch · ${escHTML(autoText)}</summary><div class="ds-group">${autos.map(autoRow).join('')}</div></details>`;
+  const rest=[...assets.filter(isZero),...liabs.filter(f=>isZero(f)&&kindOf(f)!=='loan')];
+  if(rest.length)body+=`<details class="ds-more"><summary>Positionen ohne Wert (${rest.length})</summary><div class="ds-group">${rest.map(f=>rowOf(f)).join('')}</div></details>`;
   if(!assets.length&&!liabs.length)body+=`<p class="ds-note">Lege zuerst unter Vermögenswerte oder Verbindlichkeiten eine Position an.</p>`;
+  else body+=`<div class="ms-foot"><div class="ms-sum"><span>Nettovermögen</span><strong id="msTotal" data-prev-net="${prev?calc(prev).net:''}" data-prev-label="${pk?escHTML(fmtMonth(pk)):''}"></strong><small id="msDelta"></small></div><button type="button" class="btn btn-primary ms-submit" id="msSubmit">Übernehmen</button></div>`;
   if(!_openSheet(_monthTitle(ym),body,_saveMonthSheet,undefined,openMonthSheet))return;
   document.querySelectorAll('#dsBody [data-ms-val]').forEach(i=>{const s=document.getElementById('ms-s-'+i.dataset.msVal);if(s)s.innerHTML=_msValSub(_parseDec(i.value)||0,i);});
+  document.querySelectorAll('#dsBody [data-ms-qty]').forEach(i=>{const s=document.getElementById('ms-s-'+i.dataset.msQty);if(s)s.innerHTML=_msQtySub(i);});
   _msUpdateTotal();
 }
 function _msUpdateTotal(){
   const el=document.getElementById('msTotal');if(!el)return;
-  let total=0;
-  document.querySelectorAll('#dsBody [data-ms-val]').forEach(i=>{const n=_parseDec(i.value);if(isFinite(n))total+=i.dataset.kind==='l'?-n:n;});
-  document.querySelectorAll('#dsBody [data-ms-qty]').forEach(i=>{let q=0;try{q=_assetNumber(i.value,true)||0;}catch(error){}total+=q*(+i.dataset.price);});
+  let total=0,changed=0,quoteMove=0;
+  document.querySelectorAll('#dsBody [data-ms-val]').forEach(i=>{const n=_msNum(i);if(isFinite(n)){total+=i.dataset.kind==='l'?-n:n;if(Math.abs(n-(+i.dataset.orig||0))>=0.005)changed++;}});
+  document.querySelectorAll('#dsBody [data-ms-qty]').forEach(i=>{
+    const q=_msNum(i),p=_msPrice(i);if(!isFinite(q)||!isFinite(p))return;
+    total+=q*p;if(Math.abs(q-(+i.dataset.orig||0))>1e-9||_msPriceChanged(i))changed++;
+    quoteMove+=(+i.dataset.prevQty||0)*(p-(+i.dataset.prevPrice||0));
+  });
   document.querySelectorAll('#dsBody [data-ms-fixed]').forEach(r=>{total-=+r.dataset.msFixed;});
   document.querySelectorAll('#dsBody [data-ms-fixed-asset]').forEach(r=>{total+=+r.dataset.msFixedAsset;});
   el.textContent=fmt(total);
+  const d=document.getElementById('msDelta'),pn=el.dataset.prevNet;
+  if(d)d.innerHTML=pn===''?'':(()=>{const diff=Math.round(total-(+pn));return `<span class="ds-delta ${diff>=0?'up':'down'}">${diff>=0?'+':'−'}${fmt(Math.abs(diff))}</span> seit ${escHTML(el.dataset.prevLabel)}`+(Math.abs(quoteMove)>=1?` · davon Kurse ${quoteMove>=0?'+':'−'}${fmt(Math.abs(Math.round(quoteMove)))}`:'');})();
+  const btn=document.getElementById('msSubmit');if(btn)btn.textContent=changed?'Übernehmen · '+changed+' geändert':'Alles unverändert übernehmen';
 }
+const _msField=i=>i&&i.dataset&&(i.dataset.msVal||i.dataset.msQty||i.dataset.msPrice);
 function _monthSheetInput(event){
-  const i=event.target;if(!i.dataset)return;
-  if(i.dataset.msQty){const s=document.getElementById('ms-s-'+i.dataset.msQty);let q=null;try{q=_assetNumber(i.value,true)||0;}catch(error){}if(s)s.innerHTML=q===null?'Bitte eine gültige Stückzahl eingeben':_msQtySub(q,+i.dataset.price);}
-  if(i.dataset.msVal){const s=document.getElementById('ms-s-'+i.dataset.msVal),n=_parseDec(i.value);if(s)s.innerHTML=_msValSub(isFinite(n)?n:0,i);}
-  if(i.dataset.msVal||i.dataset.msQty)_msUpdateTotal();
+  const i=event.target;if(!_msField(i))return;
+  const qtyInput=i.dataset.msPrice?document.querySelector('#dsBody [data-ms-qty="'+(window.CSS&&CSS.escape?CSS.escape(i.dataset.msPrice):i.dataset.msPrice)+'"]'):i.dataset.msQty?i:null;
+  if(qtyInput){const s=document.getElementById('ms-s-'+qtyInput.dataset.msQty);if(s)s.innerHTML=_msQtySub(qtyInput);}
+  if(i.dataset.msVal){const s=document.getElementById('ms-s-'+i.dataset.msVal),n=_msNum(i);if(s)s.innerHTML=_msValSub(isFinite(n)?n:0,i);}
+  if(i.dataset.msVal||i.dataset.msQty){const chip=i.closest&&i.closest('.ds-row')?.querySelector('.ms-sugg'),n=_msNum(i);if(chip)chip.hidden=Math.abs((isFinite(n)?n:0)-(+i.dataset.orig||0))>1e-9;}
+  _msUpdateTotal();
+}
+/* Antippen markiert den Wert (Tippen ersetzt ihn) und merkt ihn für „+250“/„−80“ */
+function _monthSheetFocus(event){
+  const i=event.target;if(!_msField(i))return;
+  const n=i.dataset.msQty?(()=>{try{return _assetNumber(i.value,true)||0;}catch(error){return 0;}})():_parseDec(i.value);
+  i.dataset.before=String(isFinite(n)?n:0);
+  /* sofort markieren und nach dem Tippen erneut (iOS setzt sonst den Cursor an die Tippstelle) */
+  const sel=()=>{try{if(document.activeElement===i)i.setSelectionRange(0,i.value.length);}catch(error){}};
+  sel();setTimeout(sel,0);requestAnimationFrame(sel);
+}
+function _monthSheetChange(event){
+  const i=event.target;if(!_msField(i))return;
+  _msResolve(i);_monthSheetInput(event);
+}
+/* „Weiter“ auf der Tastatur springt ins nächste sichtbare Feld */
+function _monthSheetKey(event){
+  const i=event.target;if(event.key!=='Enter'||!_msField(i))return;
+  event.preventDefault();_msResolve(i);_monthSheetInput(event);
+  const all=[...document.querySelectorAll('#dsBody [data-ms-val],#dsBody [data-ms-qty],#dsBody [data-ms-price]')].filter(x=>x.offsetParent!==null);
+  const next=all[all.indexOf(i)+1];if(next){next.focus();next.select();}else i.blur();
+}
+function _monthSheetSuggest(btn){
+  const i=btn.closest('.ds-row')?.querySelector('[data-ms-val],[data-ms-qty]');if(!i)return;
+  i.value=i.dataset.msQty?_qtyInput(+btn.dataset.val):_moneyInput(+btn.dataset.val);btn.hidden=true;
+  _monthSheetInput({target:i});haptic('light');
+}
+/* „Kurs ändern“: Kurszeile einblenden, wenn es keinen automatischen Kurs gibt */
+function _monthSheetPriceShow(btn){
+  const id=btn.dataset.msPriceShow,row=document.querySelector('#dsBody [data-ms-price-row="'+(window.CSS&&CSS.escape?CSS.escape(id):id)+'"]');if(!row)return;
+  row.hidden=false;btn.hidden=true;const inp=row.querySelector('input');if(inp){inp.focus();inp.select();}
 }
 function _saveMonthSheet(){
   const ym=selectedMonth;
+  document.querySelectorAll('#dsBody [data-ms-val],#dsBody [data-ms-qty],#dsBody [data-ms-price]').forEach(_msResolve);
   appStorage.beginTransaction();
   try{
     const data=loadData(),e=_monthEntryForEdit(data,ym);
-    delete e._loanHistory;delete e._estimated;/* Mit dem Sichern bestätigt: alle Werte gelten als erfasst */
+    delete e._loanHistory;delete e._estimated;/* Mit dem Speichern bestätigt: alle Werte gelten als erfasst */
     document.querySelectorAll('#dsBody [data-ms-val]').forEach(i=>{const f=_fc.fields.find(x=>x.id===i.dataset.msVal);if(f)e._details[f.id]=_sheetMoney(i.value,f.label)??0;});
     document.querySelectorAll('#dsBody [data-ms-qty]').forEach(i=>{
       const f=_fc.fields.find(x=>x.id===i.dataset.msQty);if(!f)return;
-      let q;try{q=_assetNumber(i.value,true);}catch(error){throw new Error(f.label+': Bitte eine gültige Stückzahl eingeben.');}
-      e._units[f.unitId||f.id]=q??0;e._details[f.id]=AssetModel.money((+i.dataset.price)*(q??0));
+      let q;try{q=_assetNumber(i.value,true)??0;}catch(error){throw new Error(f.label+': Bitte eine gültige Stückzahl eingeben.');}
+      const p=_msPrice(i);
+      if(!isFinite(p)||p<0)throw new Error(f.label+': Bitte einen gültigen Kurs eintragen.');
+      if(q>0&&!(p>0))throw new Error(f.label+': Bitte einen Kurs eintragen, damit sich der Wert berechnen lässt.');
+      e._units[f.unitId||f.id]=q;
+      /* Ohne automatischen Kurs und ohne Änderung bleibt der gespeicherte Wert exakt erhalten */
+      const keep=i.dataset.market!=='1'&&Math.abs(q-(+i.dataset.orig||0))<1e-12&&!_msPriceChanged(i);
+      e._details[f.id]=keep?(+i.dataset.origValue||0):AssetModel.money(p*q);
     });
     recalcAggregates(e);data[ym]=e;saveData(data);
     appStorage.commitTransaction();
   }catch(error){appStorage.rollbackTransaction();_sheetError(error.message);return false;}
-  _afterDataChange();return true;
+  const live=ym===nextYM();
+  if(live)try{localStorage.setItem(MONTH_DONE_KEY,ym);}catch(error){}
+  _afterDataChange();_monthNotif();
+  /* Danach: kurze Bestätigung, bei fälliger Sicherung direkt anbieten */
+  setTimeout(()=>{
+    const t=_lastBackup(),due=!t||(Date.now()-t.getTime())/864e5>30;
+    if(live&&due)_ask({title:'Monatsstand gespeichert',text:t?'Deine letzte Sicherung ist über 30 Tage alt. Jetzt eine neue erstellen?':'Du hast noch keine Sicherung. Jetzt eine erstellen? Deine Daten liegen nur auf diesem Gerät.',ok:'Sicherung erstellen',cancel:'Später'}).then(ok=>{if(ok)exportBackup();});
+    else _toast(live?'Monatsstand gespeichert':'Gespeichert');
+  },350);
+  return 'quiet';
+}
+/* Erinnerung in der ersten Woche eines Monats, solange der Monatsstand noch nicht übernommen ist */
+function _monthDue(){
+  if(new Date().getDate()>7||!_mod('assets')||!hasOnboardingData(appStorage.document()))return false;
+  let done=null;try{done=localStorage.getItem(MONTH_DONE_KEY);}catch(error){}
+  return done!==nextYM();
+}
+function _monthNotif(force){
+  const due=force||_monthDue();
+  const nav=document.querySelector('.nav-btn[data-page="import"]');if(nav)nav.classList.toggle('has-dot',due);
+  const side=document.querySelector('.sidebar-item[data-page="import"]');if(side)side.classList.toggle('has-dot',due);
+  const el=document.getElementById('monthNotif');if(!el)return;
+  if(!due){if(!el.hidden)_notifOut(el,'up');return;}
+  let dismissed=null;try{dismissed=localStorage.getItem(MONTH_REMINDER_KEY);}catch(error){}
+  const other=[...document.querySelectorAll('.ob-notif')].some(n=>n!==el&&!n.hidden);
+  if((force||dismissed!==nextYM())&&!other)el.hidden=false;
+}
+function _monthNotifOpen(){
+  _notifOut(document.getElementById('monthNotif'),'up');
+  selectedMonth=nextYM();picker.setVal(selectedMonth);
+  navigateToPage('import');
+  openMonthSheet();
+}
+function _monthNotifDismiss(){
+  try{localStorage.setItem(MONTH_REMINDER_KEY,nextYM());}catch(error){}
+  _notifOut(document.getElementById('monthNotif'),'up');
 }
 
 /* ── Verlauf einer Position: Bestand am Ende jedes früheren Monats.
@@ -7176,7 +7431,7 @@ function openHistorySheet(id){
   if(_sheetOpen&&!_closeSheet(false,()=>openHistorySheet(id)))return;/* erst schließen: das Schließen räumt den Sheet-Kontext */
   const inst=AssetModel.valuation(f)==='market'?AssetModel.instrument(f):null;
   const months=Object.keys(loadData()).filter(m=>m<nextYM()).sort().reverse();
-  _sheetCtx={hist:{id,key:f.unitId||f.id,inst,unit:f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück',prices:null,months,added:[],calc:{month:'',year:'',mode:'once',plan:''}}};
+  _sheetCtx={hist:{id,key:f.unitId||f.id,inst,unit:_unitName(f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück'),prices:null,months,added:[],calc:{month:'',year:'',mode:'once',plan:''}}};
   if(!_openSheet('Verlauf · '+f.label,_historySheetBody(),_saveHistorySheet,undefined,()=>openHistorySheet(id)))return;
   _historyPaint();
   if(inst)fetchMonthlyPricesEUR(_historySymbol(inst)).then(p=>{const c=_sheetCtx.hist;if(c&&c.id===id){c.prices=p;_historyPaint();}}).catch(()=>{const c=_sheetCtx.hist;if(c&&c.id===id){c.pricesFailed=true;_historyPaint();}});
@@ -7203,7 +7458,7 @@ function _historySheetBody(){
       <div class="ds-row"><span class="ds-l">Seit</span><select class="ds-in ds-sel" id="hc-month">${opt('','Monat',c.calc.month)+MONTH_FULL.map((m,i)=>opt(i+1,m,c.calc.month)).join('')}</select><select class="ds-in ds-sel" id="hc-year">${opt('','Jahr',c.calc.year)+Array.from({length:41},(_,i)=>opt(year-i,year-i,c.calc.year)).join('')}</select></div>
       <div class="ds-row"><span class="ds-l">Gekauft</span>${_seg('hc-mode',[['once','Einmal'],['plan','Mit Sparplan']],c.calc.mode)}</div>
       <label class="ds-row" id="hc-planRow"${c.calc.mode==='plan'?'':' hidden'}><span class="ds-l">Sparplan pro Monat</span><input class="ds-in ds-money" type="text" inputmode="decimal" id="hc-plan" value="${escHTML(c.calc.plan)}" placeholder="0"></label>
-      <div class="ds-sub"><button type="button" class="btn btn-ghost" data-hist-calc>Berechnen</button><p class="ds-help">Rechnet die heutige Stückzahl mit echten Monatskursen zurück. Vor dem Kaufmonat steht 0. Neue Monate vor deinem ersten erfassten Monat übernehmen die übrigen Positionen mit ihrem ersten bekannten Wert. Gespeichert wird erst mit „Sichern“.</p></div>
+      <div class="ds-sub"><button type="button" class="btn btn-ghost" data-hist-calc>Berechnen</button><p class="ds-help">Rechnet die heutige Stückzahl mit echten Monatskursen zurück. Vor dem Kaufmonat steht 0. Neue Monate vor deinem ersten erfassten Monat übernehmen die übrigen Positionen mit ihrem ersten bekannten Wert. Gespeichert wird erst mit „Speichern“.</p></div>
     </div></details>`;
   }
   if(!c.months.length)return h+`<p class="ds-empty">Noch keine früheren Monate.${c.inst?' Mit „Verlauf neu berechnen“ legst du sie an.':''}</p>`;
@@ -7392,7 +7647,7 @@ function _assetSheetHTML(prefix,f,o){
   const provider=i?.provider||(cat==='bitcoin'?'bitcoin':cat==='crypto'?'kraken':'yahoo');
   const a=k=>`id="${_assetId(prefix,k)}" data-asset-prefix="${prefix}" data-asset-key="${k}"`;
   const opt=(v,label,cur)=>`<option value="${v}"${v===cur?' selected':''}>${label}</option>`;
-  const unit=f.unitLabel||AssetModel.categories[cat]?.unit||'Stück';
+  const unit=_unitName(f.unitLabel||AssetModel.categories[cat]?.unit||'Stück');
   const quote=i?escHTML(i.name)+' · '+escHTML(i.symbol)+(i.exchange?' · '+escHTML(i.exchange):'')+(f.lastQuote?'<br>'+f.lastQuote.priceEUR.toLocaleString('de-DE',{maximumFractionDigits:8})+' € je Einheit · '+escHTML(_quoteStatus(f)):''):'';
   return `<div class="ds-group">
     <label class="ds-row"><span class="ds-l">Bezeichnung</span><input class="ds-in ds-wide" type="text" ${a('name')} value="${escHTML(f.label||'')}" placeholder="z. B. Tagesgeld" autocomplete="off"></label>
@@ -7423,7 +7678,7 @@ function openAssetSheet(id){
   const prevDet=(prev&&prev._details)||{};
   const hint=pk&&Object.prototype.hasOwnProperty.call(prevDet,id)?fmtMonth(pk)+': '+fmt(+prevDet[id]||0):'';
   const estimated=!!(e&&e._loanHistory&&(e._loanHistory.estimatedAssetIds||[]).includes(id));
-  const note=!e?`Für ${fmtMonth(ym)} gibt es noch keinen Stand.`+(pk?` Die übrigen Werte werden beim Sichern aus ${fmtMonth(pk)} übernommen.`:''):estimated?'Dieser Wert ist geschätzt (aus dem letzten erfassten Monat fortgeschrieben). Mit „Sichern“ bestätigst du ihn.':'';
+  const note=!e?`Für ${fmtMonth(ym)} gibt es noch keinen Stand.`+(pk?` Die übrigen Werte werden beim Speichern aus ${fmtMonth(pk)} übernommen.`:''):estimated?'Dieser Wert ist geschätzt (aus dem letzten erfassten Monat fortgeschrieben). Mit „Speichern“ bestätigst du ihn.':'';
   _sheetCtx={value:AssetModel.money(v),qty:q,estimated};
   const body=(note?`<p class="ds-note">${escHTML(note)}</p>`:'')+_assetSheetHTML('asset-'+id,f,{valueTitle:_monthTitle(ym),valueId:'f-'+id,qtyId:'fu-'+key,value:v?_moneyInput(v):'',qty:_qtyInput(q),valueHint:hint})
     +`<button type="button" class="ds-linkrow" data-ds-hist="${escHTML(id)}"><span>Verlauf bearbeiten</span><small>${(n=>n?n+(n===1?' früherer Monat':' frühere Monate'):'Noch kein Verlauf')(_histCount(id))}</small></button>`
@@ -7655,7 +7910,7 @@ function openAccountSheet(name){
   </div>
   <p class="ds-help">Die IBAN erscheint im Geldfluss, wenn du ein Konto antippst.${used?' Umbenennen passt die Daueraufträge dieses Kontos mit an.':''}</p>
   ${isNew?'':'<button type="button" class="ds-danger" data-account-delete>Konto löschen</button>'}`;
-  _openSheet(isNew?'Neues Konto':name,body,_saveAccountSheet,isNew?'Anlegen':'Sichern',()=>openAccountSheet(name));
+  _openSheet(isNew?'Neues Konto':name,body,_saveAccountSheet,isNew?'Anlegen':'Speichern',()=>openAccountSheet(name));
 }
 function _saveAccountSheet(){
   const old=_sheetCtx.account.name,name=(document.getElementById('a-name')?.value||'').trim().replace(/[;\r\n]/g,',');
@@ -7697,7 +7952,7 @@ function openOrderSheet(id){
   </div>
   <p class="ds-help">${names.length?'Wähle ein Konto aus den Vorschlägen oder gib eine eigene Bezeichnung ein, z. B. Kindergeld.':'Lege zuerst deine Konten an, dann werden sie hier vorgeschlagen. Eigene Bezeichnungen gehen auch.'}</p>
   ${o?'<button type="button" class="ds-danger" data-order-delete>Dauerauftrag löschen</button>':''}`;
-  _openSheet(o?o.from+' → '+o.to:'Neuer Dauerauftrag',body,_saveOrderSheet,o?'Sichern':'Anlegen',()=>openOrderSheet(id));
+  _openSheet(o?o.from+' → '+o.to:'Neuer Dauerauftrag',body,_saveOrderSheet,o?'Speichern':'Anlegen',()=>openOrderSheet(id));
 }
 function _saveOrderSheet(){
   const v=id=>(document.getElementById(id)?.value||'').trim().replace(/[;\r\n]/g,',');
@@ -7810,7 +8065,7 @@ function openBudgetSheet(opts={}){
     </div>
   </details>
   ${isNew?'':`<button type="button" class="ds-danger" data-b-delete>${mode==='once'?'Zahlung':'Posten'} löschen</button>`}`;
-  if(!_openSheet(isNew?'Neuer Eintrag':name,body,_saveBudgetSheet,isNew?'Anlegen':'Sichern',()=>openBudgetSheet(opts)))return;
+  if(!_openSheet(isNew?'Neuer Eintrag':name,body,_saveBudgetSheet,isNew?'Anlegen':'Speichern',()=>openBudgetSheet(opts)))return;
   _budgetSheetUpdate();
 }
 function _switchOn(id){const el=document.getElementById(id);return !!el&&typeof el.getAttribute==='function'&&el.getAttribute('aria-checked')==='true';}
@@ -7944,10 +8199,10 @@ function buildDynamicForm(){
   /* Sticky-Leiste nur im Bearbeiten-Modus (Altersvorsorge, Budget) */
   html+=`<div class="v2-form-head"><span>Bearbeiten</span><span class="save-msg" id="saveMsg">Gespeichert</span><span class="v2-form-btns">`;
   html+=`<button class="v2-textbtn v2-muted" id="btnCancel" onclick="cancelEditMode()" style="display:none">Abbrechen</button>`;
-  html+=`<button class="v2-textbtn v2-strong" id="btnSave" onclick="saveEntry()" style="display:none">Sichern</button></span></div>`;
+  html+=`<button class="v2-textbtn v2-strong" id="btnSave" onclick="saveEntry()" style="display:none">Speichern</button></span></div>`;
   html+=_monthCardHTML(allData);
   html+=_nextStepsHTML();
-  html+=`<div class="sec-h">Daten</div>`;
+  html+=`<div class="sec-h">Bereiche</div>`;
 
   /* Vermögenswerte und Verbindlichkeiten: Liste, Tippen öffnet das Sheet der Position */
   html+=`<details class="input-collapsible" data-mod="assets">${_v2Sum('assets','Vermögenswerte')}<div class="input-collapsible-body">${_assetListHTML(entry)}</div></details>`;
@@ -9446,7 +9701,7 @@ function _v2LtSummary(o){
   if(!el)return;
   const{s,plan,mc,tc,retireAge,availAtR,coverage,R,currentAge}=o;
   const pct=Math.round(mc.success*100),safety=Math.round(s.safety),ok=mc.success>=s.safety/100;
-  const retTxt=retireAge===null?'—':(retireAge<=Math.ceil(currentAge)?'sofort':retireAge+' J.');
+  const retTxt=retireAge===null?'—':(retireAge<=Math.ceil(currentAge)?'sofort':retireAge+' Jahren');
   const retSub=retireAge===null?'nicht bis '+plan.horizonAge+' erreichbar':'bei '+safety+' % Sicherheit';
   const cov=Math.max(0,Math.min(100,coverage*100));
   el.innerHTML=
@@ -9456,7 +9711,7 @@ function _v2LtSummary(o){
     `<div class="v2-gauge-cap"><span style="left:${safety}%">Ziel ${safety} %</span></div>`+
     `<p class="v2-ret-text">In ${pct} von 100 simulierten Marktverläufen reicht dein Geld bis ${plan.horizonAge}.</p>`+
     `<div class="v2-ret-stats">`+
-      `<div data-info="v2-at-retire"><span class="k">Vermögen mit ${Math.round(R)}</span><span class="n">${fmtCompact(Math.round(availAtR))}</span><span class="v2-mini"><i style="width:${cov.toFixed(1)}%"></i></span><span class="s">von ${fmtCompact(Math.round(tc.target))} nötig</span></div>`+
+      `<div data-info="v2-at-retire"><span class="k">Vermögen mit ${Math.round(R)}</span><span class="n">${fmtCompact(Math.round(availAtR))}</span><span class="v2-mini"><i style="width:${cov.toFixed(1)}%"></i></span><span class="s">nötig: ${fmt(Math.round(tc.target/100)*100)}</span></div>`+
       `<div data-info="v2-retire-age"><span class="k">Sicher möglich ab</span><span class="n">${retTxt}</span><span class="s">${retSub}</span></div>`+
     `</div>`;
   const pv=document.getElementById('v2-prev-pct');
@@ -9487,7 +9742,7 @@ function renderLifetimePage(){
 }
 /* ── Design 2: Bereiche-Schalter, Daten-Seite, Sprung zu den Annahmen ── */
 function _v2Sum(mod,title){
-  return `<summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${V2_ICONS[DATA_SECTION_ICONS[mod]]}</svg></span><span class="v2-sum-t"><span class="section-title">${title}</span><span class="v2-sum-sub" data-sub="${mod}"></span></span><span class="v2-switch" data-mod="${mod}" role="switch" tabindex="0" aria-label="${title} ein/aus"><i></i></span></summary>`;
+  return `<summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${V2_ICONS[DATA_SECTION_ICONS[mod]]}</svg></span><span class="v2-sum-t"><span class="section-title">${title}</span><span class="v2-sum-sub" data-sub="${mod}"></span></span></summary>`;
 }
 function _v2SubText(mod){
   try{
@@ -9507,9 +9762,9 @@ function _v2SyncSwitches(){
     const k=d.dataset.mod,on=m[k];
     d.classList.toggle('v2-off',!on);
     if(!on&&d.open)d.open=false;
-    const sub=d.querySelector('.v2-sum-sub');if(sub)sub.textContent=on?_v2SubText(k):'Ausgeschaltet';
+    const sub=d.querySelector('.v2-sum-sub');if(sub)sub.textContent=on?_v2SubText(k):'Ausgeschaltet · in den Einstellungen einschalten';
   });
-  document.querySelectorAll('#page-import .v2-switch[data-mod]').forEach(sw=>sw.setAttribute('aria-checked',m[sw.dataset.mod]?'true':'false'));
+  _renderModuleSettings();
 }
 function _v2ApplyModules(){
   const m=_mods();
@@ -9546,8 +9801,9 @@ function _v2InitModules(){
   pg.addEventListener('click',e=>{
     const sw=e.target.closest('.v2-switch');
     if(sw){e.preventDefault();e.stopPropagation();flip(sw);return;}
+    /* Ausgeschalteter Bereich: Einstellungen öffnen, dort wird er eingeschaltet */
     const sum=e.target.closest('summary');
-    if(sum&&sum.parentElement.classList.contains('v2-off'))e.preventDefault();
+    if(sum&&sum.parentElement.classList.contains('v2-off')){e.preventDefault();openInfoSheet('settings');}
   });
   pg.addEventListener('keydown',e=>{
     const sw=e.target.closest&&e.target.closest('.v2-switch');
@@ -9772,10 +10028,10 @@ function _guideContent(key){
   if(key==='forecast')return {section:'Prognose',title:'Ein Blick in deine Zukunft',text:'Erkunde, wie sich dein Vermögen bis zum Ruhestand entwickeln könnte.',
     content:'<div class="ob-example"><div class="ob-forecast-path" aria-hidden="true"><i></i><i></i><i></i></div>'+_guideRows([['Dein Ausgangspunkt','Vermögen heute'],['Deine Annahmen','Sparen & Rendite'],['Dein Ziel','Bedarf im Ruhestand']])+'</div>',
     tip:'Die Prognose ist ein Szenario. Richte erst Geburtsjahr, Bedarf und Annahmen ein; Renten kannst du später ergänzen.'};
-  if(key==='data')return {section:'Daten',title:'Alles lässt sich ergänzen',text:'Auf der Daten-Seite pflegst du deine Werte und schaltest die Bereiche ein, die du brauchst.',
-    content:'<div class="ob-data-steps"><div><b>1</b><span>Monat wählen</span><small>Kalender oben</small></div><div><b>2</b><span>Werte eintragen</span><small>Aktualisieren</small></div><div><b>3</b><span>Übernehmen</span><small>Sichern</small></div></div>',
+  if(key==='data')return {section:'Daten',title:'Alles lässt sich ergänzen',text:'Auf der Daten-Seite pflegst du deine Werte. Welche Bereiche du brauchst, wählst du unter Einstellungen.',
+    content:'<div class="ob-data-steps"><div><b>1</b><span>Monat wählen</span><small>Kalender oben</small></div><div><b>2</b><span>Werte eintragen</span><small>Aktualisieren</small></div><div><b>3</b><span>Übernehmen</span><small>Speichern</small></div></div>',
     tip:'Tippe auf eine Position, um nur sie zu ändern. Prognose-Annahmen werden direkt übernommen.'};
-  return {section:'Sicherung',title:'Eine Datei für deinen Stand',text:'Auf der Daten-Seite unter „Daten“ → Sicherung exportieren sicherst du alle Werte und Einstellungen. Importiere diese Datei auf einem anderen Gerät, um dort weiterzumachen.',
+  return {section:'Sicherung',title:'Eine Datei für deinen Stand',text:'Auf der Daten-Seite unter „Sicherung“ → Sicherung exportieren sicherst du alle Werte und Einstellungen. Importiere diese Datei auf einem anderen Gerät, um dort weiterzumachen.',
     content:'<div class="ob-backup-preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 14h8M8 18h5"/></svg><b>Deine Sicherung</b><span>Alle Daten · eine Datei</span></div>'+(_guideNew?'<div class="ob-setup-summary">Als Nächstes richtest du in wenigen Schritten deinen Start ein. Schätzwerte reichen.</div>':'<div class="ob-setup-summary">Du kannst den Rundgang jederzeit auf der Daten-Seite erneut starten.</div>'),
     tip:'Deine Daten bleiben auf diesem Gerät. Exportiere regelmäßig eine Sicherung.'};
 }
@@ -10339,7 +10595,7 @@ function _setupHistoryCard(s,r){
   const months=opt('','Monat',h.month)+MONTH_FULL.map((m,i)=>opt(i+1,m,h.month)).join('');
   const years=opt('','Jahr',h.year)+Array.from({length:41},(_,i)=>opt(year-i,year-i,h.year)).join('');
   const mode=(v,label)=>`<button type="button" class="ob-hist-mode${h.mode===v?' on':''}" data-act="hist-mode" data-v="${v}" aria-pressed="${h.mode===v}">${label}</button>`;
-  const amount=r.mode==='qty'?_setupQty(r.qty).toLocaleString('de-DE',{maximumFractionDigits:8})+' '+(SETUP_UNITS[r.category]||['Stk'])[0]+' · '+fmt(_setupRowValue(s,r)):fmt(_setupRowValue(s,r));
+  const amount=r.mode==='qty'?_setupQty(r.qty).toLocaleString('de-DE',{maximumFractionDigits:8})+' '+_unitName((SETUP_UNITS[r.category]||['Stk'])[0])+' · '+fmt(_setupRowValue(s,r)):fmt(_setupRowValue(s,r));
   return `<div class="ob-hist" data-row="${r.id}"><div class="ob-hist-head"><b>${escHTML(r.name.trim())}</b><span>${amount}</span></div>${inst}
     <div class="ob-hist-row"><span class="ob-hist-l">Seit</span><select class="ob-in ob-select" data-h="month" aria-label="Seit Monat">${months}</select><select class="ob-in ob-select" data-h="year" aria-label="Seit Jahr">${years}</select></div>
     <div class="ob-hist-row"><span class="ob-hist-l">Gekauft</span><span class="ob-hist-modes">${mode('once','Einmal')}${mode('plan','Mit Sparplan')}</span></div>
@@ -10686,6 +10942,7 @@ function _handleMonthRollover(){
     picker.setVal(selectedMonth);
   }
   render();
+  _monthNotif();
 }
 
 /* ── Init ── */
@@ -10789,6 +11046,7 @@ function initApp(){
     initDataEntryForm();
     _initSheet();
     _initObNotif();
+    _monthNotif();
     _refreshBackupInfo();
     
     /* Lifetime Page */

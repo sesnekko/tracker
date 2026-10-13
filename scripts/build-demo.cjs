@@ -64,6 +64,9 @@ for (const [i, s] of doc.snapshots.entries()) {
   );
   s.positions.find(p => p.positionId === 'kredit-wohnung').value = Loan.at(params(doc.loans[0]), s.month).balance;
 }
+// The family car loses 1 % per month from January 2025: a real depreciation instead of typed-in
+// values, so every new month continues it by itself (same values as the stored history).
+doc.positions.find(p => p.id === 'familienauto').depreciation = {method: 'percent', amount: 1, interval: 'month', startMonth: '2025-01', startValue: 28000};
 // Market paths: fictional, but with realistic monthly swings. A seeded generator keeps
 // every build identical; shared shocks (a correction in spring 2025, a crypto setback
 // in late 2025) move the whole portfolio together like a real market would.
