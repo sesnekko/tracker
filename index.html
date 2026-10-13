@@ -3003,7 +3003,7 @@ function animateSmallValue(el,newText,newNum){
   }
   if(el._svaTimer){clearTimeout(el._svaTimer);el._svaTimer=null;}
   delete el.dataset.queued;
-  const h=el.offsetHeight||18;
+  const h=_slotH(el,18);
   const upDir=Math.abs(newNum)>=Math.abs(oldNum);
   function charMap(s){const m=new Map();let dp=0;for(let i=s.length-1;i>=0;i--)if(s[i]>='0'&&s[i]<='9'){m.set(dp,s[i]);dp++;}return m;}
   function dpMap(s){const m=new Map();let dp=0;for(let i=s.length-1;i>=0;i--)if(s[i]>='0'&&s[i]<='9'){m.set(i,dp);dp++;}return m;}
@@ -3040,6 +3040,13 @@ function animateSmallValue(el,newText,newNum){
   }));
 }
 
+/* Höhe der Ziffern-Fächer = Zeilenhöhe des Textes. Nicht offsetHeight: Die große Zahl hat eine Mindesthöhe
+   (z. B. 78 px bei 71 px Zeilenhöhe), sonst sitzen die rollenden Ziffern tiefer als der ruhende Text und die
+   Zahl springt bei jeder Aktualisierung ein paar Pixel nach unten und wieder hoch. */
+function _slotH(el,fallback){
+  const lh=typeof getComputedStyle==='function'?parseFloat(getComputedStyle(el).lineHeight):NaN;
+  return lh>0?lh:(el.offsetHeight||fallback);
+}
 function animateKpiValue(id,newText,newNum){
   const el=document.getElementById(id);if(!el)return;
   const hasEur=newText.endsWith(' €');
@@ -3062,7 +3069,7 @@ function animateKpiValue(id,newText,newNum){
   delete el.dataset.queued;
   if(curText===newNumStr)return;
   if(curText==='—'){el.textContent=newNumStr;return;}
-  const upDir=Math.abs(newNum)>=Math.abs(oldNum),h=el.offsetHeight||30;
+  const upDir=Math.abs(newNum)>=Math.abs(oldNum),h=_slotH(el,30);
   function buildByDP(s){const map=new Map();let dp=0;for(let i=s.length-1;i>=0;i--)if(s[i]>='0'&&s[i]<='9'){map.set(dp,s[i]);dp++;}return map;}
   function buildDPM(s){const map=new Map();let dp=0;for(let i=s.length-1;i>=0;i--)if(s[i]>='0'&&s[i]<='9'){map.set(i,dp);dp++;}return map;}
   const newDPM=buildDPM(newNumStr),oldByDP=buildByDP(curText);
@@ -3469,28 +3476,61 @@ let _flowPreset=3;
    Vermögensentwicklung im Fenster frei bleibt. So ist bei jeder Fenstergröße alles ohne Scrollen sichtbar.
    Aufgeklappte Details der Vermögensentwicklung zählen nicht mit, damit der Chart beim Aufklappen nicht schrumpft.
    Ist das Fenster so niedrig, dass der Chart dafür zu klein würde (z. B. iPad hochkant), bleibt die gewohnte
-   Chart-Höhe aus dem CSS und die Seite scrollt wie bisher. */
+   Chart-Höhe aus dem CSS und die Seite scrollt wie bisher. Der Prognose-Chart bekommt dieselbe Höhe, damit
+   beide Seiten gleich aussehen; ist die Vermögen-Seite gerade nicht sichtbar, zählt der zuletzt gemessene Rest. */
+let _homeRest=null;
+function _pageBottom(page){
+  const body=document.body;
+  return page.getBoundingClientRect().bottom-body.getBoundingClientRect().top+body.scrollTop+(parseFloat(getComputedStyle(body).paddingBottom)||0);
+}
 function _fitHomeChart(){
   const page=document.getElementById('page-home'),wrap=page&&page.querySelector('.chart-wrap');
   if(!wrap||typeof wrap.getBoundingClientRect!=='function')return;
-  if(!(window.matchMedia&&window.matchMedia('(min-width:768px)').matches)){if(wrap.style.height)wrap.style.height='';return;}
-  if(!page.classList.contains('active')||!wrap.offsetHeight)return;
-  const body=document.body,bs=getComputedStyle(body);
-  const det=page.querySelector('#flowSection.open .flow-details');
-  const bottom=page.getBoundingClientRect().bottom-body.getBoundingClientRect().top+body.scrollTop+(parseFloat(bs.paddingBottom)||0);
-  const rest=bottom-wrap.offsetHeight-(det?det.offsetHeight:0);
-  const min=300,fit=Math.floor(window.innerHeight-rest);
-  if(fit<min){if(wrap.style.height)wrap.style.height='';return;}
+  const wraps=[wrap,document.querySelector('#page-lifetime .chart-wrap')].filter(Boolean);
+  const clear=()=>wraps.forEach(w=>{if(w.style.height)w.style.height='';});
+  if(!(window.matchMedia&&window.matchMedia('(min-width:768px)').matches)){clear();return;}
+  if(page.classList.contains('active')&&wrap.offsetHeight){
+    const det=page.querySelector('#flowSection.open .flow-details');
+    _homeRest=_pageBottom(page)-wrap.offsetHeight-(det?det.offsetHeight:0);
+  }
+  if(_homeRest==null)return;
+  const fit=Math.floor(window.innerHeight-_homeRest);
+  if(fit<300){clear();return;}
   const h=Math.min(900,fit);
-  if(Math.abs(h-wrap.offsetHeight)>=2)wrap.style.height=h+'px';
+  wraps.forEach(w=>{const cur=parseFloat(w.style.height)||w.offsetHeight;if(Math.abs(h-cur)>=2)w.style.height=h+'px';});
+}
+/* Budget auf iPad und Mac: Passt die Seite nur knapp nicht ins Fenster, gibt der Geldfluss zuerst seine
+   Mindesthöhe ab und macht dann die Kästen etwas niedriger (höchstens bis 84 px). Reicht das nicht,
+   bleibt alles wie gewohnt und die Seite scrollt. */
+function _fitBudget(){
+  const page=document.getElementById('page-budget'),sk=page&&page.querySelector('.sankey-container-html');
+  if(!sk||typeof sk.getBoundingClientRect!=='function')return;
+  const cards=[...sk.querySelectorAll('.sankey-node-card')];
+  const had=!!(sk.style.minHeight||cards.some(c=>c.style.height));
+  const reset=()=>{sk.style.minHeight='';cards.forEach(c=>{c.style.height='';});};
+  const redraw=()=>{if(_sankeyArgs)renderSankeyFlows(..._sankeyArgs);};
+  if(!(window.matchMedia&&window.matchMedia('(min-width:768px)').matches)){if(had){reset();redraw();}return;}
+  if(!page.classList.contains('active')||!sk.offsetHeight)return;
+  reset();
+  const over=()=>Math.ceil(_pageBottom(page)-window.innerHeight);
+  if(over()<=0){if(had)redraw();return;}
+  sk.style.minHeight='0px';
+  let rest=over();
+  if(rest<=0){sk.style.minHeight=(sk.offsetHeight-rest)+'px';redraw();return;}
+  const n=Math.max(1,...[...sk.querySelectorAll('.sankey-column')].map(c=>c.querySelectorAll('.sankey-node-card').length));
+  const base=cards.length?cards[0].offsetHeight:0,h=base-Math.ceil(rest/n);
+  if(!cards.length||h<84){reset();if(had)redraw();return;}
+  cards.forEach(c=>{c.style.height=h+'px';});
+  redraw();
 }
 (function(){
   if(typeof window.addEventListener!=='function'||typeof requestAnimationFrame!=='function')return;
   let raf=0;
-  const schedule=()=>{if(!raf)raf=requestAnimationFrame(()=>{raf=0;_fitHomeChart();});};
+  const schedule=()=>{if(!raf)raf=requestAnimationFrame(()=>{raf=0;_fitHomeChart();_fitBudget();});};
   window.addEventListener('resize',schedule);
-  const content=document.querySelector('#page-home .app-content');
-  if(content&&typeof ResizeObserver==='function')new ResizeObserver(schedule).observe(content);
+  if(typeof ResizeObserver==='function')['#page-home .app-content','#page-budget .app-content'].forEach(sel=>{
+    const el=document.querySelector(sel);if(el)new ResizeObserver(schedule).observe(el);
+  });
 })();
 function renderFlowSection(){
   const el=document.getElementById('flowSection');
@@ -5758,7 +5798,7 @@ function _ibanBackHTML(label,accounts){
   });
   
   // Render flows as SVG paths
-  setTimeout(()=>renderSankeyFlows(leftNodes,rightNodes,flows),50);
+  setTimeout(()=>{renderSankeyFlows(leftNodes,rightNodes,flows);_fitBudget();},50);
 }
 
 let _sankeyArgs=null,_sankeyRO=null,_sankeyRaf=0;
@@ -6696,7 +6736,7 @@ function exportBackup(){
   try{
     if(!_resolvePendingEdits(exportBackup))return;
     const now=new Date(),day=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
-    const doc=appStorage.exportBackup(now),name='vermoegen_'+day+'.json';
+    const doc=appStorage.exportBackup(now),name='master_export_'+day+'.json';
     /* iPhone/iPad: Teilen-Menü (z. B. „In Dateien sichern“), sonst Download */
     const touch=!!(window.matchMedia&&window.matchMedia('(pointer:coarse)').matches);
     const file=touch&&typeof File==='function'?new File([JSON.stringify(doc,null,2)],name,{type:'application/json'}):null;

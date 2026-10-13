@@ -2,7 +2,7 @@
 
 Die App speichert ihren vollständigen Datenbestand als **ein JSON-Dokument** im
 Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als eine
-einzige Datei `vermoegen_YYYY-MM-DD.json`. Für den Gerätewechsel werden keine
+einzige Datei `master_export_YYYY-MM-DD.json` (bis Oktober 2026 `vermoegen_YYYY-MM-DD.json`). Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
 ## Struktur, Version 9

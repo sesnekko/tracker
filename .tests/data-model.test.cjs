@@ -167,7 +167,7 @@ test('actual export and JSON upload handlers support settings-only backups and c
   const a = app(html);
   a.run("appStorage.setItem('darkMode','0');downloadJSON=(doc,name)=>{captured={doc,name};};exportBackup();");
   const captured = a.json('captured');
-  assert.match(captured.name, /^vermoegen_2026-10-08\.json$/);
+  assert.match(captured.name, /^master_export_2026-10-08\.json$/);
   assert.equal(captured.doc.snapshots.length, 0);
   assert.equal(captured.doc.preferences.theme, 'light');
   const b = imported(html);

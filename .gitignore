@@ -2,6 +2,7 @@
 *.csv
 !demo_export.csv
 vermoegen_*.json
+master_export_*.json
 *.mov
 *.mp4
 
