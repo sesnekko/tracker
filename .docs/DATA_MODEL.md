@@ -428,13 +428,20 @@ bis zur Regelaltersgrenze) und bei teilweiser Erwerbsminderung die persönliche
 Hinzuverdienstgrenze (`earningsLimit`, fehlt = Mindestgrenze). Der Hinzuverdienst ist
 das Bruttojahresgehalt (`annualSalary`); er bringt weiter Rentenpunkte. Liegt er über
 der Grenze (2026: voll 20.763,75 €, teilweise mindestens 41.527,50 €), werden 40 % des
-übersteigenden Betrags angerechnet.
+übersteigenden Betrags auf die Bruttorente angerechnet; den Zahlbetrag mindert das um
+diesen Betrag abzüglich der pauschalen Abzüge (`deductionPercent`, Kranken-/Pflege-
+versicherung und Steuer).
 
-In der Prognose deckt die EM-Rente ab „Ruhestand ab Alter“ einen Teil des Bedarfs, bis
-sie endet. Vor dem Ruhestand wird angenommen, dass sie als Einnahme im Budget steht und
-in die Sparraten einfließt. Läuft sie bis zur Regelaltersgrenze, ist die anschließende
-Altersrente mindestens die volle Erwerbsminderungsrente (bei teilweiser also das
-Doppelte des Zahlbetrags), sonst gilt die normale Hochrechnung.
+In der Prognose deckt die EM-Rente ab dem Ende der Arbeit (Vorruhestand) einen Teil des
+Bedarfs, bis sie endet – dann ohne Anrechnung, weil kein Hinzuverdienst mehr fließt. Vor dem
+Ende der Arbeit wird angenommen, dass sie als Einnahme im Budget steht und in die
+Sparraten einfließt. Läuft sie bis zur Regelaltersgrenze, wird sie dort automatisch zur
+Altersrente, auch wenn die Rentenphase später beginnt. Diese Altersrente ist der höhere
+Wert aus dem Besitzschutz (mindestens die volle Erwerbsminderungsrente, bei teilweiser
+also das Doppelte des Zahlbetrags) und der Hochrechnung aus Rentenpunkten plus Punkten
+aus dem Hinzuverdienst bis zum Ende der Arbeit. Rentenpunkte daher ohne Zurechnungszeit
+eintragen, sonst zählt sie doppelt. Endet die EM-Rente vorher, gilt die normale
+Hochrechnung.
 
 ## Erwerbsminderungsrente weiterer Personen (Version 8)
 
@@ -443,8 +450,9 @@ Weitere Personen (`retirement.people`) können dieselben vier EM-Felder in ihrer
 Beitragsbemessungsgrenze bleiben gemeinsame Werte der eigenen Person und werden bei
 weiteren Personen abgewiesen. `disabilityUntilYear` und die Regelaltersgrenze beziehen
 sich auf das Geburtsjahr der jeweiligen Person; die Prognose rechnet beides auf das
-eigene Alter um. Die EM-Rente einer weiteren Person deckt wie die eigene ab „Ruhestand
-ab Alter“ einen Teil des Bedarfs, bis sie endet. Dateien der Version 7 bleiben
+eigene Alter um. Die EM-Rente einer weiteren Person deckt wie die eigene ab dem eigenen
+Vorruhestand einen Teil des Bedarfs, bis sie endet: mit Anrechnung, solange die Person
+noch arbeitet („Arbeiten bis“), danach ohne. Dateien der Version 7 bleiben
 unverändert lesbar.
 
 ## Altersvorsorgedepots (Version 8)

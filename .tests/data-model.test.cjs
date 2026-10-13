@@ -21,7 +21,7 @@ function totals(a) {
 // (zwischen „Sparen bis“ und „Ruhestand ab“ weder Sparen noch Rentenpunkte). Neue Phasenfelder fehlen im Vergleichsstand.
 const PHASE_FIELDS = "['pensionAge','pensionSpending','p2Saving','p2Work','p2Withdraw','phase2From','workEnd','phase4From']";
 function forecast(a) {
-  return a.json('(()=>{const p=buildPlan();return {settings:Object.fromEntries(Object.entries(p.s).filter(([k])=>!'+PHASE_FIELDS+'.includes(k))),drv:p.drv,extra:p.drvExtra,groups:p.groups,det:simulatePlan(p,p.s.withdrawFrom,{record:true}),mc:runMonteCarlo(p,p.s.withdrawFrom,true),retire:findRetireAge(p),target:targetCapital(p,p.s.withdrawFrom,simulatePlan(p,p.s.withdrawFrom,{record:true}))};})()');
+  return a.json('(()=>{const p=buildPlan();return {settings:Object.fromEntries(Object.entries(p.s).filter(([k])=>!'+PHASE_FIELDS+'.includes(k))),drv:p.drv,extra:p.drvExtra.map(r=>{const x=Object.assign({},r);delete x.workEndMain;return x;}),groups:p.groups,det:simulatePlan(p,p.s.withdrawFrom,{record:true}),mc:runMonteCarlo(p,p.s.withdrawFrom,true),retire:findRetireAge(p),target:targetCapital(p,p.s.withdrawFrom,simulatePlan(p,p.s.withdrawFrom,{record:true}))};})()');
 }
 test('migration retains every month, value, quantity, budget and forecast result', () => {
   const a = app(html, new MemoryStorage(legacyValues));
