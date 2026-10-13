@@ -6,7 +6,7 @@ const Data = require('../data-store.js');
 const { app } = require('./app-harness.cjs');
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const demoCSV = fs.readFileSync(path.join(root, 'demo_export.csv'), 'utf8');
+const demoCSV = fs.readFileSync(path.join(__dirname, 'demo_export.csv'), 'utf8');
 const tick = () => new Promise(r => setImmediate(r));
 
 // Native confirm() is never used: embedded browsers suppress it and the action would silently stop.

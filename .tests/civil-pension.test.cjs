@@ -6,7 +6,7 @@ const Data = require('../data-store.js');
 const { app, MemoryStorage, FixedDate } = require('./app-harness.cjs');
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const demoCSV = fs.readFileSync(path.join(root, 'demo_export.csv'), 'utf8');
+const demoCSV = fs.readFileSync(path.join(__dirname, 'demo_export.csv'), 'utf8');
 
 test('Beamtenversorgung is stored on the own person and survives backup and restart', () => {
   const storage = new MemoryStorage();

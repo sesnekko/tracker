@@ -8,7 +8,7 @@ const root = path.resolve(__dirname, '..');
 const { app, MemoryStorage, FixedDate } = require('./app-harness.cjs');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const baselineHTML = child.execFileSync('git', ['show', '1f17a25:index.html'], { cwd: root, encoding: 'utf8' });
-const demoCSV = fs.readFileSync(path.join(root, 'demo_export.csv'), 'utf8');
+const demoCSV = fs.readFileSync(path.join(__dirname, 'demo_export.csv'), 'utf8');
 function imported(source = html, storage) {
   const a = app(source, storage); a.csv(demoCSV); return a;
 }
