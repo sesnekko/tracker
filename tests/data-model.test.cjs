@@ -208,7 +208,11 @@ test('bundled JSON demo restores a complete household without double counting lo
   assert.equal(doc.positions.length, 17);
   assert.deepEqual(doc.positions.filter(p => p.category === 'stock').map(p => p.name), ['Apple', 'Amazon', 'Nestlé']);
   assert.ok(['bitcoin', 'crypto', 'stock', 'vehicle', 'realEstate'].every(category => doc.positions.some(p => p.category === category)));
-  assert.ok(doc.positions.every(p => p.valuation === 'manual'));
+  // The two ETFs and Bitcoin use live prices (with a stored quote as offline fallback), everything else is manual.
+  assert.deepEqual(doc.positions.filter(p => p.valuation === 'market').map(p => p.id), ['msci-world-a0rpwh', 's-p-500-a0yedg', 'bitcoin']);
+  assert.ok(doc.positions.filter(p => p.valuation === 'market').every(p => p.instrument && p.lastQuote && p.lastQuote.priceEUR > 0));
+  assert.ok(doc.positions.filter(p => p.valuation !== 'market').every(p => p.valuation === 'manual'));
+  assert.ok(doc.positions.find(p => p.id === 'familienauto').depreciation, 'car keeps its monthly depreciation');
   assert.ok(doc.accounts.every(p => p.iban === ''));
   assert.equal(a.json("loadData()['2024-01']._details['kredit-wohnung']"), 239500);
   assert.equal(a.json("loadData()['2024-12']._details['kredit-auto']"), 0);

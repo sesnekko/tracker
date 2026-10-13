@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#eae8e3">
-<meta name="apple-mobile-web-app-title" content="Vermögen">
+<meta name="theme-color" content="#111110">
+<meta name="apple-mobile-web-app-title" content="Assets">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png?v=2">
 <link rel="icon" type="image/png" href="icon-192.png?v=2">
-<title>Vermögen</title>
+<title>Assets</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -26,7 +26,7 @@ body.dark {
 }
 </style>
 </head>
-<body>
+<body class="dark">
 <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
@@ -861,258 +861,6 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   #page-import #newFieldLabel, #page-import #newFieldCategory { font-size: 12px; padding: 7px 10px; }
 }
 
-/* ── LAPTOP / DESKTOP LAYOUT (≥1280px) ── */
-@media (min-width: 1280px) {
-  /* Persistent sidebar — always visible */
-  .sidebar {
-    transform: translateX(0) !important;
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 220px;
-    z-index: 201;
-    border-right: 1px solid var(--border);
-    padding: 32px 12px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .sidebar-overlay { display: none !important; }
-  .sidebar-toggle { display: none !important; }
-  .sidebar-header { display: none; }
-  .sidebar-item {
-    font-size: 13px;
-    padding: 10px 14px;
-    border-radius: 5px;
-    gap: 10px;
-  }
-  .sidebar-item svg { width: 18px; height: 18px; }
-
-  /* App title in sidebar */
-  .sidebar::before {
-    content: 'Vermögen';
-    display: block;
-    font-size: 16px;
-    font-weight: 300;
-    color: var(--ink);
-    letter-spacing: -0.01em;
-    padding: 0 14px 20px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 12px;
-  }
-
-  /* Main content offset for sidebar */
-  body {
-    margin-left: 220px;
-    max-width: none;
-    padding: 0 48px;
-    padding-top: 24px;
-  }
-
-  /* Header adjustments */
-  .app-header {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 0 8px;
-  }
-
-  /* Pages container width */
-  .page > .app-content {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  /* ── HOME PAGE: Dashboard grid ── */
-  #page-home .app-content {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    grid-template-rows: auto auto auto auto;
-    gap: 0 32px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  /* Hero spans full width */
-  #page-home .hero {
-    grid-column: 1 / -1;
-    padding: 12px 0 0;
-  }
-  #page-home .hero-value { font-size: 80px; min-height: 92px; }
-  #page-home .hero-value.kpi-has-eur::after { font-size: 32px; }
-
-  /* Chart section spans full width */
-  #page-home .chart-section {
-    grid-column: 1 / -1;
-    padding: 8px 0;
-  }
-  #page-home .chart-wrap { height: 380px; }
-  #page-home .chart-wrap-net {
-    margin-left: 0;
-    margin-right: 0;
-    width: 100%;
-  }
-
-  /* Range bar spans full width */
-  #page-home .range-bar {
-    grid-column: 1 / -1;
-  }
-
-  /* KPI grid on left */
-  #page-home .kpi-and-assets-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    grid-column: 1 / -1;
-  }
-  #page-home .kpi-grid {
-    grid-column: 1;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-  #page-home .kpi-item { height: 140px; }
-  #page-home .kpi-label { font-size: 11px; }
-  #page-home .kpi-val { font-size: 30px; }
-  #page-home .kpi-val.kpi-has-eur::after { font-size: 17px; }
-  #page-home .kpi-delta { font-size: 12px; }
-
-  /* Asset list on right */
-  #page-home .structure-section-ipad {
-    display: block;
-    grid-column: 2;
-    max-height: 310px;
-    overflow-y: auto;
-  }
-  #page-home .structure-section-mobile { display: none; }
-
-  /* ── BUDGET PAGE ── */
-  #page-budget .app-content {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  #page-budget .hero-value { font-size: 80px; min-height: 92px; }
-  #page-budget .hero-value.kpi-has-eur::after { font-size: 32px; }
-
-  #page-budget .kpi-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-  }
-  #page-budget .kpi-item { height: 140px; }
-  #page-budget .kpi-val { font-size: 30px; }
-  #page-budget .kpi-val.kpi-has-eur::after { font-size: 17px; }
-
-  .sankey-container-html {
-    grid-template-columns: 200px 1fr 200px;
-    min-height: 420px;
-    max-width: 1000px;
-    margin: 0 auto;
-    gap: 0 12px;
-  }
-  .sankey-node-card { height: 108px; }
-
-  /* ── LIFETIME PAGE ── */
-  #page-lifetime .app-content {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  /* Progress bars back above chart on desktop */
-  .lt-progress-bars { order: 1; padding-top: 0; margin-bottom: 8px; }
-  #page-lifetime .hero { order: 0; }
-  #page-lifetime .chart-section { order: 3; }
-  #page-lifetime .range-bar { order: 4; }
-  #page-lifetime .lt-settings-panel { order: 5; }
-  #page-lifetime .kpi-grid { order: 6; }
-  #page-lifetime .hero-value { font-size: 80px; min-height: 92px; }
-  #page-lifetime .hero-value.kpi-has-eur::after { font-size: 32px; }
-  #page-lifetime .chart-wrap { height: 380px; }
-  #page-lifetime .chart-wrap.lt-chart-wrap { height: 380px; }
-  #page-lifetime .chart-wrap-net {
-    margin-left: 0;
-    margin-right: 0;
-    width: 100%;
-  }
-  #page-lifetime .kpi-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-  }
-  #page-lifetime .lt-settings-panel.lt-more { order: 6; }
-  #page-lifetime .kpi-item { height: 140px; }
-  #page-lifetime .kpi-val { font-size: 30px; }
-  #page-lifetime .kpi-val.kpi-has-eur::after { font-size: 17px; }
-
-  /* Lifetime settings side-by-side */
-  #page-lifetime .lt-settings-panel {
-    margin-top: 6px;
-  }
-
-  /* ── IMPORT PAGE ── */
-  #page-import .app-content {
-    max-width: 900px;
-    margin: 0 auto;
-  }
-  #page-import .input-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px 16px;
-  }
-
-  /* ── General desktop polish ── */
-  .bottom-nav { display: none; }
-  .app-content { padding-bottom: 32px; }
-
-  /* Hover states for desktop */
-  .kpi-item { transition: box-shadow .3s, transform .3s; }
-  .kpi-item:hover:not(.flipped) {
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    transform: translateY(-2px);
-  }
-  .legend-row:hover {
-    background: color-mix(in srgb, var(--border) 15%, transparent);
-    border-radius: 4px;
-  }
-  .sidebar-item:hover {
-    color: var(--ink);
-    background: color-mix(in srgb, var(--border) 20%, transparent);
-  }
-  .range-btn:hover { color: var(--ink); }
-  .icon-btn:hover { color: var(--ink); }
-  .sankey-node-card:hover:not(.flipped) {
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    transform: translateY(-1px);
-  }
-
-  /* Scrollbar styling */
-  .structure-section-ipad::-webkit-scrollbar { width: 4px; }
-  .structure-section-ipad::-webkit-scrollbar-track { background: transparent; }
-  .structure-section-ipad::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-}
-
-/* Extra-wide screens (≥1600px) — more breathing room */
-@media (min-width: 1600px) {
-  .sidebar { width: 240px; }
-  body { margin-left: 240px; padding: 0 64px; padding-top: 28px; }
-
-  .page > .app-content,
-  #page-home .app-content,
-  #page-budget .app-content,
-  #page-lifetime .app-content {
-    max-width: 1400px;
-  }
-
-  #page-home .hero-value { font-size: 96px; min-height: 108px; }
-  #page-home .hero-value.kpi-has-eur::after { font-size: 38px; }
-  #page-home .chart-wrap { height: 440px; }
-
-  #page-home .kpi-item { height: 155px; }
-  #page-home .kpi-val { font-size: 34px; }
-  #page-home .kpi-val.kpi-has-eur::after { font-size: 19px; }
-
-  #page-budget .hero-value { font-size: 96px; }
-  #page-budget .hero-value.kpi-has-eur::after { font-size: 38px; }
-  #page-lifetime .hero-value { font-size: 96px; }
-  #page-lifetime .hero-value.kpi-has-eur::after { font-size: 38px; }
-  #page-lifetime .chart-wrap { height: 440px; }
-}
-
 /* ══════════════════════════════════════════════════════════════
    DESIGN 2 – App-Optik: normale Schreibweise statt Versalien,
    gruppierte Listen, Segment-Schalter, Bottom-Sheet.
@@ -1270,7 +1018,7 @@ body.iso-mode .hero-label::before{display:none}
 .v2-fc-col{flex:1;min-width:0;display:flex;flex-direction:column;background:none;border:none;padding:0;cursor:pointer;transition:opacity .2s}
 .v2-fc-pos{display:flex;align-items:flex-end;justify-content:center}
 .v2-fc-neg{display:flex;align-items:flex-start;justify-content:center;border-top:1px solid var(--sep)}
-.v2-fc-col i{display:block;width:min(100%,22px);opacity:.8}
+.v2-fc-col i{display:block;width:min(62%,64px);opacity:.8}/* breit genug auch bei wenigen Monaten */
 .v2-fc-pos i{border-radius:3px 3px 0 0;background:var(--green)}
 .v2-fc-neg i{border-radius:0 0 3px 3px;background:var(--red)}
 .v2-fc.has-sel .v2-fc-col:not(.sel){opacity:.28}
@@ -1718,7 +1466,7 @@ body.dark .ob-notif{box-shadow:0 10px 34px rgba(0,0,0,.5),0 0 0 .5px color-mix(i
 .ob-notif-body{-webkit-user-drag:none;display:flex;align-items:flex-start;gap:11px;padding:12px 14px 13px;color:inherit;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:22px}
 .ob-notif-body:active{background:var(--fill)}
 .ob-notif-body:focus-visible{outline:2px solid var(--green);outline-offset:2px}
-.ob-notif-icon{flex:0 0 auto;width:38px;height:38px;border-radius:9px;overflow:hidden;background:var(--card)}
+.ob-notif-icon{flex:0 0 auto;align-self:center;width:38px;height:38px;border-radius:9px;overflow:hidden;background:var(--card)}/* Logo senkrecht mittig zur Nachricht */
 .ob-notif-icon img{width:100%;height:100%;display:block}
 .ob-notif-text{flex:1;min-width:0;display:flex;flex-direction:column}
 .ob-notif-head{display:flex;align-items:baseline;gap:8px}
@@ -1800,13 +1548,67 @@ body.onboarding-open{overflow:hidden}
 .ob-field input:focus,.ob-field select:focus{outline:2px solid var(--green);outline-offset:2px}
 .ob-position-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .ob-add{width:100%;min-height:48px;font-size:14px;border-radius:12px}
-.ob-welcome-mark{width:60px;height:60px;border-radius:14px;display:block;margin-bottom:26px;box-shadow:0 0 0 .5px var(--border),0 6px 18px rgba(0,0,0,.12)}
-.ob-welcome .ob-title{font-size:38px;line-height:1.2;margin-bottom:16px}
-.ob-welcome .ob-sub{font-size:16px;max-width:370px;line-height:1.6;margin-bottom:28px}
-.ob-welcome-actions{width:100%;max-width:340px;display:flex;flex-direction:column;gap:10px}
-.ob-welcome-actions .btn{width:100%;text-align:center;font-size:16px;min-height:52px;border-radius:12px;display:flex;justify-content:center;align-items:center}
-.ob-welcome-actions .ob-skip{margin:0;padding:10px 0}
-.ob-welcome .ob-tip{max-width:340px;text-align:center;margin-top:24px}
+/* Startbildschirm: Logo in den Wellen des Icons, Name, drei Vorteile, Aktionen unten */
+.ob-welcome{position:relative;isolation:isolate;overflow:hidden;align-items:stretch;justify-content:space-between}
+.ob-welcome>:not(.ob-welcome-waves){width:100%;max-width:400px;margin-left:auto;margin-right:auto}
+.ob-hero{position:relative;display:flex;justify-content:center;padding-top:min(3vh,20px);margin-bottom:8px}
+/* Hintergrund wie im Icon: heller „Himmel“ oben, darunter fünf Wellenbänder, die nach unten Stufe für Stufe dunkler werden.
+   Im Dunkelmodus ist der Himmel ein warmes Mittelgrau: Kontrast zum dunklen A ohne Lichtschein. */
+.ob-welcome{background:linear-gradient(to bottom,#fbfaf7,#f3f1ec 30%)}
+body.dark .ob-welcome{background:linear-gradient(to bottom,#6b675f,#58544e 30%)}
+.ob-welcome-waves{position:absolute;inset:0;z-index:-1;pointer-events:none;max-width:none;margin:0}
+.ob-welcome-waves svg{display:block;width:100%;height:100%}
+.ob-welcome-waves g:nth-child(1) .wf{fill:#ece9e3}
+.ob-welcome-waves g:nth-child(2) .wf{fill:#e6e3dc}
+.ob-welcome-waves g:nth-child(3) .wf{fill:#e0ddd5}
+.ob-welcome-waves g:nth-child(4) .wf{fill:#dad6ce}
+.ob-welcome-waves g:nth-child(5) .wf{fill:#d4d0c7}
+body.dark .ob-welcome-waves g:nth-child(1) .wf{fill:#4b4843}
+body.dark .ob-welcome-waves g:nth-child(2) .wf{fill:#3d3b37}
+body.dark .ob-welcome-waves g:nth-child(3) .wf{fill:#302e2b}
+body.dark .ob-welcome-waves g:nth-child(4) .wf{fill:#252421}
+body.dark .ob-welcome-waves g:nth-child(5) .wf{fill:#1b1a18}
+/* Kanten und Monatspunkte wie im Chart: haarfeine Linien, die oberste kräftiger */
+.ob-welcome-waves .we{fill:none;stroke:var(--ink);stroke-opacity:.12;stroke-width:1;stroke-linejoin:round}
+.ob-welcome-waves g:first-child .we{stroke-opacity:.5;stroke-width:1.5}
+.ob-welcome-waves .wd{fill:var(--ink);fill-opacity:.6}
+body.dark .ob-welcome-waves .we{stroke:#f2efe9;stroke-opacity:.16}
+body.dark .ob-welcome-waves g:first-child .we{stroke-opacity:.72}
+body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
+.ob-mark{display:block;width:min(56vw,224px);height:auto;-webkit-user-drag:none;user-select:none;filter:drop-shadow(0 18px 26px rgba(0,0,0,.24))}
+
+.ob-welcome-top{display:flex;flex-direction:column;align-items:center;text-align:center}
+.ob-welcome .ob-title{font-size:58px;line-height:1.1;font-weight:300;letter-spacing:-.02em;margin-bottom:6px}
+.ob-welcome .ob-sub{font-size:16px;line-height:1.5;max-width:340px;margin:0}
+.ob-welcome-points{list-style:none;padding:0;margin:30px auto 26px;display:flex;flex-direction:column;gap:18px}
+.ob-welcome-points li{display:flex;align-items:flex-start;gap:14px}
+.ob-wp-ico{flex:0 0 auto;width:42px;height:42px;border-radius:12px;background:var(--fill);color:var(--ink);display:grid;place-items:center}
+.ob-wp-ico svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ob-wp-t b{display:block;font-size:16px;font-weight:500;color:var(--ink);margin:1px 0 3px}
+.ob-wp-t span{display:block;font-size:14.5px;line-height:1.45;color:var(--muted)}
+.ob-welcome-actions{display:flex;flex-direction:column;gap:10px}
+.ob-welcome-actions .btn{width:100%;text-align:center;font-size:16px;min-height:52px;border-radius:14px;display:flex;justify-content:center;align-items:center}
+.ob-welcome-actions .ob-skip{margin:0;padding:8px 0}
+@media (max-height:700px){.ob-hero{padding-top:0;margin-bottom:4px}.ob-mark{width:min(40vw,140px)}.ob-welcome .ob-title{font-size:46px}.ob-welcome-points{margin:14px auto 14px;gap:10px}.ob-wp-ico{width:38px;height:38px}.ob-wp-t span{font-size:14px}.ob-welcome-actions{gap:8px}.ob-welcome-actions .btn{min-height:48px}}
+/* iPad/Mac: alles als zentrierte Gruppe statt über die ganze Höhe verteilt */
+@media (min-width:700px) and (min-height:700px){
+  .ob-welcome{justify-content:center}
+  .ob-welcome>:not(.ob-welcome-waves){max-width:420px}
+  .ob-mark{width:250px}
+  .ob-welcome .ob-title{font-size:68px}
+  .ob-welcome-points{margin:36px auto 34px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .ob-mark{animation:obMarkIn .9s cubic-bezier(.2,.7,.2,1) .15s both}
+  .ob-welcome-top,.ob-welcome-points li,.ob-welcome-actions{animation:obWelcomeIn .6s cubic-bezier(.2,.7,.2,1) both}
+  .ob-welcome-top{animation-delay:.2s}
+  .ob-welcome-points li:nth-child(1){animation-delay:.28s}
+  .ob-welcome-points li:nth-child(2){animation-delay:.36s}
+  .ob-welcome-points li:nth-child(3){animation-delay:.44s}
+  .ob-welcome-actions{animation-delay:.52s}
+}
+@keyframes obWelcomeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes obMarkIn{from{opacity:0;transform:translateY(14px) scale(.94)}to{opacity:1;transform:none}}
 .ob-setup{justify-content:flex-start;align-items:stretch;padding:0 20px;padding-top:max(14px,env(safe-area-inset-top))}
 .ob-setup>*{width:100%;max-width:480px;margin-left:auto;margin-right:auto}
 .ob-setup .ob-progress{height:3px;gap:4px;margin:6px auto 4px}
@@ -1978,14 +1780,99 @@ body.onboarding-open{overflow:hidden}
   #legendAssets-ipad{position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   #legendAssets-ipad::-webkit-scrollbar{display:none}
 }
+/* ══════════════════════════════════════════════════════════════
+   MAC-ANSICHT (ab 1280 px): Seitenleiste wie in einer Mac-App. Jede Hauptseite teilt sich
+   in eine Bühne links (große Zahl + Chart) und eine Spalte rechts (Kacheln, Listen), damit
+   das Wichtigste auf einen Bildschirm passt, statt das iPhone-Layout in die Breite zu ziehen.
+   Darunter folgen Abschnitte über die volle Breite.
+   ══════════════════════════════════════════════════════════════ */
+.sidebar-brand{display:none}
+.desk-rail{display:contents}
 @media (min-width:1280px){
-  /* Prognose wie Vermögen: gleiche Breite, gleicher Hero- und Chart-Abstand; Inhalte darunter mittig begrenzt */
-  #page-lifetime .hero{padding:12px 0 0}
-  #page-lifetime .chart-section{padding:8px 0}
-  #page-lifetime .v2-ret,#page-lifetime #v2-lt-open,#page-lifetime .sec-h,#page-lifetime .v2-list,#page-lifetime .v2-kzw{max-width:860px;margin-left:auto;margin-right:auto}
-  #page-lifetime .v2-ret{margin-top:18px}
-  #page-lifetime .sec-h{padding:0 16px}
-  #page-import .app-content{max-width:760px}
+  :root{--side:236px;--rail:clamp(340px,27vw,420px);--gap:clamp(28px,2.4vw,44px);--stage:clamp(360px,calc(100vh - 318px),700px)}
+
+  /* Seitenleiste: eigene Fläche, Marke oben, große Klickziele */
+  .sidebar{transform:none!important;position:fixed;inset:0 auto 0 0;width:var(--side);z-index:201;display:flex;flex-direction:column;gap:2px;
+    padding:max(22px,env(safe-area-inset-top)) 12px 20px;background:var(--bg2);border-right:.5px solid var(--sep)}
+  body.dark .sidebar{background:#181817}
+  .sidebar-overlay,.sidebar-toggle{display:none!important}
+  .sidebar-header{display:none}
+  .sidebar-brand{display:flex;align-items:center;gap:11px;padding:4px 10px 24px;font-size:19px;font-weight:400;letter-spacing:-.01em;color:var(--ink);-webkit-user-select:none;user-select:none}
+  .sidebar-brand img{width:30px;height:30px;border-radius:8px;flex-shrink:0}
+  .sidebar-item{font-size:15px;letter-spacing:0;min-height:40px;padding:8px 12px;border-radius:10px;gap:12px}
+  .sidebar-item svg{width:19px;height:19px}
+  .sidebar-item.active{background:var(--fill);color:var(--ink);font-weight:500}
+  .bottom-nav{display:none}
+
+  /* Inhalt neben der Seitenleiste */
+  body{margin-left:var(--side);max-width:none;padding:0 var(--gap);padding-top:0;font-size:15px}
+  .app-header,.page>.app-content{max-width:1480px;margin-left:auto;margin-right:auto}
+  .app-header{padding:18px 0 10px}
+  .date-btn{font-size:15px;font-weight:500;color:var(--ink);background:var(--fill);padding:7px 15px;border-radius:999px}
+  .app-content{padding-bottom:40px}
+
+  /* Bühne links, Spalte rechts */
+  #page-home .app-content,#page-budget .app-content,#page-lifetime .app-content{display:grid;grid-template-columns:minmax(0,1fr) var(--rail);column-gap:var(--gap);align-items:start}
+  #page-home .hero,#page-budget .hero,#page-lifetime .hero{padding:4px 0 0}
+  #page-home .hero-value,#page-budget .hero-value,#page-lifetime .hero-value{font-size:clamp(72px,5.6vw,104px);min-height:1.15em}
+  #page-home .hero-value.kpi-has-eur::after,#page-budget .hero-value.kpi-has-eur::after,#page-lifetime .hero-value.kpi-has-eur::after{font-size:.38em}
+  #page-home .chart-section,#page-lifetime .chart-section{padding:8px 0 0}
+  #page-home .chart-wrap,#page-lifetime .chart-wrap,#page-lifetime .chart-wrap.lt-chart-wrap{height:var(--stage)}
+  #page-home .chart-wrap-net,#page-lifetime .chart-wrap-net{width:auto;margin-left:0;margin-right:0}
+  .kpi-label{font-size:13px}
+  .kpi-delta{font-size:12.5px}
+
+  /* Vermögen: Kacheln 2×2 und die Zusammensetzung in der rechten Spalte, so hoch wie die Bühne */
+  #page-home .app-content{grid-template-areas:"hero rail" "chart rail" "range rail" "flow flow"}
+  #page-home .hero{grid-area:hero}
+  #page-home .chart-section{grid-area:chart}
+  #page-home .range-bar{grid-area:range}
+  #page-home .flow-section{grid-area:flow;margin-top:32px}
+  #page-home .kpi-and-assets-wrapper{grid-area:rail;align-self:stretch;display:flex;flex-direction:column;gap:12px;padding:6px 0 0}
+  #page-home .kpi-and-assets-wrapper .kpi-grid{grid-template-columns:1fr 1fr;gap:12px;padding:0}
+  #page-home .kpi-and-assets-wrapper .kpi-item{height:112px}
+  #page-home .kpi-and-assets-wrapper .kpi-val{font-size:28px}
+  #page-home .structure-section-ipad{display:block;flex:1;position:relative;min-height:220px;max-height:none;overflow:visible;padding:0}
+  #page-home .structure-section-mobile{display:none}
+
+  /* Prognose: Ergebnis, Annahmen und Kennzahlen rechts neben dem Chart */
+  #page-lifetime .app-content{grid-template-areas:"hero rail" "chart rail" "range rail"}
+  #page-lifetime .hero{grid-area:hero}
+  #page-lifetime .chart-section{grid-area:chart}
+  #page-lifetime .range-bar{grid-area:range}
+  #page-lifetime .desk-rail{grid-area:rail;align-self:stretch;display:flex;flex-direction:column;gap:12px;padding-top:6px;contain:size;overflow-y:auto;scrollbar-width:thin}
+  #page-lifetime .desk-rail>*{max-width:none;margin:0;flex-shrink:0}
+  #page-lifetime .desk-rail .v2-kz-link{align-self:center}
+
+  /* Budget: große Zahl links, Kacheln 2×2 rechts daneben; Balken und Geldfluss darunter über die volle Breite */
+  #page-budget .app-content{grid-template-areas:"hero rail" "bars bars" "flow flow"}
+  #page-budget .hero{grid-area:hero;align-self:center}
+  #page-budget .kpi-grid{grid-area:rail;grid-template-columns:1fr 1fr;gap:12px;padding:6px 0 0!important}
+  #page-budget .kpi-item{height:112px}
+  #page-budget .kpi-val{font-size:28px}
+  #budgetBreakdownSection{grid-area:bars;padding-top:28px!important}
+  #page-budget .v2-sankey{grid-area:flow;margin-top:32px}
+  .sankey-container-html{grid-template-columns:200px 1fr 200px;min-height:420px;max-width:1040px;margin:0 auto;gap:0 12px}
+  .sankey-node-card{height:108px}
+
+  /* Daten: eine ruhige Spalte */
+  #page-import .app-content{max-width:780px}
+  #page-import .input-grid{grid-template-columns:repeat(4,1fr);gap:10px 16px}
+
+  @media (hover:hover) and (pointer:fine){
+    .sidebar-item:hover{color:var(--ink);background:color-mix(in srgb,var(--ink) 5%,transparent)}
+    .sidebar-item.active:hover{background:var(--fill)}
+    .kpi-item{transition:box-shadow .3s,transform .3s}
+    .kpi-item:hover:not(.flipped){box-shadow:0 6px 18px rgba(0,0,0,.08);transform:translateY(-2px)}
+    #legendAssets-ipad .legend-row:hover{background:var(--fill)}
+    .range-btn:hover,.icon-btn:hover{color:var(--ink)}
+    .sankey-node-card:hover:not(.flipped){box-shadow:0 6px 18px rgba(0,0,0,.08);transform:translateY(-1px)}
+  }
+}
+/* Große Bildschirme: etwas mehr Luft, breitere Spalte */
+@media (min-width:1600px){
+  :root{--side:252px;--rail:clamp(380px,25vw,460px)}
+  .sidebar-brand{font-size:20px}
 }
 </style>
 
@@ -2013,6 +1900,7 @@ body.onboarding-open{overflow:hidden}
 <!-- Sidebar Navigation (iPad) -->
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 <nav class="sidebar" id="sidebar">
+  <div class="sidebar-brand" aria-hidden="true"><img src="icon-192.png?v=2" alt="" draggable="false"><span>Assets</span></div>
   <div class="sidebar-header">
     <span class="sidebar-title">Navigation</span>
     <button class="icon-btn" id="sidebarClose" title="Schließen">
@@ -2385,7 +2273,8 @@ body.onboarding-open{overflow:hidden}
   <button class="tgl-btn" id="ltLogToggleBtn" title="Logarithmische Skala" aria-label="Log-Skala"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M4 20C9 20 11 16 13 11s4-7 7-7"/></svg></button>
 </div>
 
-<!-- Ergebnis: Ruhestand -->
+<!-- Ergebnis, Annahmen und Kennzahlen: auf dem Mac die rechte Spalte -->
+<div class="desk-rail">
 <div class="v2-ret" id="v2-lt-summary"></div>
 <button class="btn btn-ghost v2-wide" id="v2-lt-open"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Annahmen bearbeiten</button>
 
@@ -2448,6 +2337,7 @@ body.onboarding-open{overflow:hidden}
 <!-- Weitere Kennzahlen (aufklappbar) -->
 <div class="v2-kzw" id="lt-more-list"></div>
 <button class="v2-kz-link" data-info="lt-method">So wird gerechnet</button>
+</div>
 
 </div><!-- /app-content -->
 </div><!-- /page-lifetime -->
@@ -2531,7 +2421,7 @@ body.onboarding-open{overflow:hidden}
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="data-store.js?v=16"></script>
+<script src="data-store.js?v=17"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
 <script src="asset-model.js?v=4"></script>
@@ -3400,6 +3290,7 @@ const V2_ICONS={
   box:'<path d="M4 8 12 4l8 4v8l-8 4-8-4z"/><path d="m4 8 8 4 8-4M12 12v8"/>',
   bank:'<path d="M3.5 9 12 4.5 20.5 9"/><path d="M5 9.5v8M9.5 9.5v8M14.5 9.5v8M19 9.5v8"/><path d="M3.5 19.5h17"/>',
   clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  lock:'<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/><path d="M12 14.5v2"/>',
   /* Gleiche Zeichnung wie in der Navigationsleiste */
   pulse:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
   flow:'<path d="M4 8h13"/><path d="m14 5 3 3-3 3"/><path d="M20 16H7"/><path d="m10 13-3 3 3 3"/>',
@@ -3789,6 +3680,8 @@ function _renderThemeSetting(){
   const opt=(dark,label)=>`<button type="button" data-theme-set="${dark?'dark':'light'}" class="${isDark===dark?'on':''}" aria-pressed="${isDark===dark}">${label}</button>`;
   el.innerHTML=`<div class="ds-group"><div class="ds-row"><span class="ds-l">Modus</span><div class="ds-seg cd-seg" role="group">${opt(false,'Hell')}${opt(true,'Dunkel')}</div></div></div>`;
 }
+/* Statusleiste (iOS) und Browser-Leiste in der Farbe des aktuellen Modus */
+function _syncThemeColor(){const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',isDark?'#111110':'#eae8e3');}
 function setTheme(dark){if(isDark!==dark){toggleTheme();haptic('light');}}
 /* Aktionen, die selbst ein Fenster öffnen oder neu laden: Einstellungen vorher schließen */
 function _settingsRun(fn){_closeSheet(true);fn();}
@@ -5137,6 +5030,7 @@ function toggleTheme(){
   isDark=!isDark;
   document.body.classList.toggle('dark',isDark);
   appStorage.setItem('darkMode',isDark?'1':'0');
+  _syncThemeColor();
   document.getElementById('themeIcon').innerHTML=isDark?MOON:SUN;
   _renderThemeSetting();
   /* Destroy all charts so they rebuild with new theme colors */
@@ -6780,7 +6674,7 @@ function exportBackup(){
     const touch=!!(window.matchMedia&&window.matchMedia('(pointer:coarse)').matches);
     const file=touch&&typeof File==='function'?new File([JSON.stringify(doc,null,2)],name,{type:'application/json'}):null;
     if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
-      navigator.share({files:[file],title:'Vermögen – Sicherung'}).then(_backupDone).catch(error=>{if(error&&error.name==='AbortError')return;downloadJSON(doc,name);_backupDone();});
+      navigator.share({files:[file],title:'Assets – Sicherung'}).then(_backupDone).catch(error=>{if(error&&error.name==='AbortError')return;downloadJSON(doc,name);_backupDone();});
       return;
     }
     downloadJSON(doc,name);_backupDone();
@@ -10145,7 +10039,7 @@ function finishOnboarding(){
 function guideRender(){
   const overlay=document.getElementById('onboardingOverlay');
   overlay.onclick=overlay.oninput=overlay.onchange=overlay.onkeydown=null;
-  if(!_guideActive){overlay.innerHTML=guideWelcome();overlay.scrollTop=0;return;}
+  if(!_guideActive){overlay.innerHTML=guideWelcome();overlay.scrollTop=0;_welcomeWavesStart(overlay);return;}
   const keys=_guideKeys(),key=keys[_guideStep],step=_guideContent(key),last=_guideStep===keys.length-1;
   const primary=last?(_guideNew?'<button class="btn btn-primary" onclick="startSetup()">Jetzt einrichten</button>':'<button class="btn btn-primary" onclick="finishOnboarding()">Fertig</button>'):'<button class="btn btn-primary ob-nav" onclick="guideNav(1)">Weiter</button>';
   overlay.innerHTML=`<div class="ob-screen ob-tour${last?' ob-last':''}"><div class="ob-progress" role="progressbar" aria-label="Fortschritt im Rundgang" aria-valuemin="1" aria-valuemax="${keys.length}" aria-valuenow="${_guideStep+1}">${keys.map((_,i)=>`<i class="${i<_guideStep?'filled':i===_guideStep?'current':''}"><b></b></i>`).join('')}</div><div class="ob-tour-top"><span class="ob-story-who"><img src="icon-192.png" alt="" draggable="false"><span class="ob-step">${_guideStep+1} von ${keys.length} · ${step.section}</span></span><button class="ob-close" onclick="cancelOnboarding()" aria-label="Rundgang schließen">×</button></div><h1 class="ob-title" tabindex="-1">${step.title}</h1><p class="ob-sub">${step.text}</p><div class="ob-tour-content">${step.content}</div><p class="ob-tip">${step.tip}</p>${_guideStep===0?'<p class="ob-story-hint">Tippe rechts für weiter, links für zurück</p>':''}<p id="onboardingError" class="ob-error" role="alert" tabindex="-1" hidden></p><div class="ob-actions"><button class="btn btn-ghost ob-nav" onclick="${_guideStep?'guideNav(-1)':'cancelOnboarding()'}">${_guideStep?'Zurück':_guideOrigin==='welcome'?'Zum Start':'Schließen'}</button>${primary}</div>${last&&_guideNew?'<button class="ob-skip" onclick="finishOnboarding()">Später</button>':''}</div>`;
@@ -10183,8 +10077,95 @@ function _bindGuideStory(screen,last){
   screen.addEventListener('pointerup',end);
   screen.addEventListener('pointercancel',()=>{active=false;clearTimeout(hold);screen.style.transform='';screen.style.opacity='';pause(false);});
 }
+/* Startbildschirm-Logo: das Original-A aus dem App-Icon, freigestellt (logo-a.png).
+   Hintergrund wie im Icon: oben heller „Himmel“, darunter fünf Wellenschichten über die ganze Höhe,
+   die nach unten dunkler werden und sich beim Start von unten aufbauen. */
+const LOGO_MARK=`<img class="ob-mark" src="logo-a.png?v=1" alt="Assets" draggable="false">`;
+/* Wie der gestapelte Vermögens-Chart: jede Schicht mit eigenem Verlauf (Monatswerte, 0 = oben, 1000 = unten),
+   geglättet wie Chart.js (tension .35). Die oberste Linie ist das Gesamtvermögen und trägt Monatspunkte.
+   Gezeichnet wird in echten Bildschirm-Pixeln (kein gestrecktes SVG, keine CSS-Transformation), damit Linien
+   und Punkte auch auf Retina-Displays scharf bleiben. Die Werte wachsen beim Start von unten herauf und
+   bewegen sich danach ganz leicht, wie Live-Kurse. */
+const WELCOME_SERIES=[
+  [238,229,232,215,219,234,212,203,207,190,186,178,171,163],
+  [342,338,333,336,325,329,318,313,307,310,299,296,290,285],
+  [466,463,461,460,457,437,435,434,430,429,425,420,418,413],
+  [604,612,601,596,605,592,599,587,593,583,579,586,575,570],
+  [774,771,769,772,767,764,767,762,760,758,759,754,752,749]
+];
+const LOGO_WAVES=`<svg>${WELCOME_SERIES.map((ys,k)=>`<g><path class="wf"/><path class="we"/>${k?'':ys.slice(1,-1).map(()=>'<circle class="wd" r="2.6"/>').join('')}</g>`).join('')}</svg>`;
+function _splinePath(p){
+  const f=v=>Math.round(v*10)/10;
+  const cp=p.map((q,i)=>{
+    const a=p[i-1]||q,b=p[i+1]||q,d1=Math.hypot(q[0]-a[0],q[1]-a[1]),d2=Math.hypot(b[0]-q[0],b[1]-q[1]),sum=d1+d2||1;
+    const fa=.35*d1/sum,fb=.35*d2/sum;
+    return[[q[0]-fa*(b[0]-a[0]),q[1]-fa*(b[1]-a[1])],[q[0]+fb*(b[0]-a[0]),q[1]+fb*(b[1]-a[1])]];
+  });
+  let d=`M${f(p[0][0])} ${f(p[0][1])}`;
+  for(let i=0;i<p.length-1;i++)d+=`C${f(cp[i][1][0])} ${f(cp[i][1][1])} ${f(cp[i+1][0][0])} ${f(cp[i+1][0][1])} ${f(p[i+1][0])} ${f(p[i+1][1])}`;
+  return d;
+}
+/* t = Millisekunden seit dem Start; live = false zeichnet den ruhenden Endzustand */
+function _drawWelcomeWaves(svg,t,live){
+  const W=svg.clientWidth,H=svg.clientHeight;if(!W||!H)return;
+  const n=WELCOME_SERIES[0].length,amp=Math.min(6,H*.006);
+  svg.querySelectorAll('g').forEach((g,k)=>{
+    const ys=WELCOME_SERIES[k];if(!ys)return;
+    const e=live?Math.min(1,Math.max(0,(t-120*k)/1300)):1,rise=1-Math.pow(1-e,3);
+    const sway=live?amp*Math.min(1,Math.max(0,(t-1300-120*k)/1500)):0;
+    const p=ys.map((y,i)=>{
+      const v=y/1000*H+(sway?sway*Math.sin(t/(9000+k*1300)*2*Math.PI+i*.9+k*1.7):0);
+      return[(-20+i*440/(n-1))/400*W,H-(H-v)*rise];
+    });
+    const d=_splinePath(p),[fill,edge,...dots]=g.children;
+    fill.setAttribute('d',`${d}V${H}H${Math.round(p[0][0])}Z`);
+    edge.setAttribute('d',d);
+    dots.forEach((c,i)=>{c.setAttribute('cx',Math.round(p[i+1][0]*10)/10);c.setAttribute('cy',Math.round(p[i+1][1]*10)/10);});
+  });
+}
+function _welcomeWavesStart(root){
+  const svg=root&&typeof root.querySelector==='function'?root.querySelector('.ob-welcome-waves svg'):null;
+  if(!svg||typeof svg.querySelectorAll!=='function'||typeof requestAnimationFrame!=='function')return;
+  const reduce=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if(reduce){
+    _drawWelcomeWaves(svg,0,false);
+    if(typeof ResizeObserver==='function')new ResizeObserver((_,ro)=>{if(!svg.isConnected)return ro.disconnect();_drawWelcomeWaves(svg,0,false);}).observe(svg);
+    return;
+  }
+  let t0=null,last=-1e9;
+  const frame=now=>{
+    // Startbildschirm geschlossen oder ersetzt: Animation endet (wird beim nächsten Öffnen neu gestartet)
+    if(!svg.isConnected||!svg.getClientRects().length)return;
+    if(t0===null)t0=now;
+    // beim Aufbau flüssig, danach reichen ~30 Bilder pro Sekunde für die leichte Bewegung
+    if(now-t0<2000||now-last>=32){last=now;_drawWelcomeWaves(svg,now-t0,true);}
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}
+/* Startbildschirm: großes Logo in den Wellen des Icons, drei Vorteile, Aktionen unten.
+   Auf dem iPad als zentrierte Gruppe. */
 function guideWelcome(){
-  return `<div class="ob-screen ob-welcome"><img class="ob-welcome-mark" src="icon-192.png?v=2" alt="" draggable="false"><h1 class="ob-title">Vermögen</h1><p class="ob-sub">Dein Vermögen, dein Monat, deine Zukunft.<br>Starte mit ein paar Schätzwerten – genauer werden kannst du später.</p><div class="ob-welcome-actions"><button class="btn btn-primary" onclick="startSetup()">Geführt einrichten</button><label class="btn btn-ghost ob-import" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">Bestehende Daten laden<input type="file" accept=".json,.csv,application/json,text/csv" style="display:none" onchange="hideOnboarding();document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label><button class="ob-skip" onclick="_v2LoadDemo()">Mit Demo-Daten ausprobieren</button></div><p class="ob-tip">Etwa drei Minuten, ohne Unterlagen. Jeder Schritt lässt sich überspringen.</p></div>`;
+  const ico=k=>`<span class="ob-wp-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${V2_ICONS[k]}</svg></span>`;
+  const point=(k,title,text)=>`<li>${ico(k)}<span class="ob-wp-t"><b>${title}</b><span>${text}</span></span></li>`;
+  return `<div class="ob-screen ob-welcome">
+    <div class="ob-welcome-waves" aria-hidden="true">${LOGO_WAVES}</div>
+    <div class="ob-hero">${LOGO_MARK}</div>
+    <div class="ob-welcome-top">
+      <h1 class="ob-title">Assets</h1>
+      <p class="ob-sub">Dein Vermögen, dein Monat, deine Zukunft.</p>
+    </div>
+    <ul class="ob-welcome-points">
+      ${point('chart','Alles im Blick','Konten, Depots, Immobilien und Kredite an einem Ort.')}
+      ${point('clock','Eine Minute im Monat','Du änderst nur, was sich bewegt hat.')}
+      ${point('lock','Privat auf diesem Gerät','Kein Konto, keine Bankverbindung, keine Werbung.')}
+    </ul>
+    <div class="ob-welcome-actions">
+      <button class="btn btn-primary" onclick="startSetup()">Geführt einrichten</button>
+      <label class="btn btn-ghost ob-import" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">Bestehende Daten laden<input type="file" accept=".json,.csv,application/json,text/csv" style="display:none" onchange="hideOnboarding();document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
+      <button class="ob-skip" onclick="_v2LoadDemo()">Mit Demo-Daten ausprobieren</button>
+    </div>
+  </div>`;
 }
 /* ── Einrichtung: eine Frage je Screen, Schätzwerte genügen, jeder Schritt ist optional.
    Erfasst wird nur das Nötigste; Stückzahlen, Kurse, Darlehensverträge und Einzelposten
@@ -10964,6 +10945,7 @@ function initApp(){
       isDark=true;
     }
     document.body.classList.toggle('dark',isDark);
+    _syncThemeColor();
     document.getElementById('themeIcon').innerHTML=isDark?MOON:SUN;
     /* Listen for system theme changes */
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{

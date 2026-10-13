@@ -162,17 +162,24 @@
       "custom": false,
       "ticker": "EUNL.DE",
       "unit": {
-        "name": "Stk",
+        "name": "Stück",
         "key": "msci-world-a0rpwh"
       },
       "liquidity": "liquid",
-      "valuation": "manual",
+      "valuation": "market",
       "instrument": {
         "provider": "yahoo",
         "symbol": "EUNL.DE",
         "exchange": "XETRA",
         "currency": "EUR",
-        "name": "MSCI World - A0RPWH"
+        "name": "iShares Core MSCI World UCITS ETF USD (Acc)"
+      },
+      "lastQuote": {
+        "priceEUR": 132.12,
+        "price": 132.12,
+        "currency": "EUR",
+        "asOf": "2026-10-13T10:36:49.000Z",
+        "fetchedAt": "2026-10-13T10:52:59.677Z"
       }
     },
     {
@@ -184,17 +191,24 @@
       "custom": false,
       "ticker": "SXR8.DE",
       "unit": {
-        "name": "Stk",
+        "name": "Stück",
         "key": "s-p-500-a0yedg"
       },
       "liquidity": "liquid",
-      "valuation": "manual",
+      "valuation": "market",
       "instrument": {
         "provider": "yahoo",
         "symbol": "SXR8.DE",
         "exchange": "XETRA",
         "currency": "EUR",
-        "name": "S&P 500 - A0YEDG"
+        "name": "iShares Core S&P 500 UCITS ETF USD (Acc)"
+      },
+      "lastQuote": {
+        "priceEUR": 752.8,
+        "price": 752.8,
+        "currency": "EUR",
+        "asOf": "2026-10-13T10:37:36.000Z",
+        "fetchedAt": "2026-10-13T10:52:59.677Z"
       }
     },
     {
@@ -204,19 +218,26 @@
       "groupId": "group-3",
       "archived": false,
       "custom": false,
-      "ticker": "XBTEUR",
+      "ticker": "BTC",
       "unit": {
         "name": "BTC",
         "key": "bitcoin"
       },
       "liquidity": "liquid",
-      "valuation": "manual",
+      "valuation": "market",
       "instrument": {
         "provider": "bitcoin",
         "symbol": "XBTEUR",
         "exchange": "Kraken",
         "currency": "EUR",
-        "name": "Bitcoin / EUR"
+        "name": "Bitcoin"
+      },
+      "lastQuote": {
+        "priceEUR": 74430.5,
+        "price": 74430.5,
+        "currency": "EUR",
+        "asOf": "2026-10-13T10:53:49.676Z",
+        "fetchedAt": "2026-10-13T10:52:59.677Z"
       }
     },
     {
@@ -507,7 +528,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 56.12,
-          "value": 27085.98
+          "value": 27256.09
         },
         {
           "positionId": "bitcoin",
@@ -588,7 +609,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 57.24,
-          "value": 28727.46
+          "value": 29089.45
         },
         {
           "positionId": "bitcoin",
@@ -669,7 +690,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 58.36,
-          "value": 28137.16
+          "value": 28670.66
         },
         {
           "positionId": "bitcoin",
@@ -750,7 +771,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 59.48,
-          "value": 29002.89
+          "value": 29738.41
         },
         {
           "positionId": "bitcoin",
@@ -831,7 +852,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 60.61,
-          "value": 29751.75
+          "value": 30697.87
         },
         {
           "positionId": "bitcoin",
@@ -912,7 +933,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 61.73,
-          "value": 29827.11
+          "value": 30968.92
         },
         {
           "positionId": "bitcoin",
@@ -993,7 +1014,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 62.85,
-          "value": 28022.16
+          "value": 29277.61
         },
         {
           "positionId": "bitcoin",
@@ -1074,7 +1095,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 63.97,
-          "value": 29270.69
+          "value": 30774.15
         },
         {
           "positionId": "bitcoin",
@@ -1155,7 +1176,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 65.09,
-          "value": 29284.7
+          "value": 30982.25
         },
         {
           "positionId": "bitcoin",
@@ -1236,7 +1257,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 66.21,
-          "value": 33161.13
+          "value": 35303.74
         },
         {
           "positionId": "bitcoin",
@@ -1317,7 +1338,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 67.33,
-          "value": 34200.76
+          "value": 36639.23
         },
         {
           "positionId": "bitcoin",
@@ -1398,7 +1419,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 68.45,
-          "value": 35445.19
+          "value": 38210.87
         },
         {
           "positionId": "bitcoin",
@@ -1479,7 +1500,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 69.58,
-          "value": 35801.82
+          "value": 38837.73
         },
         {
           "positionId": "bitcoin",
@@ -1560,7 +1581,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 70.7,
-          "value": 33692.08
+          "value": 36778.65
         },
         {
           "positionId": "bitcoin",
@@ -1641,7 +1662,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 71.82,
-          "value": 33173.21
+          "value": 36439.68
         },
         {
           "positionId": "bitcoin",
@@ -1722,7 +1743,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 72.94,
-          "value": 37350.31
+          "value": 41285.77
         },
         {
           "positionId": "bitcoin",
@@ -1803,7 +1824,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 74.06,
-          "value": 39160.43
+          "value": 43558.48
         },
         {
           "positionId": "bitcoin",
@@ -1884,7 +1905,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 75.18,
-          "value": 40548.82
+          "value": 45386.07
         },
         {
           "positionId": "bitcoin",
@@ -1965,7 +1986,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 76.3,
-          "value": 43450.85
+          "value": 48939.76
         },
         {
           "positionId": "bitcoin",
@@ -2046,7 +2067,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 77.42,
-          "value": 43267.61
+          "value": 49039.45
         },
         {
           "positionId": "bitcoin",
@@ -2127,7 +2148,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 78.55,
-          "value": 42811.61
+          "value": 48827.37
         },
         {
           "positionId": "bitcoin",
@@ -2208,7 +2229,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 79.67,
-          "value": 43003.97
+          "value": 49354.81
         },
         {
           "positionId": "bitcoin",
@@ -2289,7 +2310,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 80.79,
-          "value": 45599.63
+          "value": 52662.49
         },
         {
           "positionId": "bitcoin",
@@ -2370,7 +2391,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 81.91,
-          "value": 45918.38
+          "value": 53363.68
         },
         {
           "positionId": "bitcoin",
@@ -2451,7 +2472,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 83.03,
-          "value": 47470.93
+          "value": 55514.46
         },
         {
           "positionId": "bitcoin",
@@ -2532,7 +2553,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 84.15,
-          "value": 47371.26
+          "value": 55745.83
         },
         {
           "positionId": "bitcoin",
@@ -2613,7 +2634,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 85.27,
-          "value": 48517.59
+          "value": 57453.41
         },
         {
           "positionId": "bitcoin",
@@ -2694,7 +2715,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 86.39,
-          "value": 50637.97
+          "value": 60340.93
         },
         {
           "positionId": "bitcoin",
@@ -2775,7 +2796,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 87.52,
-          "value": 52532.46
+          "value": 62991.59
         },
         {
           "positionId": "bitcoin",
@@ -2856,7 +2877,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 88.64,
-          "value": 53810.44
+          "value": 64929.27
         },
         {
           "positionId": "bitcoin",
@@ -2937,7 +2958,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 89.76,
-          "value": 55304.29
+          "value": 67150.92
         },
         {
           "positionId": "bitcoin",
@@ -3018,7 +3039,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 90.88,
-          "value": 55366.09
+          "value": 67648.18
         },
         {
           "positionId": "bitcoin",
@@ -3099,7 +3120,7 @@
         {
           "positionId": "s-p-500-a0yedg",
           "quantity": 92,
-          "value": 56120
+          "value": 69000
         },
         {
           "positionId": "bitcoin",

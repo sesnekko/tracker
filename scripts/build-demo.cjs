@@ -14,8 +14,8 @@ doc.snapshots = doc.snapshots.filter(s => s.month <= '2026-10');
 doc.schemaVersion = Data.empty().schemaVersion;
 doc.preferences.onboardingCompleted = true;
 
-// All example prices are fictional. Manual valuation makes the demo reproducible
-// offline and avoids silently replacing example values with actual market prices.
+// The history is fictional. Most positions are valued manually so the demo stays reproducible
+// offline; the two ETFs and Bitcoin use live prices (see below) to show automatic quotes.
 for (const p of doc.positions) {
   p.liquidity = ['bav', 'illiquid', 'liab'].includes(p.category) ? 'illiquid' : 'liquid';
   p.valuation = 'manual';
@@ -27,6 +27,20 @@ for (const p of doc.positions) {
   if (p.id === 'gold') { p.category = 'metal'; p.name = 'Gold (physisch)'; p.ticker = null; }
   if (p.id === 'bausparvertrag') p.name = 'Betriebliche Altersvorsorge';
   if (p.id === 'wohnung-marktwert') p.category = 'realEstate';
+}
+// Live prices for the two ETFs and Bitcoin (adopted from the demo export of 13 Oct 2026). The stored
+// quote is the offline fallback; the app replaces it with the current price when it opens.
+const liveQuote = (price, asOf) => ({priceEUR: price, price, currency: 'EUR', asOf, fetchedAt: '2026-10-13T10:52:59.677Z'});
+const live = {
+  'msci-world-a0rpwh': {name: 'iShares Core MSCI World UCITS ETF USD (Acc)', quote: liveQuote(132.12, '2026-10-13T10:36:49.000Z')},
+  's-p-500-a0yedg': {name: 'iShares Core S&P 500 UCITS ETF USD (Acc)', quote: liveQuote(752.8, '2026-10-13T10:37:36.000Z')},
+  'bitcoin': {name: 'Bitcoin', ticker: 'BTC', quote: liveQuote(74430.5, '2026-10-13T10:53:49.676Z')}
+};
+for (const [id, l] of Object.entries(live)) {
+  const p = doc.positions.find(x => x.id === id);
+  p.valuation = 'market'; p.instrument.name = l.name; p.lastQuote = l.quote;
+  if (l.ticker) p.ticker = l.ticker;
+  if (p.unit.name === 'Stk') p.unit.name = 'Stück';
 }
 doc.groups.find(g => g.id === 'group-5').name = 'Altersvorsorge';
 doc.groups.find(g => g.id === 'group-5').assumptions.availableFromAge = 67;
@@ -86,7 +100,7 @@ function pricePath(start, end, vol, beta = 1, crypto = false) {
 const holdings = (from, to, digits) => months.map((_, i) => +(from + (to - from) * i / (n - 1)).toFixed(digits));
 const market = {
   'msci-world-a0rpwh': {price: pricePath(84, 131, 0.025), qty: holdings(560, 880, 2)},
-  's-p-500-a0yedg': {price: pricePath(470, 610, 0.03, 1.1), qty: holdings(55, 92, 2)},
+  's-p-500-a0yedg': {price: pricePath(470, 750, 0.03, 1.1), qty: holdings(55, 92, 2)},/* endet nahe am Live-Kurs */
   'bitcoin': {price: pricePath(39000, 74000, 0.12, 1.4, true), qty: holdings(0.3, 0.55, 4)},
   'ethereum': {price: pricePath(2100, 3300, 0.14, 1.4, true), qty: holdings(1.5, 2.4, 3)},
   'aktie-apple': {price: pricePath(170, 228, 0.06, 1.2), qty: holdings(40, 65, 0)},
