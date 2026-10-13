@@ -874,7 +874,9 @@ body{font-size:15px;line-height:1.45}
 .app-header{padding:6px 0 0}
 /* Installierte iPhone-App: Kopfzeile unterhalb des Unschärfe-Verlaufs, den iOS unter die Statusleiste legt */
 @media (display-mode: standalone) and (max-width:767px){body{padding-top:calc(env(safe-area-inset-top) + 18px)}}
-.date-btn{font-size:15px;padding:6px 0}
+.date-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:34px;min-width:34px;padding:0 13px 0 9px;border-radius:17px;background:var(--fill);color:var(--ink);font-size:14px;font-weight:500;white-space:nowrap}
+.date-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.date-btn.is-current{width:34px;padding:0}
 .icon-btn,.live-status{width:34px;height:34px;border-radius:50%;background:var(--fill);color:var(--ink);display:flex;align-items:center;justify-content:center}
 .icon-btn svg{width:16px;height:16px}
 .live-dot{margin:0}
@@ -1400,6 +1402,46 @@ body.dark .ask{background:var(--bg2);box-shadow:0 0 0 .5px var(--border),0 18px 
 .sankey-node-front,.sankey-node-back{border-radius:12px;background:var(--card)}
 .sankey-node-back-label{text-transform:none;letter-spacing:0;font-size:11px}
 
+/* Lebensphasen: Grün = Vermögen wächst, Terrakotta = Entnahme, Grau = Rente */
+:root{--lp1:#3a5e42;--lp2:#84a088;--lp3:#a3624f;--lp4:#9a958b}
+body.dark{--lp1:#7aaa82;--lp2:#a9c3ad;--lp3:#c07058;--lp4:#8d887c}
+.lp-p1{background:var(--lp1)}.lp-p2{background:var(--lp2)}.lp-p3{background:var(--lp3)}.lp-p4{background:var(--lp4)}
+.lp-bar{display:flex;gap:3px;height:10px;margin-top:14px}
+.lp-bar i{display:block;height:100%;border-radius:3px;min-width:4px}
+.lp-ticks{position:relative;height:18px;margin-top:6px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lp-ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.lp-ticks span.first{transform:none}
+.lp-ticks span.last{transform:translateX(-100%)}
+.v2-lp{background:var(--card);border-radius:16px;padding:16px 16px 6px;margin-top:12px}
+.v2-lp:empty{display:none}
+.v2-lp-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.v2-lp-head .v2-lp-btn{border:none;font:inherit;font-size:13.5px;font-weight:500;color:var(--ink);background:var(--fill);padding:5px 12px;border-radius:999px;cursor:pointer}
+.v2-lp-rows{margin-top:8px}
+.v2-lp-row{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:8px 0;background:none;border:none;font:inherit;color:inherit;text-align:left;cursor:pointer;box-shadow:inset 0 .5px 0 var(--sep)}
+.v2-lp-row>i{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.v2-lp-row .t{flex:1;min-width:0;display:flex;flex-direction:column}
+.v2-lp-row .t b{font-weight:500;font-size:15px;color:var(--ink)}
+.v2-lp-row .t small{font-size:13px;color:var(--muted);line-height:1.35;margin-top:2px}
+.v2-lp-row .v{display:flex;flex-direction:column;align-items:flex-end;text-align:right;white-space:nowrap}
+.v2-lp-row .v b{font-weight:400;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
+.v2-lp-row .v small{font-size:12.5px;color:var(--muted)}
+.v2-lp-row.off{opacity:.45}
+.v2-lp-row.warn .v b{color:var(--red)}
+.v2-lp-row:active{opacity:.7}
+.lp-edit{display:block;width:100%;background:var(--fill);border:none;border-radius:12px;padding:12px 12px 6px;font:inherit;color:inherit;text-align:left;cursor:pointer;margin-bottom:6px}
+.lp-edit-t{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:15px;line-height:1.4;color:var(--ink)}
+.lp-edit-t small{font-size:13px;color:var(--muted);white-space:nowrap}
+.lp-head{position:sticky;top:-6px;z-index:2;background:var(--bg2);margin:0 -16px;padding:6px 16px 4px}
+.lp-head .lp-card{background:var(--card);border-radius:14px;padding:2px 14px 6px;margin-top:6px}
+.lp-pv{display:flex;align-items:baseline;gap:10px;padding:10px 0 2px}
+.lp-pv b{font-size:28px;font-weight:300;line-height:1.1;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.lp-pv b.up{color:var(--green)}.lp-pv b.down{color:var(--red)}
+.lp-pv span{font-size:13px;color:var(--muted);line-height:1.4}
+.ds-group-t.lp-t{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ds-group-t.lp-t>span:first-child{display:flex;align-items:center;gap:8px;color:var(--ink);font-weight:500}
+.ds-group-t.lp-t i{width:10px;height:10px;border-radius:3px}
+.ds-group-t.lp-t .lp-range{font-variant-numeric:tabular-nums}
+
 /* Prognose */
 #page-lifetime>.app-content{display:block}
 #page-lifetime #lt-progress-collapse{display:none!important}
@@ -1808,7 +1850,6 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
   body{margin-left:var(--side);max-width:none;padding:0 var(--gap);padding-top:0;font-size:15px}
   .app-header,.page>.app-content{max-width:1480px;margin-left:auto;margin-right:auto}
   .app-header{padding:18px 0 10px}
-  .date-btn{font-size:15px;font-weight:500;color:var(--ink);background:var(--fill);padding:7px 15px;border-radius:999px}
   .app-content{padding-bottom:40px}
 
   /* Bühne links, Spalte rechts */
@@ -1887,7 +1928,7 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
     <button class="icon-btn sidebar-toggle" id="sidebarToggle" title="Menü">
       <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
-    <button class="date-btn" id="dateBtn">Apr 2026</button>
+    <button class="date-btn" id="dateBtn" aria-label="Monat wählen"></button>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <div class="live-status" role="button" tabindex="0" aria-label="Kursstatus"><span class="live-dot" id="liveDot"></span></div>
@@ -2065,20 +2106,18 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
   <summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="v2-sum-t"><span class="section-title">Prognose &amp; Annahmen</span><span class="v2-sum-sub" data-sub="forecast"></span></span></summary>
   <div class="input-collapsible-body">
     <div class="v2-preview"><b id="v2-prev-pct">—</b><span><span id="v2-prev-txt">Erfolgschance</span><br>Änderungen werden sofort übernommen</span></div>
-    <span class="cat-label">Lebensplanung &amp; Bedarf</span>
+    <span class="cat-label">Lebensplanung</span>
     <div class="lt-panel">
     <div class="input-grid">
       <div class="input-group"><label data-info="lt-birth-year">Geburtsjahr</label><button type="button" class="num-input ds-date-btn is-empty" data-date-for="lt-birth-year" data-date-mode="year" data-date-title="Geburtsjahr" data-date-ph="Auswählen" data-date-optional="1" data-date-min="1920" data-date-max="2015">Auswählen</button><input type="hidden" id="lt-birth-year"></div>
       <div class="input-group"><label data-info="lt-life-expect">Lebenserwartung</label><input class="num-input lt-set" type="number" id="lt-life-expect" min="50" max="120"></div>
       <div class="input-group"><label data-info="lt-plan-horizon">Planen bis Alter</label><input class="num-input lt-set" type="number" id="lt-plan-horizon" min="60" max="120" placeholder="95"></div>
       <div class="input-group"><label data-info="lt-inflation">Inflation %</label><input class="num-input lt-set" type="text" inputmode="decimal" id="lt-inflation"></div>
-      <div class="input-group"><label data-info="lt-save-until">Sparen bis Alter</label><input class="num-input lt-set" type="number" id="lt-save-until" min="20" max="120"></div>
-      <div class="input-group"><label data-info="lt-savings-growth">Sparrate +% p.a.</label><input class="num-input lt-set" type="text" inputmode="decimal" id="lt-savings-growth" placeholder="0"></div>
-      <div class="input-group"><label data-info="lt-withdraw-from">Ruhestand ab</label><input class="num-input lt-set" type="number" id="lt-withdraw-from" min="20" max="120"></div>
-      <div class="input-group"><label data-info="lt-monthly-withdraw">Bedarf €/Monat</label><input class="num-input lt-set" type="text" inputmode="decimal" id="lt-monthly-withdraw"></div>
       <div class="input-group"><label data-info="lt-safety">Sicherheit %</label><input class="num-input lt-set" type="number" id="lt-safety" min="50" max="99" placeholder="85"></div>
     </div>
     </div>
+    <span class="cat-label" data-info="lt-phases">Lebensphasen</span>
+    <button type="button" class="lp-edit" id="ltPhasesEdit" onclick="openPhasesSheet()"></button>
     <span class="cat-label">Einmalige Ereignisse</span>
     <div class="lt-panel" id="lt-events"></div>
     <span class="cat-label">Rendite &amp; Sparrate je Asset</span>
@@ -2276,6 +2315,7 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 <!-- Ergebnis, Annahmen und Kennzahlen: auf dem Mac die rechte Spalte -->
 <div class="desk-rail">
 <div class="v2-ret" id="v2-lt-summary"></div>
+<div class="v2-lp" id="v2-lt-phases"></div>
 <button class="btn btn-ghost v2-wide" id="v2-lt-open"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Annahmen bearbeiten</button>
 
 <!-- Lifetime KPIs -->
@@ -2421,7 +2461,7 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="data-store.js?v=17"></script>
+<script src="data-store.js?v=18"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
 <script src="asset-model.js?v=4"></script>
@@ -2698,15 +2738,16 @@ const INFO={
   'lt-life-expect':['Lebenserwartung','<p>Nur zur Orientierung im Lebensbalken. Die Prognose rechnet bis „Planen bis Alter“, weil etwa die Hälfte der Menschen älter wird als die durchschnittliche Lebenserwartung.</p>'],
   'lt-plan-horizon':['Planen bis Alter','<p>Bis zu diesem Alter muss das Vermögen reichen. Standard 95 – ein Puffer für ein langes Leben.</p>'],
   'lt-inflation':['Inflation','<p>Jährliche Preissteigerung. Alle Beträge in den Einstellungen sind in heutiger Kaufkraft; Bedarf, Renten und Ereignisse steigen mit der Inflation. Alle Ergebnisse werden in heutiger Kaufkraft angezeigt.</p>'],
-  'lt-save-until':['Sparen bis Alter','<p>Bis zu diesem Alter fließen die Sparraten aus den Asset-Parametern. Gilt auch als Ende der Erwerbstätigkeit für die Hochrechnung der Rentenpunkte.</p>'],
+  'lt-phases':['Lebensphasen','<p>Die Prognose rechnet in vier Phasen:</p><p><strong>1 Ansparen</strong>: Du arbeitest und sparst wie heute (Sparraten je Anlage).</p><p><strong>2 Weiterarbeiten</strong>: Du arbeitest weiter, ggf. in Teilzeit, und stellst das private Sparen ein oder reduzierst es. Rentenpunkte, Dienstzeit und Betriebsrente wachsen anteilig zur Arbeitszeit, Altersvorsorgedepots laufen weiter. Optional entnimmst du einen Zuschuss aus dem Vermögen.</p><p><strong>3 Vorruhestand</strong>: Kein Arbeitseinkommen, keine Einzahlungen mehr. Der Bedarf kommt aus dem liquiden Vermögen, abzüglich Renten, die schon laufen.</p><p><strong>4 Rente</strong>: Ab dem Rentenbeginn decken Renten und Pensionen einen Teil des Bedarfs, den Rest trägt das Vermögen.</p><p>Eine Phase entfällt, wenn sie dasselbe Alter hat wie die vorige.</p>'],
+  'lt-save-until':['Ansparen bis Alter','<p>Bis zu diesem Alter fließen die Sparraten aus den Asset-Parametern voll. Danach beginnt das Weiterarbeiten (Phase 2).</p>'],
   'lt-savings-growth':['Sparraten-Steigerung','<p>Um wie viel Prozent die Sparraten jährlich steigen, z. B. mit Gehaltserhöhungen. 0 = gleichbleibende Beträge.</p>'],
-  'lt-withdraw-from':['Ruhestand ab Alter','<p>Ab diesem Alter wird der Bedarf (abzüglich Renten) aus dem verfügbaren Vermögen entnommen. Kann vor der gesetzlichen Rente liegen – die Lücke trägt dann das Vermögen.</p>'],
-  'lt-monthly-withdraw':['Bedarf €/Monat','<p>Monatliche Ausgaben im Ruhestand, netto und in heutiger Kaufkraft. Renten und Einkünfte werden davon abgezogen, nur der Rest wird entnommen.</p>'],
+  'lt-withdraw-from':['Weiterarbeiten bis Alter','<p>Ende der Erwerbstätigkeit. Ab diesem Alter wird der Bedarf (abzüglich Renten) aus dem verfügbaren Vermögen entnommen. Liegt es vor dem Rentenbeginn, trägt das Vermögen die Lücke (Vorruhestand).</p>'],
+  'lt-monthly-withdraw':['Bedarf €/Monat','<p>Monatliche Ausgaben im Vorruhestand, netto und in heutiger Kaufkraft. Ohne eigenen Wert gilt er auch in der Rente. Renten und Einkünfte werden davon abgezogen, nur der Rest wird entnommen.</p>'],
   'lt-safety':['Sicherheitsniveau','<p>In wie viel Prozent der 500 simulierten Marktverläufe das Geld bis „Planen bis Alter“ reichen muss. Bestimmt „Rente möglich ab“. 85–90 % sind ein gängiger Wert.</p>'],
   'drv-points':['Rentenpunkte heute','<p>Deine bisher gesammelten Entgeltpunkte. Stehen in der jährlichen Renteninformation bzw. Rentenauskunft der Deutschen Rentenversicherung.</p><p>Ein Jahr mit Durchschnittsverdienst ergibt 1 Punkt.</p>'],
-  'drv-salary':['Bruttojahresgehalt','<p>Dein aktuelles rentenversicherungspflichtiges Bruttogehalt pro Jahr. Daraus werden die Punkte bis „Sparen bis Alter“ hochgerechnet (Gehalt ÷ Durchschnittsentgelt, höchstens bis zur Beitragsbemessungsgrenze).</p><p>Mit Erwerbsminderungsrente: dein Hinzuverdienst pro Jahr.</p><p>Annahme: Dein Gehalt wächst wie die Durchschnittslöhne.</p>'],
+  'drv-salary':['Bruttojahresgehalt','<p>Dein aktuelles rentenversicherungspflichtiges Bruttogehalt pro Jahr. Daraus werden die Punkte bis zum Ende der Arbeit hochgerechnet, beim Weiterarbeiten anteilig zur Arbeitszeit (Gehalt ÷ Durchschnittsentgelt, höchstens bis zur Beitragsbemessungsgrenze).</p><p>Mit Erwerbsminderungsrente: dein Hinzuverdienst pro Jahr.</p><p>Annahme: Dein Gehalt wächst wie die Durchschnittslöhne.</p>'],
   'drv-emType':['Erwerbsminderungsrente','<p>Nur ausfüllen, wenn bereits eine Rente wegen Erwerbsminderung bezogen wird – bei dir oder bei einer weiteren Person.</p><p><strong>Teilweise</strong>: Du kannst noch 3 bis unter 6 Stunden am Tag arbeiten, die Rente ist halb so hoch wie die volle. <strong>Voll</strong>: unter 3 Stunden. Bekommst du bei teilweiser Erwerbsminderung die volle Rente, weil du keine Teilzeitstelle findest (Arbeitsmarktrente), wähle „Voll“.</p><p>Ein Hinzuverdienst (z. B. Teilzeit) gehört ins Feld „Brutto/Jahr“: Er bringt weitere Rentenpunkte und wird mit der Hinzuverdienstgrenze verglichen.</p>'],
-  'drv-em':['EM-Rente netto','<p>Monatlicher Zahlbetrag laut Rentenbescheid nach Kranken- und Pflegeversicherung, abzüglich geschätzter Einkommensteuer.</p><p>In der Prognose deckt sie ab „Ruhestand ab Alter“ einen Teil des Bedarfs. Vorher wird angenommen, dass sie als Einnahme im Budget steht und in die Sparraten einfließt.</p>'],
+  'drv-em':['EM-Rente netto','<p>Monatlicher Zahlbetrag laut Rentenbescheid nach Kranken- und Pflegeversicherung, abzüglich geschätzter Einkommensteuer.</p><p>In der Prognose deckt sie ab dem Vorruhestand einen Teil des Bedarfs. Vorher wird angenommen, dass sie als Einnahme im Budget steht und in die Sparraten einfließt.</p>'],
   'drv-emUntil':['Läuft bis Jahr','<p>Leer = bis zur Regelaltersgrenze. Dann wird sie zur Altersrente, die mindestens so hoch ist wie die volle Erwerbsminderungsrente.</p><p>Befristete Renten (meist 3 Jahre) werden oft verlängert. Trag ein Jahr nur ein, wenn du davon ausgehst, dass die Rente dann endet.</p>'],
   'drv-emLimit':['Hinzuverdienstgrenze','<p>Deine persönliche Grenze bei teilweiser Erwerbsminderung steht im Rentenbescheid. Sie liegt 2026 bei mindestens 41.527,50 € im Jahr. Leer = Mindestgrenze.</p><p>Bei voller Erwerbsminderung gilt 2026 einheitlich 20.763,75 €. Vom Betrag über der Grenze werden 40 % auf die Rente angerechnet.</p>'],
   'drv-age':['Regelaltersgrenze','<p>Ab diesem Alter wird die gesetzliche Rente ohne Abschläge gezahlt. Wird aus dem Geburtsjahr berechnet (ab Jahrgang 1964: 67) und kann überschrieben werden.</p>'],
@@ -2741,7 +2782,7 @@ const INFO={
   'loan-extra':['Sondertilgung €/Jahr','<p>Zusätzliche jährliche Tilgung, solange du arbeitest.</p>'],
   'loan-fixed':['Zinsbindung bis','<p>Jahr, in dem die Zinsbindung endet. Danach rechnet die Prognose mit dem Anschlusszins.</p>'],
   'loan-follow':['Anschlusszins %','<p>Erwarteter Zins nach Ende der Zinsbindung. Leer = gleicher Zins wie bisher.</p>'],
-  'lt-method':['So wird gerechnet','<p>Die Prognose simuliert dein Vermögen Jahr für Jahr in 500 zufälligen Marktverläufen. Die Linie zeigt den Median, das Band das 10. bis 90. Perzentil. Alle Werte sind in heutiger Kaufkraft.</p><p>Ablauf je Jahr: Wertentwicklung nach Rendite und Schwankung (Korrelation 0,3) → Kreditzins und Tilgung → Sparraten → einmalige Ereignisse → im Ruhestand Entnahme von Bedarf minus Renten (plus laufende Kreditraten), anteilig aus den verfügbaren Anlagen, inkl. pauschalem Abzug.</p><p>Sachwerte werden nicht verkauft. Steuern sind pauschal abgebildet. Die Prognose ist eine Modellrechnung und keine Anlageberatung.</p>']
+  'lt-method':['So wird gerechnet','<p>Die Prognose simuliert dein Vermögen Jahr für Jahr in 500 zufälligen Marktverläufen. Die Linie zeigt den Median, das Band das 10. bis 90. Perzentil. Alle Werte sind in heutiger Kaufkraft.</p><p>Ablauf je Jahr: Wertentwicklung nach Rendite und Schwankung (Korrelation 0,3) → Kreditzins und Tilgung → Sparraten je Lebensphase (Ansparen voll, Weiterarbeiten anteilig) → einmalige Ereignisse → im Vorruhestand und in der Rente Entnahme von Bedarf minus Renten (plus laufende Kreditraten), anteilig aus den verfügbaren Anlagen, inkl. pauschalem Abzug.</p><p>Sachwerte werden nicht verkauft. Steuern sind pauschal abgebildet. Die Prognose ist eine Modellrechnung und keine Anlageberatung.</p>']
 };
 function showInfo(key){
   const it=INFO[key];
@@ -2870,6 +2911,7 @@ function cd(){return{responsive:true,maintainAspectRatio:false,events:[],plugins
 /* ── Month Picker ── */
 let picker;
 let _pickerYear;
+const CAL_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>';
 function buildPicker(){
   const btn=document.getElementById('dateBtn');
   const overlay=document.getElementById('pickerOverlay');
@@ -2878,10 +2920,13 @@ function buildPicker(){
   const yearLabel=document.getElementById('pickerYearLabel');
   
   function updateBtn(){
-    const[y,m]=selectedMonth.split('-');
-    /* Der Folgemonat ist der laufend (live) aktualisierte Stand -> „Heute“ */
-    btn.textContent=selectedMonth===nextYM()?'Heute':MONTH_NAMES[parseInt(m)-1]+' '+y;
-    btn.classList.toggle('is-current',selectedMonth===nextYM());
+    const[y,m]=selectedMonth.split('-'),cur=selectedMonth===nextYM();
+    /* Der Folgemonat ist der laufend (live) aktualisierte Stand: nur das Kalendersymbol.
+       Ein anderer Monat steht daneben, damit sichtbar bleibt, welcher Stand gezeigt wird. */
+    const label=cur?'Heute':MONTH_NAMES[parseInt(m)-1]+' '+y;
+    btn.innerHTML=CAL_ICON+(cur?'':'<span>'+label+'</span>');
+    btn.setAttribute('aria-label','Monat wählen · '+label);btn.title='Monat wählen';
+    btn.classList.toggle('is-current',cur);
   }
   
   /* Der Picker dient auch als Datumsfeld: target = {mode:'month'|'year', value, onPick, isEnabled, title, onClear} */
@@ -6958,6 +7003,7 @@ function _initSheet(){
   document.addEventListener('keydown',e=>{if(_sheetOpen&&e.key==='Escape')_closeSheet();});
   b.addEventListener('keydown',e=>{const sw=e.target.closest&&e.target.closest('[data-mod-set]');if(sw&&(e.key===' '||e.key==='Enter')){e.preventDefault();sw.click();return;}_monthSheetKey(e);});
   b.addEventListener('focusin',_monthSheetFocus);
+  b.addEventListener('input',_phasesInput);
   b.addEventListener('change',_monthSheetChange);
   b.addEventListener('input',e=>{if(e.target.id==='b-loan'&&_sheetCtx.budget)_sheetCtx.budget.loanTouched=true;if(e.target.id==='b-depot'&&_sheetCtx.budget)_sheetCtx.budget.depotTouched=true;_sheetDirty=true;_dataInput(e);_monthSheetInput(e);_historyInput(e);_unitHint(e);if(_sheetCtx.budget)_budgetSheetUpdate();});
   b.addEventListener('click',e=>{
@@ -8323,7 +8369,7 @@ function _v2DrvExtraResults(wrap){
     let el=row.querySelector('.drvx-res');
     if(!el){el=document.createElement('div');el.className='lt-result drvx-res';row.insertBefore(el,row.querySelector('.plan-del'));}
     _drvEmClean(p);
-    el.innerHTML=_drvResultHTML(p,calcDrvExtra(s,p),+p.until>0?+p.until:s.saveUntil);
+    el.innerHTML=_drvResultHTML(p,calcDrvExtra(s,p),+p.until>0?+p.until:s.workEnd);
   });
 }
 /* Altersvorsorgedepots als Karten; leere Felder bleiben leer (= Standardwert der App) */
@@ -8429,11 +8475,16 @@ function initDataEntryForm(){
 function _lsNum(k,def){const v=parseFloat(String(appStorage.getItem(k)??'').replace(',','.'));return isFinite(v)?v:def;}
 function _lsJSON(k,def){try{const v=JSON.parse(appStorage.getItem(k));return v??def;}catch{return def;}}
 const LT_SET_KEYS=['lt-birth-year','lt-life-expect','lt-plan-horizon','lt-inflation','lt-save-until','lt-savings-growth','lt-withdraw-from','lt-monthly-withdraw','lt-safety'];
+/* Lebensphasen (Schema 10): eigene Schlüssel, bearbeitet im Phasen-Sheet */
+const LT_PHASE_KEYS=['lt-save-until','lt-savings-growth','lt-withdraw-from','lt-pension-age','lt-monthly-withdraw','lt-pension-spending','lt-p2-saving','lt-p2-work','lt-p2-withdraw'];
 function getLifetimeSettings(){
   let ap={};try{ap=JSON.parse(appStorage.getItem('lt-asset-params'))||{};}catch(e){}
   const pensions=_lsJSON('lt-pensions',null);
-  return{
-    birthYear:Math.round(_lsNum('lt-birth-year',1990)),
+  const birthYear=Math.round(_lsNum('lt-birth-year',1990));
+  const drvAge=+((_lsJSON('lt-drv',{})||{}).age)||0;
+  const need=_lsNum('lt-monthly-withdraw',2000);
+  return _ltPhases({
+    birthYear,
     birthMonth:1,
     lifeExpect:_lsNum('lt-life-expect',85),
     planHorizon:_lsNum('lt-plan-horizon',95),
@@ -8441,15 +8492,38 @@ function getLifetimeSettings(){
     saveUntil:_lsNum('lt-save-until',60),
     savingsGrowth:_lsNum('lt-savings-growth',0),
     withdrawFrom:_lsNum('lt-withdraw-from',60),
-    monthlyWithdraw:_lsNum('lt-monthly-withdraw',2000),
+    monthlyWithdraw:need,
     safety:Math.min(99,Math.max(50,_lsNum('lt-safety',85))),
+    /* Lebensphasen: Rente ab (leer = Rentenbeginn der gesetzlichen Rente bzw. Regelaltersgrenze),
+       Bedarf in der Rente (leer = wie im Vorruhestand), Weiterarbeiten: Sparen und Arbeitszeit in %, Entnahme €/Monat */
+    pensionAge:_lsNum('lt-pension-age',drvAge>0?drvAge:regelaltersgrenze(birthYear)),
+    pensionSpending:Math.max(0,_lsNum('lt-pension-spending',need)),
+    p2Saving:Math.min(2,Math.max(0,_lsNum('lt-p2-saving',0)/100)),
+    p2Work:Math.min(1,Math.max(0,_lsNum('lt-p2-work',100)/100)),
+    p2Withdraw:Math.max(0,_lsNum('lt-p2-withdraw',0)),
     /* Renten/Einkünfte: [{name, amount (€/Monat netto, heutige Kaufkraft), from (Alter)}] */
     /* leere Platzhalter-Einträge (alter Standard "Gesetzliche Rente" mit 0 €) ausblenden */
     pensions:Array.isArray(pensions)?pensions.filter(p=>!(/gesetzliche rente/i.test(p.name||'')&&!(+p.amount))):[],
     /* Einmalige Ereignisse: [{name, year, amount (± €, heutige Kaufkraft)}] */
     events:_lsJSON('lt-events',[]),
     assetParams:ap
-  };
+  });
+}
+/* Lebensphasen: 1 Ansparen · 2 Weiterarbeiten (ggf. Teilzeit, privates Sparen reduziert) · 3 Vorruhestand
+   (keine Arbeit, Entnahme aus dem Vermögen, keine Einzahlungen) · 4 Rente. Die Grenzen folgen aufeinander:
+   phase2From ≤ workEnd ≤ phase4From. Eine Phase ohne Dauer entfällt. */
+function _ltPhases(s){
+  s.phase2From=Math.min(s.saveUntil,s.withdrawFrom);
+  s.workEnd=s.withdrawFrom;
+  s.phase4From=Math.max(s.withdrawFrom,s.pensionAge);
+  return s;
+}
+function _phaseAt(s,age){return age<s.phase2From-1e-9?1:age<s.workEnd-1e-9?2:age<s.phase4From-1e-9?3:4;}
+const LT_PHASE_NAMES=['Ansparen','Weiterarbeiten','Vorruhestand','Rente'];
+/* Arbeitsjahre von cur bis end in Vollzeit gerechnet: Phase 1 voll, Phase 2 anteilig zur Arbeitszeit, danach keine */
+function _workYears(s,cur,end){
+  const p2=s.phase2From??s.saveUntil,we=s.workEnd??s.saveUntil,w=s.p2Work??1;
+  return Math.max(0,Math.min(p2,end)-cur)+Math.max(0,Math.min(we,end)-Math.max(p2,cur))*w;
 }
 
 /* Default-Parameter je Gruppe (Name) und je Kategorie.
@@ -8588,7 +8662,9 @@ function getDrvExtra(){const l=_lsJSON('lt-drv-extra',[]);return Array.isArray(l
 function calcDrvExtra(s,p){
   const base=getDrv();
   const by=+p.by>1900?+p.by:s.birthYear;
-  const s2=Object.assign({},s,{birthYear:by,saveUntil:+p.until>0?+p.until:s.saveUntil});
+  /* weitere Personen: eigene Regelaltersgrenze, arbeiten voll bis „Arbeiten bis“ (leer = wie die eigene Arbeit) */
+  const until=+p.until>0?+p.until:(s.workEnd??s.saveUntil);
+  const s2=Object.assign({},s,{birthYear:by,saveUntil:until,withdrawFrom:until,phase2From:until,workEnd:until,p2Work:1,pensionAge:regelaltersgrenze(by)});
   const d=Object.assign({},base,{points:+p.points||0,salary:+p.salary||0,age:+p.age||0,deduct:isFinite(+p.deduct)&&p.deduct!==''&&p.deduct!=null?+p.deduct:base.deduct});
   DRV_EM_KEYS.forEach(k=>{delete d[k];if(k in p)d[k]=p[k];});
   _drvEmClean(d);
@@ -8631,7 +8707,9 @@ function _avdParams(s,d){
   const person=d.person?getDrvExtra().find(r=>r.id===d.person):null;
   const by=person&&+person.by>1900?+person.by:s.birthYear;
   const from=Math.min(70,Math.max(65,_avdNum(d.from,0)>0?+d.from:regelaltersgrenze(by)));
-  const workUntil=person?(+person.until>0?+person.until:s.saveUntil):s.saveUntil;
+  /* Beiträge laufen bis zum Ende der Arbeit (auch beim Weiterarbeiten in Phase 2) */
+  const ownWork=s.workEnd??s.saveUntil;
+  const workUntil=person?(+person.until>0?+person.until:ownWork):ownWork;
   const own=Math.max(0,_avdNum(d.contrib,0))*12;
   const kids=(String(d.kids??'').match(/\d{4}/g)||[]).map(Number);
   const start=Math.max(AVD_START,_avdNum(d.start,0)>0?Math.round(+d.start):AVD_START);
@@ -8702,10 +8780,11 @@ function regelaltersgrenze(by){
   return 65;
 }
 function calcDrvPension(s,drv){
-  const age=drv.age>0?drv.age:regelaltersgrenze(s.birthYear);
+  const age=drv.age>0?drv.age:(s.pensionAge??regelaltersgrenze(s.birthYear));
   const now=new Date();
   const curAge=_ageAt(s,now.getFullYear(),now.getMonth());
-  const years=Math.max(0,Math.min(s.saveUntil,age)-curAge);
+  /* Punkte bis zum Ende der Arbeit (Beginn Vorruhestand), beim Weiterarbeiten anteilig zur Arbeitszeit */
+  const years=_workYears(s,curAge,age);
   const epYear=drv.salary>0&&drv.de>0?Math.min(drv.salary,drv.bbg||Infinity)/drv.de:0;
   const epTotal=Math.max(0,drv.points)+epYear*years;
   const brutto=epTotal*drv.rw;
@@ -8729,10 +8808,12 @@ function getBeamte(){
 function hasBeamte(d){return (d||getBeamte()).pay>0;}
 function calcBeamtePension(s,b){
   const limit=b.age>0?b.age:regelaltersgrenze(s.birthYear);
-  const age=b.from>0?Math.min(b.from,limit):limit;
+  /* ohne eigenes Antragsalter beginnt die Pension mit der Rentenphase, höchstens an der Altersgrenze */
+  const age=b.from>0?Math.min(b.from,limit):Math.min(s.pensionAge??limit,limit);
   const now=new Date();
   const curAge=_ageAt(s,now.getFullYear(),now.getMonth());
-  const years=Math.max(0,Math.min(s.saveUntil,age)-curAge);
+  /* Dienstzeit bis zum Ende der Arbeit, Teilzeit zählt anteilig */
+  const years=_workYears(s,curAge,age);
   const total=Math.max(0,b.years)+years;
   let rate=Math.min(71.75,total*1.79375);
   if(total>=5)rate=Math.max(rate,35);
@@ -8745,8 +8826,9 @@ function fmtAge(a){const y=Math.floor(a),m=Math.round((a-y)*12);return m?y+' J. 
 
 /* ══ Prognose: Planmodell ══ */
 function _ageAt(s,year,monthIdx0){return year-s.birthYear+(monthIdx0-(s.birthMonth-1))/12;}
-function buildPlan(){
-  const s=getLifetimeSettings();
+/* sIn/opt: Entwurf aus dem Phasen-Sheet (Vorschau), sonst die gespeicherten Einstellungen */
+function buildPlan(sIn,opt={}){
+  const s=sIn||getLifetimeSettings();
   const data=loadData(),sorted=Object.keys(data).sort();
   if(!sorted.length)return null;
   const latestKey=sorted[sorted.length-1];
@@ -8826,11 +8908,11 @@ function buildPlan(){
   const penOn=_mod('pension');
   const pensions=penOn?(s.pensions||[]).filter(p=>(+p.amount||0)>0).map(p=>({amount:+p.amount,from:+p.from||67})):[];
   /* Gesetzliche Rente aus Rentenpunkten + Gehalt hochgerechnet (Altersvorsorge aus: keine Renten) */
-  const drv=penOn?calcDrvPension(s,getDrv()):{age:0,years:0,epYear:0,epTotal:0,brutto:0,netto:0};
+  const drv=penOn?calcDrvPension(s,opt.drv||getDrv()):{age:0,years:0,epYear:0,epTotal:0,brutto:0,netto:0};
   if(drv.netto>0)pensions.push({amount:drv.netto,from:drv.age,drv:true});
   /* laufende EM-Rente: wirkt im Ruhestand bis zur Altersrente (vorher steckt sie in den Sparraten) */
   if(drv.em&&drv.em.amount>0)pensions.push({amount:drv.em.amount,from:0,until:drv.em.until,drv:true});
-  const bv=penOn?calcBeamtePension(s,getBeamte()):{age:0,netto:0};
+  const bv=penOn?calcBeamtePension(s,opt.bv||getBeamte()):{age:0,netto:0};
   if(bv.netto>0)pensions.push({amount:bv.netto,from:bv.age,drv:true});
   /* Altersvorsorgedepots: Auszahlplan bis 85 als Einkommen, Teilauszahlung als Zufluss ins liquide Vermögen */
   const avd=penOn?getAvDepots().map(d=>calcAvDepot(s,d)).filter(r=>r.netto>0):[];
@@ -8858,6 +8940,10 @@ function simulatePlan(plan,retireAge,opt={}){
   const loanOutArr=record?new Float64Array(nSteps):null;
   const sr=Math.sqrt(0.3),sr1=Math.sqrt(0.7);/* Ein-Faktor-Modell, Korrelation 0,3 */
   let shortfallAge=null,prevAge=currentAge;
+  /* Lebensphasen: Ansparen bis a2, Weiterarbeiten bis zum Ruhestand (retireAge = Beginn Vorruhestand),
+     Rente ab a4. findRetireAge verschiebt retireAge, die Phasen rücken entsprechend nach. */
+  const a2=Math.min(s.saveUntil,retireAge),a4=Math.max(retireAge,s.pensionAge??retireAge);
+  const p2Save=s.p2Saving??0,p2Work=s.p2Work??1,p2Draw=s.p2Withdraw||0,needLate=s.pensionSpending??s.monthlyWithdraw;
   /* Entnahme netto aus verfügbaren Gruppen, anteilig nach Wert, brutto inkl. Abzug */
   const withdraw=(amount,age)=>{
     let cap=0;
@@ -8874,7 +8960,8 @@ function simulatePlan(plan,retireAge,opt={}){
   for(let y=0;y<nSteps;y++){
     const age=firstAge+y,dt=age-prevAge,tEnd=age-currentAge,tStart=prevAge-currentAge;
     const inRet=prevAge>=retireAge-1e-9;
-    const inSave=!inRet&&prevAge<s.saveUntil-1e-9;
+    const inSave=!inRet&&prevAge<a2-1e-9;/* Phase 1 */
+    const inWork=!inRet&&!inSave;/* Phase 2 */
     /* 1) Wertentwicklung */
     const base=rnd?(run*nSteps+y)*(G+1):0;
     const F=rnd?rnd[base]:0;
@@ -8910,13 +8997,17 @@ function simulatePlan(plan,retireAge,opt={}){
         else if(l.extra>0)B-=Math.min(B,l.extra*dt);
         LB[j][k]=Math.max(0,B);
       }
-      if(LG[j]>0&&inSave&&g.saving>0)LG[j]=Math.max(0,LG[j]-g.saving*12*dt*Math.pow(1+sg,tStart));
+      /* Schulden ohne Kreditdaten: Spar/M wirkt als Tilgung aus dem Einkommen, beim Weiterarbeiten anteilig zur Arbeitszeit */
+      if(LG[j]>0&&(inSave||(inWork&&p2Work>0))&&g.saving>0)LG[j]=Math.max(0,LG[j]-g.saving*(inSave?1:p2Work)*12*dt*Math.pow(1+sg,tStart));
     }
-    /* 3) Sparraten in Gruppen ohne Kredit */
-    if(inSave){
+    /* 3) Sparraten in Gruppen ohne Kredit: beim Ansparen voll, beim Weiterarbeiten anteilig
+          (betriebliche Altersvorsorge nach Arbeitszeit, privates Sparen nach „Weiter sparen“) */
+    if(inSave||inWork){
       for(let j=0;j<G;j++){
         const g=groups[j];
-        if(g.debt<=0&&g.saving>0)A[j]+=g.saving*12*dt*Math.pow(1+sg,tStart);
+        if(g.debt>0||!(g.saving>0))continue;
+        const f=inSave?1:(g.cat==='bav'?p2Work:p2Save);
+        if(f>0)A[j]+=g.saving*f*12*dt*Math.pow(1+sg,tStart);
       }
     }
     /* 4) Einmalige Ereignisse (heutige Kaufkraft -> nominal): Betrag fließt Von -> Nach */
@@ -8937,10 +9028,14 @@ function simulatePlan(plan,retireAge,opt={}){
         else if(!ev.toExt&&depositIdx>=0)A[depositIdx]+=amt;
       }
     }
-    /* 5) Ruhestand: Bedarf - Renten (+ Kreditraten) entnehmen, Rentenüberschuss anlegen */
+    /* 5a) Weiterarbeiten: optionale Entnahme, falls das (Teilzeit-)Einkommen nicht alles deckt */
+    if(inWork&&p2Draw>0){
+      if(withdraw(p2Draw*12*dt*Math.pow(1+infl,tEnd),age)>1&&shortfallAge===null)shortfallAge=age;
+    }
+    /* 5) Vorruhestand und Rente: Bedarf der Phase - Renten (+ Kreditraten) entnehmen, Rentenüberschuss anlegen */
     if(inRet){
       const inflF=Math.pow(1+infl,tEnd);
-      const need=s.monthlyWithdraw*12*dt*inflF;
+      const need=(prevAge<a4-1e-9?s.monthlyWithdraw:needLate)*12*dt*inflF;
       let pens=0;
       for(const p of pensions)if(prevAge>=p.from-1e-9&&!(p.until<=prevAge+1e-9))pens+=p.amount*12*dt*inflF;
       const req=need+loanOut-pens;
@@ -9040,12 +9135,13 @@ function targetCapital(plan,R,det){
   const rReal=Math.max(-0.5,(1+rNom)/(1+infl)-1);
   let sum=0;
   const aStart=Math.max(Math.round(R),Math.ceil(currentAge));
+  const a4=Math.max(R,s.pensionAge??R),needLate=s.pensionSpending??s.monthlyWithdraw;
   for(let a=aStart;a<horizonAge;a++){
     let pens=0;
     for(const p of pensions)if(a>=p.from&&!(p.until<=a))pens+=p.amount*12;
     const yA=Math.min(nSteps-1,Math.max(0,a+1-firstAge));
     const loanReal=det.loanOut?det.loanOut[yA]/Math.pow(1+infl,a+1-currentAge):0;
-    const need=Math.max(0,s.monthlyWithdraw*12+loanReal-pens);
+    const need=Math.max(0,(a<a4-1e-9?s.monthlyWithdraw:needLate)*12+loanReal-pens);
     sum+=need/(1-tax)/Math.pow(1+rReal,a-aStart);
   }
   return{target:sum,rNom,rReal,tax};
@@ -9076,6 +9172,7 @@ function updateLifetimeInputs(){
   renderDrvEditor();
   renderPensionEditor();
   renderEventEditor();
+  _renderPhaseSummary();
 }
 function initLifetimePage(){
   migrateLoanParams();
@@ -9147,9 +9244,9 @@ function _drvFromInputs(prefix){
 }
 function _drvResultText(d){
   const s=getLifetimeSettings();
-  return _drvResultHTML(d,calcDrvPension(s,d),s.saveUntil);
+  return _drvResultHTML(d,calcDrvPension(s,d),s.workEnd);
 }
-/* Ergebniszeile der gesetzlichen Rente (eigene und weitere Personen); saveUntil = Punkte sammeln bis Alter */
+/* Ergebniszeile der gesetzlichen Rente (eigene und weitere Personen); saveUntil = Punkte sammeln bis Alter (Ende der Arbeit) */
 function _drvResultHTML(d,r,saveUntil){
   let emTxt='';
   if(d.emType===1||d.emType===2){
@@ -9432,6 +9529,7 @@ function renderLifetimePageCalcs(){
     kpiIds.forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='—';el.classList.remove('kpi-has-eur');delete el.dataset.num;delete el.dataset.display;}});
     ['lt-target-sub','lt-success-sub','lt-retire-sub','lt-at-retire-sub'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
     const ml=document.getElementById('lt-more-list');if(ml)ml.innerHTML='';
+    const ph=document.getElementById('v2-lt-phases');if(ph)ph.innerHTML='';
   };
   if(!hasData&&!hasSettings){clearKpis();return;}
 
@@ -9511,7 +9609,7 @@ function renderLifetimePageCalcs(){
     let h='';
     if(inc.length){
       const steady=inc.filter(x=>!x.temp);
-      const tot=steady.reduce((x,i)=>x+i.v,0),need=+s.monthlyWithdraw||0,base=Math.max(need,tot)||1,cov=need>0?tot/need:0;
+      const tot=steady.reduce((x,i)=>x+i.v,0),need=+s.pensionSpending||0,base=Math.max(need,tot)||1,cov=need>0?tot/need:0;
       const shade=i=>`color-mix(in srgb,var(--green) ${[100,62,38,22][i%4]}%,var(--bg3))`;
       h+=`<div class="v2-inc"><div class="v2-inc-t">Einkommen im Ruhestand</div><div class="v2-inc-v">${Math.round(tot).toLocaleString('de-DE')}<small>€ / Monat</small></div>`;
       h+=`<div class="v2-inc-bar">${steady.map((x,i)=>`<i style="width:${(x.v/base*100).toFixed(2)}%;background:${shade(i)}"></i>`).join('')}</div>`;
@@ -9598,7 +9696,12 @@ function renderLifetimePageCalcs(){
   const ltScaleOpts=ltUseLog
     ?{type:'logarithmic',display:false,min:1000,ticks:{callback:v=>fmtAxis(v)}}
     :{type:'linear',display:false};
-  const retireIdx=allAges.indexOf(Math.round(R));
+  /* Phasenwechsel als Markierungen im Chart (nur künftige, entfallene Phasen ohne Linie) */
+  const marks=[];
+  const mark=(age,i)=>{const k=allAges.indexOf(Math.round(age));if(k>=0&&age>currentAge+0.01)marks.push({idx:k,label:LT_PHASE_NAMES[i],short:_ageTxt(age),color:'--lp'+(i+1)});};
+  if(s.workEnd>s.phase2From+0.01)mark(s.phase2From,1);
+  if(s.phase4From>s.workEnd+0.01)mark(s.workEnd,2);
+  mark(s.phase4From,3);
   if(_ltExisting){
     const ch=_ltExisting;
     ch.data.labels=allAges.map(a=>a+' J.');
@@ -9615,7 +9718,8 @@ function renderLifetimePageCalcs(){
     else for(let j=existing;j<assetSublines.length;j++)ch.data.datasets.push(assetSublines[j]);
     ch.options.scales.y=ltScaleOpts;
     ch.options.scales.x.max=ltXMaxIdx;
-    ch.options.plugins.ltMarker={idx:retireIdx};
+    ch.options.plugins.ltMarker={marks};
+    ch.options.layout.padding.top=18;
     ch.options.animation={duration:CHART_ANIM_MS,easing:'easeOutQuart'};
     ch.update();
   }else{
@@ -9632,8 +9736,8 @@ function renderLifetimePageCalcs(){
       ]
     },options:{
       responsive:true,maintainAspectRatio:false,events:[],
-      layout:{padding:{left:0,right:0,top:0,bottom:0}},
-      plugins:{legend:{display:false},datalabels:{display:false},tooltip:{enabled:false},ltMarker:{idx:retireIdx}},
+      layout:{padding:{left:0,right:0,top:18,bottom:0}},
+      plugins:{legend:{display:false},datalabels:{display:false},tooltip:{enabled:false},ltMarker:{marks}},
       interaction:{mode:'nearest',intersect:false},
       scales:{x:{display:false,grid:{display:false},max:ltXMaxIdx},y:ltScaleOpts}
     },plugins:[_ltMarkerPlugin]});
@@ -9644,6 +9748,7 @@ function renderLifetimePageCalcs(){
 
   _ltState={plan,det,mc,tc,real,infl,currentAge,allAges,histLine,projLine,projHi,projLo,histAssetMaps,availAtR,coverage,R};
   _v2LtSummary({s,plan,mc,tc,retireAge,availAtR,coverage,R,currentAge});
+  _v2LtPhases({s,plan,mc,currentAge,infl});
   setupLifetimeInteraction();
 }
 /* ── Design 2: Prognose-Hero und Ergebnisliste ── */
@@ -9666,13 +9771,13 @@ function _v2LtSummary(o){
   const retSub=retireAge===null?'nicht bis '+plan.horizonAge+' erreichbar':'bei '+safety+' % Sicherheit';
   const cov=Math.max(0,Math.min(100,coverage*100));
   el.innerHTML=
-    `<div class="v2-ret-head"><span class="v2-ret-title">Ruhestand mit ${Math.round(R)}</span><span class="v2-chip ${ok?'up':'down'}">${ok?'Abgesichert':'Noch nicht abgesichert'}</span></div>`+
+    `<div class="v2-ret-head"><span class="v2-ret-title">${s.phase4From>s.workEnd+0.01?'Vorruhestand':'Ruhestand'} mit ${_ageTxt(R)}</span><span class="v2-chip ${ok?'up':'down'}">${ok?'Abgesichert':'Noch nicht abgesichert'}</span></div>`+
     `<div class="v2-ret-main" data-info="lt-safety"><span class="v2-ret-big">${pct}<small>%</small></span><span class="v2-ret-lbl">Erfolgschance</span></div>`+
     `<div class="v2-gauge ${ok?'up':'down'}"><i style="width:${pct}%"></i><b style="left:${safety}%"></b></div>`+
     `<div class="v2-gauge-cap"><span style="left:${safety}%">Ziel ${safety} %</span></div>`+
     `<p class="v2-ret-text">In ${pct} von 100 simulierten Marktverläufen reicht dein Geld bis ${plan.horizonAge}.</p>`+
     `<div class="v2-ret-stats">`+
-      `<div data-info="v2-at-retire"><span class="k">Vermögen mit ${Math.round(R)}</span><span class="n">${fmtCompact(Math.round(availAtR))}</span><span class="v2-mini"><i style="width:${cov.toFixed(1)}%"></i></span><span class="s">nötig: ${fmt(Math.round(tc.target/100)*100)}</span></div>`+
+      `<div data-info="v2-at-retire"><span class="k">Vermögen mit ${_ageTxt(R)}</span><span class="n">${fmtCompact(Math.round(availAtR))}</span><span class="v2-mini"><i style="width:${cov.toFixed(1)}%"></i></span><span class="s">nötig: ${fmt(Math.round(tc.target/100)*100)}</span></div>`+
       `<div data-info="v2-retire-age"><span class="k">Sicher möglich ab</span><span class="n">${retTxt}</span><span class="s">${retSub}</span></div>`+
     `</div>`;
   const pv=document.getElementById('v2-prev-pct');
@@ -9681,21 +9786,213 @@ function _v2LtSummary(o){
   if(pt)pt.textContent='Erfolgschance bis '+plan.horizonAge+' · Ziel '+safety+' %';
   _v2SyncSwitches();
 }
-/* Senkrechte Markierung für den geplanten Ruhestand */
+/* Senkrechte Markierungen für die Phasenwechsel, beschriftet in der Phasenfarbe über dem Chart */
 const _ltMarkerPlugin={
   id:'ltMarker',
   afterDatasetsDraw(chart,args,opts){
-    if(!opts||opts.idx==null||opts.idx<0)return;
-    const x=chart.scales.x.getPixelForValue(opts.idx);
-    if(!isFinite(x)||x<chart.chartArea.left||x>chart.chartArea.right)return;
-    const c=chart.ctx;
+    const marks=opts&&opts.marks;
+    if(!marks||!marks.length)return;
+    const c=chart.ctx,area=chart.chartArea,cs=getComputedStyle(document.body);
     c.save();
-    c.strokeStyle=getComputedStyle(document.body).getPropertyValue('--green').trim();
-    c.globalAlpha=0.5;c.setLineDash([2,4]);c.lineWidth=1;
-    c.beginPath();c.moveTo(x,chart.chartArea.top);c.lineTo(x,chart.chartArea.bottom);c.stroke();
+    c.font='11px "IBM Plex Sans",sans-serif';c.textBaseline='bottom';
+    const vis=marks.map(m=>({...m,x:chart.scales.x.getPixelForValue(m.idx),col:cs.getPropertyValue(m.color).trim()||cs.getPropertyValue('--green').trim()}))
+      .filter(m=>isFinite(m.x)&&m.x>=area.left&&m.x<=area.right);
+    /* Beschriftungen nebeneinander legen; überschneiden sich die Namen, für alle nur das Alter zeigen */
+    const place=key=>{let right=-Infinity;return vis.map(m=>{const t=m[key],w=c.measureText(t).width;let tx=m.x+5;if(tx+w>area.right)tx=m.x-5-w;const ok=tx>right+8;if(ok)right=tx+w;return{t,tx,ok};});};
+    let labels=place('label');
+    if(labels.some(l=>!l.ok))labels=place('short');
+    vis.forEach((m,i)=>{
+      c.globalAlpha=0.6;c.strokeStyle=m.col;c.setLineDash([2,4]);c.lineWidth=1;
+      c.beginPath();c.moveTo(m.x,area.top);c.lineTo(m.x,area.bottom);c.stroke();
+      const l=labels[i];
+      if(l.ok){c.globalAlpha=1;c.fillStyle=m.col;c.fillText(l.t,l.tx,area.top-3);}
+    });
     c.restore();
   }
 };
+
+/* ══ Lebensphasen: Zeitstrahl, Karte auf der Prognose-Seite, Zeile auf der Daten-Seite, Bearbeiten-Sheet ══ */
+function _ageTxt(a){return Math.abs(a-Math.round(a))<1/24?String(Math.round(a)):fmtAge(a);}
+/* Grenzen der vier Phasen ab heute: [heute, Weiterarbeiten, Vorruhestand, Rente, Planungsende] */
+function _phaseBounds(s,cur,end){
+  const c=v=>Math.min(end,Math.max(cur,v));
+  return[cur,c(s.phase2From),c(s.workEnd),c(s.phase4From),Math.max(cur,end)];
+}
+function _phaseBarHTML(b){
+  const span=Math.max(1e-9,b[4]-b[0]);
+  let bar='',ticks='',last=-1;
+  for(let i=0;i<4;i++){const w=b[i+1]-b[i];if(w>0.01)bar+=`<i class="lp-p${i+1}" style="flex:${w.toFixed(3)}"></i>`;}
+  b.forEach((a,i)=>{
+    const pct=(a-b[0])/span*100;
+    if(i>0&&i<4&&(b[i]-b[i-1]<=0.01||pct-last<9||100-pct<9))return;
+    ticks+=`<span class="${i===0?'first':i===4?'last':''}" style="left:${pct.toFixed(2)}%">${i===0?'heute':_ageTxt(a)}</span>`;
+    last=pct;
+  });
+  return `<div class="lp-bar">${bar}</div><div class="lp-ticks">${ticks}</div>`;
+}
+/* Renten (€/Monat, heutige Kaufkraft), die in einem Alter laufen */
+function _pensionsAt(plan,age){return plan?plan.pensions.filter(p=>age>=p.from-1e-9&&!(p.until<=age+1e-9)).reduce((x,p)=>x+p.amount,0):0;}
+function _phaseSaving(plan){return plan?plan.groups.reduce((x,g)=>x+(g.saving>0?g.saving:0),0):0;}
+/* Kurzbeschreibung je Phase (Karte und Sheet) */
+function _phaseText(s,plan,i,b){
+  const save=_phaseSaving(plan);
+  if(i===0)return save>0?fmt(Math.round(save))+'/Mon. sparen'+(s.savingsGrowth>0?', +'+_numStr(s.savingsGrowth)+' % p. a.':''):'Sparraten unter Annahmen eintragen';
+  if(i===1){
+    const parts=[s.p2Work<1?'Teilzeit '+Math.round(s.p2Work*100)+' %':'Vollzeit'];
+    parts.push(s.p2Saving>0?fmt(Math.round(save*s.p2Saving))+'/Mon. sparen':'kein privates Sparen');
+    if(s.p2Withdraw>0)parts.push(fmt(s.p2Withdraw)+'/Mon. entnehmen');
+    return parts.join(' · ');
+  }
+  if(i===2){const pens=_pensionsAt(plan,b[2]),draw=Math.max(0,s.monthlyWithdraw-pens);return fmt(Math.round(draw))+'/Mon. aus dem Vermögen'+(pens>0?' · '+fmt(Math.round(pens))+' Rente':'');}
+  const pens=_pensionsAt(plan,b[3]),draw=Math.max(0,s.pensionSpending-pens);
+  return pens>0?(draw>0?fmt(Math.round(pens))+' Renten + '+fmt(Math.round(draw))+' aus dem Vermögen':'Renten '+fmt(Math.round(pens))+' decken den Bedarf'):fmt(Math.round(s.pensionSpending))+'/Mon. aus dem Vermögen';
+}
+function _v2LtPhases(o){
+  const el=document.getElementById('v2-lt-phases');if(!el)return;
+  const{s,plan,mc,currentAge,infl}=o;
+  const b=_phaseBounds(s,currentAge,plan.horizonAge);
+  const real=(arr,age)=>{const yi=Math.round(age)-plan.firstAge;return yi>=0&&yi<plan.nSteps?arr[yi]/Math.pow(1+infl,Math.round(age)-currentAge):null;};
+  /* Ab dem Vorruhestand: erstes Alter, in dem im Median kein verfügbares Vermögen mehr übrig ist */
+  let empty=null;
+  for(let a=Math.ceil(b[2]);a<=plan.horizonAge;a++){const v=real(mc.avail50,a);if(v!=null&&v<1000){empty=a;break;}}
+  const rows=LT_PHASE_NAMES.map((name,i)=>{
+    const off=b[i+1]-b[i]<=0.01&&i<3;
+    const range=i===0?'heute bis '+_ageTxt(b[1]):i===3?'ab '+_ageTxt(b[3]):_ageTxt(b[i])+' bis '+_ageTxt(b[i+1]);
+    let v='',cls=off?' off':'';
+    if(off)v='<b>—</b><small>entfällt</small>';
+    else if(i<3){const val=real(mc.p50,b[i+1]);v=`<b>${val==null?'—':fmtCompact(val)}</b><small>mit ${_ageTxt(b[i+1])}</small>`;}
+    else if(empty!=null&&empty<plan.horizonAge){cls+=' warn';v=`<b>aufgebraucht</b><small>mit ${empty}</small>`;}
+    else{const val=real(mc.p50,plan.horizonAge);v=`<b>${val==null?'—':fmtCompact(val)}</b><small>mit ${plan.horizonAge}</small>`;}
+    return `<button type="button" class="v2-lp-row${cls}" onclick="openPhasesSheet(${i+1})"><i class="lp-p${i+1}"></i><span class="t"><b>${name}</b><small>${escHTML(range+' · '+(off?'Phase entfällt':_phaseText(s,plan,i,b)))}</small></span><span class="v">${v}</span></button>`;
+  }).join('');
+  el.innerHTML=`<div class="v2-lp-head"><span class="v2-ret-title" data-info="lt-phases">Lebensphasen</span><button type="button" class="v2-lp-btn" onclick="openPhasesSheet()">Bearbeiten</button></div>${_phaseBarHTML(b)}<div class="v2-lp-rows">${rows}</div>`;
+}
+/* Daten-Seite: Lebensphasen als eine Zeile mit Zeitstrahl, öffnet das Sheet */
+function _renderPhaseSummary(){
+  const el=document.getElementById('ltPhasesEdit');if(!el)return;
+  const s=getLifetimeSettings(),now=new Date(),cur=_ageAt(s,now.getFullYear(),now.getMonth());
+  const b=_phaseBounds(s,cur,Math.max(Math.round(s.planHorizon),Math.ceil(cur)+1));
+  const parts=[];
+  if(b[1]>b[0]+0.01)parts.push('Ansparen bis '+_ageTxt(b[1]));
+  if(b[2]>b[1]+0.01)parts.push('Weiterarbeiten bis '+_ageTxt(b[2]));
+  if(b[3]>b[2]+0.01)parts.push('Vorruhestand ab '+_ageTxt(b[2]));
+  parts.push('Rente ab '+_ageTxt(b[3]));
+  el.innerHTML=`<span class="lp-edit-t"><span>${escHTML(parts.join(' · '))}</span><small>Bearbeiten ›</small></span>${_phaseBarHTML(b)}`;
+}
+
+/* Bearbeiten: alle vier Phasen in einem Sheet, mit Vorschau der Erfolgschance beim Tippen */
+function openPhasesSheet(focus){
+  const s=getLifetimeSettings(),now=new Date(),cur=_ageAt(s,now.getFullYear(),now.getMonth());
+  const plan=_mod('assets')?buildPlan():null,drv=getDrv(),rag=regelaltersgrenze(s.birthYear),auto=drv.age>0?drv.age:rag;
+  const end=plan?plan.horizonAge:Math.max(Math.round(s.planHorizon),Math.ceil(cur)+1);
+  const b=_phaseBounds(s,cur,end),save=_phaseSaving(plan);
+  const storedA4=appStorage.getItem('lt-pension-age')!==null,storedN4=appStorage.getItem('lt-pension-spending')!==null;
+  const row=(id,label,help,val,ph,money)=>`<div class="ds-row"><span class="ds-l">${label}<small id="${id}-h">${help}</small></span><input class="ds-in${money?' ds-money':''}" id="${id}" type="text" inputmode="decimal" autocomplete="off" value="${escHTML(val)}" placeholder="${escHTML(ph)}" data-lp></div>`;
+  const head=(i,id)=>`<div class="ds-group-t lp-t" id="lp-sec-${i}"><span><i class="lp-p${i}"></i>${i} · ${LT_PHASE_NAMES[i-1]}</span><span class="lp-range" id="${id}"></span></div>`;
+  const body=
+    `<div class="lp-head"><div class="lp-card"><div id="lpTime">${_phaseBarHTML(b)}</div><div class="lp-pv"><b id="lpPct">—</b><span id="lpPctT">Erfolgschance wird berechnet …</span></div></div></div>`+
+    `<p class="ds-note">Jede Phase beginnt, wo die vorige endet. Gleiches Alter wie bei der Phase davor: Die Phase entfällt.</p>`+
+    head(1,'lp-r1')+`<div class="ds-group">`+
+      row('lp-a2','Ansparen bis Alter',save>0?'Volle Arbeit, du sparst '+fmt(Math.round(save))+'/Monat':'Volle Arbeit, Sparraten wie unter Annahmen',_numStr(s.phase2From),'60')+
+      row('lp-growth','Sparrate steigt % pro Jahr','z. B. mit Gehaltserhöhungen',s.savingsGrowth?_numStr(s.savingsGrowth):'','0')+
+    `</div>`+
+    head(2,'lp-r2')+`<div class="ds-group">`+
+      row('lp-a3','Weiterarbeiten bis Alter','Danach beginnt der Vorruhestand',_numStr(s.workEnd),'60')+
+      row('lp-work','Arbeitszeit %','Rentenpunkte, Dienstzeit und Betriebsrente wachsen anteilig',s.p2Work<1?_numStr(Math.round(s.p2Work*1000)/10):'','100')+
+      row('lp-saving','Weiter sparen %','der heutigen Sparrate · leer oder 0 = Sparen eingestellt',s.p2Saving>0?_numStr(Math.round(s.p2Saving*1000)/10):'','0')+
+      row('lp-draw','Entnahme €/Monat','falls das Einkommen nicht alles deckt',s.p2Withdraw>0?_moneyInput(s.p2Withdraw):'','0',true)+
+    `</div>`+
+    head(3,'lp-r3')+`<div class="ds-group">`+
+      row('lp-a4','Rente ab Alter','Regelaltersgrenze '+_ageTxt(rag)+(drv.age>0?' · gesetzliche Rente ab '+_ageTxt(drv.age):''),storedA4?_numStr(s.pensionAge):'',_ageTxt(auto))+
+      row('lp-need3','Bedarf €/Monat','Kein Einkommen, keine Einzahlungen: Der Bedarf kommt aus dem liquiden Vermögen',_moneyInput(s.monthlyWithdraw),'2.000',true)+
+    `</div>`+
+    head(4,'lp-r4')+`<div class="ds-group">`+
+      row('lp-need4','Bedarf €/Monat','',storedN4?_moneyInput(s.pensionSpending):'','wie im Vorruhestand',true)+
+    `</div>`+
+    `<p class="ds-help">Beträge in heutiger Kaufkraft. Gesetzliche Rente, Betriebsrente und Altersvorsorgedepots pflegst du unter Daten → Altersvorsorge, Renditen und Sparraten je Anlage unter Prognose &amp; Annahmen.</p>`;
+  if(!_openSheet('Lebensphasen',body,_savePhasesSheet,'Sichern',()=>openPhasesSheet(focus)))return;
+  _sheetCtx={phases:{base:null,drvAge:drv.age,oldA4:s.pensionAge,rag,bvFrom:getBeamte().from}};
+  _phasesPreview();
+  if(focus>1){const sec=document.getElementById('lp-sec-'+focus);if(sec)requestAnimationFrame(()=>sec.scrollIntoView({block:'start'}));}
+}
+/* Eingaben lesen; strict = Fehler melden (Sichern), sonst null bei ungültigen Werten (Vorschau) */
+function _phasesDraft(strict){
+  const ctx=_sheetCtx.phases;if(!ctx)return null;
+  const s=getLifetimeSettings();
+  const raw=id=>(document.getElementById(id)?.value||'').trim();
+  const bad=msg=>{if(strict)throw new Error(msg);return NaN;};
+  const num=(id,label,min,max,empty)=>{const t=raw(id);if(t==='')return empty;const n=_parseDec(t);return isFinite(n)&&n>=min&&n<=max?n:bad(label+': bitte eine Zahl zwischen '+min+' und '+max.toLocaleString('de-DE')+' eingeben.');};
+  const a2=num('lp-a2','Ansparen bis Alter',15,110,null),a3=num('lp-a3','Weiterarbeiten bis Alter',15,110,null);
+  if(a2==null||a3==null){bad('Bitte eintragen, bis wann du ansparst und weiterarbeitest.');return null;}
+  const a4in=num('lp-a4','Rente ab Alter',50,110,null);
+  const growth=num('lp-growth','Sparrate steigt',-10,20,0),work=num('lp-work','Arbeitszeit',0,100,100),sav=num('lp-saving','Weiter sparen',0,200,0);
+  const draw=num('lp-draw','Entnahme',0,1e6,0),need3=num('lp-need3','Bedarf im Vorruhestand',0,1e6,null),need4=num('lp-need4','Bedarf in der Rente',0,1e6,null);
+  if(need3==null){bad('Bitte den Bedarf im Vorruhestand eintragen.');return null;}
+  if([a2,a3,a4in,growth,work,sav,draw,need3,need4].some(v=>Number.isNaN(v)))return null;
+  /* „Rente ab“ leer = automatisch (gesetzliche Rente bzw. Regelaltersgrenze); eine passende gesetzliche Rente zieht mit */
+  const drvLinked=ctx.drvAge>0&&Math.abs(ctx.drvAge-ctx.oldA4)<1e-9;
+  const a4=a4in??(drvLinked?ctx.rag:(ctx.drvAge>0?ctx.drvAge:ctx.rag));
+  if(!(a2<=a3+1e-9&&a3<=a4+1e-9)){bad('Die Phasen folgen aufeinander: Ansparen bis ≤ Weiterarbeiten bis ≤ Rente ab.');return null;}
+  const d=_ltPhases(Object.assign({},s,{saveUntil:a2,withdrawFrom:a3,pensionAge:a4,savingsGrowth:growth,p2Work:work/100,p2Saving:sav/100,p2Withdraw:draw,monthlyWithdraw:need3,pensionSpending:need4??need3}));
+  const drv=getDrv(),bv=getBeamte();
+  const bvLinked=bv.from>0&&Math.abs(bv.from-ctx.oldA4)<1e-9;
+  if(drvLinked)drv.age=a4in==null?0:a4;
+  if(bvLinked)bv.from=a4;
+  return{s:d,a2,a3,a4,a4in,growth,work,sav,draw,need3,need4,drv,bv,drvLinked,bvLinked};
+}
+let _lpTimer=0;
+function _phasesInput(e){
+  if(!_sheetCtx.phases||!e.target.matches||!e.target.matches('[data-lp]'))return;
+  clearTimeout(_lpTimer);_lpTimer=setTimeout(_phasesPreview,250);
+}
+function _phasesPreview(){
+  const ctx=_sheetCtx.phases,pctEl=document.getElementById('lpPct'),txt=document.getElementById('lpPctT');
+  if(!ctx||!pctEl)return;
+  let d=null;try{d=_phasesDraft(false);}catch(e){d=null;}
+  const now=new Date(),s0=getLifetimeSettings(),cur=_ageAt(s0,now.getFullYear(),now.getMonth());
+  if(!d){pctEl.textContent='—';pctEl.className='';txt.textContent='Bitte gültige Werte eintragen – die Phasen folgen aufeinander.';return;}
+  const plan=_mod('assets')?buildPlan(d.s,{drv:d.drv,bv:d.bv}):null;
+  const b=_phaseBounds(d.s,cur,plan?plan.horizonAge:Math.max(Math.round(d.s.planHorizon),Math.ceil(cur)+1));
+  document.getElementById('lpTime').innerHTML=_phaseBarHTML(b);
+  const yrs=(x,y)=>{const n=Math.round((y-x)*10)/10;return n<=0.01?'entfällt':(n===1?'1 Jahr':_numStr(n)+' Jahre');};
+  [['lp-r1',0],['lp-r2',1],['lp-r3',2]].forEach(([id,i])=>{const el=document.getElementById(id);if(el)el.textContent=yrs(b[i],b[i+1]);});
+  const r4=document.getElementById('lp-r4');if(r4)r4.textContent='ab '+_ageTxt(b[3]);
+  const h4=document.getElementById('lp-need4-h');
+  if(h4){const pens=_pensionsAt(plan,b[3]);h4.textContent=pens>0?'Renten ≈ '+fmt(Math.round(pens))+'/Monat, der Rest kommt aus dem Vermögen':'Renten unter Daten → Altersvorsorge eintragen';}
+  const h3=document.getElementById('lp-a4-h');
+  if(h3&&d.drvLinked)h3.textContent='Regelaltersgrenze '+_ageTxt(ctx.rag)+' · die gesetzliche Rente beginnt mit dieser Phase';
+  if(!plan||!plan.groups.length){pctEl.textContent='—';pctEl.className='';txt.textContent='Für die Erfolgschance braucht die Prognose Vermögenswerte.';return;}
+  const mc=runMonteCarlo(plan,d.s.withdrawFrom,false);
+  if(ctx.base==null){const p0=buildPlan();ctx.base=p0&&p0.groups.length?runMonteCarlo(p0,s0.withdrawFrom,false).success:null;}
+  const pct=Math.round(mc.success*100),ok=mc.success>=s0.safety/100;
+  pctEl.textContent=pct+' %';pctEl.className=ok?'up':'down';
+  const diff=ctx.base==null?0:pct-Math.round(ctx.base*100);
+  txt.textContent='Erfolgschance bis '+plan.horizonAge+(ctx.base==null||!diff?'':' · bisher '+Math.round(ctx.base*100)+' %');
+}
+function _savePhasesSheet(){
+  const d=_phasesDraft(true);if(!d)throw new Error('Bitte die Eingaben prüfen.');
+  const ctx=_sheetCtx.phases;
+  appStorage.beginTransaction();
+  try{
+    const put=(k,v,def)=>{if(v==null||Math.abs(v-def)<1e-9)appStorage.removeItem(k);else appStorage.setItem(k,String(v));};
+    appStorage.setItem('lt-save-until',String(d.a2));
+    appStorage.setItem('lt-withdraw-from',String(d.a3));
+    put('lt-savings-growth',d.growth,0);
+    appStorage.setItem('lt-monthly-withdraw',String(d.need3));
+    put('lt-pension-spending',d.need4,d.need3);
+    put('lt-p2-work',d.work,100);put('lt-p2-saving',d.sav,0);put('lt-p2-withdraw',d.draw,0);
+    if(d.drvLinked){const raw=_lsJSON('lt-drv',{});if(d.drv.age>0)raw.age=d.drv.age;else delete raw.age;appStorage.setItem('lt-drv',JSON.stringify(raw));}
+    if(d.bvLinked){const raw=_lsJSON('lt-beamte',{});raw.from=d.a4;appStorage.setItem('lt-beamte',JSON.stringify(raw));}
+    /* Rente ab nur speichern, wenn sie vom automatischen Wert abweicht (gesetzliche Rente bzw. Regelaltersgrenze) */
+    const autoAge=d.drv.age>0?d.drv.age:ctx.rag;
+    put('lt-pension-age',d.a4in==null?null:d.a4,autoAge);
+    appStorage.commitTransaction();
+  }catch(error){appStorage.rollbackTransaction();throw error;}
+  _ltCalcCache=null;
+  updateLifetimeInputs();
+  renderLifetimePageCalcs();
+  if(typeof _nsRefresh==='function')_nsRefresh();
+}
 
 function renderLifetimePage(){
   buildAssetParamsTable();
@@ -9814,7 +10111,7 @@ function setupLifetimeInteraction(){
     animateKpiValue('lt-hero',fmt(val),val);
     const heroLabel=document.querySelector('#page-lifetime .hero-label');
     const yr=Math.round(S.plan.s.birthYear+age);
-    if(heroLabel)heroLabel.textContent='Mit '+age+' Jahren ('+yr+')'+(isProj?' · Median':'');
+    if(heroLabel)heroLabel.textContent='Mit '+age+' Jahren ('+yr+')'+(isProj?' · '+LT_PHASE_NAMES[_phaseAt(S.plan.s,age)-1]:'');
     const pill=document.getElementById('lt-hero-pill');
     if(pill){
       if(isProj){pill.className='hero-delta';pill.textContent='80 % zwischen '+fmtCompact(S.projLo[idx]||0)+' und '+fmtCompact(S.projHi[idx]||0);}
@@ -10924,6 +11221,8 @@ function _nextSteps(){
   if(m.budget&&items.some(r=>/^setup-(fixed|living)/.test(r.id)))out.push({id:'budget-split',title:'Budget genauer aufteilen',text:'Ersetze Fixkosten und Lebenshaltung nach und nach durch Posten wie Miete oder Versicherungen.',run:()=>_openDataSection('budget','ds-budget-items')});
   const lp=getLoanParams(),loan=pos.find(p=>p.category==='liab'&&!LoanModel.configured(lp[p.id]||{}));
   if(m.liab&&loan)out.push({id:'loan-'+loan.id,title:'„'+loan.name+'“ genauer erfassen',text:'Mit Darlehensvertrag und Zinsbindung berechnet die App die Restschuld jeden Monat selbst.',run:()=>openLoanSheet(loan.id)});
+  const fs=doc.forecast.settings;
+  if(assets.length&&m.forecast&&!['pensionStartAge','phase2WorkPercent','phase2SavingPercent','pensionSpending'].some(k=>k in fs))out.push({id:'phases',title:'Lebensphasen planen',text:'Ansparen, Weiterarbeiten, Vorruhestand und Rente – jede Phase mit eigenen Annahmen.',run:()=>openPhasesSheet()});
   if(assets.length&&m.forecast)out.push({id:'assumptions',title:'Annahmen prüfen',text:'Rendite je Anlage, Inflation und Sicherheit findest du unter Prognose & Annahmen.',run:()=>_v2OpenForecastSettings()});
   if(assets.length&&!_lastBackup())out.push({id:'backup',title:'Erste Sicherung erstellen',text:'Deine Daten liegen nur auf diesem Gerät. Eine Datei genügt für den Umzug.',run:()=>exportBackup()});
   const hidden=new Set(_tipsDismissed());

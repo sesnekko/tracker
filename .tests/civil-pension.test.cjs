@@ -41,7 +41,7 @@ test('version 6 files stay readable; invalid Beamtenversorgung is rejected', () 
 test('Ruhegehalt: 1,79375 % per year, capped at 71,75 %, minimum 35 % and early-retirement deduction', () => {
   const a = app(html);
   // Born January 1980: 46,75 years old in October 2026, limit 67.
-  a.run("appStorage.setItem('lt-birth-year','1980');appStorage.setItem('lt-save-until','67');");
+  a.run("appStorage.setItem('lt-birth-year','1980');appStorage.setItem('lt-save-until','67');appStorage.setItem('lt-withdraw-from','67');");
   const calc = b => a.json(`calcBeamtePension(getLifetimeSettings(),Object.assign({},BV_DEFAULTS,${JSON.stringify(b)}))`);
   const full = calc({ pay: 4000, years: 20 });
   assert.equal(full.age, 67);
@@ -53,7 +53,7 @@ test('Ruhegehalt: 1,79375 % per year, capped at 71,75 %, minimum 35 % and early-
   assert.ok(Math.abs(early.total - 37.25) < 1e-9);
   assert.ok(Math.abs(early.cut - 10.8) < 1e-9);
   assert.ok(Math.abs(early.brutto - 4000 * 37.25 * 1.79375 / 100 * 0.892) < 1e-6);
-  a.run("appStorage.setItem('lt-save-until','48');");
+  a.run("appStorage.setItem('lt-save-until','48');appStorage.setItem('lt-withdraw-from','48');");
   assert.ok(calc({ pay: 4000, years: 2 }).rate < 35);
   assert.equal(calc({ pay: 4000, years: 4 }).rate, 35);
   assert.equal(calc({ pay: 0, years: 30 }).netto, 0);

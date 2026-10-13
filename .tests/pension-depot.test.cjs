@@ -23,7 +23,7 @@ test('subsidies: 50 % on the first 360 €, 25 % up to 1.800 €, child bonus 1:
 test('depot value and payout plan until 85 (no return, no inflation: plain sums)', () => {
   const a = app(html);
   // Today is 2026-10-08 in the harness. Born 1985, saving until 67, Regelalter 67.
-  a.run("appStorage.setItem('lt-birth-year','1985');appStorage.setItem('lt-save-until','67');appStorage.setItem('lt-inflation','0');");
+  a.run("appStorage.setItem('lt-birth-year','1985');appStorage.setItem('lt-save-until','67');appStorage.setItem('lt-withdraw-from','67');appStorage.setItem('lt-inflation','0');");
   const calc = d => a.json(`calcAvDepot(getLifetimeSettings(),${JSON.stringify(d)})`);
   const r = calc({ contrib: 150, ret: 0, deduct: 0 });
   assert.equal(r.from, 67);
@@ -47,7 +47,7 @@ test('depot value and payout plan until 85 (no return, no inflation: plain sums)
 
 test('children until the year they turn 18 and the one-time starter bonus for under-25s', () => {
   const a = app(html);
-  a.run("appStorage.setItem('lt-birth-year','1985');appStorage.setItem('lt-save-until','67');appStorage.setItem('lt-inflation','0');");
+  a.run("appStorage.setItem('lt-birth-year','1985');appStorage.setItem('lt-save-until','67');appStorage.setItem('lt-withdraw-from','67');appStorage.setItem('lt-inflation','0');");
   const calc = d => a.json(`calcAvDepot(getLifetimeSettings(),${JSON.stringify(d)})`);
   const base = calc({ contrib: 50, ret: 0, deduct: 0 });
   const kid = calc({ contrib: 50, ret: 0, deduct: 0, kids: '2019' });

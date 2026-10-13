@@ -5,11 +5,11 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `master_export_YYYY-MM-DD.json` (bis Oktober 2026 `vermoegen_YYYY-MM-DD.json`). Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 9
+## Struktur, Version 10
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `9`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `10`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
@@ -18,7 +18,7 @@ weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 | `budget` | Zwölfmonatiger Plan ohne Jahresbezug, Budgetposten, Daueraufträge und einmalige Zahlungen (`oneTime`); `null`, wenn nicht eingerichtet |
 | `loans` | Darlehensparameter, über `positionId` einer Verbindlichkeit zugeordnet |
 | `retirement` | Eigene Person (gesetzliche Rente, optional laufende Erwerbsminderungsrente und Beamtenversorgung), weitere Personen mit gesetzlicher Rente (optional laufende Erwerbsminderungsrente), Altersvorsorgedepots und weitere Renteneinkünfte |
-| `forecast` | Lebensplanung, Bedarf, Inflation, Sicherheitsniveau und einmalige Ereignisse |
+| `forecast` | Lebensplanung, Lebensphasen mit Bedarf je Phase, Inflation, Sicherheitsniveau und einmalige Ereignisse |
 | `preferences` | Theme, fünf Bereichsschalter, Aufklappzustände und Abschluss des Onboardings |
 
 Beispiel einer Verbindung (Auszug, keine vollständige Sicherung):
@@ -468,6 +468,32 @@ jünger als 25 ist. Beiträge laufen bis „Sparen bis Alter“ bzw. „Arbeiten
 Person, höchstens bis zur Auszahlung. Ausgezahlt wird als Auszahlplan bis 85 in heutiger
 Kaufkraft; die Prognose zählt ihn als Einkommen, eine Teilauszahlung fließt ins liquide
 Vermögen. Der steuerliche Sonderausgabenabzug in der Ansparphase wird nicht eingerechnet.
+
+## Lebensphasen (Version 10)
+
+Die Prognose rechnet in vier Phasen. Ihre Grenzen und Annahmen stehen in
+`forecast.settings`; fehlende Felder bedeuten das bisherige Verhalten.
+
+| Phase | beginnt mit | Annahmen |
+| --- | --- | --- |
+| 1 Ansparen | heute | Sparraten je Anlage, `savingsGrowthPercent` |
+| 2 Weiterarbeiten | `saveUntilAge` | `phase2WorkPercent` (Arbeitszeit, Standard 100), `phase2SavingPercent` (Anteil der heutigen Sparrate, Standard 0), `phase2MonthlyWithdrawal` (€/Monat, Standard 0) |
+| 3 Vorruhestand | `retirementAge` | `monthlySpending` aus dem liquiden Vermögen, keine Einzahlungen |
+| 4 Rente | `pensionStartAge` | `pensionSpending` (Standard: wie `monthlySpending`) |
+
+- Die Grenzen folgen aufeinander: Phase 2 beginnt bei `min(saveUntilAge, retirementAge)`,
+  Phase 4 bei `max(retirementAge, pensionStartAge)`. Eine Phase ohne Dauer entfällt.
+- `pensionStartAge` fehlt: Rentenbeginn der gesetzlichen Rente (`statutoryPension.retirementAge`)
+  bzw. die Regelaltersgrenze. Eine gesetzliche Rente ohne eigenes Alter beginnt mit Phase 4;
+  stimmt ihr Alter mit Phase 4 überein, zieht das Phasen-Sheet es beim Verschieben mit
+  (ebenso das Antragsalter der Beamtenversorgung).
+- Rentenpunkte, Dienstzeit und die betriebliche Altersvorsorge wachsen in Phase 1 voll und in
+  Phase 2 anteilig zur Arbeitszeit; Altersvorsorgedepots bekommen Beiträge bis zum Ende der
+  Arbeit (`retirementAge`). Kreditraten zahlt bis dahin das Einkommen.
+- Mit `phase2WorkPercent: 0` entspricht die Rechnung genau dem Modell bis Version 9
+  (zwischen „Sparen bis“ und „Ruhestand ab“ weder Sparen noch Rentenpunkte); die Tests
+  vergleichen das mit dem Stand `1f17a25`.
+- Dateien der Version 9 bleiben lesbar und erhalten die Standardwerte.
 
 ## Altersvorsorgedepots im Budget (Version 9)
 

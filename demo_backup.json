@@ -1,6 +1,6 @@
 {
   "format": "vermoegen-backup",
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "currency": "EUR",
   "groups": [
     {
@@ -3946,11 +3946,14 @@
       "lifeExpectancyAge": 85,
       "planningHorizonAge": 95,
       "inflationPercent": 2,
-      "saveUntilAge": 67,
+      "saveUntilAge": 55,
       "savingsGrowthPercent": 1.5,
-      "retirementAge": 67,
-      "monthlySpending": 2800,
-      "safetyPercent": 85
+      "retirementAge": 62,
+      "monthlySpending": 3200,
+      "safetyPercent": 85,
+      "pensionStartAge": 67,
+      "phase2WorkPercent": 70,
+      "pensionSpending": 2900
     },
     "events": [
       {
