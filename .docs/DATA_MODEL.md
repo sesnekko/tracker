@@ -5,11 +5,11 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `master_export_YYYY-MM-DD.json` (bis Oktober 2026 `vermoegen_YYYY-MM-DD.json`). Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 12
+## Struktur, Version 15
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `12`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `15`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
@@ -17,7 +17,7 @@ weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 | `accounts` | Konten mit ID, Name und IBAN |
 | `budget` | Zwölfmonatiger Plan ohne Jahresbezug, Budgetposten, Daueraufträge und einmalige Zahlungen (`oneTime`); `null`, wenn nicht eingerichtet |
 | `loans` | Darlehensparameter, über `positionId` einer Verbindlichkeit zugeordnet |
-| `retirement` | Eigene Person (gesetzliche Rente, optional laufende Erwerbsminderungsrente und Beamtenversorgung), weitere Personen mit gesetzlicher Rente (optional laufende Erwerbsminderungsrente), Altersvorsorgedepots und weitere Renteneinkünfte |
+| `retirement` | Haushalt und Altersvorsorge: eigene Person (Geburtsjahr und -monat, gesetzliche Rente, optional laufende Erwerbsminderungsrente und Beamtenversorgung), weitere Personen mit gesetzlicher Rente (optional laufende Erwerbsminderungsrente), Kinder, Altersvorsorgedepots und weitere Renteneinkünfte (optional mit Ende und Person) |
 | `forecast` | Lebensplanung, Lebensphasen mit Bedarf je Phase, Inflation, Sicherheitsniveau und einmalige Ereignisse |
 | `preferences` | Theme, Sprache, fünf Bereichsschalter, Aufklappzustände und Abschluss des Onboardings |
 
@@ -98,6 +98,15 @@ Schemaänderungen oder Änderungen der Bedeutung von Standardwerten erfordern
 eine neue `schemaVersion` und eine explizite Migration. Unbekannte zukünftige
 Versionen dürfen nicht stillschweigend gelesen oder heruntergestuft werden.
 
+**Mehrere Fenster (seit Version 13 der App, ohne Formatänderung):** Alle Fenster derselben
+Herkunft teilen sich einen Speicher. Der Speicher merkt sich den zuletzt gelesenen Stand und
+prüft vor jedem Schreiben, ob ein anderes Fenster inzwischen gespeichert hat. Dann übernimmt er
+dessen Stand und lehnt die eigene Änderung ab (Fehler mit `code: 'CONFLICT'`), statt sie darüber
+zu schreiben. Einen Stand, den diese App-Version nicht lesen kann (z. B. von einer neueren
+Version), überschreibt er nie. `reload()` übernimmt einen fremden Stand ohne zu schreiben; die App
+ruft es beim `storage`-Ereignis auf, sobald nichts bearbeitet wird, und zeichnet die Seite neu.
+Ein Schreibvorgang ohne inhaltliche Änderung schreibt nichts. Tests: `.tests/concurrency.test.cjs`.
+
 ## Prüfung und Demo
 
 ```sh
@@ -105,26 +114,38 @@ node --test .tests/data-model.test.cjs
 node .scripts/build-demo.cjs
 ```
 
-Die Tests vergleichen Monatswerte, Budget und Monte-Carlo-Ergebnisse mit dem
-Stand vor der Migration (`1f17a25`). Sie prüfen außerdem Gerätewechsel,
+Die Tests vergleichen Monatswerte, Budget und die Eingaben der Prognose mit dem
+Stand vor der Migration (`1f17a25`). Die Prognose-Ergebnisse selbst vergleichen sie seit der
+Fehlerbehebung P18–P29 zwischen migrierten und frisch importierten Daten, weil sich das
+Rechenmodell bewusst geändert hat (siehe PROBLEME.md, Abschnitt 0). Sie prüfen außerdem Gerätewechsel,
 Umbenennungen, archivierte Daten, ungültige Importe, Speicherfehler und die
-tatsächlichen Export-/Importfunktionen. `demo_backup.json` ist die neue Demo für
-die App; `.tests/demo_export.csv` bleibt eine Test- und Kompatibilitätsvorlage.
+tatsächlichen Export-/Importfunktionen. `demo_backup.json` ist die Demo für
+die App und die **Quelle**: Sie wird in der App bearbeitet und exportiert.
+`.scripts/build-demo.cjs` ändert keine Inhalte, sondern normalisiert die Datei (aktuelle
+`schemaVersion`, ohne `exportedAt`, ohne den Live-Monat eines Exports) und erzeugt daraus
+`demo_backup.js` für die lokal geöffnete App. Inhalte ändern nur bewusste, einzeln dokumentierte
+Schritte wie `.scripts/demo-quote-history.cjs` (Historie aus Kursen). `.tests/demo_export.csv` bleibt eine Test- und
+Kompatibilitätsvorlage; die frühere CSV-basierte Fassung des Skripts steht in der Git-Historie
+(`7504901`).
 
-Die JSON-Demo zeigt einen fiktiven Haushalt mit 34 Monatsständen von Januar 2024
-bis Oktober 2026: Konten, zwei ETFs, die Einzelaktien Apple, Amazon und Nestlé,
-getrennte Bitcoin- und Ethereum-Positionen, physisches Gold, Altersvorsorge, Wohnung
-und Familienauto. Das Nettovermögen wächst von rund 190.000 € auf 430.000 €. Die
-Kurse folgen erfundenen, aber realistisch schwankenden Verläufen mit festem
-Zufallsstartwert (gemeinsame Korrekturen, Krypto-Rücksetzer), sodass jeder Build gleich ist.
-Immobilien- und Autokredit sind mit ihren Assets verknüpft. Restschulden stammen
-aus vollständigen Annuitätenverträgen einschließlich datierter Sondertilgungen.
-Budget, Daueraufträge, Rentenangaben und Prognoseereignisse sind enthalten; die
-automatischen Kreditraten werden nicht zusätzlich als manuelle Budgetposten gezählt.
-Alle Bestände, Kurse und Annahmen sind erfundene Beispiele. Die Bewertung bleibt
-manuell, damit die Demo offline funktioniert und Live-Kurse keine Beispielwerte
-ersetzen. Kursquellen für ETFs, Bitcoin und Ethereum sind als Asset-Angaben
-hinterlegt. Konten tragen den Zusatz „Demo“ und enthalten keine IBAN.
+Die JSON-Demo zeigt einen fiktiven Haushalt (Max, Anna und Lena, Jahrgang 2019) mit 34 Monatsständen von
+Januar 2024 bis Oktober 2026: Konten, zwei ETFs, die Einzelaktien Apple, Amazon und Nestlé,
+getrennte Bitcoin- und Ethereum-Positionen, physisches Gold, Wohnung, Familienauto und seit
+Januar 2026 Garagen (60.000 €, mit Abschreibung) über den „Kredit Garagen“ in eigener Gruppe.
+Die Altersvorsorge-Positionen sind archiviert. Wohnungs-, Auto- und Garagenkredit sind mit
+ihren Assets verknüpft; Restschulden stammen aus vollständigen Annuitätenverträgen einschließlich
+datierter Sondertilgungen. Budget (Januar 2026: 5.384 € Einnahmen inkl. 259 € automatisches Kindergeld,
+1.661 € Ausgaben, 1.850 € Kreditraten, 825 € Sparen; die Gehälter sind Max und Anna zugeordnet), Daueraufträge,
+Rentenangaben (Anna arbeitet bis 67; Lenas Kinderzulage zählt bei Anna), Lebensphasen (Ansparen bis 50,
+Max im Weiterarbeiten bis 60 mit 50 %: seit Schema 15 sinkt damit sein dem Budget zugeordnetes Gehalt),
+zwei Altersvorsorgedepots ab 2027 und Prognoseereignisse sind enthalten; die automatischen
+Kreditraten werden nicht zusätzlich als manuelle Budgetposten gezählt.
+ETFs, Bitcoin, die drei Aktien und Ethereum werden mit Live-Kurs bewertet; der gespeicherte Kurs
+ist der Rückfall ohne Netz. Ihre Historie (Stückzahlen erfunden) ist mit echten Monatsschlusskursen
+bewertet: `.scripts/demo-quote-history.cjs` wendet „Werte aus Kursen übernehmen“ mit den Kursen aus
+`.scripts/demo-prices.json` (abgerufen am 14.10.2026) an. Nestlé hat erst ab Mai 2025 Kurse; davor
+bleiben die erfundenen Werte. Alle Bestände und Annahmen sind erfundene Beispiele.
+Konten enthalten keine IBAN.
 
 ## Darlehen und Asset-Verknüpfung
 
@@ -484,8 +505,8 @@ Die Prognose rechnet in vier Phasen. Ihre Grenzen und Annahmen stehen in
 
 | Phase | beginnt mit | Annahmen |
 | --- | --- | --- |
-| 1 Ansparen | heute | Sparraten je Anlage, `savingsGrowthPercent` |
-| 2 Weiterarbeiten | `saveUntilAge` | `phase2WorkPercent` (Arbeitszeit, Standard 100), `phase2SavingPercent` (private Vermögensbildung in % der heutigen Sparraten, Standard 0), `phase2PensionPercent` (Altersvorsorge in % der heutigen Beiträge, Standard 100, ab Version 11), `phase2MonthlyWithdrawal` (€/Monat, Standard 0) |
+| 1 Ansparen | heute | Sparraten je Anlage, `savingsGrowthPercent`; seit Version 15 `phase1WorkPercent` (deine Arbeitszeit, Standard 100) |
+| 2 Weiterarbeiten | `saveUntilAge` | `phase2WorkPercent` (Arbeitszeit, Standard 100, seit Version 15: wie Phase 1), `phase2SavingPercent` (private Vermögensbildung in % der heutigen Sparraten, Standard 0), `phase2PensionPercent` (Altersvorsorge in % der heutigen Beiträge, Standard 100, ab Version 11), `phase2MonthlyWithdrawal` (€/Monat, Standard 0) |
 | 3 Vorruhestand | `retirementAge` | `monthlySpending` aus dem liquiden Vermögen; ab Version 11 optional `phase3SavingPercent` und `phase3PensionPercent` (Standard 0) |
 | 4 Rente | `pensionStartAge` | `pensionSpending` (Standard: wie `monthlySpending`) |
 
@@ -495,10 +516,13 @@ Die Prognose rechnet in vier Phasen. Ihre Grenzen und Annahmen stehen in
   bzw. die Regelaltersgrenze. Eine gesetzliche Rente ohne eigenes Alter beginnt mit Phase 4;
   stimmt ihr Alter mit Phase 4 überein, zieht das Phasen-Sheet es beim Verschieben mit
   (ebenso das Antragsalter der Beamtenversorgung).
-- Rentenpunkte und Dienstzeit wachsen in Phase 1 voll und in Phase 2 anteilig zur Arbeitszeit.
+- Rentenpunkte und Dienstzeit wachsen je Phase anteilig zur Arbeitszeit (seit Version 15 relativ zur
+  Arbeitszeit von heute, Dienstzeit als Anteil einer Vollzeitstelle).
   Altersvorsorge (Sparraten der Gruppen mit Kategorie `bav` und Beiträge eigener
   Altersvorsorgedepots) läuft in Phase 1 voll, in Phase 2 und 3 mit dem jeweiligen Prozentsatz,
   danach nicht mehr; die Depot-Hochrechnung rechnet das Jahr für Jahr (Alter zur Jahresmitte).
+  Weitere Personen haben seit Version 15 eigene Werte je Phase (Abschnitt „Arbeitszeit und
+  Altersvorsorge je Lebensphase“).
   Private Vermögensbildung (übrige Sparraten) entsprechend mit den Spar-Prozentsätzen.
   Kreditraten zahlt bis zum Ende der Arbeit das Einkommen.
 - Mit `phase2WorkPercent: 0` und `phase2PensionPercent: 0` entspricht die Rechnung genau dem Modell bis Version 9
@@ -520,6 +544,78 @@ Die Prognose rechnet in vier Phasen. Ihre Grenzen und Annahmen stehen in
   eingetragene Guthaben. In der Prognose zählt die Gruppe bis zum Auszahlungsbeginn zum
   Vermögen, danach steckt das Kapital in der monatlichen Auszahlung (nicht doppelt).
 - **Erscheinungsbild**: `preferences.theme` kann zusätzlich `system` sein (folgt dem Gerät).
+
+## Monatsstand und Stichtag
+
+Ein Monatsstand `M` ist der Stand beim Wechsel in den Monat `M`. Der Live-Monat („Heute“) ist der
+Folgemonat (`nextYM()`, Entscheidung 14.10.2026: bleibt so) und friert ein, wenn der Kalender in
+diesen Monat wechselt. Historische Kurswerte rechnen deshalb mit dem Schlusskurs des Vormonats
+(VERMOEGEN.md, 4.6). Budget und Prognose leiten den Kalendermonat daraus ab (`_budgetYM()`,
+`latestKey`).
+
+## Arbeitszeit und Altersvorsorge je Lebensphase (Version 15)
+
+Entscheidung 14.10.2026: Alle Lebensphasen-Parameter stehen im Lebensphasen-Sheet der Prognose. Für jede erwachsene
+Person gibt es je Phase (Phasen in deinem Alter: 1 Ansparen, 2 Weiterarbeiten, 3 Vorruhestand, 4 Rente) eine
+Arbeitszeit und einen Anteil der Altersvorsorge, z. B. Phase 1: du Vollzeit, Anna Teilzeit; Phase 2: du 50 %, Anna 25 %.
+
+| Feld | Inhalt | fehlt |
+| --- | --- | --- |
+| `forecast.settings.phase1WorkPercent` | deine Arbeitszeit in Phase 1 in % einer Vollzeitstelle (0–100). Legacy `lt-p1-work` | 100 |
+| `forecast.settings.phase2WorkPercent` | wie bisher, Phase 2 (Ich arbeite ab Phase 3 nicht mehr) | wie Phase 1 |
+| `forecast.settings.phase2PensionPercent`, `phase3PensionPercent` | wie bisher: deine Altersvorsorge in % der heutigen Beiträge | solange du arbeitest 100 %, danach 0 (= bisherige Standardwerte) |
+| `people[].phase<n>WorkPercent` (n = 1–4) | Arbeitszeit der Person in Phase n (0–100). Legacy `w1` … `w4` in `lt-drv-extra` | wie in der Phase davor, Phase 1: 100 |
+| `people[].phase<n>PensionPercent` (n = 2–4) | Altersvorsorge der Person in Phase n (0–200 % der heutigen Beiträge). Legacy `pen2` … `pen4` | solange sie arbeitet (vor `workUntilAge`) 100 %, danach 0 |
+
+- Das Budget-Gehalt einer Person gilt für die Arbeitszeit der Phase, in der heute liegt; in anderen Phasen zählt
+  Gehalt × Arbeitszeit ÷ Arbeitszeit heute. Nach `workUntilAge` arbeitet die Person nicht mehr.
+- **Migration 14 → 15:** `partTimeFromAge`/`partTimePercent` (nur in Version 14) werden zur Arbeitszeit der ersten
+  Phase, die mindestens zur Hälfte in der Teilzeit liegt (Phasen in deinem Alter ab heute, ohne Rentenbeginn 67);
+  die folgenden Phasen übernehmen sie. Danach sind die beiden Felder nicht mehr erlaubt. Eigene Werte bleiben, wo sie
+  waren; ihre Standardwerte rechnen wie bisher.
+- Tests: `.tests/household.test.cjs` (Arbeitszeit je Phase), `.tests/persons.test.cjs` (Schema 15, Migration).
+
+## Personen und Kinder (Version 14)
+
+Entscheidung 14.10.2026: Der Haushalt besteht aus Personen. Einkünfte und Altersvorsorge werden ihnen zugeordnet;
+Kindergeld und Kinderzulage leitet die App aus den Kindern ab.
+
+| Feld | Inhalt |
+| --- | --- |
+| `retirement.primary` | „Ich“ (ID bleibt, z. B. `person-main`) |
+| `retirement.people[]` | weitere Erwachsene: `id`, `name`, `birthYear`, `workUntilAge`, `statutoryPension`; seit Version 15 optional je Lebensphase `phase1WorkPercent` … `phase4WorkPercent` und `phase2PensionPercent` … `phase4PensionPercent` (siehe oben). Arbeitszeit, Altersvorsorge, `workUntilAge` und `statutoryPension.retirementAge` werden im Lebensphasen-Sheet gepflegt, die übrigen Felder auf der Haushaltskarte |
+| `retirement.children[]` | Kinder: `id` (`child-…`), `name`, `birthYear`; optional `birthMonth` (1–12, fehlt = Januar), `childBenefitUntilAge: 25` (Ausbildung; fehlt = 18), `allowanceParentId` (Erwachsener, bei dem die Kinderzulage zählt; fehlt = ich). Das Feld fehlt ohne Kinder. Legacy-Schlüssel `lt-children` (`by`, `bm`, `until`, `parent`) |
+| `budget.items[].personId` | nur bei Einnahmen: wessen Einkommen (fehlt = Haushalt, z. B. Miete). Das Gehalt einer weiteren Person ist der Ø ihrer zugeordneten Einnahmen ohne „Auch im Ruhestand“. Legacy `person` |
+| `retirement.incomes[].personId` | weitere Einkunft einer weiteren Person; `fromAge`/`untilAge` gelten dann in deren Alter (fehlt = ich). Legacy `person` |
+
+- IDs sind über eigene Person, weitere Personen und Kinder eindeutig. Wird eine Person gelöscht, fallen ihre
+  Zuordnungen weg (Einnahmen werden Haushalt, Einkünfte und Kinderzulage gehören dann mir); Beträge bleiben.
+- **Kindergeld** wird nicht gespeichert, sondern berechnet: 259 € je Kind und Monat (§ 66 Abs. 1 EStG, Stand 2026) vom
+  Geburtsmonat bis zum Monat des 18. bzw. 25. Geburtstags (§ 66 Abs. 2, § 32 Abs. 3, Abs. 4 Nr. 2 EStG). Es erscheint
+  als automatische Budgetzeile und ersetzt einen eigenen Posten, dessen Name „Kindergeld“ enthält.
+- **Migration nach 14:** Schema 13: `people[].monthlyNetIncome` wird dem eindeutig passenden, noch nicht zugeordneten
+  Einnahmeposten zugeordnet (Name enthält den Namen der Person), sonst entsteht „Nettogehalt <Name>“ mit dem Betrag
+  in allen zwölf Monaten (ohne Budget: Budget mit diesem Posten). Alle Versionen bis 13:
+  `pensionDepots[].childBirthYears` werden Kinder („Kind (2019)“); wie bisher zählt jedes Kind bei der zuerst genannten
+  Person und ein Jahrgang so oft, wie er in einem Depot dieser Person steht, die Kinderzulage rechnet also gleich.
+  Danach sind beide Felder nicht mehr erlaubt; ein Import mit ihnen in Version 14 wird abgelehnt.
+- `Data.migrate(doc)` führt das beim Laden, beim Import und in `.scripts/build-demo.cjs` aus.
+- Tests: `.tests/persons.test.cjs`, `.tests/household.test.cjs`, `.tests/setup.test.cjs` (Haushalt).
+
+## Geburtsmonat, Nettogehalt weiterer Personen, Einkünfte mit Ende (Version 13)
+
+- `retirement.primary.birthMonth`: ganze Zahl 1–12 (fehlt = Januar). Das Alter wird auf den Monat
+  genau gerechnet. Weitere Personen haben denselben Geburtsmonat (Modellannahme).
+- `retirement.people[].monthlyNetIncome`: Nettogehalt dieser Person in €/Monat (≥ 0, nur weitere
+  Personen; Legacy-Feld `net` in `lt-drv-extra`). **Nur in Version 13**; seit Version 14 kommt das Gehalt aus
+  den zugeordneten Budget-Einnahmen (siehe oben, Migration).
+- `retirement.incomes[].untilAge`: optionales Ende einer weiteren Einkunft (größer als `fromAge`;
+  Legacy-Feld `until` in `lt-pensions`). Fehlt es, läuft die Einkunft lebenslang.
+- **Migration:** Dateien der Versionen 1–12 werden ohne Änderung übernommen (die neuen Felder
+  fehlen dann). Der Import lehnt ab: Geburtsmonat außerhalb 1–12 oder nicht ganzzahlig, negatives
+  Nettogehalt, Nettogehalt bei der eigenen Person, Ende vor oder gleich dem Beginn. Unvollständige
+  Eingaben in der App (z. B. Ende kurz vor dem Beginn während des Tippens, Monat 13) speichert der
+  Adapter nicht, statt den Speichervorgang abzulehnen. Tests: `.tests/pension-rules.test.cjs`.
 
 ## Sprache (Version 12)
 

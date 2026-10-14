@@ -24,12 +24,13 @@ test('the welcome starts the setup; steps follow the chosen focus; closing retur
   const a=context(),before=a.storage.getItem(Data.KEY);
   assert.match(a.run('guideWelcome()'),/onclick="startSetup\(\)">Geführt einrichten/);
   a.run('startSetup()');
-  assert.deepEqual(a.json('_setupSteps()'),['focus','assets','debts','done']);
-  assert.match(a.el('onboardingOverlay').innerHTML,/Wobei soll dir die App helfen/);
+  /* Seit 14.10.2026 beginnt die Einrichtung mit dem Haushalt (Entscheidung: zuerst die relevanten Personen anlegen) */
+  assert.deepEqual(a.json('_setupSteps()'),['household','focus','assets','debts','done']);
+  assert.match(a.el('onboardingOverlay').innerHTML,/Wer gehört zu deinem Haushalt/);
   a.run("_setup.focus.budget=true;_setup.focus.future=true;");
-  assert.deepEqual(a.json('_setupSteps()'),['focus','assets','debts','budget','future','pension','done']);
+  assert.deepEqual(a.json('_setupSteps()'),['household','focus','assets','debts','budget','future','pension','done']);
   a.run("_setup.futureSkipped=true;");
-  assert.deepEqual(a.json('_setupSteps()'),['focus','assets','debts','budget','future','done']);
+  assert.deepEqual(a.json('_setupSteps()'),['household','focus','assets','debts','budget','future','done']);
   a.run('_setupClose()');
   assert.equal(a.json('_setup'),null);
   assert.match(a.el('onboardingOverlay').innerHTML,/Geführt einrichten/);
@@ -164,7 +165,9 @@ test('one-time purchase keeps the quantity; the current month is not part of the
   const h=a.json("reconstructHolding(prices,'2025-11','2026-02',10)");
   assert.deepEqual(h.map(x=>x.month),['2025-11','2025-12','2026-01']);
   assert.deepEqual(h.map(x=>x.quantity),[10,10,10]);
-  assert.deepEqual(h.map(x=>x.value),[1100,900,1200]);
+  /* P32 (Entscheidung 14.10.2026): Stand M = Stückzahl × Kurs zum Monatswechsel, also Schlusskurs des Vormonats
+     (wie der Live-Monat einfriert); früher Schlusskurs desselben Monats: [1100, 900, 1200] */
+  assert.deepEqual(h.map(x=>x.value),[1000,1100,900]);
 });
 test('a savings plan buys every month; the rest of today\'s holding counts as an initial purchase',()=>{
   const a=context();a.context.prices=prices;
@@ -226,7 +229,7 @@ test('the history step only appears for assets with prices; savings plans prefil
   a.run("startSetup();_setup.assets=[{id:'a1',name:'Tagesgeld',category:'cash',amount:'100'}]");
   assert.ok(!a.json('_setupSteps()').includes('history'));
   a.run("_setup.assets.push({id:'a2',name:'MSCI World ETF',category:'etf',amount:'2500'},{id:'a3',name:'Bitcoin',category:'bitcoin',amount:'1000'})");
-  assert.deepEqual(a.json('_setupSteps()').slice(0,4),['focus','assets','history','debts']);
+  assert.deepEqual(a.json('_setupSteps()').slice(1,5),['focus','assets','history','debts']);
   a.run("_setupHist(_setup,'a2').mode='plan';_setupHist(_setup,'a2').plan='300';_setupHist(_setup,'a3').mode='plan';_setupHist(_setup,'a3').plan='50';_setupPrefillSaving(_setup)");
   assert.equal(a.json('_setup.budget.saving'),'350');assert.equal(a.json('_setup.budget.target'),'a2');
 });
@@ -361,4 +364,47 @@ test('chart defaults per page are stored per device and fall back on invalid val
   a.storage.setItem('vermoegen-chart-defaults','kaputt');
   assert.equal(a.json('_chartDefaults().lifetime.range'),10);
   assert.ok(!a.storage.getItem(Data.KEY)||!a.storage.getItem(Data.KEY).includes('chart-defaults'),'not part of the backup');
+});
+
+/* P4 (E1): die Einrichtung fragt nach der bereits erreichten Anwartschaft. Weitere Punkte entstehen nur aus dem Gehalt
+   bis zum Arbeitsende; wer früher aufhört, bekommt die Jahre bis zur Regelaltersgrenze nicht gutgeschrieben. */
+test('P4: erreichte Anwartschaft = heutige Punkte, Gehalt bringt Punkte nur bis zum Arbeitsende',()=>{
+  const a=context();
+  const base=apply(a,state('future',{future:{birthYear:'1985',retireAge:'63',need:'2.000'},pension:''}));
+  assert.equal(base.retirement.primary.statutoryPension.annualSalary,undefined);
+  const doc=apply(a,state('pension',{pension:'1.063',pensionSalary:'51.944'}),'appStorage.document()');
+  const sp=doc.retirement.primary.statutoryPension;
+  assert.ok(Math.abs(sp.points-1063/42.52)<1e-3,'1.063 € ÷ 42,52 € = 25 Punkte');
+  assert.equal(sp.annualSalary,51944);
+  // Harness-Datum Oktober 2026, geboren Januar 1985: 41,75 Jahre. „Ruhestand mit 63“ = Arbeitsende 63 (Vorruhestand),
+  // die Rente beginnt mit der Regelaltersgrenze 67 ohne Abschlag. Durchschnittsgehalt = 1 Punkt je Arbeitsjahr bis 63.
+  const r=a.json('calcDrvPension(getLifetimeSettings(),getDrv())');
+  assert.equal(r.age,67); assert.equal(r.zf,1);
+  assert.ok(Math.abs(r.epTotal-(25+(63-41.75)))<1e-3,'25 + 21,25 Punkte, keine Jahre von 63 bis 67: '+r.epTotal);
+  // ein ungültiges Gehalt wird erklärt und nichts gespeichert
+  a.context.s=state('pension',{pension:'1.063',pensionSalary:'abc'});
+  assert.throws(()=>a.run("buildSetupDocument(appStorage.document(),s,'2026-10','2026-11')"),/Bruttogehalt im Jahr/);
+});
+
+/* Haushalt als erster Schritt (Schema 14): Personen und Kinder; Kindergeld rechnet die App aus den Kindern */
+test('Haushalt: Partner/in und Kinder werden angelegt, Kindergeld zählt im Budget-Schritt, nicht doppelt',()=>{
+  const a=context();
+  a.run("startSetup()");
+  assert.match(a.el('onboardingOverlay').innerHTML,/Wer gehört zu deinem Haushalt/);
+  const hh={partner:{name:'Anna',by:'1987'},children:[{id:'k1',name:'Lena',by:'2019'},{id:'k2',name:'',by:'2022'}]};
+  const s=state('full',{focus:{budget:true,future:false},assets:[asset('a1','Girokonto','cash','2.000')],hasDebts:false,
+    budget:{income:'4.000',fixed:'1.500',living:'1.200',saving:'500',target:''},future:{birthYear:'1985',retireAge:'67',need:'',needFromBudget:false},household:hh});
+  a.context.s2=s;
+  const b=a.json('_setupBudget(s2,false)');
+  assert.equal(b.childBenefit,2*259);assert.equal(b.left,4000+518-1500-1200-500);
+  const doc=apply(a,s);
+  assert.equal(doc.retirement.primary.birthYear,1985);
+  assert.deepEqual(doc.retirement.people.map(p=>[p.name,p.birthYear]),[['Anna',1987]]);
+  assert.deepEqual(doc.retirement.children,[{id:'child-1',name:'Lena',birthYear:2019},{id:'child-2',name:'Kind 2',birthYear:2022}]);
+  const inc=doc.budget.items.filter(i=>i.kind==='income').map(i=>[i.name,i.monthlyAmounts[0]]);
+  assert.deepEqual(inc,[['Nettoeinkommen',4000]],'Kindergeld ist kein eigener Posten');
+  assert.equal(a.json('calcBudgetMonth(loadBudgetData(),9).einnahmen'),4000+518,'Kindergeld automatisch');
+  // ein Kind ohne Geburtsjahr wird erklärt, nichts gespeichert
+  a.context.s3=state('full',{household:{partner:null,children:[{id:'k1',name:'Lena',by:''}]}});
+  assert.throws(()=>a.run('_setupHousehold(s3)'),/Lena: Bitte das Geburtsjahr/);
 });

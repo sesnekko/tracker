@@ -19,9 +19,18 @@ function totals(a) {
 }
 // Lebensphasen (Schema 10/11): Mit „Arbeitszeit 0 %“ und „Altersvorsorge 0 %“ beim Weiterarbeiten entspricht die Rechnung dem früheren Modell
 // (zwischen „Sparen bis“ und „Ruhestand ab“ weder Sparen noch Rentenpunkte). Neue Phasenfelder fehlen im Vergleichsstand.
-const PHASE_FIELDS = "['pensionAge','pensionSpending','p2Saving','p2Work','p2Withdraw','p2Pension','p3Saving','p3Pension','phase2From','workEnd','phase4From']";
-function forecast(a) {
-  return a.json('(()=>{const p=buildPlan();return {settings:Object.fromEntries(Object.entries(p.s).filter(([k])=>!'+PHASE_FIELDS+'.includes(k))),drv:(d=>{d=Object.assign({},d);delete d.inp;return d;})(p.drv),extra:p.drvExtra.map(r=>{const x=Object.assign({},r);delete x.workEndMain;delete x.inp;return x;}),groups:p.groups.map(g=>{const x=Object.assign({},g);delete x.convertAt;return x;}),det:simulatePlan(p,p.s.withdrawFrom,{record:true}),mc:runMonteCarlo(p,p.s.withdrawFrom,true),retire:findRetireAge(p),target:targetCapital(p,p.s.withdrawFrom,simulatePlan(p,p.s.withdrawFrom,{record:true}))};})()');
+const PHASE_FIELDS = "['pensionAge','pensionSpending','p1Work','p2Saving','p2Work','p2Withdraw','p2Pension','p3Saving','p3Pension','phase2From','workEnd','phase4From','workRef']";
+// Seit dem Umbau der Prognose auf Monatsschritte mit Haushalts-Cashflow (14.10.2026, Befunde P18–P29 in
+// .docs/PROBLEME.md) rechnet die Simulation bewusst anders als der Vergleichsstand 1f17a25. Verglichen werden deshalb
+// (1) die Eingaben des Modells mit dem alten Stand und (2) die Ergebnisse zwischen Migration und frischem Import im
+// aktuellen Code. So bleibt belegt, dass die Migration nichts verliert, ohne einen fachlich falschen Sollwert festzuhalten.
+const GROUP_FIELDS = "['key','cat','gross','debt','legacyDebt','ret','vol','retDyn','volDyn','saving','avail','tax','hasLoanModel']";
+const DRV_NEW = "['inp','rag','zf','zfMonths','workEndMain','workUntil','by','net','prof']";
+function forecastInputs(a) {
+  return a.json('(()=>{const p=buildPlan();const strip=d=>{d=Object.assign({},d);'+DRV_NEW+'.forEach(k=>delete d[k]);return d;};return {settings:Object.fromEntries(Object.entries(p.s).filter(([k])=>!'+PHASE_FIELDS+'.includes(k))),drv:strip(p.drv),extra:p.drvExtra.map(strip),groups:p.groups.map(g=>{const x={};'+GROUP_FIELDS+'.forEach(k=>x[k]=g[k]);x.loans=g.loans.map(l=>({bal:l.bal,rate:l.rate,pay:l.pay,extra:l.extra,follow:l.follow,fixedAge:l.fixedAge}));return x;})};})()');
+}
+function forecastResult(a) {
+  return a.json('(()=>{const p=buildPlan();const det=simulatePlan(p,p.s.withdrawFrom,{record:true});return {det,mc:runMonteCarlo(p,p.s.withdrawFrom,true),retire:findRetireAge(p),target:targetCapital(p,p.s.withdrawFrom,det)};})()');
 }
 test('migration retains every month, value, quantity, budget and forecast result', () => {
   const a = app(html, new MemoryStorage(legacyValues));
@@ -32,9 +41,11 @@ test('migration retains every month, value, quantity, budget and forecast result
     const stripMetadata = c => JSON.parse(JSON.stringify(c, (k, v) => ['id', 'targetGroup', 'explicitTarget'].includes(k) ? undefined : v));
     assert.deepEqual(stripMetadata(a.json(`calcBudgetMonth(loadBudgetData(),${m})`)), stripMetadata(legacyApp.json(`calcBudgetMonth(loadBudgetData(),${m})`)));
   }
-  // IDs are metadata; all simulation inputs and outputs remain numerically equal.
+  // IDs are metadata; all simulation inputs remain numerically equal to the old model, results equal a fresh import.
   const stripIds = x => JSON.parse(JSON.stringify(x, (k, v) => k === 'id' ? undefined : v));
-  assert.deepEqual(stripIds(forecast(a)), stripIds(forecast(legacyApp)));
+  assert.deepEqual(stripIds(forecastInputs(a)), stripIds(forecastInputs(legacyApp)));
+  const fresh = imported(html); fresh.run("appStorage.setItem('lt-p2-work','0');appStorage.setItem('lt-p2-pension','0')");
+  assert.deepEqual(stripIds(forecastResult(a)), stripIds(forecastResult(fresh)));
   assert.ok(a.storage.getItem(Data.KEY));
   assert.equal(a.storage.getItem('finData'), null);
 });
@@ -43,7 +54,7 @@ test('actual CSV importer produces the same results in the new store', () => {
   a.run("appStorage.setItem('lt-p2-work','0');appStorage.setItem('lt-p2-pension','0')");
   assert.deepEqual(totals(a), totals(legacyApp));
   const stripIds = x => JSON.parse(JSON.stringify(x, (k, v) => k === 'id' ? undefined : v));
-  assert.deepEqual(stripIds(forecast(a)), stripIds(forecast(legacyApp)));
+  assert.deepEqual(stripIds(forecastInputs(a)), stripIds(forecastInputs(legacyApp)));
 });
 test('one JSON file restores all data and preferences on a fresh device', () => {
   const source = Data.createStore(new MemoryStorage({ ...legacyValues, darkMode: '0', 'v2-modules': JSON.stringify({ budget: false, liab: false }), 'ui-open-flow': '1' }));
@@ -204,32 +215,48 @@ test('saved budget targets survive names and explicit unassigned rows stay unass
   assert.ok(a.json('deriveSavingsFromBudget(buildPlan()).unmatched').includes(saving.name));
 });
 test('bundled JSON demo restores a complete household without double counting loan payments', () => {
+  /* Erwartungen aus demo_backup.json (in der App bearbeitete Demo vom 13.10.2026, normalisiert mit .scripts/build-demo.cjs).
+     Budgetwerte unabhängig aus den Posten nachgerechnet: Januar 2026 Einnahmen 3.200 + 1.800 + 259 (Kindergeld für Lena,
+     automatisch aus dem Kind, § 66 EStG; der frühere Posten „Kindergeld“ 250 € entfällt) + 125 = 5.384 €,
+     Ausgaben 701 € fix + 960 € variabel, Kreditraten laut Vertrag 1.200 + 400 + 250 = 1.850 €, Sparen 500 + 50 + 250 + 25
+     = 825 € (der Posten „Altersvorsorge-Beiträge“ auf die archivierte Gruppe ist seit DEMO-6 entfernt, Entscheidung 14.10.2026). */
   const doc = JSON.parse(fs.readFileSync(path.join(root, 'demo_backup.json'), 'utf8'));
   Data.validate(doc);
   const a = app(html); a.context.demo = doc;
   a.run("appStorage.importBackup(demo);_fc=loadFieldConfig();selectedMonth='2026-10';ensureNextMonth();");
   assert.equal(doc.schemaVersion, Data.VERSION);
+  assert.equal(doc.exportedAt, undefined);
   assert.equal(doc.snapshots.length, 34);
-  assert.equal(doc.positions.length, 17);
+  assert.equal(doc.snapshots.at(-1).month, '2026-10', 'kein Live-Monat in der Demo; die App legt ihn beim Öffnen an');
+  assert.equal(doc.positions.length, 19);
   assert.deepEqual(doc.positions.filter(p => p.category === 'stock').map(p => p.name), ['Apple', 'Amazon', 'Nestlé']);
   assert.ok(['bitcoin', 'crypto', 'stock', 'vehicle', 'realEstate'].every(category => doc.positions.some(p => p.category === category)));
-  // The two ETFs and Bitcoin use live prices (with a stored quote as offline fallback), everything else is manual.
-  assert.deepEqual(doc.positions.filter(p => p.valuation === 'market').map(p => p.id), ['msci-world-a0rpwh', 's-p-500-a0yedg', 'bitcoin']);
+  // ETFs, Bitcoin, Aktien und Ethereum mit Live-Kurs (gespeicherter Kurs als Rückfall ohne Netz), alles andere manuell.
+  assert.deepEqual(doc.positions.filter(p => p.valuation === 'market').map(p => p.id), ['msci-world-a0rpwh', 's-p-500-a0yedg', 'bitcoin', 'aktie-apple', 'aktie-amazon', 'aktie-nestle', 'ethereum']);
   assert.ok(doc.positions.filter(p => p.valuation === 'market').every(p => p.instrument && p.lastQuote && p.lastQuote.priceEUR > 0));
-  assert.ok(doc.positions.filter(p => p.valuation !== 'market').every(p => p.valuation === 'manual'));
+  // Vermögenswerte ohne Kurs sind manuell bewertet; Verbindlichkeiten haben keine Bewertungsart („Kredit Garagen“ wurde in der App angelegt)
+  assert.ok(doc.positions.filter(p => p.valuation !== 'market' && p.category !== 'liab').every(p => p.valuation === 'manual'));
   assert.ok(doc.positions.find(p => p.id === 'familienauto').depreciation, 'car keeps its monthly depreciation');
   assert.ok(doc.accounts.every(p => p.iban === ''));
+  // Personen (Schema 14): Gehälter sind ihren Personen zugeordnet, das Kind ist eine Person mit Kinderzulage bei Anna
+  assert.equal(doc.budget.items.find(i => i.name === 'Nettogehalt Anna').personId, doc.retirement.people[0].id);
+  assert.equal(doc.budget.items.find(i => i.name === 'Nettogehalt Max').personId, doc.retirement.primary.id);
+  assert.deepEqual(doc.retirement.children, [{ id: 'child-1', name: 'Lena', birthYear: 2019, allowanceParentId: doc.retirement.people[0].id }]);
+  assert.ok(!doc.budget.items.some(i => /kindergeld/i.test(i.name)), 'Kindergeld kommt automatisch');
   assert.equal(a.json("loadData()['2024-01']._details['kredit-wohnung']"), 239500);
   assert.equal(a.json("loadData()['2024-12']._details['kredit-auto']"), 0);
   assert.equal(a.json("loadData()['2025-01']._details['kredit-auto']"), 19700);
   const jan = a.json('calcBudgetMonth(loadBudgetData(),0)');
   const aug = a.json('calcBudgetMonth(loadBudgetData(),7)');
-  assert.equal(jan.einnahmen, 5250);
-  assert.equal(jan.sparplaene, 895);
-  // Ordinary spending (1,661) + both contract rates (1,600) + savings (895).
-  assert.equal(Math.round(jan.frei), 1094);
-  assert.equal(Math.round(aug.frei), -1406);
-  assert.equal(jan.fixItems.filter(p => p.automatic).length, 2);
+  assert.equal(jan.einnahmen, 5384);
+  assert.equal(jan.sparplaene, 825);
+  assert.equal(Math.round(jan.frei), 5384 - 1661 - 1850 - 825);
+  // August 2026: Sondertilgung 2.500 € für die Wohnung
+  assert.equal(Math.round(aug.frei), 5384 - 1661 - 1850 - 825 - 2500);
+  // Kein Sparposten zielt auf eine Gruppe ohne aktive Position (P15/DEMO-6)
+  const active = new Set(doc.positions.filter(p => !p.archived).map(p => p.groupId));
+  assert.deepEqual(doc.budget.items.filter(i => i.kind === 'saving' && i.targetGroupId && !active.has(i.targetGroupId)).map(i => i.name), []);
+  assert.equal(jan.fixItems.filter(p => p.automatic).length, 3, 'drei Kreditverträge, jede Rate genau einmal');
   const target = app(html); target.context.demo = a.json('appStorage.exportBackup()');
   target.run('appStorage.importBackup(demo);_fc=loadFieldConfig();');
   assert.deepEqual(totals(target), totals(a));

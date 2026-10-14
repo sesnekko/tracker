@@ -17,7 +17,10 @@ test('subsidies: 50 % on the first 360 €, 25 % up to 1.800 €, child bonus 1:
   assert.deepEqual(sub(3000, 0), { base: 540, child: 0, total: 540 });
   assert.deepEqual(sub(600, 1), { base: 240, child: 300, total: 540 });
   assert.deepEqual(sub(600, 2), { base: 240, child: 600, total: 840 });
-  assert.deepEqual(sub(100, 1), { base: 50, child: 100, total: 150 });
+  // Sollwert korrigiert (14.10.2026): § 86 EStG i. d. F. des Altersvorsorgereformgesetzes (BR-Drs. 206/26, Art. 2 Nr. 9)
+  // gewährt Grund- und Kinderzulage nur mit mindestens 120 € Eigenbeitrag. Früher erwartet: 50 + 100 = 150 €.
+  assert.deepEqual(sub(100, 1), { base: 0, child: 0, total: 0 });
+  assert.deepEqual(sub(120, 1), { base: 60, child: 120, total: 180 });
 });
 
 test('depot value and payout plan until 85 (no return, no inflation: plain sums)', () => {
@@ -50,11 +53,16 @@ test('children until the year they turn 18 and the one-time starter bonus for un
   a.run("appStorage.setItem('lt-birth-year','1985');appStorage.setItem('lt-save-until','67');appStorage.setItem('lt-withdraw-from','67');appStorage.setItem('lt-inflation','0');");
   const calc = d => a.json(`calcAvDepot(getLifetimeSettings(),${JSON.stringify(d)})`);
   const base = calc({ contrib: 50, ret: 0, deduct: 0 });
-  const kid = calc({ contrib: 50, ret: 0, deduct: 0, kids: '2019' });
+  // Schema 14: children are persons; the subsidy counts for the parent they are assigned to (empty = me).
+  a.run("appStorage.setItem('lt-children',JSON.stringify([{id:'child-1',name:'Lena',by:2019}]));");
+  const kid = calc({ contrib: 50, ret: 0, deduct: 0 });
   // Child born 2019: Kinderzulage for 2027–2037 (11 years), 300 € each with 600 € own contribution.
   near(kid.capReal - base.capReal, 11 * 300);
   assert.equal(kid.firstSub.kids, 1);
-  assert.equal(calc({ contrib: 50, kids: 'zwei' }).kidsBad, true);
+  // Child benefit until 25 (education): the subsidy runs until 2044.
+  a.run("appStorage.setItem('lt-children',JSON.stringify([{id:'child-1',name:'Lena',by:2019,until:25}]));");
+  near(calc({ contrib: 50, ret: 0, deduct: 0 }).capReal - base.capReal, 18 * 300);
+  a.run("appStorage.setItem('lt-children','[]');");
   // Starter bonus: a partner born 2003 is 23 at the start of 2027; born 2001 is 25 → no bonus.
   a.run("appStorage.setItem('lt-drv-extra',JSON.stringify([{id:'person-1',name:'Jung',by:2003},{id:'person-2',name:'Älter',by:2001}]));");
   assert.equal(calc({ contrib: 50, person: 'person-1' }).bonus, 200);
@@ -77,15 +85,20 @@ test('version 8 stores several depots per person and they survive a backup', () 
   const doc = store.document();
   assert.equal(doc.schemaVersion, Data.VERSION);
   assert.deepEqual(doc.retirement.pensionDepots[0], { id: 'depot-1', name: 'AV-Depot', personId: 'person-main', monthlyContribution: 150 });
+  /* Schema 14 (Entscheidung 14.10.2026): Kinder sind Personen. Jahrgänge am Depot werden zu Kindern mit Kinderzulage
+     bei der Depotinhaberin; das Depot selbst trägt keine Jahrgänge mehr. */
   assert.deepEqual(doc.retirement.pensionDepots[1], {
     id: 'depot-2', name: 'AV-Depot Anna', personId: 'person-1', monthlyContribution: 50, balance: 1200, startYear: 2028,
-    returnPercent: 6, payoutAge: 66, lumpSumPercent: 30, deductionPercent: 15, childBirthYears: [2019, 2022]
+    returnPercent: 6, payoutAge: 66, lumpSumPercent: 30, deductionPercent: 15
   });
+  assert.deepEqual(doc.retirement.children, [
+    { id: 'child-1', name: 'Kind (2019)', birthYear: 2019, allowanceParentId: 'person-1' },
+    { id: 'child-2', name: 'Kind (2022)', birthYear: 2022, allowanceParentId: 'person-1' }]);
   const target = Data.createStore(new MemoryStorage());
   target.importBackup(JSON.parse(JSON.stringify(store.exportBackup(new FixedDate()))));
   assert.deepEqual(target.document(), doc);
   const back = JSON.parse(target.getItem('lt-av-depots')).map(({ id, ...r }) => r);
-  assert.deepEqual(back, rows);
+  assert.deepEqual(back, rows.map(({ kids, ...r }) => r));
   // Unknown person (e.g. removed) falls back to the own person instead of failing the save.
   store.setItem('lt-av-depots', JSON.stringify([{ name: 'X', person: 'person-9', contrib: 10 }]));
   assert.equal(store.document().retirement.pensionDepots[0].personId, 'person-main');
@@ -100,7 +113,10 @@ test('invalid depots are rejected; version 7 files without depots stay readable'
   assert.throws(() => Data.validate(depot({ lumpSumPercent: 40 })), /höchstens 30/);
   assert.throws(() => Data.validate(depot({ monthlyContribution: -5 })), /ungültige Zahl/);
   assert.throws(() => Data.validate(depot({ fees: 1 })), /unbekanntes Feld/);
-  assert.throws(() => Data.validate(depot({ childBirthYears: '2019' })), /Liste erwartet/);
+  // Jahrgänge am Depot nur bis Version 13 (danach Kinder als Personen)
+  const v13 = depot({ childBirthYears: '2019' }); v13.schemaVersion = 13;
+  assert.throws(() => Data.validate(v13), /Liste erwartet/);
+  assert.throws(() => Data.validate(depot({ childBirthYears: [2019] })), /unbekanntes Feld/);
 });
 
 test('forecast: payouts count as income until 85, the partial lump sum flows into liquid assets', () => {
