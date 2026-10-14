@@ -71,7 +71,7 @@ einen Satz zur Bedienung.
 
 | Modus | Schritte | Aufruf |
 | --- | --- | --- |
-| `full` | focus → assets → (history) → debts → (budget) → (future → pension) → done | Willkommen |
+| `full` | household → focus → assets → (history) → debts → (budget) → (future → pension) → done | Willkommen |
 | `budget` | budget | Vorschlag „Monatsbudget einrichten“ |
 | `future` | future → pension | Vorschlag „Zukunft planen“ |
 | `pension` | pension | Vorschlag „Rente ergänzen“ |
@@ -80,8 +80,13 @@ einen Satz zur Bedienung.
   Monatsbudget und Zukunft & Ruhestand. Nicht gewählte Bereiche bleiben ausgeschaltet und
   werden später vorgeschlagen.
 - **assets**: Chips für Girokonto, Tagesgeld, ETF, Aktien, Bitcoin, Krypto, Gold, Immobilie,
-  Auto, Sonstiges (`SETUP_ASSETS`).
-  - Wert in Euro oder (bei ETF, Aktie, Bitcoin, Krypto, Gold) als Stückzahl.
+  Auto, Altersvorsorge, Beteiligung, Sonstiges (`SETUP_ASSETS`).
+  - Seit 14.10.2026 (Persona-Befund A3) „Altersvorsorge“ (`bav`: gebunden, ab „verfügbar ab“ 62 entnehmbar) für
+    Riester, Direkt- und Lebensversicherung und „Beteiligung“ (`illiquid`: wird in der Prognose nicht verkauft) für
+    Firmen- und Praxisanteile. Unter dem Namen steht, was die Prognose damit macht (`SETUP_CAT_NOTE`). Verträge, die
+    nur als Rente auszahlen (Rürup), gehören laut Hinweis in den Rentenschritt.
+  - Wert in Euro; bei ETF, Aktie, Bitcoin, Krypto und Gold wahlweise als Stückzahl. Seit 14.10.2026 (B1) starten
+    alle in Euro, die Stückzahl ist eine Option (vorher landete ein getippter Betrag in der Wertpapiersuche).
   - Wert = Stückzahl × aktueller Kurs (`_setupLoadQuote` → `fetchInstrumentQuote`). Bitcoin
     und Gold haben eine feste Kursquelle (`SETUP_FIXED_INSTRUMENTS`); Wertpapiere werden über
     Namen oder ISIN gesucht (`searchInstruments`, Yahoo, deutsche Handelsplätze zuerst).
@@ -98,25 +103,45 @@ einen Satz zur Bedienung.
   Kreditkarte und Sonstiges werden Restschuld, optional Rate und Zins (0–50 %) erfasst.
   Immobilien- und Autokredit werden mit der einzigen Immobilie bzw. dem einzigen Auto verknüpft.
 - **budget**: Einnahmen, Fixkosten, Lebenshaltung, Sparen (+ Ziel-Anlage).
+  - Seit 14.10.2026 (A2) mit Partner/in „Dein Nettogehalt“ und „Nettogehalt <Name>“ (eigener Posten mit `personId`,
+    endet mit deren Arbeitsende). Über „+ Einnahmen, die im Ruhestand weiterlaufen“ zusätzlich „Mieteinnahmen & Co.“
+    (`retirementIncome: true`).
+  - Seit 14.10.2026 (B3) lässt sich die Sparrate über „Sparrate auf mehrere Anlagen aufteilen“ je Anlage eintragen;
+    „Sparen & Anlegen“ zeigt dann die Summe. Mehrere Sparpläne aus dem Verlauf-Schritt werden so vorbelegt.
   - Kreditraten aus dem Schritt „debts“ kommen als eigener Posten dazu.
   - Angezeigt wird „bleibt jeden Monat übrig“.
-  - Die Sparrate geht direkt in die Annahmen der Ziel-Anlage (`monthlySaving`).
+  - Die Sparrate geht direkt in die Annahmen der Ziel-Anlage (`monthlySaving`, je Gruppe die Summe ihrer Anteile).
 - **future**: Geburtsjahr (1920 bis heute − 14), Ruhestand mit (40–85), Bedarf pro Monat
-  (vorbelegt aus Fixkosten + Lebenshaltung).
+  (vorbelegt aus Fixkosten + Lebenshaltung). Mit Partner/in optional „Ruhestand <Name> mit“ (→ `workUntilAge`,
+  sonst im selben Alter wie die eigene Person). Liegt der Ruhestand nicht in der Zukunft (Alter ≥ Ruhestandsalter),
+  fragt die App „Schon im Ruhestand?“ (A8); bei Ja wird die eigene Rente im nächsten Schritt als „Bekomme schon
+  Rente“ vorgewählt.
 - **household** (seit 14.10.2026 der erste Schritt der vollständigen Einrichtung): „Wer gehört zu deinem
   Haushalt?“ – eigenes Geburtsjahr (optional), Partner/in (Name, Geburtsjahr) und Kinder (Name, Geburtsjahr).
   Ergebnis: `retirement.primary.birthYear`, `retirement.people[]`, `retirement.children[]`. Das Kindergeld zeigt der
   Schritt sofort an; im Budget-Schritt steht es als eigene Zeile („automatisch aus deinen Kindern“), zählt in
   „bleibt übrig“ mit und landet nicht im Einkommen (keine Doppelzählung). Geburtsjahre werden beim Verlassen des
   Felds nicht als Betrag formatiert. Test: `setup.test.cjs` „Haushalt“.
-- **pension**: bisher erreichte Rente brutto pro Monat laut Renteninformation („Ihre bislang
-  erreichte Rentenanwartschaft entspräche einer monatlichen Rente von“), gespeichert als heutige
-  Punkte `points = Betrag ÷ Rentenwert`, und optional das Bruttogehalt im Jahr
-  (`statutoryPension.annualSalary`), aus dem die Prognose Punkte bis zum Arbeitsende hochrechnet.
-  Ein Hinweis warnt vor der „künftigen Regelaltersrente“ (setzt Beiträge bis 67 voraus). „Weiß ich
-  nicht“ überspringt beides. Seit 14.10.2026 (E1/P4); vorher wurde die Hochrechnung als heutige
-  Punkte gespeichert.
-- **done**: Zusammenfassung (Ausgangspunkt, Annahmen, drei Vorschläge für später).
+- **pension** („Wie bist du/seid ihr fürs Alter abgesichert?“, seit 14.10.2026 je erwachsener Person, A1/B2):
+  Auswahl `SETUP_PENSION_KINDS` je Person (`s.pens[k]`, für „Ich“ Betrag und Gehalt weiter in `s.pension`/`s.pensionSalary`):
+  - *Gesetzliche Rente*: „Bisher erreicht“ (Renteninformation „Ihre bislang erreichte Rentenanwartschaft …“, optional
+    Bruttogehalt im Jahr für weitere Punkte bis zum Arbeitsende) oder „Künftige Rente“ (Regelaltersrente laut
+    Renteninformation, ohne Gehalt; Hinweis: Näherung, setzt Beiträge bis zur Regelaltersgrenze voraus). Gespeichert als
+    `points = Betrag ÷ Rentenwert` (E1/P4).
+  - *Beamtenpension*: ruhegehaltfähige Bezüge, Dienstjahre bisher, optional Altersgrenze (z. B. 62). Bei der eigenen
+    Person beginnt die Pension mit dem Ruhestand, wenn der vor der Altersgrenze liegt (`startAge`); die Rechnung hebt
+    auf frühestens 63 bzw. die Altersgrenze an und erklärt das (A4).
+  - *Versorgungswerk*: voraussichtliche Rente **netto** und Beginn (Standard 67) → weitere Rente.
+  - *Bekomme schon Rente*: Rente netto heute → weitere Rente „Laufende Rente“ ab dem heutigen Alter, lebenslang.
+  - *Weiß nicht*: nichts; die Prognose rechnet ohne Rente, der Abschluss schlägt „Rente ergänzen“ vor.
+  „Weiß ich nicht“ unten überspringt alle Personen. Mit einer Anlage „Altersvorsorge“ warnt ein Hinweis vor Vertrag
+  **und** Rente.
+- **done**: Zusammenfassung (Ausgangspunkt, Renten je Person, drei Vorschläge für später). Seit 14.10.2026 (A6) nennt
+  sie das angenommene Wachstum der gewählten Anlagen (`LT_CAT_DEFAULTS`, z. B. „Bitcoin 15 % (stark schwankend)“).
+  Vorschläge passen zur Lage (B5): fehlende Rente je Person, Zinsbindung nur beim Immobilienkredit, sonst „Rate und
+  Zins ergänzen“.
+- **Fortschritt** (B6): feste Kapitel Haushalt, Schwerpunkte, Vermögen, Schulden, Monat, Zukunft, Fertig; der
+  Verlauf zählt zu Vermögen, die Rente zu Zukunft. Der Balken wächst unterwegs nicht mehr.
 
 Validierung (`_setupNum`, `_setupAssetRows`, `_setupDebtRows`, `_setupBudget`, `_setupFuture`):
 - Deutsche Zahlen.
@@ -133,11 +158,15 @@ Validierung (`_setupNum`, `_setupAssetRows`, `_setupDebtRows`, `_setupBudget`, `
   - Bereiche: Vermögen an, Kredite nur mit Schulden, Budget/Prognose/Altersvorsorge aus. Sie
     werden durch die folgenden Schritte eingeschaltet.
   - `onboardingCompleted = true`.
-- **budget**: Posten `setup-income`, `setup-loans`, `setup-fixed`, `setup-living`,
-  `setup-saving` mit zwölf gleichen Werten. Bereich Budget an.
-- **future**: `birthYear`, `retirementAge = saveUntilAge = Ruhestandsalter`, `monthlySpending`.
-  Phase 2 ist damit leer. Bereich Prognose an.
-- **pension**: `statutoryPension.points`, Bereich Altersvorsorge an.
+- **budget**: Posten `setup-income`, `setup-income-partner` (`personId`), `setup-rent` (`retirementIncome`),
+  `setup-loans`, `setup-fixed`, `setup-living`, `setup-saving` (aufgeteilt: `setup-saving-2` …, je mit
+  `targetGroupId`) mit zwölf gleichen Werten. Bereich Budget an.
+- **future**: `birthYear`, `retirementAge = saveUntilAge = Ruhestandsalter`, `monthlySpending`, optional
+  `people[].workUntilAge` der Partnerin/des Partners. Phase 2 ist damit leer. Bereich Prognose an.
+- **pension** (`_setupPensionData`): je Person `statutoryPension.points` (+ `annualSalary`),
+  `civilServicePension` (`pensionableSalary`, `serviceYears`, `retirementAge`, `startAge`) oder ein Eintrag in
+  `retirement.incomes` („Versorgungswerk“, „Laufende Rente“; bei weiteren Personen mit `personId`). Mit mindestens
+  einer Angabe Bereich Altersvorsorge an.
 - Am Ende `AssetsData.validate(doc)`, dann `importBackup` (`_setupFinish`). Danach geht es zur
   Startseite mit dem Hinweis „Dein nächster Schritt“; bei Mini-Einrichtungen zur passenden
   Seite mit „Gespeichert“.
@@ -145,21 +174,24 @@ Validierung (`_setupNum`, `_setupAssetRows`, `_setupDebtRows`, `_setupBudget`, `
 ### 4.3 Vorschläge danach (`_nextSteps`, Z. ≈11635)
 
 Höchstens drei, in dieser Reihenfolge geprüft. Jeder lässt sich ausblenden
-(`vermoegen-tips-dismissed`, je Gerät).
+(`vermoegen-tips-dismissed`, je Gerät). Seit 14.10.2026 stehen Vorschläge, ohne die die Prognose verfälscht ist,
+vor den Komfort-Vorschlägen.
 
 1. Ersten Vermögenswert anlegen
 2. Budgetposten mit Kredit verknüpfen
 3. Sparposten mit Altersvorsorgedepot verknüpfen
 4. Monatsbudget einrichten
 5. Zukunft planen
-6. Rente ergänzen
-7. Altersvorsorgedepot planen (bis 2028)
-8. Live-Kurs für eine Position
-9. Budget genauer aufteilen (solange `setup-fixed/living` existieren)
-10. Kredit genauer erfassen
-11. Lebensphasen planen
-12. Annahmen prüfen
-13. Erste Sicherung erstellen
+6. Rente ergänzen (gar keine Altersvorsorge erfasst)
+7. Rente für <Person> ergänzen (weitere Person ohne Rente, Pension oder weitere Einkünfte; A1)
+8. Kredit: beim Immobilienkredit (verknüpfte Immobilie oder Name) „genauer erfassen“ mit Darlehensvertrag und
+   Zinsbindung, bei anderen Krediten ohne Rate und Zins „Rate und Zins für …“ (B5)
+9. Altersvorsorgedepot planen (bis 2028)
+10. Live-Kurs für eine Position
+11. Budget genauer aufteilen (solange `setup-fixed/living` existieren)
+12. Lebensphasen planen
+13. Annahmen prüfen
+14. Erste Sicherung erstellen
 
 ---
 
@@ -170,6 +202,8 @@ Höchstens drei, in dieser Reihenfolge geprüft. Jeder lässt sich ausblenden
 - Nach oben wischen entfernt sie (`_initNotifSwipe`).
 - Seitlich wischen geht erst ab Tablet-Breite.
 - Die Monatserinnerung erscheint nur, wenn keine andere Mitteilung sichtbar ist.
+- „Dein nächster Schritt“ nach der Einrichtung gleitet seit 14.10.2026 erst nach 1,8 s herein (`ob-notif-late`) und
+  verschwindet nach 11 s von selbst (`_showOnboardingNext`, C13): Der erste Blick gehört der großen Zahl.
 
 ---
 
@@ -194,6 +228,11 @@ Höchstens drei, in dieser Reihenfolge geprüft. Jeder lässt sich ausblenden
 - P4 (seit 14.10.2026): erreichte Anwartschaft als heutige Punkte, Gehalt bringt Punkte nur bis
   zum Arbeitsende (Ruhestand mit 63: 25 + 21,25 Punkte, keine Jahre bis 67), ungültiges Gehalt
   wird erklärt und nichts gespeichert.
+- `persona-fixes.test.cjs` (16 Tests, 14.10.2026, davon 3 zur kompakten Daten- und Prognose-Seite): Gehalt je Person, Miete, aufgeteilte Sparrate (P10), Rente je
+  Person mit Pension (Altersgrenze 62, Wunsch 60), Versorgungswerk, laufende und künftige Rente, „Weiß nicht“, Euro
+  als Standard, Chips Altersvorsorge/Beteiligung, feste Kapitel, Ruhestand in der Vergangenheit, vollständiges
+  Löschen, Ereignis-Standard, Zinsbindung ohne Vertrag, Vorschläge, Hinweise zu Wartezeit und EM-Punkten,
+  Kredit ohne Vermögenswert, Minuszeichen, erster Monat.
 - Nicht abgedeckt: Demo laden im englischen Modus (siehe E2).
 
 ---

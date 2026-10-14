@@ -38,18 +38,19 @@ Von oben nach unten:
 | Ziel-Balken (verfügbar / Ziel) | `#lt-target-section` | `renderLifetimePageCalcs()`, Crosshair | **nein** (gleicher Container) |
 | Chart | `#chartLifetime` (Chart.js `charts['lifetime']`) | `renderLifetimePageCalcs()` | ja |
 | Zeitraum 5 J / 10 J / 25 J / Alle, Flächen, Log | `[data-lt-range]`, `#ltAssetsToggleBtn`, `#ltLogToggleBtn` | Zustand `ltRange`, `ltShowAssets`, `ltUseLog` (Z. ≈2625, Standard aus „Darstellung der Charts“) | ja |
-| Ergebnis-Karte „Vorruhestand/Ruhestand mit X“ | `#v2-lt-summary` | `_v2LtSummary()` | ja |
-| Lebensphasen-Karte | `#v2-lt-phases` | `_v2LtPhases()`: vier Phasen → `openPhasesSheet(i)`; darunter „Weitere Personen“, je Person eine Zeile mit Phasen-Kurztext und Rente/Monat → `openPhasesSheet('p-<id>')` | ja |
-| „Annahmen bearbeiten“ | `#v2-lt-open` | springt zu Daten → Prognose & Annahmen | ja |
+| Ergebnis-Karte „Vorruhestand/Ruhestand mit X“ | `#v2-lt-summary` | `_v2LtSummary()`: Erfolgschance mit Ziel in einer Zeile („Was bedeutet das? ›“ → `openSuccessExplain`), ein Satz, zwei Kacheln (Verfügbar mit X, Sicher möglich ab), darunter die Kennzahlen Vermögen am Horizont, Ø Rendite, Schuldenfrei (seit 14.10.2026 hier statt unter dem Einkommen; die Skala entfällt) | ja |
+| Lebensphasen-Karte | `#v2-lt-phases` | `_v2LtPhases()`: je Phase **eine Zeile** (Name, Zeitraum, Wert); Antippen klappt die Beschreibung auf (`_v2Fold`), dort „Phase bearbeiten ›“ → `openPhasesSheet(i)`. „Weitere Personen“ ebenso (Rente ab …, aufgeklappt Phasentext und „Bearbeiten ›“) | ja |
+| „Annahmen bearbeiten“ | `#v2-lt-open` | klappt den Abschnitt „Annahmen“ unten auf dieser Seite auf und scrollt hin (`_v2OpenForecastSettings`) | ja |
 | 4 KPI-Kacheln (Ziel, Erfolgschance, Rente möglich ab, Bei Rentenbeginn) | `.kpi-grid`, `#lt-target-real` … | `renderLifetimePageCalcs()` | **nein** (CSS Z. ≈1516) |
-| Einkommen im Ruhestand + Eckdaten | `#lt-more-list` | `renderLifetimePageCalcs()` (Abschnitt „Einkommen im Ruhestand“) | ja |
-| „So wird gerechnet“ | `.v2-kz-link[data-info=lt-method]` | `INFO['lt-method']` | ja |
-| Partner-Story | `#psOpen` → `openPartnerStory()` | `_psData()`, `_psSlides()` | ja, sobald eine Prognose gerechnet ist |
+| Einkommen im Ruhestand | `#lt-more-list` | `renderLifetimePageCalcs()`: Summe, Deckung, mit mehreren Personen je Person eine aufklappbare Zwischensumme (`.v2-inc-grp`), sonst die Einzelzeilen; Fußnote nur mit weiteren Personen oder EM-Rente | ja |
+| „So wird gerechnet“, Partner-Story | `.v2-lt-links`: `[data-info=lt-method]` (`INFO['lt-method']`), `#psOpen` → `openPartnerStory()` | zwei Zeilen in einer Karte | Partner-Story nur mit weiterer erwachsener Person |
+| Annahmen | `#ltAssume` > `#v2-forecast-sec` (Lebensplanung, Lebensphasen, Ereignisse, Rendite & Sparrate je Asset) | `updateLifetimeInputs()`, `renderEventEditor()`, `buildAssetParamsTable()`; speichert sofort (`v2-live`). Seit 14.10.2026 hier statt auf der Daten-Seite; die Optik kommt aus denselben Regeln (`:is(#page-import,#ltAssume)`) | ja, zugeklappt |
 
-Auf dem Mac (≥1280 px) liegt alles ab der Ergebnis-Karte in der rechten Spalte `.desk-rail`.
+Auf dem Mac (≥1280 px) liegt alles ab der Ergebnis-Karte in der rechten Spalte `.desk-rail`; die Annahmen stehen
+darunter (Bereich `assume`, höchstens 860 px breit).
 
-Eingaben, die auf der Prognose wirken, liegen auf der Daten-Seite (Bereiche „Haushalt“,
-„Altersvorsorge“ und „Prognose & Annahmen“) und im Phasen-Sheet. Alle Lebensphasen-Parameter
+Eingaben, die auf der Prognose wirken, liegen auf der Daten-Seite (Bereiche „Haushalt“ und „Altersvorsorge“), unten auf
+dieser Seite (Annahmen) und im Phasen-Sheet. Alle Lebensphasen-Parameter
 (Phasengrenzen, Bedarf, Sparen, Entnahme, Arbeitszeit und Altersvorsorge je Person, Arbeitsende und
 Rentenbeginn weiterer Personen) stehen nur im Phasen-Sheet (8.4), das von dieser Seite aus geöffnet wird.
 
@@ -501,6 +502,23 @@ Alter, Budget-Einnahmen und Vermögensaufbau, Ereignisse ab heute, spätestes Ti
 Es werden keine Daten gespeichert. Details in DATA_MODEL.md, Abschnitt „Partner-Story“.
 
 ---
+
+### 8.x Persona-Befunde vom 14.10.2026 (Darstellung)
+
+- Kennzahl „Verfügbar mit <Alter>“ statt „Vermögen mit …“: entnehmbares Vermögen; die Lebensphasen zeigen weiter das
+  Gesamtvermögen (C3).
+- Entfallene Phasen stehen nicht mehr als Zeile, sondern als Notiz „Weiterarbeiten entfällt · unter Bearbeiten planbar“ (C4).
+- Vorruhestand: Beginnt in der Phase eine Rente oder Pension, nennt der Text den Wechsel („ab 62: 2.424 € Rente, deckt den
+  Bedarf“; C5).
+- Einkommen im Ruhestand: Zwischensumme einer Person, deren Einkommen erst später beginnt, ab diesem Alter („1.422 € ab
+  69“; C6); Name und Zeitraum stehen untereinander statt abgeschnitten (C9).
+- Pension: Ein gewünschter Beginn vor 63 wird angehoben und erklärt („Gewünscht ab 60: Antragsruhestand frühestens …“,
+  `calcBeamtePension().want`; A4).
+- Gesetzliche Rente: Hinweise bei sehr wenigen Punkten ohne weitere Beiträge (Wartezeit, A10) und bei Punkten, die schon
+  die EM-Rente ergeben (Zurechnungszeit, A5). Rentenwert, Ø-Entgelt und BBG eingeklappt unter „Rechengrößen“ (C12).
+- Neues Ereignis: „Liquide (anteilig) → Extern (Ausgabe)“; „Extern → Extern“ mit Hinweis in der Zeile (A9). Jahresauswahl
+  in Seiten ab dem frühesten wählbaren Jahr (C11). Platzhalter Inflation 2 %, Lebenserwartung 85 (C11).
+- Partner-Story nur mit weiterer erwachsener Person (C7).
 
 ## 9. Leistung und Cache
 

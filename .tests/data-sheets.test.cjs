@@ -144,9 +144,11 @@ test('loan history explanation appears once per loan as a notification, not as c
   assert.deepEqual(JSON.parse(a.storage.getItem('vermoegen-loan-history-seen')),['kredit']);
 });
 
-test('pension is no longer offered as an asset type, but existing pension assets keep their category',()=>{
+/* Persona-Simulation 14.10.2026 (A3): Riester, Direkt- und Lebensversicherung landeten sonst als frei verfügbare
+   „Sonstige Anlage“. Die Kategorie Altersvorsorge (gebunden bis „verfügbar ab“) ist daher wieder wählbar. */
+test('pension contracts can be chosen as an asset type again; existing pension assets keep their category',()=>{
   const a=context();
-  assert.doesNotMatch(a.run("_assetOptions('cash')"),/value="bav"/);
+  assert.match(a.run("_assetOptions('cash')"),/value="bav"/);
   assert.match(a.run("_assetOptions('bav')"),/value="bav" selected/);
   assert.ok(!a.json('ONBOARDING_CATEGORIES').some(c=>c[0]==='bav'));
 });

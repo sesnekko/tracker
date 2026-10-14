@@ -686,6 +686,9 @@ Version und wird in der App unter Daten → „Nach dem Update“ geklärt, jewe
   unveränderten Rohtext unter `vermoegen-data-v1-before-update` ab (nur der letzte; kein Teil der Sicherungsdatei). Das
   gilt auch für ein älteres Dokument, das ein anderes Fenster ablegt, während dieses noch auf das Schreibrecht wartet (P65).
   Herunterladen über die Karte „Nach dem Update“ oder Daten → Sicherung („Stand vor dem Update sichern“).
+  „Alle Daten löschen“ ruft `clear({discardBackup: true})`: Das leere Dokument wird ohne neue Kopie geschrieben und
+  die vorhandene Kopie entfernt (Persona-Befund A7, 14.10.2026). Scheitert das Speichern (nur ansehen, veraltet),
+  bleiben Dokument und Kopie unverändert. `clear()` ohne Option sichert wie bisher.
 - **Weitere Schlüssel (kein Teil des Dokuments, Review P34):** `vermoegen-writer` (Marke des schreibenden Fensters:
   `id`, `state` active/released, `at`, bei Ablehnung einer Bitte `busyFor` und `req`) und `vermoegen-writer-request`
   (Bitte um Übergabe: `id`, `at`). Beide sind nur Hinweise für die Übergabe; die Web Lock selbst schützt (siehe

@@ -179,6 +179,13 @@ body.iso-mode .hero-label { color:var(--ink); }
 .chart-section { padding:0; }
 .chart-wrap { position:relative;height:240px;-webkit-user-select:none;user-select:none;cursor:crosshair; }
 .chart-wrap-net { margin-left:-20px;margin-right:-20px; }
+.chart-section.is-start .chart-wrap-net{display:none}
+.chart-start{margin:14px 0 6px;padding:22px 20px;border-radius:16px;border:1px dashed var(--border);text-align:center;display:flex;flex-direction:column;gap:6px}
+.chart-start[hidden]{display:none}
+.chart-start b{font-size:15px;font-weight:500;color:var(--ink)}
+.chart-start span{font-size:13px;line-height:1.45;color:var(--muted)}
+#page-home .chart-section.is-start+.range-bar{display:none}
+@media (min-width:768px){.chart-start{min-height:200px;justify-content:center;margin:18px 0 8px}}
 .chart-wrap.pie { height:260px;display:flex;align-items:center;justify-content:center; }
 .chart-wrap.pie canvas { max-height:240px;max-width:240px; }
 .lt-chart-wrap { height:262px; }
@@ -407,8 +414,8 @@ details.lt-settings-panel[open]>.lt-settings-toggle::before{transform:rotate(45d
 /* ── Prognose: Panels, Listen, Asset-Parameter ── */
 .lt-panel{border:none;padding:0 14px 14px;margin:0;background:transparent}
 /* Beschriftungen mit Info dürfen umbrechen; Eingabefelder bleiben unten bündig */
-.lt-panel .input-group, #page-import .input-group{justify-content:flex-end}
-.lt-panel .input-group label, #page-import .input-group label[data-info]{white-space:normal;line-height:1.3}
+.lt-panel .input-group, :is(#page-import,#ltAssume) .input-group{justify-content:flex-end}
+.lt-panel .input-group label, :is(#page-import,#ltAssume) .input-group label[data-info]{white-space:normal;line-height:1.3}
 .lt-table-hint{font-size:11px;color:var(--muted);margin-top:6px}
 @media (max-width:767px){ th[data-info]::after{display:none} }
 @media (min-width:768px){ .lt-table-hint{display:none} }
@@ -424,7 +431,7 @@ details.lt-settings-panel[open]>.lt-settings-toggle::before{transform:rotate(45d
 .plan-row .input-group{min-width:0}
 .plan-row .input-group[hidden]{display:none!important}
 /* Altersvorsorgedepot: Felder mit Standardwert nur beim Bearbeiten zeigen */
-body:not(.v2-editing) #page-import .plan-row.avd .avd-default{display:none}/* sonst gewinnt #page-import .input-group{display:grid} */
+body:not(.v2-editing) :is(#page-import,#ltAssume) .plan-row.avd .avd-default{display:none}/* sonst gewinnt :is(#page-import,#ltAssume) .input-group{display:grid} */
 .plan-del{background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;height:36px;padding:0}
 .plan-row.ev{grid-template-columns:1.3fr .7fr 1fr 24px;grid-template-areas:"name year amount del" "from from to to";padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid color-mix(in srgb,var(--border) 40%,transparent)}
 .plan-row.ev .pc-name{grid-area:name}.plan-row.ev .pc-year{grid-area:year}.plan-row.ev .pc-amount{grid-area:amount}
@@ -853,12 +860,12 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   .import-section > div { font-size: 15px; }
 
   /* Data entry: slightly denser on desktop */
-  #page-import .section-title { font-size: 13px; }
-  #page-import .input-group label { font-size: 10px; }
-  #page-import .num-input { font-size: 14px; padding: 8px 10px; min-height: 36px; }
-  #page-import .input-units-label { font-size: 8px; }
-  #page-import .num-input-units { font-size: 11px; padding: 3px 7px; min-height: 24px; }
-  #page-import #newFieldLabel, #page-import #newFieldCategory { font-size: 12px; padding: 7px 10px; }
+  :is(#page-import,#ltAssume) .section-title { font-size: 13px; }
+  :is(#page-import,#ltAssume) .input-group label { font-size: 10px; }
+  :is(#page-import,#ltAssume) .num-input { font-size: 14px; padding: 8px 10px; min-height: 36px; }
+  :is(#page-import,#ltAssume) .input-units-label { font-size: 8px; }
+  :is(#page-import,#ltAssume) .num-input-units { font-size: 11px; padding: 3px 7px; min-height: 24px; }
+  :is(#page-import,#ltAssume) #newFieldLabel, :is(#page-import,#ltAssume) #newFieldCategory { font-size: 12px; padding: 7px 10px; }
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -976,7 +983,7 @@ body.v2-noliab #page-home .kpi-item[data-kpi="assets"],body.v2-noliab #page-home
 .v2-row-r{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
 #legendAssets .legend-name,#legendAssets-ipad .legend-name{color:var(--ink);font-size:15.5px;line-height:1.3}
 .v2-sub{display:flex;align-items:center;gap:6px;min-height:18px;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden}
-.v2-kind::before{content:'·';margin-right:6px}
+.v2-kind::before{content:'·';margin-right:6px}.legend-pct:empty+.v2-kind::before{content:none}
 /* Mit eingeblendetem „Details“ wird die Zeile schmaler: Prozent bleibt ganz, nur der Text wird gekürzt */
 .v2-sub .legend-pct{flex-shrink:0;white-space:nowrap}
 .v2-sub .v2-kind{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1069,16 +1076,16 @@ body.iso-mode .hero-label::before{display:none}
 .nav-btn svg{width:24px;height:24px}
 
 /* Eingaben als Listenzeilen: Bezeichnung links, Wert in fester Spalte rechts */
-#page-import .input-grid{display:block;margin:0}
-#page-import .input-group{display:grid;grid-template-columns:minmax(0,1fr) 132px;align-items:center;column-gap:12px;row-gap:0;padding:7px 0;min-height:50px;position:relative}
-#page-import .input-group+.input-group{box-shadow:inset 0 .5px 0 var(--sep)}
-#page-import .input-group>label,#page-import .input-group>label[data-info]{grid-column:1;min-width:0;text-transform:none;letter-spacing:0;font-size:15px;color:var(--ink);white-space:normal;line-height:1.3;overflow:visible}
-#page-import .input-group>.num-input,#page-import .input-group>select{grid-column:2;width:100%;max-width:none}
+:is(#page-import,#ltAssume) .input-grid{display:block;margin:0}
+:is(#page-import,#ltAssume) .input-group{display:grid;grid-template-columns:minmax(0,1fr) 132px;align-items:center;column-gap:12px;row-gap:0;padding:7px 0;min-height:50px;position:relative}
+:is(#page-import,#ltAssume) .input-group+.input-group{box-shadow:inset 0 .5px 0 var(--sep)}
+:is(#page-import,#ltAssume) .input-group>label,:is(#page-import,#ltAssume) .input-group>label[data-info]{grid-column:1;min-width:0;text-transform:none;letter-spacing:0;font-size:15px;color:var(--ink);white-space:normal;line-height:1.3;overflow:visible}
+:is(#page-import,#ltAssume) .input-group>.num-input,:is(#page-import,#ltAssume) .input-group>select{grid-column:2;width:100%;max-width:none}
 .num-input{border:none;background:transparent;text-align:right;font-size:16px;color:var(--ink);border-radius:9px;min-height:36px;padding:6px 10px;font-variant-numeric:tabular-nums}
-#page-import .num-input{opacity:1!important}
-#page-import .num-input[readonly]{background:transparent;color:var(--ink)}
-#page-import .num-input:not([readonly]){background:var(--fill)}
-#page-import select.num-input:disabled{opacity:1!important;color:var(--ink);background:transparent;-webkit-appearance:none;appearance:none;text-align:right;text-align-last:right}
+:is(#page-import,#ltAssume) .num-input{opacity:1!important}
+:is(#page-import,#ltAssume) .num-input[readonly]{background:transparent;color:var(--ink)}
+:is(#page-import,#ltAssume) .num-input:not([readonly]){background:var(--fill)}
+:is(#page-import,#ltAssume) select.num-input:disabled{opacity:1!important;color:var(--ink);background:transparent;-webkit-appearance:none;appearance:none;text-align:right;text-align-last:right}
 .num-input:focus{box-shadow:0 0 0 1.5px var(--ink)!important;border-color:transparent}
 .num-input[type=number]{-moz-appearance:textfield}
 input[aria-invalid="true"]{border-color:var(--red)!important;box-shadow:0 0 0 1px var(--red)}
@@ -1091,10 +1098,13 @@ input[aria-invalid="true"]{border-color:var(--red)!important;box-shadow:0 0 0 1p
 .hh-ctx div+div{margin-top:3px}.hh-ctx b{font-weight:500;color:var(--ink)}
 .hh-card{background:var(--fill);border-radius:12px;padding:2px 12px;margin:8px 0}
 .hh-val{grid-column:2;text-align:right;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
-#page-import .hh-person .drvx-res{margin:0;padding:8px 0}
-body:not(.v2-editing) #page-import .hh-person .pc-name{display:none}/* Name steht im Kopf */
+:is(#page-import,#ltAssume) .hh-person .drvx-res{margin:0;padding:8px 0}
+body:not(.v2-editing) :is(#page-import,#ltAssume) .hh-person .pc-name{display:none}/* Name steht im Kopf */
 .pv-row .plan-del{display:none!important}.plan-row[hidden]{display:none!important}
-body:not(.v2-editing) #page-import .pv-row.pv-empty{display:none}
+body:not(.v2-editing) :is(#page-import,#ltAssume) .pv-row.pv-empty,body:not(.v2-editing) :is(#page-import,#ltAssume) .pv-card.pv-empty{display:none}
+.drv-params{margin:4px 0 0}.drv-params>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:10px 0;font-size:13px;color:var(--muted)}
+.drv-params>summary::-webkit-details-marker{display:none}.drv-params>summary::after{content:'›';transition:transform .2s}.drv-params[open]>summary::after{transform:rotate(90deg)}
+.drv-params>summary small{margin-left:auto;font-size:12px;font-variant-numeric:tabular-nums}
 .pv-card{margin-bottom:8px}.pv-add{display:flex;flex-wrap:wrap;gap:6px}
 .mig-card .ns-head span{display:block}
 .v2-inc-g{display:flex;align-items:baseline;gap:8px;padding:14px 0 4px;font-size:13px;color:var(--muted)}.v2-inc-g span{flex:1;font-weight:500;color:var(--ink)}.v2-inc-g b{font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}.v2-inc-g small{font-size:11.5px}
@@ -1130,21 +1140,21 @@ button.v2-ret-main{display:flex;align-items:baseline;gap:10px;background:none;bo
 .hh-time .lp-bar{margin-top:10px}.hh-tl{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.4}
 .num-input::-webkit-inner-spin-button,.num-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 select.num-input{text-align:left;font-size:15px}
-#page-import .input-units-label{grid-column:1;font-size:13px;letter-spacing:0;text-transform:none;opacity:1;margin:0;color:var(--muted);display:block}
-#page-import .num-input-units{grid-column:2;width:100%;max-width:none;min-height:30px;padding:3px 10px;font-size:14px;color:var(--muted);border:none;border-style:none}
+:is(#page-import,#ltAssume) .input-units-label{grid-column:1;font-size:13px;letter-spacing:0;text-transform:none;opacity:1;margin:0;color:var(--muted);display:block}
+:is(#page-import,#ltAssume) .num-input-units{grid-column:2;width:100%;max-width:none;min-height:30px;padding:3px 10px;font-size:14px;color:var(--muted);border:none;border-style:none}
 .lt-block-label{text-transform:none;letter-spacing:0;font-size:13px;color:var(--muted);margin:16px 0 2px}
 .lt-result{font-size:13px;color:var(--muted);margin:6px 0 8px;line-height:1.45}
 .plan-row,.plan-row.ev{display:block;background:var(--fill);border-radius:12px;padding:2px 12px 4px;margin:8px 0;position:relative;border:none}
-#page-import .plan-row .input-group{min-height:46px}
-#page-import .plan-row .pc-name{grid-template-columns:auto minmax(0,1fr)}
-#page-import .plan-row .pc-name>.num-input{text-align:right}
+:is(#page-import,#ltAssume) .plan-row .input-group{min-height:46px}
+:is(#page-import,#ltAssume) .plan-row .pc-name{grid-template-columns:auto minmax(0,1fr)}
+:is(#page-import,#ltAssume) .plan-row .pc-name>.num-input{text-align:right}
 .plan-del{position:static;display:block;width:auto;height:auto;margin:2px 0 4px auto;padding:4px 0;background:none;border:none;color:var(--red);font-size:0;cursor:pointer}
 .plan-del::after{content:'Entfernen';font-size:14px}
 .plan-add{width:100%;margin-top:6px}
 .loan-summary{display:block;padding:8px 0 6px;font-size:13px;color:var(--muted)}
 .loan-card{border-radius:12px;background:var(--fill);padding:4px 14px 14px;margin:14px 0}
 .loan-card-heading{display:flex;align-items:center;gap:12px;min-height:48px;color:var(--ink);font-size:15px;font-weight:500}
-#page-import .loan-card .input-group{grid-template-columns:minmax(0,1fr) minmax(132px,40%)}
+:is(#page-import,#ltAssume) .loan-card .input-group{grid-template-columns:minmax(0,1fr) minmax(132px,40%)}
 .loan-card label small{display:block;color:var(--muted);font-size:12px;font-weight:400;margin-top:3px}
 .loan-hint,.loan-plan p,.loan-budget p{font-size:12.5px;color:var(--muted);line-height:1.5;margin:8px 0 12px}
 .loan-extras h4,.loan-budget h4{font-size:14px;font-weight:500;color:var(--ink);margin:14px 0 8px}
@@ -1162,7 +1172,7 @@ select.num-input{text-align:left;font-size:15px}
 .loan-plan tr.selected{background:var(--card)}
 .loan-budget{padding:4px 12px;background:var(--fill);border-radius:12px;margin:12px 0}
 .loan-budget>div{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;color:var(--ink)}
-@media(max-width:480px){#page-import .loan-card .input-group{grid-template-columns:minmax(0,1fr) 132px}.loan-extra-row{flex-wrap:wrap}.loan-extra-row .position-remove{margin-left:auto}.loan-card{padding-left:10px;padding-right:10px}}
+@media(max-width:480px){:is(#page-import,#ltAssume) .loan-card .input-group{grid-template-columns:minmax(0,1fr) 132px}.loan-extra-row{flex-wrap:wrap}.loan-extra-row .position-remove{margin-left:auto}.loan-card{padding-left:10px;padding-right:10px}}
 .position-add-bar{display:flex;justify-content:flex-end;padding:12px 0 4px}
 .position-add-bar .btn{font-size:14px;min-height:44px}
 .position-editor{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;margin:8px 0 16px}
@@ -1188,21 +1198,21 @@ select.num-input{text-align:left;font-size:15px}
 .position-editor-fields .btn{min-height:46px;white-space:nowrap}
 .position-label{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .position-remove{border:0;background:none;color:var(--red);font:inherit;font-size:12px;cursor:pointer;padding:8px 0;min-height:44px;margin-left:auto}
-#page-import #dynamicLiabForm .cat-label{display:flex;align-items:center;gap:10px}
+:is(#page-import,#ltAssume) #dynamicLiabForm .cat-label{display:flex;align-items:center;gap:10px}
 @media(max-width:480px){.position-editor-fields{flex-direction:column;align-items:stretch}.position-editor-fields label{min-width:0}.position-label{align-items:flex-start;flex-direction:column;gap:0}.position-remove{margin-left:0;min-height:32px;padding:4px 0}}
 
 /* Daten-Seite */
 .import-page{padding:8px 0}
-#page-import .input-panel{background:none;padding:0;margin:0;border-radius:0;overflow:visible}/* sonst klebt die Bearbeiten-Leiste nicht */
-#page-import .input-panel>.divider{display:none}
+:is(#page-import,#ltAssume) .input-panel{background:none;padding:0;margin:0;border-radius:0;overflow:visible}/* sonst klebt die Bearbeiten-Leiste nicht */
+:is(#page-import,#ltAssume) .input-panel>.divider{display:none}
 /* Bearbeiten-Leiste: schwebt beim Scrollen durch die Kategorien oben mit */
 .v2-form-head{position:sticky;top:max(8px,env(safe-area-inset-top));z-index:30;display:flex;align-items:center;gap:10px;margin:10px 0 10px;padding:8px 8px 8px 16px;min-height:50px;border-radius:14px;
   background:color-mix(in srgb,var(--bg2) 82%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 4px 18px rgba(0,0,0,.12)}
 body.dark .v2-form-head{box-shadow:0 4px 18px rgba(0,0,0,.4)}
 .v2-form-head>span:first-child{font-size:14px;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#page-import .v2-form-head .save-msg:not(.show){display:none}
+:is(#page-import,#ltAssume) .v2-form-head .save-msg:not(.show){display:none}
 .v2-form-head:has(.save-msg.show)>span:first-child{display:none}
-#page-import .v2-form-head .save-msg.show{flex:1;font-size:14px}
+:is(#page-import,#ltAssume) .v2-form-head .save-msg.show{flex:1;font-size:14px}
 .v2-form-btns{display:flex;gap:6px}
 .v2-textbtn{border:none;background:var(--fill);font:inherit;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;padding:7px 16px;border-radius:999px;white-space:nowrap}
 .v2-textbtn:active{opacity:.75}
@@ -1210,35 +1220,35 @@ body.dark .v2-form-head{box-shadow:0 4px 18px rgba(0,0,0,.4)}
 .v2-textbtn.v2-strong{background:var(--green);color:var(--bg);font-weight:600}
 /* Im Bearbeiten-Modus: Hinweis statt Monat */
 body.v2-editing .v2-form-head>span:first-child{color:var(--ink)}
-#page-import .save-msg{font-size:13px;color:var(--green)}
-#page-import details.input-collapsible{background:var(--card);border-radius:16px;margin-bottom:10px;overflow:hidden}
-#page-import .input-collapsible-summary{padding:12px 16px;min-height:62px;gap:12px}
-#page-import .input-collapsible-summary::before{display:none}
-#page-import .input-collapsible-summary::after{content:'';flex-shrink:0;width:8px;height:8px;margin-left:4px;border-right:1.8px solid var(--muted);border-bottom:1.8px solid var(--muted);transform:rotate(-45deg);opacity:.6;transition:transform .2s,opacity .2s}
-#page-import details[open]>.input-collapsible-summary::after{transform:rotate(45deg)}
+:is(#page-import,#ltAssume) .save-msg{font-size:13px;color:var(--green)}
+:is(#page-import,#ltAssume) details.input-collapsible{background:var(--card);border-radius:16px;margin-bottom:10px;overflow:hidden}
+:is(#page-import,#ltAssume) .input-collapsible-summary{padding:12px 16px;min-height:62px;gap:12px}
+:is(#page-import,#ltAssume) .input-collapsible-summary::before{display:none}
+:is(#page-import,#ltAssume) .input-collapsible-summary::after{content:'';flex-shrink:0;width:8px;height:8px;margin-left:4px;border-right:1.8px solid var(--muted);border-bottom:1.8px solid var(--muted);transform:rotate(-45deg);opacity:.6;transition:transform .2s,opacity .2s}
+:is(#page-import,#ltAssume) details[open]>.input-collapsible-summary::after{transform:rotate(45deg)}
 .v2-sum-t{flex:1;min-width:0;display:flex;flex-direction:column}
-#page-import .section-title{text-transform:none;letter-spacing:0;font-size:16px;font-weight:400;margin:0;border:none;padding:0;color:var(--ink)}
-.v2-sum-sub{font-size:13px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:is(#page-import,#ltAssume) .section-title{text-transform:none;letter-spacing:0;font-size:16px;font-weight:400;margin:0;border:none;padding:0;color:var(--ink)}
+.v2-sum-sub{font-size:13px;color:var(--muted);margin-top:1px;line-height:1.35;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}/* C9: zwei Zeilen statt abgeschnitten */
 .v2-sum-sub:empty{display:none}
-#page-import details.v2-off .section-title{color:var(--muted)}
-#page-import details.v2-off>.input-collapsible-summary::after{opacity:0}
-#page-import details.v2-off>:not(summary){display:none}
+:is(#page-import,#ltAssume) details.v2-off .section-title{color:var(--muted)}
+:is(#page-import,#ltAssume) details.v2-off>.input-collapsible-summary::after{opacity:0}
+:is(#page-import,#ltAssume) details.v2-off>:not(summary){display:none}
 .v2-switch{position:relative;flex:0 0 auto;width:48px;height:29px;border-radius:15px;background:color-mix(in srgb,var(--muted) 40%,transparent);transition:background .2s;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .v2-switch i{position:absolute;top:2px;left:2px;width:25px;height:25px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .25s cubic-bezier(.3,.7,.3,1)}
 .v2-switch[aria-checked="true"]{background:var(--green)}
 .v2-switch[aria-checked="true"] i{transform:translateX(19px)}
 .v2-switch:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-#page-import .input-collapsible-body{padding:16px 16px 14px;box-shadow:inset 0 .5px 0 var(--sep)}
+:is(#page-import,#ltAssume) .input-collapsible-body{padding:16px 16px 14px;box-shadow:inset 0 .5px 0 var(--sep)}
 /* Gleicher Abstand unter der Überschrift in jedem Bereich, egal ob zuerst eine Box, eine Liste oder ein Titel folgt */
-#page-import .input-collapsible-body>:first-child,#page-import .input-collapsible-body>.ds-anchor:first-child+*,#page-import .input-collapsible-body>.ds-anchor:first-child+.ds-anchor+*,
-body.v2-editing #page-import .input-collapsible-body>.ds-sec-actions:first-child+*{margin-top:0}
-#page-import .input-collapsible-body>.ds-sec-actions:first-child{padding-top:0}
-#page-import .input-collapsible-body>.ds-list-t:first-child,#page-import .input-collapsible-body>.ds-anchor:first-child+.ds-list-t{padding-top:0}
-#page-import .cat-grid{display:block}
-#page-import .cat-label{display:block;writing-mode:horizontal-tb;background:none;color:var(--muted);font-size:13px;font-weight:400;letter-spacing:0;text-transform:none;padding:16px 0 2px;margin:0!important;border-radius:0}
-#page-import .cat-label.red{color:var(--red)}
-#page-import .cat-grid>.input-grid{margin:0!important}
-#page-import .lt-panel{background:none;border:none;padding:0;margin:0}
+:is(#page-import,#ltAssume) .input-collapsible-body>:first-child,:is(#page-import,#ltAssume) .input-collapsible-body>.ds-anchor:first-child+*,:is(#page-import,#ltAssume) .input-collapsible-body>.ds-anchor:first-child+.ds-anchor+*,
+body.v2-editing :is(#page-import,#ltAssume) .input-collapsible-body>.ds-sec-actions:first-child+*{margin-top:0}
+:is(#page-import,#ltAssume) .input-collapsible-body>.ds-sec-actions:first-child{padding-top:0}
+:is(#page-import,#ltAssume) .input-collapsible-body>.ds-list-t:first-child,:is(#page-import,#ltAssume) .input-collapsible-body>.ds-anchor:first-child+.ds-list-t{padding-top:0}
+:is(#page-import,#ltAssume) .cat-grid{display:block}
+:is(#page-import,#ltAssume) .cat-label{display:block;writing-mode:horizontal-tb;background:none;color:var(--muted);font-size:13px;font-weight:400;letter-spacing:0;text-transform:none;padding:16px 0 2px;margin:0!important;border-radius:0}
+:is(#page-import,#ltAssume) .cat-label.red{color:var(--red)}
+:is(#page-import,#ltAssume) .cat-grid>.input-grid{margin:0!important}
+:is(#page-import,#ltAssume) .lt-panel{background:none;border:none;padding:0;margin:0}
 .v2-preview{display:flex;align-items:center;gap:14px;background:var(--fill);border-radius:12px;padding:12px 14px;margin-top:14px}
 .v2-preview b{font-size:26px;font-weight:400;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
 .v2-preview>span{font-size:13px;color:var(--muted);line-height:1.4}
@@ -1252,46 +1262,46 @@ details.tut-section[open]>.tut-toggle::after{transform:rotate(45deg)}
 .tut-body .tut-toggle{font-size:14.5px;min-height:44px;padding:11px 14px}
 .csv-msg{text-align:center;margin:8px 0}
 /* Daten-Seite: jedes Objekt (Kategorie, Kredit, Rente, Budget-Gruppe, Lebensplanung, Asset) als eigene Fläche */
-#page-import .input-collapsible-body .input-grid{background:var(--fill);border-radius:12px;padding:2px 12px;margin:0}
-#page-import .input-collapsible-body .input-grid+.input-grid{margin-top:8px}
-#page-import .cat-label{padding:18px 2px 7px}
-#page-import .lt-block-label{margin:18px 2px 7px}
-#page-import .lt-result{margin:8px 2px 0}
-#page-import .loan-summary{padding:8px 0 10px;box-shadow:inset 0 .5px 0 var(--sep)}
-#page-import .plan-row{padding:2px 12px 2px}
-#page-import .plan-row+.plan-row{margin-top:8px}
-#page-import .plan-rows .plan-row:first-child,#page-import #dpPensions .plan-row:first-child{margin-top:0}
-#page-import .v2-ap-list{margin:0;box-shadow:none;display:flex;flex-direction:column;gap:8px}
-#page-import .v2-ap{background:var(--fill);border-radius:12px;overflow:hidden}
-#page-import .v2-ap+.v2-ap{box-shadow:none}
-#page-import .v2-ap-head{padding:11px 12px}
-#page-import .v2-ap-body{background:transparent;padding:0 12px 6px;box-shadow:inset 0 .5px 0 var(--sep)}
-#page-import .v2-preview{margin-top:0}
-#page-import .plan-row .pc-from,#page-import .plan-row .pc-to{grid-template-columns:auto minmax(0,1fr)}
-#page-import .plan-row select.num-input{text-align:right;text-align-last:right}
+:is(#page-import,#ltAssume) .input-collapsible-body .input-grid{background:var(--fill);border-radius:12px;padding:2px 12px;margin:0}
+:is(#page-import,#ltAssume) .input-collapsible-body .input-grid+.input-grid{margin-top:8px}
+:is(#page-import,#ltAssume) .cat-label{padding:18px 2px 7px}
+:is(#page-import,#ltAssume) .lt-block-label{margin:18px 2px 7px}
+:is(#page-import,#ltAssume) .lt-result{margin:8px 2px 0}
+:is(#page-import,#ltAssume) .loan-summary{padding:8px 0 10px;box-shadow:inset 0 .5px 0 var(--sep)}
+:is(#page-import,#ltAssume) .plan-row{padding:2px 12px 2px}
+:is(#page-import,#ltAssume) .plan-row+.plan-row{margin-top:8px}
+:is(#page-import,#ltAssume) .plan-rows .plan-row:first-child,:is(#page-import,#ltAssume) #dpPensions .plan-row:first-child{margin-top:0}
+:is(#page-import,#ltAssume) .v2-ap-list{margin:0;box-shadow:none;display:flex;flex-direction:column;gap:8px}
+:is(#page-import,#ltAssume) .v2-ap{background:var(--fill);border-radius:12px;overflow:hidden}
+:is(#page-import,#ltAssume) .v2-ap+.v2-ap{box-shadow:none}
+:is(#page-import,#ltAssume) .v2-ap-head{padding:11px 12px}
+:is(#page-import,#ltAssume) .v2-ap-body{background:transparent;padding:0 12px 6px;box-shadow:inset 0 .5px 0 var(--sep)}
+:is(#page-import,#ltAssume) .v2-preview{margin-top:0}
+:is(#page-import,#ltAssume) .plan-row .pc-from,:is(#page-import,#ltAssume) .plan-row .pc-to{grid-template-columns:auto minmax(0,1fr)}
+:is(#page-import,#ltAssume) .plan-row select.num-input{text-align:right;text-align-last:right}
 .v2-empty-state{background:var(--card);border-radius:16px;padding:18px 16px;margin-top:12px;text-align:center}
 .v2-empty-state .v2-t2{margin:4px 0 0;line-height:1.45}
 .ob-title{font-weight:400;font-size:28px}
 .ob-actions .btn{min-height:50px}
 
 /* Daten-Seite: Abschnitte mit Icons, Schalter gesammelt unter „Bereiche“ */
-#page-import details.v2-off .ds-sec-ico{opacity:.45}
-#page-import details.input-collapsible{margin-bottom:8px}
-#page-import .input-collapsible-summary{min-height:60px;padding:10px 14px 10px 12px}
+:is(#page-import,#ltAssume) details.v2-off .ds-sec-ico{opacity:.45}
+:is(#page-import,#ltAssume) details.input-collapsible{margin-bottom:8px}
+:is(#page-import,#ltAssume) .input-collapsible-summary{min-height:60px;padding:10px 14px 10px 12px}
 .ds-sec-ico{width:34px;height:34px;border-radius:10px}
 .ds-sec-ico svg{width:19px;height:19px}
-#page-import .sec-h{margin:24px 4px 8px}
-#page-import .ds-month+.sec-h{margin-top:22px}
+:is(#page-import,#ltAssume) .sec-h{margin:24px 4px 8px}
+:is(#page-import,#ltAssume) .ds-month+.sec-h{margin-top:22px}
 .ds-row-danger .v2-t1,.ds-row-danger .ds-sec-ico{color:var(--red)}
-#page-import .v2-list .v2-row{gap:12px;padding-left:12px;min-height:60px}
-#page-import .v2-row-action .v2-t1{font-weight:400}
-#page-import .v2-list .v2-t2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#page-import .v2-list .v2-row+.v2-row{box-shadow:none}
-#page-import .v2-list .v2-row+.v2-row::before{content:'';position:absolute;top:0;left:58px;right:0;height:.5px;background:var(--sep)}
+:is(#page-import,#ltAssume) .v2-list .v2-row{gap:12px;padding-left:12px;min-height:60px}
+:is(#page-import,#ltAssume) .v2-row-action .v2-t1{font-weight:400}
+:is(#page-import,#ltAssume) .v2-list .v2-t2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:is(#page-import,#ltAssume) .v2-list .v2-row+.v2-row{box-shadow:none}
+:is(#page-import,#ltAssume) .v2-list .v2-row+.v2-row::before{content:'';position:absolute;top:0;left:58px;right:0;height:.5px;background:var(--sep)}
 
 
 /* Daten-Seite: Positionen als Liste, Bearbeiten je Position im Sheet */
-body:not(.v2-editing) #page-import .v2-form-head{display:none}
+body:not(.v2-editing) :is(#page-import,#ltAssume) .v2-form-head{display:none}
 .ds-month{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;padding:14px 12px 14px 16px;margin:10px 0}
 .ds-month-l{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start}
 .ds-month-t{border:none;background:none;padding:0;font:inherit;font-size:17px;font-weight:500;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:7px}
@@ -1304,7 +1314,7 @@ body:not(.v2-editing) #page-import .v2-form-head{display:none}
 .ds-item+.ds-item{box-shadow:inset 0 .5px 0 var(--sep)}
 .ds-item:active{background:var(--fill)}
 .ds-item-l{flex:1;min-width:0;display:flex;flex-direction:column}
-.ds-item-l>span{color:var(--ink);font-size:15px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ds-item-l>span{color:var(--ink);font-size:15px;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow-wrap:anywhere}/* C9: lange Namen auf zwei Zeilen */
 .ds-item-l>small{color:var(--muted);font-size:12.5px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ds-item-v{font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
 .ds-item.is-zero .ds-item-v{color:var(--muted)}
@@ -1341,6 +1351,7 @@ body.ds-lock{overflow:hidden}
 .ds-mine{box-shadow:0 0 0 2px color-mix(in srgb,var(--red) 55%,transparent)!important;border-radius:8px}
 .ds-theirs{display:block;margin:4px 0 0;font-size:12px;color:var(--muted)}
 /* P64: Hinweis einer Live-Liste nach einem abgelehnten Schreibversuch */
+.plan-row-hint{grid-column:1/-1;margin:2px 0 6px;font-size:12px;line-height:1.4;color:var(--red)}.plan-row-hint[hidden]{display:none}
 .plan-stale{margin:0 0 10px}.plan-stale ul{margin:6px 0 0 18px;padding:0}.plan-stale-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .ds-note{font-size:13px;color:var(--muted);line-height:1.5;margin:12px 4px 0}
 .ds-group-t{font-size:13px;color:var(--muted);margin:20px 4px 6px}
@@ -1484,6 +1495,7 @@ body.dark{--lp1:#7aaa82;--lp2:#a9c3ad;--lp3:#c07058;--lp4:#8d887c}
 .v2-lp-row.off{opacity:.45}
 .v2-lp-row.pers>.hh-ava{margin:0 -6px}
 .v2-lp-sub{font-size:13px;color:var(--muted);padding:14px 0 2px;box-shadow:inset 0 .5px 0 var(--sep)}
+.v2-lp-skip{margin:0;padding:8px 0 4px;font-size:12px;color:var(--muted);box-shadow:inset 0 .5px 0 var(--sep)}
 .v2-lp-row.warn .v b{color:var(--red)}
 .v2-lp-row:active{opacity:.7}
 .lp-edit{display:block;width:100%;background:var(--fill);border:none;border-radius:12px;padding:12px 12px 6px;font:inherit;color:inherit;text-align:left;cursor:pointer;margin-bottom:6px}
@@ -1581,8 +1593,10 @@ body.dark{--lp1:#7aaa82;--lp2:#a9c3ad;--lp3:#c07058;--lp4:#8d887c}
 .v2-inc-rows{margin-top:10px}
 .v2-inc-row{display:flex;align-items:center;gap:10px;min-height:44px;box-shadow:inset 0 .5px 0 var(--sep)}
 .v2-inc-row>i{width:10px;height:10px;border-radius:3px;flex-shrink:0}
-.v2-inc-row .n{flex:1;min-width:0;font-size:15px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.v2-inc-row .n small{font-size:13px;color:var(--muted);margin-left:8px}
+/* C9: Name und Zeitraum untereinander statt abgeschnitten */
+.v2-inc-row{padding:6px 0}
+.v2-inc-row .n{flex:1;min-width:0;font-size:15px;color:var(--ink);display:flex;flex-direction:column;line-height:1.3}
+.v2-inc-row .n small{font-size:12px;color:var(--muted);margin-top:1px}
 .v2-inc-row .v{font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
 button.v2-inc-row{width:100%;background:none;border:none;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer}
 button.v2-inc-row::after{content:'›';color:var(--muted);font-size:17px;margin-left:2px}
@@ -1631,6 +1645,7 @@ button.v2-inc-row:active{opacity:.7}
   transition:transform .25s cubic-bezier(.3,.7,.3,1),opacity .25s;animation:obNotifIn .55s cubic-bezier(.2,.9,.25,1.15)}
 body.dark .ob-notif{box-shadow:0 10px 34px rgba(0,0,0,.5),0 0 0 .5px color-mix(in srgb,var(--ink) 14%,transparent)}
 .ob-notif[hidden]{display:none}
+.ob-notif.ob-notif-late{animation-delay:1.8s;animation-fill-mode:both}
 @keyframes obNotifIn{from{transform:translateY(calc(-100% - 24px));opacity:.4}to{transform:none;opacity:1}}
 .ob-notif-body{-webkit-user-drag:none;display:flex;align-items:flex-start;gap:11px;padding:12px 14px 13px;color:inherit;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:22px}
 .ob-notif-body:active{background:var(--fill)}
@@ -1820,7 +1835,7 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 .ob-in:focus{box-shadow:0 0 0 2px var(--green)}
 .ob-form-row>.ob-in:not(.ob-select){padding-right:10px}
 .ob-form-row .ob-money:has(input[data-fu="retireAge"]) .ob-in{width:132px;padding-right:62px}
-.ob-select{width:150px;padding-right:28px;text-align:left;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+.ob-select{width:min(190px,48vw);padding-right:28px;text-align:left;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat}
 .ob-x{flex:0 0 40px;height:40px;border:0;background:none;color:var(--muted);font-size:22px;line-height:1;cursor:pointer;border-radius:50%}
 .ob-total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 4px 0;font-size:15px;color:var(--muted)}
 .ob-total b{font-size:17px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}
@@ -1879,6 +1894,14 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 .ob-hist-inst.is-picked::before{content:'✓';color:var(--green);margin-right:2px}
 .ob-hist-inst>span{flex:1;min-width:0}
 .ob-link{border:0;background:none;font:inherit;font-size:14px;color:var(--green);cursor:pointer;padding:8px 0 8px 6px}
+.ob-links{display:flex;flex-direction:column;align-items:flex-start;margin-top:4px}.ob-links .ob-link{padding:8px 0 4px 4px;text-align:left}
+.ob-pen+.ob-pen{margin-top:22px}
+.ob-pen-name{display:block;font-size:16px;font-weight:500;color:var(--ink);margin:0 0 8px 2px}
+.ob-pen-kinds{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.ob-pick{border:0;border-radius:999px;background:var(--fill);color:var(--ink);font:inherit;font-size:14px;padding:7px 12px;min-height:36px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ob-pick.on{background:var(--ink);color:var(--bg)}
+.ob-pen .ob-hint{margin-top:8px;font-size:13px}
+.ob-form-row.ob-pen-seg{min-height:48px}
 .ob-hist-modes{flex:1;display:flex;gap:2px;padding:2px;border-radius:10px;background:var(--fill)}
 .ob-hist-mode{flex:1;min-height:38px;border:0;border-radius:8px;background:none;font:inherit;font-size:15px;color:var(--muted);cursor:pointer}
 .ob-hist-mode.on{background:var(--bg2);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
@@ -1907,7 +1930,7 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 .ns-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left;border:0;background:none;font:inherit;padding:11px 0 12px 16px;cursor:pointer;color:inherit}
 .ns-main:active{background:var(--fill)}
 .ns-t{font-size:15px;color:var(--ink)}
-.ns-t::after{content:' ›';color:var(--muted)}
+.ns-t::after{content:'\00a0›';color:var(--muted)}/* C9: Pfeil bleibt am letzten Wort */
 .ns-s{font-size:13px;line-height:1.4;color:var(--muted)}
 .ns-x{flex:0 0 44px;border:0;background:none;color:var(--muted);font-size:20px;cursor:pointer}
 @media(max-width:380px){.ob-in{width:116px}.ob-tour,.ob-welcome{padding-left:20px;padding-right:20px}.ob-tour .ob-title{font-size:26px}.ob-position-pair{grid-template-columns:1fr}.ob-example-row{font-size:14px}}
@@ -2004,7 +2027,8 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
   #page-home .structure-section-mobile{display:none}
 
   /* Prognose: Ergebnis, Annahmen und Kennzahlen rechts neben dem Chart */
-  #page-lifetime .app-content{grid-template-areas:"hero rail" "chart rail" "range rail"}
+  #page-lifetime .app-content{grid-template-areas:"hero rail" "chart rail" "range rail" "assume assume"}
+  #page-lifetime .lt-assume{grid-area:assume;margin-top:28px;max-width:860px}
   #page-lifetime .hero{grid-area:hero}
   #page-lifetime .chart-section{grid-area:chart}
   #page-lifetime .range-bar{grid-area:range}
@@ -2024,8 +2048,8 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
   .sankey-node-card{height:108px}
 
   /* Daten: eine ruhige Spalte */
-  #page-import .app-content{max-width:780px}
-  #page-import .input-grid{grid-template-columns:repeat(4,1fr);gap:10px 16px}
+  :is(#page-import,#ltAssume) .app-content{max-width:780px}
+  :is(#page-import,#ltAssume) .input-grid{grid-template-columns:repeat(4,1fr);gap:10px 16px}
 
   @media (hover:hover) and (pointer:fine){
     .sidebar-item:hover{color:var(--ink);background:color-mix(in srgb,var(--ink) 5%,transparent)}
@@ -2042,6 +2066,46 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
   :root{--side:252px;--rail:clamp(380px,25vw,460px)}
   .sidebar-brand{font-size:20px}
 }
+/* ── Kompakte Darstellung (14.10.2026): Prognose-Seite ── */
+.v2-ret-lbl .v2-ret-more{display:block;margin-top:2px}
+.v2-ret-facts{margin-top:14px;padding-top:12px;box-shadow:inset 0 .5px 0 var(--sep)}
+.v2-ret-facts .n{font-size:16px}
+.v2-ret-facts .k{white-space:normal;line-height:1.25;overflow:visible}
+.v2-fold{flex:0 0 auto;width:7px;height:7px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:rotate(45deg);opacity:.55;margin:0 4px 4px 2px;transition:transform .2s}
+.is-open>.v2-fold{transform:rotate(-135deg);margin-bottom:-2px}
+.v2-lp-item{box-shadow:inset 0 .5px 0 var(--sep)}
+.v2-lp-item>.v2-lp-row{box-shadow:none;min-height:50px;padding:6px 0}
+.v2-lp-item>.v2-lp-row .t small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v2-lp-desc{font-size:13px;line-height:1.45;color:var(--muted);padding:0 0 11px 22px}
+.v2-lp-desc[hidden]{display:none}
+.v2-lp-item>.pers+.v2-lp-desc{padding-left:28px}
+.v2-lp-edit{border:0;background:none;padding:0;font:inherit;font-size:13px;color:var(--green);cursor:pointer;white-space:nowrap}
+.v2-inc-grp{box-shadow:inset 0 .5px 0 var(--sep)}
+button.v2-inc-g{width:100%;border:0;background:none;font:inherit;text-align:left;cursor:pointer;padding:13px 0;align-items:center;color:inherit}
+.v2-inc-items[hidden]{display:none}
+.v2-lt-links{background:var(--card);border-radius:16px;margin:16px 0 4px;overflow:hidden}
+.v2-lt-link{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:9px 14px;border:0;background:none;font:inherit;color:var(--ink);text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.v2-lt-link+.v2-lt-link{box-shadow:inset 0 .5px 0 var(--sep)}
+.v2-lt-link[hidden]{display:none}
+.v2-lt-link:active{background:var(--fill)}
+.v2-lt-link .t{flex:1;min-width:0;display:flex;flex-direction:column;font-size:15px}
+.v2-lt-link .t small{font-size:12.5px;color:var(--muted);margin-top:2px}
+.v2-lt-link .ps-open-i{flex:0 0 32px;width:32px;height:32px;background:linear-gradient(135deg,#3a5e42,#16301f)}
+.v2-lt-link .ps-open-i svg{width:13px;height:13px}
+.v2-lt-link .v2-lt-ico{background:var(--fill)}
+.v2-lt-link .v2-lt-ico svg{width:17px;height:17px;fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;margin:0}
+.lt-assume{margin-top:18px}
+/* ── Kompakte Daten-Seite (14.10.2026) ── */
+.ns-short .ns-main{padding:10px 0 10px 16px}
+#page-import .hh-time .lp-bar,#page-import .hh-time .lp-ticks{display:none}
+#page-import .hh-time{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:10px;row-gap:2px;padding:8px 0 9px}
+#page-import .hh-time .hh-tl{margin-top:0;flex:1 1 12em}
+#page-import .hh-time .hh-link{padding:0}
+body:not(.v2-editing) #page-import details[data-sec="household"] .input-group{display:none}
+body:not(.v2-editing) #page-import .pv-fields{display:none}
+body.v2-editing #page-import .pv-sum{display:none}
+.pv-list .ds-item-v{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.pv-list .ds-item-v small{font-size:12px;color:var(--muted);margin-top:1px}
 </style>
 
 <!-- Pull to Refresh Indicator -->
@@ -2130,6 +2194,7 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 <!-- Chart: Nettovermögen Verlauf -->
 <div class="chart-section">
   <div class="chart-wrap chart-wrap-net"><canvas id="chartNet"></canvas></div>
+  <p class="chart-start" id="chartNetStart" hidden><b>Dein Verlauf beginnt jetzt.</b><span>Ab dem nächsten Monatsstand zeigt die Linie hier, wie sich dein Vermögen entwickelt.</span></p>
 </div>
 
 <div class="range-bar">
@@ -2228,27 +2293,9 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 <input type="file" accept=".json,.csv,application/json,text/csv" id="csvInput" style="display:none">
 <div class="csv-msg" id="csvMsg"></div>
 
-<!-- Prognose-Annahmen: werden sofort gespeichert (kein Bearbeiten-Modus) -->
-<details class="input-collapsible v2-live" data-mod="forecast" id="v2-forecast-sec">
-  <summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="v2-sum-t"><span class="section-title">Prognose &amp; Annahmen</span><span class="v2-sum-sub" data-sub="forecast"></span></span></summary>
-  <div class="input-collapsible-body">
-    <div class="v2-preview"><b id="v2-prev-pct">—</b><span><span id="v2-prev-txt">Erfolgschance</span><br>Änderungen werden sofort übernommen</span></div>
-    <span class="cat-label">Lebensplanung</span>
-    <div class="lt-panel">
-    <div class="input-grid">
-      <div class="input-group"><label data-info="lt-life-expect">Lebenserwartung</label><input class="num-input lt-set" type="number" id="lt-life-expect" min="50" max="120"></div>
-      <div class="input-group"><label data-info="lt-plan-horizon">Planen bis Alter</label><input class="num-input lt-set" type="number" id="lt-plan-horizon" min="60" max="120" placeholder="95"></div>
-      <div class="input-group"><label data-info="lt-inflation">Inflation %</label><input class="num-input lt-set" type="text" inputmode="decimal" id="lt-inflation"></div>
-      <div class="input-group"><label data-info="lt-safety">Sicherheit %</label><input class="num-input lt-set" type="number" id="lt-safety" min="50" max="99" placeholder="85"></div>
-    </div>
-    </div>
-    <span class="cat-label" data-info="lt-phases">Lebensphasen</span>
-    <button type="button" class="lp-edit" id="ltPhasesEdit" onclick="openPhasesSheet()"></button>
-    <span class="cat-label">Einmalige Ereignisse</span>
-    <div class="lt-panel" id="lt-events"></div>
-    <span class="cat-label">Rendite &amp; Sparrate je Asset</span>
-    <div id="lt-asset-params-table"></div>
-  </div>
+<!-- Prognose & Annahmen stehen seit 14.10.2026 auf der Prognose-Seite; hier nur der Sprung dorthin -->
+<details class="input-collapsible ds-jump" data-mod="forecast" id="dsForecastJump">
+  <summary class="input-collapsible-summary" onclick="event.preventDefault();_v2OpenForecastSettings()"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="v2-sum-t"><span class="section-title">Prognose &amp; Annahmen</span><span class="v2-sum-sub" data-sub="forecast"></span></span></summary>
 </details>
 
 
@@ -2505,9 +2552,36 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 
 <!-- Weitere Kennzahlen (aufklappbar) -->
 <div class="v2-kzw" id="lt-more-list"></div>
-<button class="v2-kz-link" data-info="lt-method">So wird gerechnet</button>
-<button type="button" class="ps-open" id="psOpen" onclick="openPartnerStory()" hidden><span class="ps-open-i" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span><span class="ps-open-t"><b>Partner-Story</b><small>Euer Lebensplan in Bildern – einfach erklärt</small></span></button>
+<div class="v2-lt-links">
+  <button type="button" class="v2-lt-link" data-info="lt-method"><span class="ps-open-i v2-lt-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.6v.1"/></svg></span><span class="t">So wird gerechnet<small>Simulation, Annahmen und Grenzen des Modells</small></span><span class="v2-chev"></span></button>
+  <button type="button" class="v2-lt-link" id="psOpen" onclick="openPartnerStory()" hidden><span class="ps-open-i" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span><span class="t">Partner-Story<small>Euer Lebensplan in Bildern – einfach erklärt</small></span><span class="v2-chev"></span></button>
 </div>
+</div>
+
+<section class="lt-assume" id="ltAssume">
+<!-- Annahmen der Prognose (seit 14.10.2026 hier statt auf der Daten-Seite): werden sofort gespeichert -->
+<details class="input-collapsible v2-live" id="v2-forecast-sec">
+  <summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="v2-sum-t"><span class="section-title">Annahmen</span><span class="v2-sum-sub">Lebensplanung, Ereignisse, Rendite je Anlage</span></span></summary>
+  <div class="input-collapsible-body">
+    <div class="v2-preview"><b id="v2-prev-pct">—</b><span><span id="v2-prev-txt">Erfolgschance</span><br>Änderungen werden sofort übernommen</span></div>
+    <span class="cat-label">Lebensplanung</span>
+    <div class="lt-panel">
+    <div class="input-grid">
+      <div class="input-group"><label data-info="lt-life-expect">Lebenserwartung</label><input class="num-input lt-set" type="number" id="lt-life-expect" min="50" max="120" placeholder="85"></div>
+      <div class="input-group"><label data-info="lt-plan-horizon">Planen bis Alter</label><input class="num-input lt-set" type="number" id="lt-plan-horizon" min="60" max="120" placeholder="95"></div>
+      <div class="input-group"><label data-info="lt-inflation">Inflation %</label><input class="num-input lt-set" type="text" inputmode="decimal" id="lt-inflation" placeholder="2"></div>
+      <div class="input-group"><label data-info="lt-safety">Sicherheit %</label><input class="num-input lt-set" type="number" id="lt-safety" min="50" max="99" placeholder="85"></div>
+    </div>
+    </div>
+    <span class="cat-label" data-info="lt-phases">Lebensphasen</span>
+    <button type="button" class="lp-edit" id="ltPhasesEdit" onclick="openPhasesSheet()"></button>
+    <span class="cat-label">Einmalige Ereignisse</span>
+    <div class="lt-panel" id="lt-events"></div>
+    <span class="cat-label">Rendite &amp; Sparrate je Asset</span>
+    <div id="lt-asset-params-table"></div>
+  </div>
+</details>
+</section>
 
 </div><!-- /app-content -->
 </div><!-- /page-lifetime -->
@@ -2591,8 +2665,8 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="i18n-en.js?v=12"></script>
-<script src="data-store.js?v=28"></script>
+<script src="i18n-en.js?v=13"></script>
+<script src="data-store.js?v=29"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
 <script src="asset-model.js?v=4"></script>
@@ -2908,7 +2982,7 @@ const INFO={
   'bv-from':['Pension ab Alter','<p>Optional, wenn du vor der Altersgrenze auf Antrag in den Ruhestand gehen willst (frühestens mit 63, § 52 Abs. 3 BBG). Pro Jahr vor der Altersgrenze werden 3,6 % abgezogen, höchstens 14,4 % (§ 14 Abs. 3 BeamtVG); mit 65 und 45 Dienstjahren entfällt der Abschlag. Leer = ab Altersgrenze.</p><p>Gerechnet wird nach Bundesrecht. Schwerbehinderung, Dienstunfähigkeit und abweichendes Landesrecht sind nicht abgebildet.</p>'],
   'bv-deduct':['Abzüge %','<p>Pauschaler Abzug vom Ruhegehalt. Die Pension ist voll steuerpflichtig, dazu kommt die private Krankenversicherung (mit Beihilfe von meist 70 %). 20–30 % sind ein üblicher Richtwert.</p>'],
   'pen-name':['Weitere Renten & Einkünfte','<p>Zusätzliche regelmäßige Einkünfte im Ruhestand, z. B. Betriebsrente, private Rente, Mieteinnahmen.</p>'],
-  'pen-amount':['Betrag €/Monat','<p>Netto pro Monat in heutiger Kaufkraft (nach Steuern und Krankenversicherung).</p>'],
+  'pen-amount':['Netto €/Monat','<p>Netto pro Monat in heutiger Kaufkraft, also nach Steuern und Kranken-/Pflegeversicherung. Die App zieht hier nichts mehr ab.</p><p><strong>Betriebsrente</strong>: abzüglich rund 19 % Kranken- und Pflegeversicherung (oberhalb des Freibetrags) und Steuer. <strong>Versorgungswerk</strong>: Bruttobetrag laut Bescheid minus rund 15–20 %.</p>'],
   'pen-from':['ab Alter','<p>Ab diesem Alter fließt die Zahlung.</p>'],
   'pen-person':['Für','<p>Wem die Einkunft gehört. „ab Alter“ und „bis Alter“ gelten im Alter dieser Person; die Prognose rechnet es in dein Alter um.</p>'],
   'b-person':['Person','<p>Wessen Einkommen das ist. Mit dem Gehalt einer Person rechnet die Prognose ihre Arbeitszeit je Lebensphase: Arbeitet sie später weniger oder mehr, ändert sich das Einkommen entsprechend. Das Gehalt einer weiteren Person zählt nach deinem Arbeitsende weiter, bis zu ihrem Arbeitsende.</p><p>„Haushalt“ (z. B. Miete) ändert die Prognose nicht: Solange du arbeitest, steckt das Budget in deinen Sparraten.</p>'],
@@ -2968,9 +3042,11 @@ function fmtMonth(ym){const[y,m]=ym.split('-');return MONTH_NAMES[+m-1]+' '+y;}
 const _unitName=u=>u==='Stk'?'Stück':u;
 function _monthLabel(ym){return ym===nextYM()?'Heute':fmtMonth(ym);}
 function _inMonth(ym){return ym===nextYM()?'heute':'in '+fmtMonth(ym);}
-function fmt(n){if(n==null||isNaN(n))return'—';return n.toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:0})+' €';}
+/* C8: negative Beträge einheitlich mit typografischem Minus (−), nie „-0 €“ */
+const _minus=t=>t.replace(/^-(?=\d)/,'−');
+function fmt(n){if(n==null||isNaN(n))return'—';if(Math.abs(n)<0.5)n=0;return _minus(n.toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:0}))+' €';}
 /* Kompakt für enge Tabellen: 102 Tsd. €, 1,2 Mio € */
-function fmtCompact(n){if(n==null||isNaN(n))return'—';const a=Math.abs(n);if(a>=1e6)return(n/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})+L(' Mio €',' M €');if(a>=1e4)return Math.round(n/1e3).toLocaleString('de-DE')+L(' Tsd. €','k €');if(a>=1e3)return(n/1e3).toLocaleString('de-DE',{maximumFractionDigits:1})+L(' Tsd. €','k €');return Math.round(n).toLocaleString('de-DE')+' €';}
+function fmtCompact(n){if(n==null||isNaN(n))return'—';const a=Math.abs(n);if(a>=1e6)return _minus((n/1e6).toLocaleString('de-DE',{maximumFractionDigits:1}))+L(' Mio €',' M €');if(a>=1e4)return _minus(Math.round(n/1e3).toLocaleString('de-DE'))+L(' Tsd. €','k €');if(a>=1e3)return _minus((n/1e3).toLocaleString('de-DE',{maximumFractionDigits:1}))+L(' Tsd. €','k €');return _minus(Math.round(n).toLocaleString('de-DE'))+' €';}
 function fmtAxis(n){if(n==null||isNaN(n))return'';if(Math.abs(n)>=1e6)return(n/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})+'M';if(Math.abs(n)>=1e3)return(n/1e3).toLocaleString('de-DE',{maximumFractionDigits:0})+'k';return n.toLocaleString('de-DE',{minimumFractionDigits:0});}
 function fmtIban(s){if(!s)return'';const clean=escHTML(s.replace(/\s/g,''));const spaced=clean.replace(/(.{4})/g,'$1 ').trim();if(clean.length>12){return spaced.slice(0,14)+'<br>'+spaced.slice(14).trim();}return spaced;}
 function loadStoredData(){try{const l=appStorage.getItem('finData');return l?JSON.parse(l):{};}catch{return{};}}
@@ -3027,7 +3103,7 @@ function calc(e){
   return{liquid:l,illiquid:i,illiquidGross:ig,assets:a,liab:b,net:a-b};
 }
 
-/* Zentrale Netto-Gruppierung: liab wird von der eigenen Gruppe abgezogen, sonst von der ersten Sachwert-Gruppe.
+/* Zentrale Netto-Gruppierung: liab wird von der Gruppe ihres Vermögenswerts abgezogen, sonst als eigene Zeile geführt.
    includeNegative: auch Gruppen mit negativem Eigenkapital liefern (Asset-Liste soll das Nettovermögen ergeben). */
 function buildNetGroups(details,includeNegative=false){
   const groupMap={};
@@ -3042,14 +3118,11 @@ function buildNetGroups(details,includeNegative=false){
       groupMap[grp].val+=val;
     }
   });
-  /* Verteile liab auf ihre Gruppe, oder auf die erste illiquide Gruppe */
+  /* Verteile liab auf ihre Gruppe. C2: Ein Kredit ohne zugehörigen Vermögenswert (z. B. Ratenkredit, Kreditkarte)
+     steht als eigene Zeile, statt still das größte Sachwert-Konto (oft das Auto) zu mindern. */
   liabItems.forEach(li=>{
-    if(groupMap[li.grp]){
-      groupMap[li.grp].val-=li.val;
-    }else{
-      const tgt=groupMap[_orphanLiabTarget()];
-      if(tgt)tgt.val-=li.val;
-    }
+    if(groupMap[li.grp])groupMap[li.grp].val-=li.val;
+    else if(li.val)groupMap[li.grp]={label:li.grp,val:-li.val,key:li.grp,liab:true};
   });
   return Object.values(groupMap).filter(p=>includeNegative?Math.round(p.val)!==0:p.val>0).sort((a,b)=>b.val-a.val);
 }
@@ -3094,7 +3167,8 @@ function buildPicker(){
   const title=document.getElementById('pickerTitle'),actions=document.getElementById('pickerActions');
   const yearMode=()=>!!target&&target.mode==='year';
   function renderYears(){
-    const start=Math.floor(_pickerYear/12)*12;
+    /* C11: Seiten ab dem frühesten wählbaren Jahr (z. B. 2026–2037 statt 2028–2039) */
+    const a=Number.isFinite(+target.anchor)&&target.anchor!==''?+target.anchor:0,start=a+Math.floor((_pickerYear-a)/12)*12;
     yearLabel.textContent=start+' – '+(start+11);
     for(let y=start;y<start+12;y++){
       const cell=document.createElement('div');
@@ -3396,7 +3470,11 @@ function renderNetChart(){
   const data=loadData(),sorted=Object.keys(data).sort();
   if(Object.values(data).some(e=>e._loanHistory))_loanHistoryNotif();
   const entry=data[selectedMonth];
-  if(!entry||sorted.length<2){destroyChart('net');return;}
+  /* C1: Neustart (ein Monatsstand bzw. zwei gleiche aus der Einrichtung): Hinweis statt einer gleichförmigen Fläche */
+  const start=!!entry&&(sorted.length<2||(sorted.length===2&&Math.round(calc(data[sorted[0]]).net)===Math.round(calc(data[sorted[1]]).net)));
+  const startEl=document.getElementById('chartNetStart');if(startEl)startEl.hidden=!start;
+  document.querySelector('#page-home .chart-section')?.classList.toggle('is-start',start);
+  if(!entry||sorted.length<2||start){destroyChart('net');return;}
   destroyChart('net');
   /* Voller Neuaufbau des Charts -> evtl. aktive Isolation zurücksetzen */
   isolatedAsset=null;
@@ -3487,7 +3565,7 @@ function _legendModel(details,prevDetails){
 function _legendStats(item,m){
   const neg=item.val<0;
   const delta=m.prev?item.val-(m.prev[item.key]||0):null;
-  return{neg,pct:neg||!m.total?'—':Math.round(item.val/m.total*100)+' %',barPct:neg?0:Math.round(item.val/m.maxVal*100),delta};
+  return{neg,pct:item.liab?'':neg||!m.total?'—':Math.round(item.val/m.total*100)+' %',barPct:neg?0:Math.round(item.val/m.maxVal*100),delta};
 }
 /* Symbol und Art einer Asset-Gruppe (aus Name und Kategorie der Felder) */
 const V2_ICONS={
@@ -3535,6 +3613,7 @@ function _v2Icon(key){
 }
 function _v2GroupKind(key){
   const fs=_v2GroupFields(key),has=c=>fs.some(f=>f.category===c);
+  if(fs.length&&fs.every(f=>f.category==='liab'))return L('Kredit · keinem Vermögenswert zugeordnet','Loan · not linked to an asset');
   let t=fs.some(f=>f.category!=='liab'&&AssetModel.liquidity(f)==='liquid')?'liquide':has('bav')?'Vorsorge':'illiquide';
   if(has('liab'))t+=' · nach Kredit';
   return t;
@@ -4633,8 +4712,10 @@ function _ask({title='',text='',ok='OK',cancel='Abbrechen',danger=false}={}){
 }
 async function resetApp(){
   const base=appStorage.shownRevision();
-  if(!await _ask({title:'Alle Daten löschen?',text:'Vermögen, Budget, Prognose und Einstellungen werden unwiderruflich von diesem Gerät gelöscht.\nTipp: vorher unter „Daten“ eine Sicherung exportieren.',ok:'Alles löschen',danger:true}))return;
-  try{appStorage.withBase(base,()=>appStorage.clear());}catch(error){if(_isStale(error)){_importStale();return;}throw error;}
+  if(!await _ask({title:'Alle Daten löschen?',text:'Vermögen, Budget, Prognose und Einstellungen werden unwiderruflich von diesem Gerät gelöscht, auch die automatische Kopie vom letzten Update.\nTipp: vorher „Sicherung exportieren“ verwenden.',ok:'Alles löschen',danger:true}))return;
+  try{appStorage.withBase(base,()=>appStorage.clear({discardBackup:true}));}catch(error){if(_isStale(error)){_importStale();return;}throw error;}
+  /* A7: auch die Merker dieses Geräts (letzte Sicherung, Monat erledigt, Tipps, gesehene Kreditverläufe, Chart-Ansicht) */
+  [BACKUP_KEY,MONTH_DONE_KEY,MONTH_REMINDER_KEY,LOAN_NOTIF_KEY,TIPS_KEY,CHART_DEFAULTS_KEY].forEach(k=>{try{localStorage.removeItem(k);}catch(error){}});
   location.reload();
 }
 
@@ -5864,7 +5945,8 @@ function renderBudgetPage(){
       if(mc&&mc.einnahmen>0){minE=Math.min(minE,mc.einnahmen);maxE=Math.max(maxE,mc.einnahmen);}
     }
     if(minE!==Infinity&&maxE>0){
-      deltaEl.textContent=`↓ ${minE.toLocaleString('de-DE')} € • ↑ ${maxE.toLocaleString('de-DE')} €`;
+      /* C10: die Spanne über das Jahr in Worten statt unerklärter Pfeile */
+      deltaEl.textContent=Math.round(minE)===Math.round(maxE)?L('jeden Monat gleich','the same every month'):L(`je Monat zwischen ${fmt(minE)} und ${fmt(maxE)}`,`between ${fmt(minE)} and ${fmt(maxE)} per month`);
       deltaEl.className='hero-delta';
     }
   }
@@ -6624,7 +6706,7 @@ const _assetCheckRuns=new Map();
 function _assetId(prefix,key){return prefix==='newAsset'?(key==='name'?'newFieldLabel':key==='category'?'newFieldCategory':prefix+'-'+key):prefix+'-'+key;}
 function _assetEl(prefix,key){return document.getElementById(_assetId(prefix,key));}
 /* Altersvorsorge hat einen eigenen Bereich; als Art nur für bestehende Positionen sichtbar, damit deren Kategorie erhalten bleibt */
-function _assetOptions(category){return Object.entries(AssetModel.categories).filter(([k])=>k!=='bav'||k===category).map(([k,c])=>`<option value="${k}"${k===category?' selected':''}>${c.name}</option>`).join('');}
+function _assetOptions(category){return Object.entries(AssetModel.categories).map(([k,c])=>`<option value="${k}"${k===category?' selected':''}>${c.name}</option>`).join('');}
 function _quoteStatus(f){
   if(!f.lastQuote)return 'Noch kein Kurs gespeichert';
   const time=new Date(f.lastQuote.asOf).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short'});
@@ -7076,7 +7158,7 @@ async function handleDataUpload(ev){
 
 /* ── Tutorial / Onboarding ── */
 function buildTutorialHTML(){
-  return '<div class="tut-body"><p>Auf der Daten-Seite unter „Daten“ → Sicherung exportieren werden alle Daten und Einstellungen in einer JSON-Datei gespeichert.</p><p>Importiere diese Datei auf einem weiteren Gerät, um den vollständigen Stand wiederherzustellen. Bisherige CSV-Dateien können weiterhin importiert werden.</p></div>';
+  return '<div class="tut-body"><p>Auf der Daten-Seite unter „Sicherung“ → Sicherung exportieren werden alle Daten und Einstellungen in einer JSON-Datei gespeichert.</p><p>Importiere diese Datei auf einem weiteren Gerät, um den vollständigen Stand wiederherzustellen. Bisherige CSV-Dateien können weiterhin importiert werden.</p></div>';
 }
 
 function _loanAssetOptions(selected,legacy=false){
@@ -7116,7 +7198,13 @@ function _loanFromInputs(fieldId,strict=false){
     }
   }
   if(strict&&(['principal','repayment','firstDue','fixedYears'].some(k=>p[k]!==undefined)||(p.extras&&p.extras.length))){
-    if(!LoanModel.configured(p))throw new Error('Für das Darlehen bitte Betrag, Sollzins, erste Fälligkeit und eine positive Monatsrate eintragen.');
+    if(!LoanModel.configured(p)){
+      /* A12: die fehlenden Felder nennen; ohne Vertrag genügen Restschuld, Zins, Rate und „Zinsbindung bis“ */
+      const miss=[['principal','Darlehensbetrag'],['rate','Sollzins'],['firstDue','Erste Rate']].filter(([k])=>!(p[k]!==undefined&&(k!=='principal'||p[k]>=0.01))).map(x=>x[1]);
+      if(!(LoanModel.payment(p)>=0.01))miss.push('Monatsrate');
+      const why=p.fixedYears!==undefined&&!['principal','repayment','firstDue'].some(k=>p[k]!==undefined)&&!(p.extras&&p.extras.length)?L('„Zinsbindung in Jahren“ zählt ab der ersten Rate. Ohne Darlehensvertrag genügt „Zinsbindung bis“ (Jahr).','"Fixed rate in years" counts from the first payment. Without a loan contract, "Fixed rate until" (year) is enough.'):L('Für den Tilgungsplan fehlt noch: ','For the repayment plan, still missing: ')+miss.map(m=>L(m,{Darlehensbetrag:'Loan amount',Sollzins:'Interest rate','Erste Rate':'First payment',Monatsrate:'Monthly payment'}[m])).join(', ')+'.';
+      throw new Error(why);
+    }
     if(p.pay<p.principal*p.rate/1200)throw new Error('Die Monatsrate muss mindestens den anfänglichen Zinsanteil decken.');
   }
   return p;
@@ -7151,7 +7239,7 @@ function _loanSummaryText(balance,p){
   if(!(balance>0))return 'Darlehensparameter ergänzen, um Rate und Restschuld automatisch zu berechnen. Für bestehende Kredite kannst du alternativ die aktuelle Restschuld eintragen.';
   if(!hasLoanModel(p))return `Restschuld <strong>${fmt(balance)}</strong> · Zins und Rate eintragen, um Zins-/Tilgungsanteil und Laufzeit zu berechnen.`;
   const st=loanStatus(balance,p),ym=st.payoff?fmtMonth(st.payoff):null;
-  return `Zins <strong>${fmt(st.interestM)}</strong> + Tilgung <strong>${fmt(st.principalM)}</strong>/Monat`+(ym?' · schuldenfrei <strong>'+ym+'</strong>':' · <span style="color:var(--red)">Rate deckt die Zinsen nicht</span>')+(p.fixed&&st.restAtFixed!=null?' · Rest '+p.fixed+': '+fmt(st.restAtFixed):'');
+  return `Zins <strong>${fmt(st.interestM)}</strong> + Tilgung <strong>${fmt(st.principalM)}</strong>/Monat`+(ym?' · schuldenfrei ca. <strong>'+ym+'</strong>':' · <span style="color:var(--red)">Rate deckt die Zinsen nicht</span>')+(p.fixed&&st.restAtFixed!=null?' · Rest '+p.fixed+': '+fmt(st.restAtFixed):'');
 }
 function _loanMoney(n){return n.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';}
 function _automaticLoanRows(month){
@@ -7624,7 +7712,7 @@ function _openDatePicker(btn){
   const input=document.getElementById(btn.dataset.dateFor);if(!input||btn.readOnly)return;
   const mode=btn.dataset.dateMode,year=mode==='year',min=btn.dataset.dateMin,max=btn.dataset.dateMax;
   const cmp=v=>year?+v:String(v);
-  picker.pick({mode,value:input.value,start:max&&!input.value?max:undefined,title:btn.dataset.dateTitle,
+  picker.pick({mode,value:input.value,start:max&&!input.value?max:undefined,anchor:year&&min!==undefined&&min!==''?+min:undefined,title:btn.dataset.dateTitle,
     isEnabled:v=>(min===undefined||cmp(v)>=cmp(min))&&(max===undefined||cmp(v)<=cmp(max)),
     onPick:v=>_setDateValue(btn,v),
     onClear:btn.dataset.dateOptional?()=>_setDateValue(btn,''):null});
@@ -8330,10 +8418,11 @@ function _loanSheetHTML(id,f,p,o){
   <div id="loanPlan-${id}"></div>
   <details class="ds-more"${more?' open':''}><summary>Zinsbindung &amp; Sondertilgungen</summary>
     <div class="ds-group">
-      ${row('fixedYears','Zinsbindung in Jahren',num(p.fixedYears))}
+      ${/* A12: „bis Jahr“ gilt auch ohne Darlehensvertrag; „in Jahren“ zählt ab der ersten Rate und braucht den Vertrag */''}
+      <label class="ds-row"><span class="ds-l">Zinsbindung bis<small>Jahr, in dem die Zinsbindung endet</small></span>${_dateFieldHTML({id:L('fixed'),value:p.fixed??'',mode:'year',title:'Zinsbindung bis',optional:true,attrs:`data-loan="${escHTML(id)}" data-k="fixed"`})}</label>
+      ${p.fixedYears!==undefined?row('fixedYears','Zinsbindung in Jahren',num(p.fixedYears),{hint:'ab der ersten Rate'}):''}
       ${row('follow','Anschlusszins % p. a.',num(p.follow),{ph:'wie Sollzins'})}
       ${p.extra!==undefined?row('extra','Jährliche Sondertilgung € (bisher)',money(p.extra),{cls:' ds-money'}):''}
-      ${p.fixed!==undefined?`<label class="ds-row"><span class="ds-l">Zinsbindung bis Jahr (bisher)</span>${_dateFieldHTML({id:L('fixed'),value:p.fixed,mode:'year',title:'Zinsbindung bis',optional:true,attrs:`data-loan="${escHTML(id)}" data-k="fixed"`})}</label>`:''}
     </div>
     <div class="ds-group-t">Sondertilgungen</div>
     <div class="ds-group"><div id="loanExtras-${id}">${(p.extras||[]).map(e=>_loanExtraHTML(id,e)).join('')}</div><div class="ds-sub"><button type="button" class="btn btn-ghost" data-extra-add="${escHTML(id)}">+ Sondertilgung</button></div></div>
@@ -8807,10 +8896,14 @@ function buildDynamicForm(){
   html+=`<div class="divider"></div>`;
   html+=`<details class="input-collapsible" data-mod="pension">${_v2Sum('pension','Altersvorsorge')}<div class="input-collapsible-body">`;
   html+=`<div class="ds-sec-actions"><button type="button" class="v2-textbtn" onclick="enterEditMode()">Bearbeiten</button></div>`;
+  /* kompakt (14.10.2026): ohne Bearbeiten je Person und Art eine Zeile mit dem Ergebnis; die Felder erst beim Bearbeiten */
+  html+=`<div class="pv-sum">${_pensionSummaryHTML()}</div><div class="pv-fields">`;
   /* Jede Altersvorsorge gehört zu einer Person: gesetzliche Rente und Beamtenversorgung je Person als Karte (14.10.2026).
      Rentenwert, Durchschnittsentgelt und BBG stehen bei dir und gelten für alle. */
   const ppl=getDrvExtra().filter(p=>p.id);
-  html+=`<div class="lt-block-label">Gesetzliche Rente</div><div class="hh-card pv-card"><div class="hh-head">${_hhHeadHTML(L('Ich','Me'),L('Gesetzliche Rente','State pension'))}</div>`+_drvFieldsHTML(getDrv(),'dp','form')+`</div>`;
+  /* Lesemodus kompakt: eine leere eigene Karte (z. B. bei Beamtenpension) erscheint erst beim Bearbeiten */
+  const myDrv=getDrv(),myEmpty=!(+myDrv.points>0||+myDrv.salary>0||+myDrv.em>0),pplDrv=ppl.some(p=>+p.points>0||+p.salary>0||+p.em>0);
+  html+=`<div class="lt-block-label${myEmpty&&!pplDrv?' edit-only':''}">Gesetzliche Rente</div><div class="hh-card pv-card${myEmpty?' pv-empty':''}" id="pvMeDrv"><div class="hh-head">${_hhHeadHTML(L('Ich','Me'),L('Gesetzliche Rente','State pension'))}</div>`+_drvFieldsHTML(myDrv,'dp','form')+`</div>`;
   html+=`<div id="dpDrvPeople">${_pvDrvRowsHTML(ppl)}</div>`;
   if(ppl.length)html+=`<p class="ds-help edit-only">${L('Rentenwert, Ø-Entgelt und BBG trägst du bei dir ein; sie gelten für alle.','Pension value, average salary and contribution ceiling are entered with yours; they apply to everyone.')}</p>`;
   /* Beamtenversorgung: je Person nur sichtbar, wenn eingetragen; im Bearbeiten-Modus hinzufügbar */
@@ -8822,9 +8915,11 @@ function buildDynamicForm(){
   const avds=getAvDepots();
   html+=`<div class="lt-block-label${avds.length?'':' edit-only'}" id="dpAvdLabel">Altersvorsorgedepots</div><div id="dpAvd">${_avdRowsHTML(avds)}</div>`;
   html+=`<button class="btn btn-ghost plan-add edit-only" id="dpAvdAdd">+ Altersvorsorgedepot</button>`;
-  html+=`<div class="lt-block-label">Weitere Renten & Einkünfte</div><div id="dpPensions">${_planRowsHTML(getLifetimeSettings().pensions,PENSION_COLS,'form')}</div>`;
+  const pens=getLifetimeSettings().pensions,bavPos=_vf().some(f=>f.category==='bav');
+  html+=`<div class="lt-block-label${pens.length?'':' edit-only'}">Weitere Renten & Einkünfte</div><div id="dpPensions">${_planRowsHTML(pens,PENSION_COLS,'form')}</div>`;
+  if(bavPos&&pens.length)html+=`<p class="ds-help">${L('Ein Vertrag, der hier als Rente steht, sollte nicht zusätzlich als Vermögen „Altersvorsorge“ zählen.','A contract listed here as a pension should not also count as an "Altersvorsorge" asset.')}</p>`;
   html+=`<button class="btn btn-ghost plan-add edit-only" id="dpPensionAdd">+ Rente / Einkommen</button>`;
-  html+=`</div></details>`;
+  html+=`</div></div></details>`;
 
   /* Einnahmen & Ausgaben: wiederkehrende Posten und einmalige Zahlungen als Liste, Bearbeiten im Sheet */
   html+=`<div class="divider"></div>`;
@@ -9002,7 +9097,7 @@ function _v2DrvExtraResults(wrap){
     let hd=row.querySelector('.hh-head');if(!hd){hd=document.createElement('div');hd.className='hh-head';row.prepend(hd);}
     hd.innerHTML=_hhHeadHTML(p.name,L('Weitere Person','Other person')+(+p.by>1900?L(' · Jahrgang ',' · born ')+p.by:''));
     let tl=row.querySelector('.hh-time');if(!tl){tl=document.createElement('div');tl.className='hh-time';hd.after(tl);}
-    tl.innerHTML=_personTimelineHTML(s,p)+(p.id?`<button type="button" class="hh-link" onclick="openPhasesSheet(2)">${L('In den Lebensphasen ändern','Change in life phases')}</button>`:`<div class="hh-tl">${L('Arbeitszeit und Arbeitsende stellst du nach dem Speichern in den Lebensphasen ein.','After saving, set working time and end of work in life phases.')}</div>`);
+    tl.innerHTML=_personTimelineHTML(s,p)+(p.id?`<button type="button" class="hh-link" onclick="openPhasesSheet(2)">${L('Lebensphasen ›','Life phases ›')}</button>`:`<div class="hh-tl">${L('Arbeitszeit und Arbeitsende stellst du nach dem Speichern in den Lebensphasen ein.','After saving, set working time and end of work in life phases.')}</div>`);
     let ctx=row.querySelector('.hh-ctx');if(!ctx){ctx=document.createElement('div');ctx.className='hh-ctx';row.insertBefore(ctx,row.querySelector('.plan-del'));}
     ctx.innerHTML=row.dataset.rowId?_personContextHTML(row.dataset.rowId):L('Nach dem Speichern lassen sich Gehalt, Altersvorsorge und Einkünfte dieser Person zuordnen.','After saving you can assign salary, pensions and income to this person.');
   });
@@ -9400,19 +9495,19 @@ const DRV_EXTRA_COLS=[
   {key:'by',label:'Geburtsjahr',info:'drvx-by',type:'year',ph:'Auswählen',min:1920,max:2015},
   {key:'until',label:'Arbeiten bis Alter',info:'drvx-until',ph:'wie eigene'},
   {key:'points',label:'Rentenpunkte',info:'drv-points',ph:'0'},
-  {key:'salary',label:'Brutto/Jahr €',info:'drv-salary',ph:'0'},
+  {key:'salary',label:'Brutto €/Jahr',info:'drv-salary',ph:'0'},
   {key:'age',label:'Rentenbeginn',info:'drv-age',ph:'automatisch'},
   {key:'deduct',label:'Abzüge %',info:'drv-deduct',ph:'20'},
   {key:'emType',label:'Erwerbsminderung',info:'drv-emType',type:'select',options:()=>[['0','Keine'],['1','Teilweise'],['2','Voll']]},
-  {key:'em',label:'EM-Rente netto €',info:'drv-em',ph:'0'},
+  {key:'em',label:'EM-Rente netto €/Monat',info:'drv-em',ph:'0'},
   {key:'emUntil',label:'Läuft bis Jahr',info:'drv-emUntil',ph:'bis Regelalter'},
-  {key:'emLimit',label:'Hinzuverdienst­grenze €',info:'drv-emLimit',ph:'41.528'}
+  {key:'emLimit',label:'Hinzuverdienst­grenze €/Jahr',info:'drv-emLimit',ph:'41.528'}
 ];
 /* Haushaltskarte: nur die Person (Name, Geburtsjahr). Ihre Altersvorsorge steht unter Altersvorsorge (je Person eine
    Karte für gesetzliche Rente und Beamtenversorgung), Arbeitsende und Arbeitszeit in den Lebensphasen (14.10.2026). */
 const DRV_CARD_COLS=DRV_EXTRA_COLS.filter(c=>['name','by'].includes(c.key));
 const PERSON_DRV_COLS=DRV_EXTRA_COLS.filter(c=>['points','salary','age','deduct','emType','em','emUntil','emLimit'].includes(c.key)).map(c=>c.key==='age'?Object.assign({},c,{label:'Rentenbeginn'}):c);
-const PERSON_BV_COLS=[{key:'bvPay',label:'Bezüge/Monat €',info:'bv-pay',ph:'0'},{key:'bvYears',label:'Dienstjahre bisher',info:'bv-years',ph:'0'},
+const PERSON_BV_COLS=[{key:'bvPay',label:'Bezüge brutto €/Monat',info:'bv-pay',ph:'0'},{key:'bvYears',label:'Dienstjahre bisher',info:'bv-years',ph:'0'},
   {key:'bvAge',label:'Altersgrenze',info:'bv-age',ph:'automatisch'},{key:'bvFrom',label:'Pension ab Alter',info:'bv-from',ph:'wie Grenze'},{key:'bvDeduct',label:'Abzüge %',info:'bv-deduct',ph:'25'}];
 function getDrvExtra(){const l=_lsJSON('lt-drv-extra',[]);return Array.isArray(l)?l:[];}
 /* ══ Personen (Schema 14) ══
@@ -9549,7 +9644,7 @@ function _meCardHTML(){
   const by=appStorage.getItem('lt-birth-year'),bm=appStorage.getItem('lt-birth-month');
   return `<div class="hh-card hh-me"><div class="hh-head">${_hhHeadHTML(L('Ich','Me'),by?L('Jahrgang ','Born ')+s.birthYear:L('Geburtsjahr fehlt','Year of birth missing'))}</div>`
     +`<div class="hh-time">${_phaseBarHTML(b).replace('class="lp-bar"','class="lp-bar hh-bar"')}<div class="hh-tl">${escHTML(_ownPhaseText(b))}</div>`
-    +`<button type="button" class="hh-link" onclick="openPhasesSheet()">${L('In den Lebensphasen ändern','Change in life phases')}</button></div>`
+    +`<button type="button" class="hh-link" onclick="openPhasesSheet()">${L('Lebensphasen ›','Life phases ›')}</button></div>`
     +`<div class="input-group"><label data-info="lt-birth-year">${L('Geburtsjahr','Year of birth')}</label>${_dateFieldHTML({id:'hh-birth-year',value:by||'',mode:'year',cls:'num-input form-store',title:L('Geburtsjahr','Year of birth'),placeholder:L('Auswählen','Choose'),min:1920,max:2015})}</div>`
     +`<div class="input-group"><label data-info="lt-birth-month">${L('Geburtsmonat','Birth month')}</label><select class="num-input form-store" id="hh-birth-month">${MONTH_FULL.map((x,i)=>`<option value="${i+1}"${i+1===(+bm||1)?' selected':''}>${x}</option>`).join('')}</select></div>`
     +`<div class="hh-ctx">${_personContextHTML('')}</div></div>`;
@@ -9971,6 +10066,7 @@ function calcBeamtePension(s,b){
   /* ohne eigenes Antragsalter beginnt die Pension mit der Rentenphase, höchstens an der Altersgrenze;
      Antragsruhestand frühestens mit 63 (§ 52 Abs. 3 BBG). Schwerbehinderung und Dienstunfähigkeit sind nicht abgebildet. */
   let age=b.from>0?Math.min(b.from,limit):Math.min(s.pensionAge??limit,limit);
+  const want=age;
   if(age<63)age=Math.min(63,limit);
   const now=new Date();
   const curAge=_ageAt(s,now.getFullYear(),now.getMonth());
@@ -9989,7 +10085,7 @@ function calcBeamtePension(s,b){
   if(age>=65-1e-9&&total>=45-1e-9)cut=0;
   const brutto=eligible&&b.pay>0?b.pay*rate/100*(1-cut/100):0;
   const netto=brutto*(1-Math.min(90,Math.max(0,b.deduct))/100);
-  return{age,limit,years,total,rate,cut,eligible,brutto,netto,inp:{pay:b.pay,years:Math.max(0,b.years),deduct:b.deduct}};
+  return{age,want,limit,years,total,rate,cut,eligible,brutto,netto,inp:{pay:b.pay,years:Math.max(0,b.years),deduct:b.deduct}};
 }
 function fmtAge(a){const y=Math.floor(a),m=Math.round((a-y)*12);return m?y+L(' J. ',' y ')+m+L(' M.',' m'):String(y);}
 
@@ -10628,20 +10724,23 @@ function _drvFieldsHTML(d,prefix,mode){
   const f=(k,label,val,ph)=>`<div class="input-group"><label data-info="drv-${k}">${label}</label><input class="num-input${mode==='form'?' form-store':''}" type="text" inputmode="decimal" id="${prefix}-drv-${k}" data-drv="${k}" value="${val}" placeholder="${ph||''}"></div>`;
   let h=`<div class="input-grid">`;
   h+=f('points','Rentenpunkte',_numStr(d.points||''),'0');
-  h+=f('salary','Brutto/Jahr €',d.salary?Math.round(d.salary).toLocaleString('de-DE'):'','0');
+  h+=f('salary','Brutto €/Jahr',d.salary?Math.round(d.salary).toLocaleString('de-DE'):'','0');
   h+=f('age','Rentenbeginn',d.age>0?_numStr(d.age):'',String(Math.round(regelaltersgrenze(s.birthYear)*10)/10).replace('.',','));
   h+=f('deduct','Abzüge %',_numStr(d.deduct),'20');
-  h+=f('rw','Rentenwert €',_numStr(d.rw),'42,52');
-  h+=f('de','Ø-Entgelt €',Math.round(d.de).toLocaleString('de-DE'),'51.944');
-  h+=f('bbg','BBG €',Math.round(d.bbg).toLocaleString('de-DE'),'101.400');
   /* Erwerbsminderungsrente: Auswahl, Details nur bei teilweise/voll */
   const t=d.emType===1||d.emType===2?d.emType:0;
   h+=`<div class="input-group"><label data-info="drv-emType">Erwerbsminderung</label><select class="num-input${mode==='form'?' form-store':''}" id="${prefix}-drv-emType" data-drv="emType">${[[0,'Keine'],[1,'Teilweise'],[2,'Voll']].map(([v,l])=>`<option value="${v}"${v===t?' selected':''}>${l}</option>`).join('')}</select></div>`;
   h+=`<div class="drv-em"${t?'':' hidden'}>`;
-  h+=f('em','EM-Rente netto €',d.em>0?_numStr(d.em):'','0');
+  h+=f('em','EM-Rente netto €/Monat',d.em>0?_numStr(d.em):'','0');
   h+=f('emUntil','Läuft bis Jahr',d.emUntil>0?String(Math.round(d.emUntil)):'','bis Regelalter');
-  h+=`<div class="drv-em-limit"${t===1?'':' hidden'}>`+f('emLimit','Hinzuverdienst­grenze €',d.emLimit>0?Math.round(d.emLimit).toLocaleString('de-DE'):'','41.528')+`</div>`;
-  h+=`</div></div><div class="lt-result" id="${prefix}-drv-result"></div>`;
+  h+=`<div class="drv-em-limit"${t===1?'':' hidden'}>`+f('emLimit','Hinzuverdienst­grenze €/Jahr',d.emLimit>0?Math.round(d.emLimit).toLocaleString('de-DE'):'','41.528')+`</div>`;
+  h+=`</div></div>`;
+  /* C12: Rechengrößen (gelten für alle Personen) eingeklappt unter den eigenen Angaben */
+  h+=`<details class="drv-params"><summary>${L('Rechengrößen','Parameters')}<small>${_numStr(d.rw)} € · ${Math.round(d.de).toLocaleString('de-DE')} € · ${Math.round(d.bbg).toLocaleString('de-DE')} €</small></summary><div class="input-grid">`;
+  h+=f('rw','Rentenwert €',_numStr(d.rw),'42,52');
+  h+=f('de','Ø-Entgelt €/Jahr',Math.round(d.de).toLocaleString('de-DE'),'51.944');
+  h+=f('bbg','BBG €/Jahr',Math.round(d.bbg).toLocaleString('de-DE'),'101.400');
+  h+=`</div></details><div class="lt-result" id="${prefix}-drv-result"></div>`;
   return h;
 }
 /* Erwerbsminderung: Detailfelder ein-/ausblenden */
@@ -10727,8 +10826,14 @@ function _drvResultHTML(d,r,saveUntil){
   const pts=add>0?', +'+add.toLocaleString('de-DE',{maximumFractionDigits:1})+L(' Punkte bis ',' points until ')+Math.round(Math.min(saveUntil,r.age)):'';
   /* Greift die Mindesthöhe aus der EM-Rente, die Hochrechnung nur zum Vergleich zeigen */
   const zfTxt=r.zfMonths<0?L(`, −${_pts(-r.zfMonths*0.3)} % für ${-r.zfMonths} Monate vor ${fmtAge(r.rag)}`,`, −${_pts(-r.zfMonths*0.3)} % for ${-r.zfMonths} months before ${fmtAge(r.rag)}`):r.zfMonths>0?L(`, +${_pts(r.zfMonths*0.5)} % für ${r.zfMonths} Monate nach ${fmtAge(r.rag)}`,`, +${_pts(r.zfMonths*0.5)} % for ${r.zfMonths} months after ${fmtAge(r.rag)}`):'';
+  /* A5: Punkte, die schon die ganze EM-Rente ergeben, enthalten vermutlich die Zurechnungszeit (zählt sonst doppelt) */
+  const i=r.inp||{},ptsNet=i.points*(i.rw||0)*(r.em&&r.em.type===1?0.5:1)*(1-Math.min(90,Math.max(0,i.deduct||0))/100);
+  let warn='';
+  if(r.em&&i.points>0&&ptsNet>=0.95*r.em.gross)warn=L('Die Rentenpunkte ergeben schon etwa die EM-Rente. Enthalten sie die Zurechnungszeit? Dann die Punkte ohne Zurechnungszeit eintragen, sonst zählt sie doppelt.','The pension points already add up to about the disability pension. Do they include the additional credited period? Then enter the points without it, otherwise it counts twice.');
+  /* A10: allgemeine Wartezeit (fünf Beitragsjahre) wird nicht geprüft; bei sehr wenigen Punkten ohne weitere Beiträge darauf hinweisen */
+  else if(!r.em&&r.epTotal<5&&!(i.salary>0))warn=L('Wenige Punkte: Eine Rente gibt es erst nach fünf Beitragsjahren (Kindererziehungszeiten zählen mit). Ist die Wartezeit nicht erfüllt, entfällt dieser Betrag.','Few points: a pension is only paid after five years of contributions (child-rearing periods count). If this qualifying period is not met, this amount does not apply.');
   const detail=r.em&&r.netto>r.calcNetto?L(`mindestens volle EM-Rente; aus Punkten ${fmt(r.calcNetto)} netto${pts}`,`at least the full disability pension; from points ${fmt(r.calcNetto)} net${pts}`):`${fmt(r.brutto)} ${L('brutto','gross')}${pts}${zfTxt}`;
-  return L(`≈ <strong>${ep} Punkte</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)}`,`≈ <strong>${ep} points</strong> → <strong>${fmt(r.netto)}</strong> net/month from ${fmtAge(r.age)}`)+` <span style="color:var(--muted)">(${detail})</span>`+emTxt;
+  return L(`≈ <strong>${ep} Punkte</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)}`,`≈ <strong>${ep} points</strong> → <strong>${fmt(r.netto)}</strong> net/month from ${fmtAge(r.age)}`)+` <span style="color:var(--muted)">(${detail})</span>`+emTxt+(warn?`<br><span style="color:var(--red)">${warn}</span>`:'');
 }
 function renderDrvEditor(){
   const el=document.getElementById('lt-drv');
@@ -10754,7 +10859,7 @@ function _bvFieldsHTML(d){
   const s=getLifetimeSettings();
   const f=(k,label,val,ph)=>`<div class="input-group"><label data-info="bv-${k}">${label}</label><input class="num-input form-store" type="text" inputmode="decimal" id="dp-bv-${k}" data-bv="${k}" value="${val}" placeholder="${ph||''}"></div>`;
   let h=`<div class="input-grid">`;
-  h+=f('pay','Bezüge/Monat €',d.pay?Math.round(d.pay).toLocaleString('de-DE'):'','0');
+  h+=f('pay','Bezüge brutto €/Monat',d.pay?Math.round(d.pay).toLocaleString('de-DE'):'','0');
   h+=f('years','Dienstjahre bisher',d.years?_numStr(d.years):'','0');
   h+=f('age','Altersgrenze',d.age>0?_numStr(d.age):'',String(Math.round(regelaltersgrenze(s.birthYear)*10)/10).replace('.',','));
   h+=f('from','Pension ab Alter',d.from>0?_numStr(d.from):'','wie Grenze');
@@ -10779,26 +10884,59 @@ function _bvResultLine(b,r){
   if(r.eligible===false)return L(`Bis zum Pensionsbeginn ${_pts(r.total)} Dienstjahre: unter fünf Jahren kein Anspruch auf Ruhegehalt (§ 4 BeamtVG).`,`${_pts(r.total)} years of service until the pension: below five years there is no pension entitlement (§ 4 BeamtVG).`);
   const pc=v=>v.toLocaleString('de-DE',{maximumFractionDigits:2})+' %';
   const yrs=r.total.toLocaleString('de-DE',{maximumFractionDigits:1});
-  return L(`≈ <strong>${yrs} Dienstjahre</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)} <span style="color:var(--muted)">(${pc(r.rate)} Ruhegehaltssatz${r.cut>0?', −'+pc(r.cut)+' Abschlag':''}, ${fmt(r.brutto)} brutto)</span>`,`≈ <strong>${yrs} years of service</strong> → <strong>${fmt(r.netto)}</strong> net/month from ${fmtAge(r.age)} <span style="color:var(--muted)">(${pc(r.rate)} pension rate${r.cut>0?', −'+pc(r.cut)+' reduction':''}, ${fmt(r.brutto)} gross)</span>`);
+  /* A4: Beginn vor 63 wird angehoben (Antragsruhestand frühestens mit 63, sonst mit der Altersgrenze) */
+  const later=r.want!=null&&r.want<r.age-1e-9?' '+L(`<span style="color:var(--muted)">Gewünscht ab ${fmtAge(r.want)}: Antragsruhestand ist frühestens mit 63 möglich (bei besonderer Altersgrenze mit dieser), die Pension beginnt daher mit ${fmtAge(r.age)}. Dienstjahre zählen bis zum Ende der Arbeit.</span>`,`<span style="color:var(--muted)">Requested from ${fmtAge(r.want)}: retirement on application is possible from 63 at the earliest (or the special age limit), so the pension starts at ${fmtAge(r.age)}. Years of service count until the end of work.</span>`):'';
+  return L(`≈ <strong>${yrs} Dienstjahre</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)} <span style="color:var(--muted)">(${pc(r.rate)} Ruhegehaltssatz${r.cut>0?', −'+pc(r.cut)+' Abschlag':''}, ${fmt(r.brutto)} brutto)</span>`,`≈ <strong>${yrs} years of service</strong> → <strong>${fmt(r.netto)}</strong> net/month from ${fmtAge(r.age)} <span style="color:var(--muted)">(${pc(r.rate)} pension rate${r.cut>0?', −'+pc(r.cut)+' reduction':''}, ${fmt(r.brutto)} gross)</span>`)+(later?'<br>'+later.trim():'');
 }
 function _updateBvResult(){
   const el=document.getElementById('dp-bv-result');
   if(el)el.innerHTML=_bvResultText(_bvFromInputs());
 }
 
+/* Altersvorsorge ohne Bearbeiten: je Person und Art eine Zeile mit dem Ergebnis (gleiche Rechnung wie die Felder).
+   Antippen öffnet das Bearbeiten an dieser Stelle (_pvJump). */
+function _pensionSummaryHTML(){
+  const s=getLifetimeSettings(),rows=[],me=L('Ich','Me');
+  const row=(to,title,sub,val,small)=>rows.push(`<button type="button" class="ds-item" data-pv-jump="${escHTML(to)}"><span class="ds-item-l"><span>${escHTML(title)}</span><small>${escHTML(sub)}</small></span><span class="ds-item-v">${val}${small?`<small>${escHTML(small)}</small>`:''}</span><span class="v2-chev"></span></button>`);
+  const net=L('netto ab ','net from '),pts=n=>_pts(n)+L(' Punkte',' points'),yrs=n=>_pts(n)+L(' Dienstjahre',' years of service');
+  const d=calcDrvPension(s,getDrv());
+  if(d.em)row('pvMeDrv',L('Erwerbsminderungsrente','Disability pension'),me,fmt(d.em.amount),L('netto bis ','net until ')+fmtAge(d.em.until));
+  if(d.epTotal>0)row('pvMeDrv',L('Gesetzliche Rente','State pension'),me+' · '+pts(d.epTotal),fmt(d.netto),net+fmtAge(d.age));
+  if(hasBeamte()){const b=calcBeamtePension(s,getBeamte());row('dpBv',L('Beamtenpension','Civil service pension'),me+' · '+yrs(b.total),b.eligible===false?L('kein Anspruch','no entitlement'):fmt(b.netto),b.eligible===false?'':net+fmtAge(b.age));}
+  getDrvExtra().filter(p=>p.id).forEach(p=>{
+    const n=(p.name||'').trim()||L('Weitere Person','Other person'),r=calcDrvExtra(s,p),b=calcBeamteExtra(s,p);
+    if(r.em&&r.em.gross>0)row('drv:'+p.id,L('Erwerbsminderungsrente','Disability pension'),n,fmt(r.em.gross),L('netto bis ','net until ')+_ageTxt(r.em.until));
+    if(r.epTotal>0)row('drv:'+p.id,L('Gesetzliche Rente','State pension'),n+' · '+pts(r.epTotal),fmt(r.netto),net+_ageTxt(r.age));
+    if(b)row('bv:'+p.id,L('Beamtenpension','Civil service pension'),n+' · '+yrs(b.total),b.eligible===false?L('kein Anspruch','no entitlement'):fmt(b.netto),b.eligible===false?'':net+_ageTxt(b.age));
+  });
+  getAvDepots().filter(x=>x.id).forEach(x=>row('avd:'+x.id,(x.name||'').trim()||L('Altersvorsorgedepot','Retirement depot'),(x.person?_personName(x.person):me)+' · '+L('Beitrag','contribution'),fmt(+x.contrib||0),L('pro Monat','per month')));
+  (s.pensions||[]).filter(x=>+x.amount>0).forEach(x=>row('pen:'+(x.id||''),x.name||L('Weitere Rente','Other pension'),x.person?_personName(x.person):me,fmt(+x.amount),net+_ageTxt(+x.from||67)+(+x.until>0?L(' bis ',' until ')+_ageTxt(+x.until):'')));
+  if(!rows.length)return `<p class="ds-help">${L('Noch keine Altersvorsorge erfasst. Unter „Bearbeiten“ trägst du gesetzliche Rente, Pension, Depots und weitere Renten ein.','No pensions recorded yet. Under "Edit" you add state pension, civil service pension, depots and other pensions.')}</p>`;
+  return `<div class="ds-list pv-list">${rows.join('')}</div>`;
+}
+/* Zeile der Zusammenfassung antippen: Bearbeiten an der passenden Karte */
+function _pvJump(to){
+  if(!_editMode)enterEditMode();
+  const k=to.includes(':')?to.slice(0,to.indexOf(':')):'',id=k?to.slice(k.length+1):'',esc=v=>CSS.escape(v);
+  const box={drv:'dpDrvPeople',bv:'dpBvPeople',avd:'dpAvd',pen:'dpPensions'}[k];
+  const el=box?document.querySelector(`#${box} .plan-row[data-row-id="${esc(id)}"]`):document.getElementById(to);
+  if(el)requestAnimationFrame(()=>el.scrollIntoView({block:'center',behavior:'smooth'}));
+}
 /* ── Listen (weitere Renten, Ereignisse): gleiche Optik wie die Eingabefelder der Data-Seite ── */
-const PENSION_COLS=[{key:'name',label:'Name',info:'pen-name',type:'text',ph:'z. B. Betriebsrente'},{key:'person',label:'Für',info:'pen-person',type:'select',options:()=>_personOptions('Mich')},{key:'amount',label:'€/Monat',info:'pen-amount',ph:'0'},{key:'from',label:'ab Alter',info:'pen-from',ph:'65'},{key:'until',label:'bis Alter',info:'pen-until',ph:'lebenslang',blank0:true}];
+const PENSION_COLS=[{key:'name',label:'Name',info:'pen-name',type:'text',ph:'z. B. Betriebsrente'},{key:'person',label:'Für',info:'pen-person',type:'select',options:()=>_personOptions('Mich')},{key:'amount',label:'Netto €/Monat',info:'pen-amount',ph:'0'},{key:'from',label:'ab Alter',info:'pen-from',ph:'65'},{key:'until',label:'bis Alter',info:'pen-until',ph:'lebenslang',blank0:true}];
 /* Ereignisse: Betrag fließt von "Von" nach "Nach".
    Von: '' = Extern (Zufluss von außen), '*' = Liquide anteilig, sonst Asset-Gruppe.
    Nach: '' = Extern (Ausgabe/Konsum), sonst Asset-Gruppe. */
 function _assetGroupKeys(){return[...new Set(_fc.fields.filter(f=>f.category!=='liab').map(f=>f.displayGroup||f.category))];}
 const EVENT_COLS=[
-  {key:'name',label:'Name',info:'ev-name',type:'text',ph:'z. B. Erbschaft'},
+  {key:'name',label:'Name',info:'ev-name',type:'text',ph:'z. B. Autokauf'},
   {key:'year',label:'Jahr',info:'ev-year',type:'year',ph:'Auswählen',min:new Date().getFullYear(),max:new Date().getFullYear()+80},
   {key:'amount',label:'Betrag €',info:'ev-amount',ph:'0',blank0:true},
   {key:'from',label:'Von',info:'ev-from',type:'select',options:()=>[['','Extern (Zufluss)'],['*','Liquide (anteilig)'],..._assetGroupKeys().map(k=>[k,k])]},
   {key:'to',label:'Nach',info:'ev-to',type:'select',options:()=>[['','Extern (Ausgabe)'],..._assetGroupKeys().map(k=>[k,k])]}
 ];
+/* A9: „Extern → Extern“ verändert das Vermögen nicht und wird in der Prognose übergangen */
+EVENT_COLS.rowHint=r=>!r.from&&!r.to&&+r.amount>0?L('Von „Extern“ nach „Extern“ ändert dein Vermögen nicht. Wähle bei „Von“ oder „Nach“ eine Anlage, z. B. „Liquide (anteilig)“ für eine Ausgabe.','From "External" to "External" does not change your wealth. Choose an investment under "From" or "To", e.g. "Liquid (proportional)" for an expense.'):'';
 /* Ältere Ereignisse ohne Von/Nach: positiv = Zufluss ins Cash, negativ = Ausgabe aus liquiden Mitteln */
 function _normEvent(ev){
   const amt=+ev.amount||0;
@@ -10824,7 +10962,7 @@ function _planRowsHTML(rows,cols,mode,rowCls){
     if(c.blank0&&(v===''||+v===0))v='';/* leeres Feld statt „0“, der Platzhalter zeigt die 0 */
     v=v==null?'':(c.type==='text'?String(v):(c.key==='year'||c.key==='from'?String(v):_numStr(v)));
     return `<div class="input-group pc-${c.key}"><label data-info="${c.info}">${c.label}</label><input class="num-input${mode==='form'?' form-store':''}" type="text" ${c.type==='text'?'':'inputmode="decimal"'} data-k="${c.key}" value="${esc(v)}" placeholder="${c.ph}"></div>`;
-  }).join('')+`<button class="plan-del${mode==='form'?' edit-only':''}" data-del="${i}" aria-label="Entfernen">×</button></div>`).join('');
+  }).join('')+`<button class="plan-del${mode==='form'?' edit-only':''}" data-del="${i}" aria-label="Entfernen">×</button>${cols.rowHint?`<p class="plan-row-hint"${cols.rowHint(r)?'':' hidden'}>${cols.rowHint(r)}</p>`:''}</div>`).join('');
 }
 /* P64: Kennung einer neuen Listenzeile, schon beim Anlegen vergeben und dauerhaft (der Speicher behält sie). Eine gelöschte
    Kennung wird so nie für eine andere, neue Zeile wiederverwendet. */
@@ -10858,7 +10996,8 @@ function _planListEditor(containerId,storeKey,rows,cols,addLabel,newRow,title,ro
   const redraw=list=>_planListEditor(containerId,storeKey,list,cols,addLabel,newRow,title,rowCls,load);
   const write=list=>{try{appStorage.withBase(rev,()=>appStorage.setItem(storeKey,JSON.stringify(list)));return true;}catch(error){if(!_isStale(error))throw error;return false;}};
   const stale=extra=>_planListNote(el,_planListMine(el,cols,drawn),cols,redraw,load,storeKey,extra);
-  const save=()=>{if(write(_collectPlanRows(el,cols)))_ltScheduleRender();else stale();};
+  const hints=list=>{if(cols.rowHint)el.querySelectorAll('.plan-row').forEach((r,i)=>{const h=r.querySelector('.plan-row-hint'),t=list[i]?cols.rowHint(list[i]):'';if(h){h.innerHTML=t;h.hidden=!t;}});};
+  const save=()=>{const list=_collectPlanRows(el,cols);if(write(list)){hints(list);_ltScheduleRender();}else stale();};
   el.querySelectorAll('.plan-row input').forEach(inp=>inp.addEventListener('input',save));
   el.querySelectorAll('.plan-row select').forEach(sel=>sel.addEventListener('change',save));
   el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
@@ -10930,7 +11069,7 @@ function renderPensionEditor(){
   _planListEditor('lt-pensions','lt-pensions',getLifetimeSettings().pensions,PENSION_COLS,'Rente / Einkommen',()=>({id:_newRowId('income-'),name:'',amount:0,from:65}),'Weitere Renten & Einkünfte',undefined,()=>getLifetimeSettings().pensions);
 }
 function renderEventEditor(){
-  _planListEditor('lt-events','lt-events',getLifetimeSettings().events.map(_normEvent),EVENT_COLS,'Ereignis',()=>({id:_newRowId('event-'),name:'',year:new Date().getFullYear()+5,amount:'',from:'',to:''}),null,'ev',()=>getLifetimeSettings().events.map(_normEvent));
+  _planListEditor('lt-events','lt-events',getLifetimeSettings().events.map(_normEvent),EVENT_COLS,'Ereignis',()=>({id:_newRowId('event-'),name:'',year:new Date().getFullYear()+5,amount:'',from:'*',to:''}),null,'ev',()=>getLifetimeSettings().events.map(_normEvent));
 }
 
 /* Sparraten aus dem Budget je Gruppe ableiten (Ø der 12 Planmonate) */
@@ -11181,6 +11320,7 @@ function renderLifetimePageCalcs(){
     if(st.payoff&&(!lastPayoff||st.payoff>lastPayoff))lastPayoff=st.payoff;
   });
   const ml=document.getElementById('lt-more-list');
+  let ltFacts=[];
   if(ml){
     let h='';
     if(inc.length){
@@ -11195,14 +11335,19 @@ function renderLifetimePageCalcs(){
       const order=['',...getDrvExtra().filter(p=>p.id).map(p=>p.id),'hh'],whoName=w=>w===''?L('Ich','Me'):w==='hh'?L('Haushalt','Household'):_personName(w)||L('Weitere Person','Other person');
       inc.forEach(x=>{if(!order.includes(x.who??''))order.push(x.who);});
       const grp=order.map(w=>({w,items:inc.map((x,i)=>({x,i})).filter(o=>(o.x.who??'')===w)})).filter(g=>g.items.length);
-      h+=`<div class="v2-inc-rows">${grp.length>1?grp.map(g=>`<div class="v2-inc-g"><span>${escHTML(whoName(g.w))}</span><b>${fmt(Math.round(g.items.filter(o=>o.x.on(A.age)).reduce((a,o)=>a+o.x.v,0)))}</b><small>${L('mit ','at ')}${_ageTxt(A.age)}</small></div>`+g.items.map(o=>rowHTML(o.x,o.i)).join('')).join(''):inc.map(rowHTML).join('')}</div>`;
-      h+=`<p class="v2-inc-note">${L('Alle Altersangaben in deinem Alter, bei weiteren Personen deren Alter in Klammern. Eine Erwerbsminderungsrente endet mit Beginn der Altersrente und wird nicht zusätzlich gezählt.','All ages are your age; for other people their own age in brackets. A disability pension ends when the old-age pension starts and is not counted on top.')}</p>`;
+      /* C6: beginnt bei einer Person noch nichts zum Rentenbeginn, die Summe ab ihrem ersten Einkommen zeigen */
+      const gSum=(g,age)=>g.items.filter(o=>o.x.on(age)).reduce((a,o)=>a+o.x.v,0);
+      const gHead=g=>{let age=A.age,sum=gSum(g,age);if(!(sum>0)){const later=g.items.map(o=>o.x.from).filter(f=>f>A.age+1e-9).sort((a,b)=>a-b)[0];if(later!=null){age=later;sum=gSum(g,later);}}return `<b>${fmt(Math.round(sum))}</b><small>${age===A.age?L('mit ','at '):L('ab ','from ')}${_ageTxt(age)}</small>`;};
+      h+=`<div class="v2-inc-rows">${grp.length>1?grp.map(g=>`<div class="v2-inc-grp"><button type="button" class="v2-inc-g" aria-expanded="false" onclick="_v2Fold(this)"><span>${escHTML(whoName(g.w))}</span>${gHead(g)}<i class="v2-fold" aria-hidden="true"></i></button><div class="v2-inc-items" hidden>${g.items.map(o=>rowHTML(o.x,o.i)).join('')}</div></div>`).join(''):inc.map(rowHTML).join('')}</div>`;
+      /* Fußnote nur, wenn sie etwas erklärt: weitere Personen (Alter in Klammern) oder eine Erwerbsminderungsrente */
+      const incEm=inc.some(x=>/Erwerbsminderung|EM-Rente/.test(x.n)),incOthers=grp.some(g=>g.w!=='');
+      if(incOthers||incEm)h+=`<p class="v2-inc-note">${incOthers?L('Alter in deinem Alter, bei weiteren Personen deren Alter in Klammern.','Ages are your age; for other people their own age in brackets.'):''}${incEm?(incOthers?' ':'')+L('Eine Erwerbsminderungsrente wird zur Altersrente und zählt nicht zusätzlich.','A disability pension becomes the old-age pension and does not count on top.'):''}</p>`;
       h+=`</div>`;
       _incExplain=inc.map(x=>({t:x.n,h:x.ex||''}));
     }
-    const facts=[[fmtCompact(mc.p50[endIdx]/defl(plan.horizonAge)),'Vermögen mit '+plan.horizonAge,'Median'],[pc(pr),'Ø Rendite p. a.','real '+pc((1+pr)/(1+infl)-1)]];
-    if(lastPayoff)facts.push([fmtMonth(lastPayoff),'Schuldenfrei','mit '+Math.floor(_ageAt(s,+lastPayoff.slice(0,4),+lastPayoff.slice(5)-1))]);
-    h+=`<div class="v2-facts">${facts.map(f=>`<div><span class="n">${f[0]}</span><span class="k">${f[1]}</span><span class="s">${f[2]}</span></div>`).join('')}</div>`;
+    /* Kennzahlen stehen seit 14.10.2026 im Statusblock (_v2LtSummary) */
+    ltFacts=[[fmtCompact(mc.p50[endIdx]/defl(plan.horizonAge)),'Vermögen mit '+plan.horizonAge,'Median'],[pc(pr),'Ø Rendite p. a.','real '+pc((1+pr)/(1+infl)-1)]];
+    if(lastPayoff)ltFacts.push([fmtMonth(lastPayoff),'Schuldenfrei','mit '+Math.floor(_ageAt(s,+lastPayoff.slice(0,4),+lastPayoff.slice(5)-1))]);
     ml.innerHTML=h;
     ml.onclick=e=>{const b=e.target.closest&&e.target.closest('[data-inc]');if(!b)return;const it=_incExplain[+b.dataset.inc];if(it&&it.h)showInfoHTML(it.t,it.h);};
   }
@@ -11332,9 +11477,10 @@ function renderLifetimePageCalcs(){
   document.querySelectorAll('[data-lt-range]').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.ltRange)===ltRange));
 
   _ltState={plan,det,mc,tc,real,infl,currentAge,allAges,histLine,projLine,projHi,projLo,histAssetMaps,availAtR,coverage,R,retireAge};
-  _v2LtSummary({s,plan,mc,tc,retireAge,availAtR,coverage,R,currentAge});
+  _v2LtSummary({s,plan,mc,tc,retireAge,availAtR,coverage,R,currentAge,facts:ltFacts});
   _v2LtPhases({s,plan,mc,currentAge,infl});
-  const psBtn=document.getElementById('psOpen');if(psBtn)psBtn.hidden=false;
+  /* C7: die Partner-Story („Euer Plan“) nur mit Partner/in bzw. weiterer erwachsener Person */
+  const psBtn=document.getElementById('psOpen');if(psBtn)psBtn.hidden=!getDrvExtra().some(p=>p.id);
   setupLifetimeInteraction();
 }
 /* ── Design 2: Prognose-Hero und Ergebnisliste ── */
@@ -11377,15 +11523,14 @@ function _v2LtSummary(o){
   const cov=Math.max(0,Math.min(100,coverage*100));
   el.innerHTML=
     `<div class="v2-ret-head"><span class="v2-ret-title">${s.phase4From>s.workEnd+0.01?'Vorruhestand':'Ruhestand'} mit ${_ageTxt(R)}</span><span class="v2-chip ${ok?'up':'down'}">${ok?'Abgesichert':'Noch nicht abgesichert'}</span></div>`+
-    `<button type="button" class="v2-ret-main" onclick="openSuccessExplain()" aria-label="${L('Erfolgschance erklären','Explain the probability of success')}"><span class="v2-ret-big">${pct}<small>%</small></span><span class="v2-ret-lbl">${L('Erfolgschance','Probability of success')} <span class="v2-ret-more">${L('So wird gerechnet ›','How it is calculated ›')}</span></span></button>`+
-    `<div class="v2-gauge ${ok?'up':'down'}"><i style="width:${pct}%"></i><b style="left:${safety}%"></b></div>`+
-    `<div class="v2-gauge-cap"><span style="left:${safety}%">Ziel ${safety} %</span></div>`+
+    /* kompakt (14.10.2026): eine Kopfzeile mit Ziel, ein Satz, zwei Kacheln, darunter die Kennzahlen; die Skala entfällt */
+    `<button type="button" class="v2-ret-main" onclick="openSuccessExplain()" aria-label="${L('Erfolgschance erklären','Explain the probability of success')}"><span class="v2-ret-big">${pct}<small>%</small></span><span class="v2-ret-lbl">${L('Erfolgschance','Probability of success')} · ${L('Ziel ','target ')}${safety} %<span class="v2-ret-more">${L('Was bedeutet das? ›','What does this mean? ›')}</span></span></button>`+
     `<p class="v2-ret-text">In ${pct} von 100 simulierten Marktverläufen reicht dein Geld bis ${plan.horizonAge}.</p>`+
     _v2LtNotes(plan)+
     `<div class="v2-ret-stats">`+
-      `<div data-info="v2-at-retire"><span class="k">Vermögen mit ${_ageTxt(R)}</span><span class="n">${fmtCompact(Math.round(availAtR))}</span><span class="v2-mini"><i style="width:${cov.toFixed(1)}%"></i></span><span class="s">nötig: ${fmt(Math.round(tc.target/100)*100)}</span></div>`+
+      `<div data-info="v2-at-retire"><span class="k">${L('Verfügbar mit ','Available at ')}${_ageTxt(R)}</span><span class="n">${fmtCompact(Math.round(availAtR))}</span><span class="v2-mini"><i style="width:${cov.toFixed(1)}%"></i></span><span class="s">nötig: ${fmt(Math.round(tc.target/100)*100)}</span></div>`+
       `<div data-info="v2-retire-age"><span class="k">Sicher möglich ab</span><span class="n">${retTxt}</span><span class="s">${retSub}</span></div>`+
-    `</div>`;
+    `</div>`+((o.facts||[]).length?`<div class="v2-facts v2-ret-facts">${o.facts.map(f=>`<div><span class="n">${f[0]}</span><span class="k">${f[1]}</span><span class="s">${f[2]}</span></div>`).join('')}</div>`:'');
   const pv=document.getElementById('v2-prev-pct');
   if(pv){pv.textContent=pct+' %';pv.style.color=ok?'var(--green)':'var(--red)';}
   const pt=document.getElementById('v2-prev-txt');
@@ -11670,7 +11815,10 @@ function _phaseText(s,plan,i,b){
   }
   if(i===2){
     const pens=_pensionsAt(plan,b[2]),w=_workAt(plan,b[2]),work=w.sum,kg=_childBenefitPlanAt(plan,b[2]),draw=Math.max(0,s.monthlyWithdraw-pens-work-kg);
-    return fmt(Math.round(draw))+mo+L(' aus dem Vermögen',' from wealth')+(work>0?' · '+fmt(Math.round(work))+L(' Gehalt',' salary')+_workUntilTxt(w,b[3]):'')+(kg>0?' · '+fmt(kg)+L(' Kindergeld',' child benefit'):'')+(pens>0?' · '+fmt(Math.round(pens))+L(' Rente',' pension'):'')+(s.p3Saving>0?L(' · Sparen ',' · saving ')+pc(s.p3Saving):'')+(s.p3Pension>0?L(' · Vorsorge ',' · pension ')+pc(s.p3Pension):'');
+    /* C5: beginnt innerhalb des Vorruhestands eine Rente oder Pension (z. B. Pension mit 62), den Wechsel nennen */
+    let later='';
+    for(let a=Math.floor(b[2])+1;a<b[3]-1e-9;a++){const p=_pensionsAt(plan,a);if(p>pens+0.5){const w2=_workAt(plan,a).sum,k2=_childBenefitPlanAt(plan,a),d2=Math.max(0,s.monthlyWithdraw-p-w2-k2);later=' · '+L('ab ','from ')+_ageTxt(a)+': '+fmt(Math.round(p))+L(' Rente',' pension')+(d2>0?', '+fmt(Math.round(d2))+mo+L(' aus dem Vermögen',' from wealth'):L(', deckt den Bedarf',', covers the need'));break;}}
+    return fmt(Math.round(draw))+mo+L(' aus dem Vermögen',' from wealth')+(work>0?' · '+fmt(Math.round(work))+L(' Gehalt',' salary')+_workUntilTxt(w,b[3]):'')+(kg>0?' · '+fmt(kg)+L(' Kindergeld',' child benefit'):'')+(pens>0?' · '+fmt(Math.round(pens))+L(' Rente',' pension'):'')+(s.p3Saving>0?L(' · Sparen ',' · saving ')+pc(s.p3Saving):'')+(s.p3Pension>0?L(' · Vorsorge ',' · pension ')+pc(s.p3Pension):'')+later;
   }
   const w4=_workAt(plan,b[3]),work=w4.sum,pens=_pensionsAt(plan,b[3]),kg4=_childBenefitPlanAt(plan,b[3]),draw=Math.max(0,s.pensionSpending-pens-work-kg4);
   const parts=[];
@@ -11680,6 +11828,11 @@ function _phaseText(s,plan,i,b){
   if(!parts.length)return fmt(Math.round(s.pensionSpending))+mo+L(' aus dem Vermögen',' from wealth');
   if(draw>0)return parts.join(' + ')+' + '+fmt(Math.round(draw))+L(' aus dem Vermögen',' from wealth');
   return work>0?parts.join(' + ')+L(' decken den Bedarf',' cover the need'):L('Renten ','Pensions ')+fmt(Math.round(pens))+L(' decken den Bedarf',' cover the need');
+}
+/* Zeile auf-/zuklappen: der folgende Block (Beschreibung bzw. Einzelzeilen) erscheint darunter */
+function _v2Fold(btn){
+  const box=btn.nextElementSibling;if(!box)return;
+  const open=box.hidden;box.hidden=!open;btn.setAttribute('aria-expanded',String(open));btn.classList.toggle('is-open',open);
 }
 function _v2LtPhases(o){
   const el=document.getElementById('v2-lt-phases');if(!el)return;
@@ -11699,12 +11852,17 @@ function _v2LtPhases(o){
     else if(failIn(i)){cls+=' warn';v=failV;}
     else if(i<3){const val=real(mc.p50,b[i+1]);v=`<b>${val==null?'—':fmtCompact(val)}</b><small>mit ${_ageTxt(b[i+1])}</small>`;}
     else{const val=real(mc.p50,plan.horizonAge);v=`<b>${val==null?'—':fmtCompact(val)}</b><small>mit ${plan.horizonAge}</small>`;}
-    return `<button type="button" class="v2-lp-row${cls}" onclick="openPhasesSheet(${i+1})"><i class="lp-p${i+1}"></i><span class="t"><b>${name}</b><small>${escHTML(range+' · '+(off?L('Phase entfällt','Phase skipped'):_phaseText(s,plan,i,b)))}</small></span><span class="v">${v}</span></button>`;
+    if(off)return '';
+    /* kompakt (14.10.2026): eine Zeile je Phase; was in der Phase passiert, steht beim Antippen darunter */
+    return `<div class="v2-lp-item"><button type="button" class="v2-lp-row${cls}" aria-expanded="false" onclick="_v2Fold(this)"><i class="lp-p${i+1}"></i><span class="t"><b>${name}</b><small>${escHTML(range)}</small></span><span class="v">${v}</span><i class="v2-fold" aria-hidden="true"></i></button><div class="v2-lp-desc" hidden>${escHTML(_phaseText(s,plan,i,b))} <button type="button" class="v2-lp-edit" onclick="openPhasesSheet(${i+1})">${L('Phase bearbeiten ›','Edit phase ›')}</button></div></div>`;
   }).join('');
+  /* C4: entfallene Phasen nur als kurze Notiz unter der Liste */
+  const skipped=LT_PHASE_NAMES.filter((_,i)=>i<3&&b[i+1]-b[i]<=0.01);
+  const skippedHTML=skipped.length?`<p class="v2-lp-skip">${escHTML(skipped.join(L(' und ',' and ')))}${skipped.length>1?L(' entfallen',' skipped'):L(' entfällt',' skipped')} · ${L('unter Bearbeiten planbar','can be planned under Edit')}</p>`:'';
   /* weitere Personen: eigene Phasen (Arbeitsende, Teilzeit, Rente), öffnet das Sheet bei der Person */
   const people=getDrvExtra().filter(p=>p.id).map(p=>{const r=calcDrvExtra(s,p),n=(p.name||'').trim()||L('Weitere Person','Other person');
-    return `<button type="button" class="v2-lp-row pers" data-f="p-${escHTML(p.id)}" onclick="openPhasesSheet(this.dataset.f)"><span class="hh-ava sm" aria-hidden="true">${escHTML(n[0].toUpperCase())}</span><span class="t"><b>${escHTML(n)}</b><small>${escHTML(_personPhaseText(s,p))}</small></span><span class="v">${r.netto>0?`<b>${fmt(Math.round(r.netto))}</b><small>${L('Rente/Monat','pension/month')}</small>`:''}</span></button>`;}).join('');
-  el.innerHTML=`<div class="v2-lp-head"><span class="v2-ret-title" data-info="lt-phases">Lebensphasen</span><button type="button" class="v2-lp-btn" onclick="openPhasesSheet()">Bearbeiten</button></div>${_phaseBarHTML(b)}<div class="v2-lp-rows">${rows}${people?`<div class="v2-lp-sub">${L('Weitere Personen','Other people')}</div>${people}`:''}</div>`;
+    return `<div class="v2-lp-item"><button type="button" class="v2-lp-row pers" aria-expanded="false" onclick="_v2Fold(this)"><span class="hh-ava sm" aria-hidden="true">${escHTML(n[0].toUpperCase())}</span><span class="t"><b>${escHTML(n)}</b><small>${r.netto>0?L('Rente ab ','pension from ')+_ageTxt(r.age):''}</small></span><span class="v">${r.netto>0?`<b>${fmt(Math.round(r.netto))}</b><small>${L('Rente/Monat','pension/month')}</small>`:''}</span><i class="v2-fold" aria-hidden="true"></i></button><div class="v2-lp-desc" hidden>${escHTML(_personPhaseText(s,p))} <button type="button" class="v2-lp-edit" data-f="p-${escHTML(p.id)}" onclick="openPhasesSheet(this.dataset.f)">${L('Bearbeiten ›','Edit ›')}</button></div></div>`;}).join('');
+  el.innerHTML=`<div class="v2-lp-head"><span class="v2-ret-title" data-info="lt-phases">Lebensphasen</span><button type="button" class="v2-lp-btn" onclick="openPhasesSheet()">Bearbeiten</button></div>${_phaseBarHTML(b)}<div class="v2-lp-rows">${rows}${skippedHTML}${people?`<div class="v2-lp-sub">${L('Weitere Personen','Other people')}</div>${people}`:''}</div>`;
 }
 /* Daten-Seite: Lebensphasen als eine Zeile mit Zeitstrahl, öffnet das Sheet */
 function _renderPhaseSummary(){
@@ -11998,7 +12156,7 @@ function _v2SyncSwitches(){
     const k=d.dataset.mod,on=m[k];
     d.classList.toggle('v2-off',!on);
     if(!on&&d.open)d.open=false;
-    const sub=d.querySelector('.v2-sum-sub');if(sub)sub.textContent=on?_v2SubText(k):'Ausgeschaltet · in den Einstellungen einschalten';
+    const sub=d.querySelector('.v2-sum-sub');if(sub)sub.textContent=on?_v2SubText(k):L('Ausgeschaltet · unter Einstellungen','Off · see Settings');
   });
   /* Haushalt ist kein Bereich zum Ausschalten, hat aber dieselbe Unterzeile */
   document.querySelectorAll('#page-import details[data-sec="household"] .v2-sum-sub').forEach(sub=>{sub.textContent=_v2SubText('household');});
@@ -12027,16 +12185,19 @@ function _v2SetMod(k,on){
   _v2SyncSwitches();
 }
 function _v2OpenForecastSettings(){
-  navigateToPage('import');
+  /* auf der Prognose-Seite nur aufklappen und hinscrollen (kein Neuaufbau, aufgeklappte Zeilen bleiben) */
+  const pg=document.getElementById('page-lifetime');
+  if(!(pg&&pg.classList.contains('active')))navigateToPage('lifetime');
   const d=document.getElementById('v2-forecast-sec');
   if(!d)return;
-  if(!d.classList.contains('v2-off'))d.open=true;
+  d.open=true;
   requestAnimationFrame(()=>d.scrollIntoView({behavior:'smooth',block:'start'}));
 }
 function _v2InitModules(){
   const pg=document.getElementById('page-import');
   const flip=sw=>{const k=sw.dataset.mod;const on=k==='liab'?_mod('liab'):_mod(k);_v2SetMod(k,!on);haptic('medium');};
   pg.addEventListener('click',e=>{
+    const pvj=e.target.closest('[data-pv-jump]');if(pvj){e.preventDefault();_pvJump(pvj.dataset.pvJump);return;}
     const avp=e.target.closest('[data-avd-pos]');if(avp){e.preventDefault();e.stopPropagation();openAssetSheet(avp.dataset.avdPos);return;}
     const avn=e.target.closest('[data-avd-new]');if(avn){e.preventDefault();e.stopPropagation();openAvdPositionSheet(avn.dataset.avdNew);return;}
     const sw=e.target.closest('.v2-switch');
@@ -12328,6 +12489,15 @@ function _notifOut(el,direction){
 }
 /* Der Hinweis nach dem Rundgang gilt nur, bis die Daten-Seite geöffnet oder er geschlossen wird */
 function dismissOnboardingNext(direction){_notifOut(document.getElementById('onboardingNextStep'),direction);}
+/* C13: Der erste Blick nach der Einrichtung gehört der großen Zahl: der Hinweis gleitet verzögert herein
+   (CSS ob-notif-late) und verschwindet nach einigen Sekunden von selbst; die Vorschläge stehen auf der Daten-Seite. */
+let _obNextTimer=0;
+function _showOnboardingNext(){
+  const el=document.getElementById('onboardingNextStep');if(!el)return;
+  el.classList.add('ob-notif-late');el.hidden=false;
+  document.getElementById('onboardingNextTitle').focus({preventScroll:true});
+  clearTimeout(_obNextTimer);_obNextTimer=setTimeout(()=>dismissOnboardingNext('up'),11000);
+}
 /* Einmal je Kredit und Gerät: Hinweis, dass Monate aus dem Tilgungsplan ergänzt und Asset-Werte geschätzt sind */
 const LOAN_NOTIF_KEY='vermoegen-loan-history-seen';
 function _loanHistoryNotif(){
@@ -12377,9 +12547,8 @@ function finishOnboarding(){
     selectedMonth=nextYM();picker.setVal(selectedMonth);
     buildDynamicForm();updateLifetimeInputs();_v2ApplyModules();_v2SyncSwitches();render();
     hideOnboarding();
-    document.getElementById('onboardingNextStep').hidden=false;
     navigateToPage('home');
-    document.getElementById('onboardingNextTitle').focus({preventScroll:true});
+    _showOnboardingNext();
   }catch(error){_guideError(error);}
 }
 function guideRender(){
@@ -12518,7 +12687,9 @@ function guideWelcome(){
    Erfasst wird nur das Nötigste; Stückzahlen, Kurse, Darlehensverträge und Einzelposten
    schlägt die Daten-Seite danach nach und nach vor („Nach und nach ergänzen“).
    mode 'full' richtet einen leeren Bestand ein, 'budget' | 'future' | 'pension' ergänzen später einen Bereich. ── */
-const SETUP_ASSETS=[['Girokonto','cash'],['Tagesgeld','cash'],['ETF','etf'],['Aktien','stock'],['Bitcoin','bitcoin'],['Krypto','crypto'],['Gold','metal'],['Immobilie','realEstate'],['Auto','vehicle'],['Sonstiges','other']];
+const SETUP_ASSETS=[['Girokonto','cash'],['Tagesgeld','cash'],['ETF','etf'],['Aktien','stock'],['Bitcoin','bitcoin'],['Krypto','crypto'],['Gold','metal'],['Immobilie','realEstate'],['Auto','vehicle'],['Altersvorsorge','bav'],['Beteiligung','illiquid'],['Sonstiges','other']];
+/* A3: was die Prognose mit der Kategorie macht, kurz unter dem Namen */
+const SETUP_CAT_NOTE={bav:'gebunden, ab 62 verfügbar',illiquid:'wird in der Prognose nicht verkauft',other:'frei verfügbar'};
 const SETUP_DEBTS=[['Immobilienkredit','realEstate'],['Autokredit','vehicle'],['Ratenkredit',''],['Kreditkarte',''],['Privatdarlehen',''],['Sonstige Schulden','']];
 const SETUP_SAVE_CATS=['etf','stock','bitcoin','crypto','metal','cash','other'];
 const SETUP_MARKET_CATS=['etf','stock','bitcoin','crypto'];
@@ -12576,7 +12747,6 @@ function _setupNum(raw,label,min=0,max=Infinity){
 const _setupLenient=raw=>{try{return _setupNum(raw,'')||0;}catch(error){return 0;}};
 /* Bitcoin, Gold und Wertpapiere: Bestand wahlweise in Euro oder als Stückzahl; Stückzahl × aktueller Kurs = Wert */
 const SETUP_UNITS={bitcoin:['BTC','BTC'],metal:['oz','Unzen'],etf:['Stk','Stück'],stock:['Stk','Stück'],crypto:['Stk','Stück']};
-const SETUP_QTY_DEFAULT=['etf','stock','bitcoin','crypto','metal'];
 const _setupQty=raw=>{try{return _assetNumber(raw,true)||0;}catch(error){return 0;}};
 function _setupInstrument(s,r){const fixed=SETUP_FIXED_INSTRUMENTS[r.category];return fixed?{provider:fixed.provider,symbol:fixed.symbol}:((s.hist&&s.hist[r.id]&&s.hist[r.id].instrument)||null);}
 function _setupRowValue(s,r){
@@ -12657,13 +12827,25 @@ function _setupDefaultTarget(targets){
   return t?t.value:'';
 }
 function _setupBudget(s,strict=true){
-  const n=strict?(k,l)=>_setupNum(s.budget[k],l)||0:k=>_setupLenient(s.budget[k]);
-  const b={income:n('income','Einnahmen'),fixed:n('fixed','Fixkosten'),living:n('living','Lebenshaltung'),saving:n('saving','Sparen'),loans:_setupLoanPay(s),childBenefit:s.mode==='full'?_setupChildBenefit(s):0};
+  const nv=strict?(v,l)=>_setupNum(v,l)||0:v=>_setupLenient(v),n=(k,l)=>nv(s.budget[k],l);
+  /* A2: Gehalt je erwachsener Person (endet mit deren Arbeitsende) und Einnahmen, die im Ruhestand weiterlaufen */
+  const others=_setupAdults(s).slice(1).map(a=>({k:a.k,name:a.name,amount:nv((s.budget.others||{})[a.k],'Nettogehalt '+a.name)}));
+  const own=n('income',others.length?'Dein Nettogehalt':'Einnahmen'),rent=n('rent','Mieteinnahmen & Co.');
+  /* B3: Sparrate auf mehrere Anlagen aufteilen */
+  const targets=_setupTargets(s);
+  const split=s.budget.split&&targets.length>1?targets.map(t=>({target:t.value,label:t.label,amount:nv(s.budget.split[t.value],'Sparen in '+t.label)})):null;
+  const b={own,others,rent,income:own+rent+others.reduce((a,x)=>a+x.amount,0),fixed:n('fixed','Fixkosten'),living:n('living','Lebenshaltung'),
+    saving:split?split.reduce((a,x)=>a+x.amount,0):n('saving','Sparen'),split,loans:_setupLoanPay(s),childBenefit:s.mode==='full'?_setupChildBenefit(s):0};
   /* Kindergeld kommt automatisch aus den Kindern (eigene Budgetzeile), zählt hier aber zu dem, was übrig bleibt */
   b.left=b.income+b.childBenefit-b.fixed-b.living-b.saving-b.loans;
-  const targets=_setupTargets(s);
   b.target=targets.some(t=>t.value===s.budget.target)?s.budget.target:_setupDefaultTarget(targets);
   return b;
+}
+/* Erwachsene des Haushalts: in der Einrichtung aus dem Haushalt-Schritt, sonst aus den gespeicherten Personen */
+function _setupAdults(s){
+  if(s.mode==='full'){const p=s.household&&s.household.partner;return [{k:'me',name:L('Ich','Me'),by:s.future.birthYear},...(p?[{k:'partner',name:p.name.trim()||'Partner/in',by:p.by}]:[])];}
+  const doc=appStorage.document();
+  return [{k:'me',name:L('Ich','Me'),by:s.future.birthYear||doc.retirement.primary.birthYear},...doc.retirement.people.map(p=>({k:p.id,name:p.name||'Person',by:p.birthYear}))];
 }
 function _setupPrefillNeed(s){
   if(s.future.need.trim())return;
@@ -12714,7 +12896,8 @@ function _setupFuture(s){
   if(age===null)throw new Error('Bitte eintragen, mit wie vielen Jahren du in den Ruhestand gehen möchtest.');
   const need=_setupNum(s.future.need,'Bedarf im Ruhestand');
   if(need===null)throw new Error('Bitte ungefähr eintragen, was du im Ruhestand pro Monat brauchst. Ein Schätzwert reicht.');
-  return {birthYear:Math.round(by),retireAge:Math.round(age),need};
+  const partner=s.mode==='full'&&s.household&&s.household.partner?_setupNum(s.future.partnerRetire,'Ruhestand '+(s.household.partner.name.trim()||'Partner/in'),40,85):null;
+  return {birthYear:Math.round(by),retireAge:Math.round(age),need,partnerRetire:partner===null?null:Math.round(partner)};
 }
 /* Baut das neue Dokument; nur die Bereiche dieser Einrichtung werden verändert */
 function buildSetupDocument(original,s,month,liveMonth=month){
@@ -12722,13 +12905,13 @@ function buildSetupDocument(original,s,month,liveMonth=month){
   const usedGroups=new Set(doc.groups.map(g=>g.name)),usedIds=new Set([...doc.groups.map(g=>g.id),...doc.positions.map(p=>p.id)]);
   const uniqueName=name=>{let n=name,k=2;while(usedGroups.has(n))n=name+' ('+(k++)+')';usedGroups.add(n);return n;};
   const uniqueId=prefix=>{let k=1;while(usedIds.has(prefix+k))k++;usedIds.add(prefix+k);return prefix+k;};
-  const targetGroup={};
+  const targetGroup={};let partnerId=null;
   if(s.mode==='full'){
     if(hasOnboardingData(doc))throw new Error('Es sind bereits Daten vorhanden. Die Einrichtung startet nur bei einem leeren Bestand.');
     /* Haushalt: Geburtsjahr, Partner/in und Kinder (Schema 14) */
     const hh=_setupHousehold(s);
     if(String(s.future.birthYear||'').trim())doc.retirement.primary.birthYear=Math.round(_setupNum(s.future.birthYear,'Dein Geburtsjahr'));
-    if(hh.partner){let k=1;while(doc.retirement.people.some(p=>p.id==='person-'+k))k++;doc.retirement.people.push({id:'person-'+k,name:hh.partner.name,...(hh.partner.by?{birthYear:hh.partner.by}:{}),statutoryPension:{}});}
+    if(hh.partner){let k=1;while(doc.retirement.people.some(p=>p.id==='person-'+k))k++;partnerId='person-'+k;doc.retirement.people.push({id:partnerId,name:hh.partner.name,...(hh.partner.by?{birthYear:hh.partner.by}:{}),statutoryPension:{}});}
     if(hh.children.length)doc.retirement.children=hh.children.map((c,i)=>({id:'child-'+(i+1),name:c.name,birthYear:c.by}));
     const assets=_setupAssetRows(s),debts=_setupDebtRows(s),values=[],held=[];
     const add=(name,category,value,assumptions,h=null)=>{
@@ -12779,21 +12962,26 @@ function buildSetupDocument(original,s,month,liveMonth=month){
   const wantsBudget=s.mode==='budget'||(s.mode==='full'&&s.focus.budget&&!s.budgetSkipped);
   if(wantsBudget){
     const b=_setupBudget(s),items=doc.budget?doc.budget.items:[],ids=new Set(items.map(r=>r.id)),rows=[];
-    const target=b.target?(s.mode==='full'?targetGroup[b.target]:b.target)||null:null;
-    const row=(id,name,category,kind,amount,targetGroupId=null)=>{
+    const group=v=>v?(s.mode==='full'?targetGroup[v]:v)||null:null;
+    const row=(id,name,category,kind,amount,targetGroupId=null,extra={})=>{
       if(!(amount>0))return;
       let rid=id,k=2;while(ids.has(rid))rid=id+'-'+(k++);ids.add(rid);
-      rows.push({id:rid,name,category,subcategory:'',kind,targetGroupId,monthlyAmounts:Array(12).fill(amount)});
+      rows.push({id:rid,name,category,subcategory:'',kind,targetGroupId,monthlyAmounts:Array(12).fill(amount),...extra});
     };
-    row('setup-income','Nettoeinkommen','einkommen','income',b.income);
+    row('setup-income','Nettoeinkommen','einkommen','income',b.own);
+    /* A2: Gehalt weiterer Personen endet mit deren Arbeitsende; Mieteinnahmen laufen im Ruhestand weiter */
+    b.others.forEach(o=>{const pid=o.k==='partner'?partnerId:o.k;if(pid)row('setup-income-'+(o.k==='partner'?'partner':pid),'Nettogehalt '+o.name,'einkommen','income',o.amount,null,{personId:pid});});
+    row('setup-rent','Mieteinnahmen','einkommen','income',b.rent,null,{retirementIncome:true});
     row('setup-loans','Kreditraten','fixe','loanPayment',b.loans);
     row('setup-fixed','Fixkosten','fixe','expense',b.fixed);
     row('setup-living','Lebenshaltung','variable','expense',b.living);
-    row('setup-saving','Sparen','sparen','saving',b.saving,target);
+    const saves=b.split?b.split.filter(x=>x.amount>0):[{target:b.target,label:'',amount:b.saving}];
+    saves.forEach(x=>row('setup-saving',b.split?'Sparen '+x.label:'Sparen','sparen','saving',x.amount,group(x.target)));
     doc.budget=doc.budget||{items:[],standingOrders:[]};
     doc.budget.items=[...items,...rows];
-    /* Die Sparrate fließt direkt in die Prognose der Zielanlage */
-    if(target&&b.saving>0){const g=doc.groups.find(g=>g.id===target);if(g)g.assumptions={...g.assumptions,monthlySaving:b.saving};}
+    /* Die Sparrate fließt direkt in die Prognose der Zielanlage (B3: je Gruppe die Summe ihrer Anteile) */
+    const per={};saves.forEach(x=>{const g=group(x.target);if(g&&x.amount>0)per[g]=(per[g]||0)+x.amount;});
+    Object.entries(per).forEach(([id,v])=>{const g=doc.groups.find(g=>g.id===id);if(g)g.assumptions={...g.assumptions,monthlySaving:v};});
     mods.budget=true;
   }
   const wantsFuture=s.mode==='future'||(s.mode==='full'&&s.focus.future&&!s.futureSkipped);
@@ -12801,17 +12989,30 @@ function buildSetupDocument(original,s,month,liveMonth=month){
     const f=_setupFuture(s);
     doc.retirement.primary.birthYear=f.birthYear;
     Object.assign(doc.forecast.settings,{retirementAge:f.retireAge,saveUntilAge:f.retireAge,monthlySpending:f.need});
+    const partner=partnerId&&doc.retirement.people.find(p=>p.id===partnerId);
+    if(partner&&f.partnerRetire!=null)partner.workUntilAge=f.partnerRetire;
     mods.forecast=true;
   }
   if(s.mode==='pension'||wantsFuture){
-    const amount=_setupNum(s.pension,'Rente pro Monat');
-    if(amount){
-      const sp=doc.retirement.primary.statutoryPension,rw=sp.pensionPointValue||DRV_DEFAULTS.rw;
-      sp.points=Math.round(amount/rw*10000)/10000;
+    /* A1/B2: je erwachsener Person gesetzliche Rente (bisher erreicht oder künftige Regelaltersrente), Pension,
+       Versorgungswerk oder eine schon laufende Rente; Versorgungswerk und laufende Rente als weitere Rente (netto) */
+    const prim=doc.retirement.primary,rw=(prim.statutoryPension||{}).pensionPointValue||DRV_DEFAULTS.rw,year=new Date().getFullYear();
+    const person=k=>k==='me'?prim:doc.retirement.people.find(p=>p.id===(k==='partner'?partnerId:k));
+    _setupPensionData(s).forEach(x=>{
+      const p=person(x.k);if(!p)return;
+      const other=p!==prim;
+      if(x.kind==='statutory'){p.statutoryPension=p.statutoryPension||{};p.statutoryPension.points=Math.round(x.amount/rw*10000)/10000;if(x.salary)p.statutoryPension.annualSalary=x.salary;}
+      if(x.kind==='civil'){
+        /* Pension ab dem eigenen Ruhestand, wenn der vor der Altersgrenze liegt (Antragsruhestand; die Rechnung hebt auf frühestens 63 bzw. die Altersgrenze an) */
+        const ra=other?null:wantsFuture?_setupFuture(s).retireAge:doc.forecast.settings.retirementAge,limit=x.age||regelaltersgrenze(+p.birthYear||year-40);
+        p.civilServicePension={...(p.civilServicePension||{}),pensionableSalary:x.pay,...(x.years?{serviceYears:x.years}:{}),...(x.age?{retirementAge:x.age}:{}),...(ra&&ra<limit?{startAge:ra}:{})};
+      }
+      if(x.kind==='chamber'||x.kind==='running'){
+        const by=+p.birthYear||0,from=x.kind==='chamber'?x.from:by?Math.max(0,year-by-1):0;
+        doc.retirement.incomes.push({id:_newRowId('income-'),name:(x.kind==='chamber'?'Versorgungswerk':'Laufende Rente')+(other?' '+p.name:''),monthlyAmount:x.amount,fromAge:from,...(other?{personId:p.id}:{})});
+      }
       mods.pension=true;
-    }
-    const salary=_setupNum(s.pensionSalary,'Bruttogehalt im Jahr');
-    if(amount&&salary)doc.retirement.primary.statutoryPension.annualSalary=salary;
+    });
   }
   return AssetsData.validate(doc);
 }
@@ -12838,19 +13039,30 @@ async function _setupNext(){
     if(key==='debts')_setupDebtRows(s);
     if(key==='budget'){_setupBudget(s);s.budgetSkipped=false;}
     if(key==='future'){_setupFuture(s);s.futureSkipped=false;}
-    if(key==='pension'){_setupNum(s.pension,'Rente pro Monat');_setupNum(s.pensionSalary,'Bruttogehalt im Jahr');}
+    if(key==='pension')_setupPensionData(s);
   }catch(error){_guideError(error);return;}
+  /* A8: Ruhestand in der Vergangenheit nur nach Rückfrage (dann zählt das Gehalt nicht mehr) */
+  if(key==='future'&&!s.future.pastOk){
+    const f=_setupFuture(s),age=new Date().getFullYear()-f.birthYear;
+    if(f.retireAge<=age){
+      const ok=await _ask({title:L('Schon im Ruhestand?','Already retired?'),text:L(`Du bist etwa ${age} Jahre alt. Ein Ruhestand mit ${f.retireAge} hat damit schon begonnen: Die Prognose zählt dein Gehalt aus dem Budget dann nicht mehr. Laufende Renten trägst du im nächsten Schritt ein.`,`You are about ${age} years old. Retirement at ${f.retireAge} has therefore already started: the forecast no longer counts your salary from the budget. You enter current pensions in the next step.`),ok:L('Ja, bin im Ruhestand','Yes, I am retired'),cancel:L('Alter ändern','Change age')});
+      if(_setup!==s)return;
+      if(!ok){_setupRender('[data-fu="retireAge"]');return;}
+      s.future.pastOk=true;
+      const me=_setupPen(s,'me');if(me.kind==='statutory'&&!String(s.pension||'').trim())me.kind='running';
+    }
+  }
   if(s.mode!=='full'&&s.i===steps.length-1){_setupFinish();return;}
   _setupAdvance(s);
 }
 function _setupSkip(){
   const s=_setup,key=_setupSteps()[s.i];
   /* Später ergänzen: Abbrechen speichert nichts; nur „Weiß ich nicht“ zur Rente übernimmt die übrigen Angaben */
-  if(s.mode!=='full'){if(key==='pension'&&s.mode==='future'){s.pension='';s.pensionSalary='';_setupFinish();}else _setupClose();return;}
+  if(s.mode!=='full'){if(key==='pension'&&s.mode==='future'){s.pension='';s.pensionSalary='';s.pens={};_setupFinish();}else _setupClose();return;}
   if(key==='history'){s.history={};s.historyFailed=[];}
   if(key==='budget')s.budgetSkipped=true;
   if(key==='future')s.futureSkipped=true;
-  if(key==='pension'){s.pension='';s.pensionSalary='';}
+  if(key==='pension'){s.pension='';s.pensionSalary='';s.pens={};}
   _setupAdvance(s);
 }
 function _setupFinish(){
@@ -12867,8 +13079,7 @@ function _setupFinish(){
   if(appStorage.shownRevision()!==appStorage.revision()){_extChange=true;_applyExternalChange();}
   if(s.mode==='full'){
     navigateToPage('home');
-    document.getElementById('onboardingNextStep').hidden=false;
-    document.getElementById('onboardingNextTitle').focus({preventScroll:true});
+    _showOnboardingNext();
   }else{
     navigateToPage(s.mode==='budget'?'budget':'lifetime');
     _toast('Gespeichert');
@@ -13110,6 +13321,8 @@ function _setupPrefillSaving(s){
   if(!plans.length)return;
   s.budget.saving=_moneyInput(plans.reduce((a,x)=>a+x.plan,0));
   s.budget.target=plans.sort((a,b)=>b.plan-a.plan)[0].id;
+  /* mehrere Sparpläne: gleich aufgeteilt, jede Anlage mit ihrem Betrag */
+  if(plans.length>1)s.budget.split=Object.fromEntries(plans.map(x=>[x.id,_moneyInput(x.plan)]));
 }
 /* Kleiner Verlauf für die Zusammenfassung, aus genau dem Dokument, das gespeichert wird */
 function _setupSparkHTML(s){
@@ -13131,7 +13344,7 @@ function _setupAssetsView(s){
   const cat=c=>(AssetModel.categories[c]||{}).name||'';
   const row=r=>{
     const units=SETUP_UNITS[r.category],qty=r.mode==='qty';
-    const sub=units?`<span class="ob-unitseg" role="group" aria-label="Angabe in"><button type="button" data-act="unit" data-v="eur" class="${qty?'':'on'}" aria-pressed="${!qty}">€</button><button type="button" data-act="unit" data-v="qty" class="${qty?'on':''}" aria-pressed="${qty}">${units[1]}</button></span>`:`<small>${escHTML(cat(r.category))}</small>`;
+    const sub=units?`<span class="ob-unitseg" role="group" aria-label="Angabe in"><button type="button" data-act="unit" data-v="eur" class="${qty?'':'on'}" aria-pressed="${!qty}">€</button><button type="button" data-act="unit" data-v="qty" class="${qty?'on':''}" aria-pressed="${qty}">${units[1]}</button></span>`:`<small>${escHTML(SETUP_CAT_NOTE[r.category]||cat(r.category))}</small>`;
     const input=qty?`<span class="ob-money"><input class="ob-in" type="text" inputmode="decimal" autocomplete="off" data-f="qty" value="${escHTML(r.qty)}" placeholder="0" aria-label="${escHTML(r.name)} in ${escHTML(units[1])}"><i>${units[0]}</i></span>`:_setupMoney('data-f="amount"',r.amount,'Wert von '+r.name);
     let extra='';
     if(qty){
@@ -13146,7 +13359,7 @@ function _setupAssetsView(s){
   const total=s.assets.reduce((a,r)=>a+_setupRowValue(s,r),0);
   return {title:'Was besitzt du?',sub:'Tippe an, was du hast, und trage ungefähr den heutigen Wert ein. Schätzwerte reichen völlig.',
     body:_setupChips(SETUP_ASSETS,'add-asset')+(rows?`<div class="ob-entries">${rows}</div><div class="ob-total"><span>Zusammen</span><b id="setupTotal">${fmt(total)}</b></div>`:'')
-      +`<p class="ob-hint">${s.assets.some(r=>SETUP_UNITS[r.category])?'Bei Bitcoin, Gold und Wertpapieren kannst du zwischen Euro und Stückzahl wechseln. ':''}Genauere Angaben kannst du später ergänzen.</p>`,
+      +`<p class="ob-hint">${s.assets.some(r=>SETUP_UNITS[r.category])?'Bei Bitcoin, Gold und Wertpapieren kannst du statt des Werts auch die Stückzahl angeben. ':''}Riester, Direkt- oder Lebensversicherung: „Altersvorsorge“. Firmen- oder Praxisanteile: „Beteiligung“. Verträge, die nur als Rente auszahlen (z. B. Rürup), trägst du später als Rente ein.</p>`,
     foot:`<button type="button" class="btn btn-primary" data-act="next">Weiter</button>${rows?'':'<button type="button" class="ob-skip" data-act="skip">Später eintragen</button>'}`};
 }
 function _setupDebtsView(s){
@@ -13160,11 +13373,20 @@ function _setupDebtsView(s){
 }
 function _setupBudgetView(s){
   const b=_setupBudget(s,false),targets=_setupTargets(s),mini=s.mode!=='full';
-  const row=(k,label,hint)=>`<label class="ob-form-row"><span class="ob-l">${label}<small>${hint}</small></span>${_setupMoney(`data-b="${k}"`,s.budget[k],label)}</label>`;
-  const target=targets.length?`<label class="ob-form-row"><span class="ob-l">Fließt in<small>für die Prognose</small></span><select class="ob-in ob-select" data-b="target">${targets.map(t=>`<option value="${escHTML(t.value)}"${t.value===b.target?' selected':''}>${escHTML(t.label)}</option>`).join('')}</select></label>`:'';
+  const money=(attrs,v,label,hint)=>`<label class="ob-form-row"><span class="ob-l">${label}<small>${hint}</small></span>${_setupMoney(attrs,v??'',label)}</label>`;
+  const row=(k,label,hint)=>money(`data-b="${k}"`,s.budget[k],label,hint);
+  const kg=b.childBenefit>0?' – ohne Kindergeld':'';
+  const income=b.others.length?row('income','Dein Nettogehalt','netto pro Monat'+kg)+b.others.map(o=>money(`data-bo="${escHTML(o.k)}"`,(s.budget.others||{})[o.k],'Nettogehalt '+escHTML(o.name),'netto pro Monat')).join('')
+    :row('income','Einnahmen','Nettogehalt und alles, was regelmäßig reinkommt'+kg);
+  const rent=s.budget.showRent||String(s.budget.rent||'').trim()?row('rent','Mieteinnahmen & Co.','laufen auch im Ruhestand weiter'):'';
+  const target=b.split?b.split.map(x=>money(`data-bs="${escHTML(x.target)}"`,s.budget.split[x.target],'→ '+escHTML(x.label),'pro Monat')).join('')
+    :targets.length?`<label class="ob-form-row"><span class="ob-l">Fließt in<small>für die Prognose</small></span><select class="ob-in ob-select" data-b="target">${targets.map(t=>`<option value="${escHTML(t.value)}"${t.value===b.target?' selected':''}>${escHTML(t.label)}</option>`).join('')}</select></label>`:'';
+  const saving=b.split?`<div class="ob-form-row"><span class="ob-l">Sparen & Anlegen<small>Summe der Aufteilung</small></span><b class="ob-fixed" id="setupSaveSum">${fmt(b.saving)}</b></div>`:row('saving','Sparen & Anlegen','z. B. Sparplan oder Tagesgeld');
+  const links=(rent?'':'<button type="button" class="ob-link" data-act="b-rent">+ Einnahmen, die im Ruhestand weiterlaufen (z. B. Miete)</button>')
+    +(targets.length>1?`<button type="button" class="ob-link" data-act="b-split">${b.split?'Doch alles in eine Anlage':'Sparrate auf mehrere Anlagen aufteilen'}</button>`:'');
   return {title:'Dein Monat',sub:'Grobe Monatswerte genügen. Einzelne Posten wie Miete oder Versicherungen kannst du später aufteilen.',
-    body:`<div class="ob-form">${row('income','Einnahmen','Nettogehalt und alles, was regelmäßig reinkommt'+(b.childBenefit>0?' – ohne Kindergeld':''))}${b.childBenefit>0?`<div class="ob-form-row"><span class="ob-l">Kindergeld<small>automatisch aus deinen Kindern</small></span><b class="ob-fixed">${fmt(b.childBenefit)}</b></div>`:''}${b.loans>0?`<div class="ob-form-row"><span class="ob-l">Kreditraten<small>aus deinen Schulden</small></span><b class="ob-fixed">${fmt(b.loans)}</b></div>`:''}${row('fixed','Fixkosten','Miete, Nebenkosten, Versicherungen, Verträge'+(b.loans>0?' – ohne Kreditraten':''))}${row('living','Lebenshaltung','Essen, Mobilität, Freizeit, Sonstiges')}${row('saving','Sparen & Anlegen','z. B. Sparplan oder Tagesgeld')}${target}</div>`
-      +`<div class="ob-result" id="setupResult">${_setupResultHTML(b)}</div>`,
+    body:`<div class="ob-form">${income}${rent}${b.childBenefit>0?`<div class="ob-form-row"><span class="ob-l">Kindergeld<small>automatisch aus deinen Kindern</small></span><b class="ob-fixed">${fmt(b.childBenefit)}</b></div>`:''}${b.loans>0?`<div class="ob-form-row"><span class="ob-l">Kreditraten<small>aus deinen Schulden</small></span><b class="ob-fixed">${fmt(b.loans)}</b></div>`:''}${row('fixed','Fixkosten','Miete, Nebenkosten, Versicherungen, Verträge'+(b.loans>0?' – ohne Kreditraten':''))}${row('living','Lebenshaltung','Essen, Mobilität, Freizeit, Sonstiges')}${saving}${target}</div>`
+      +(links?`<div class="ob-links">${links}</div>`:'')+`<div class="ob-result" id="setupResult">${_setupResultHTML(b)}</div>`,
     foot:`<button type="button" class="btn btn-primary" data-act="next">${mini?'Übernehmen':'Weiter'}</button><button type="button" class="ob-skip" data-act="skip">${mini?'Abbrechen':'Überspringen'}</button>`};
 }
 function _setupResultHTML(b){
@@ -13176,19 +13398,71 @@ function _setupFutureView(s){
   const f=s.future,mini=s.mode!=='full',year=new Date().getFullYear();
   const row=(k,label,hint,input)=>`<label class="ob-form-row"><span class="ob-l">${label}${hint?`<small${k==='need'?' id="setupNeedHint"':''}>${hint}</small>`:''}</span>${input}</label>`;
   return {title:'Deine Zukunft',sub:'Drei Angaben genügen für eine erste Prognose. Beträge in heutiger Kaufkraft.',
-    body:`<div class="ob-form">${row('birthYear','Geburtsjahr','','<input class="ob-in" type="text" inputmode="numeric" maxlength="4" data-fu="birthYear" value="'+escHTML(f.birthYear)+'" placeholder="JJJJ" aria-label="Geburtsjahr" autocomplete="bday-year">')}${row('retireAge','Ruhestand mit','','<span class="ob-money"><input class="ob-in" type="text" inputmode="numeric" maxlength="2" data-fu="retireAge" value="'+escHTML(f.retireAge)+'" placeholder="67" aria-label="Ruhestand mit Jahren"><i>Jahren</i></span>')}${row('need','Bedarf im Ruhestand',f.needFromBudget?'pro Monat · Vorschlag aus deinem Budget':'pro Monat, was du dann zum Leben brauchst',_setupMoney('data-fu="need"',f.need,'Bedarf im Ruhestand pro Monat'))}</div>`
+    body:`<div class="ob-form">${row('birthYear','Geburtsjahr','','<input class="ob-in" type="text" inputmode="numeric" maxlength="4" data-fu="birthYear" value="'+escHTML(f.birthYear)+'" placeholder="JJJJ" aria-label="Geburtsjahr" autocomplete="bday-year">')}${row('retireAge','Ruhestand mit','','<span class="ob-money"><input class="ob-in" type="text" inputmode="numeric" maxlength="2" data-fu="retireAge" value="'+escHTML(f.retireAge)+'" placeholder="67" aria-label="Ruhestand mit Jahren"><i>Jahren</i></span>')}${!mini&&s.household&&s.household.partner?row('partnerRetire','Ruhestand '+escHTML(s.household.partner.name.trim()||'Partner/in')+' mit','optional, sonst im selben Alter wie du','<span class="ob-money"><input class="ob-in" type="text" inputmode="numeric" maxlength="2" data-fu="partnerRetire" value="'+escHTML(f.partnerRetire||'')+'" placeholder="'+escHTML(f.retireAge||'67')+'" aria-label="Ruhestand Partner/in mit Jahren"><i>Jahren</i></span>'):''}${row('need','Bedarf im Ruhestand',f.needFromBudget?'pro Monat · Vorschlag aus deinem Budget':'pro Monat, was du dann zum Leben brauchst',_setupMoney('data-fu="need"',f.need,'Bedarf im Ruhestand pro Monat'))}</div>`
       +`<p class="ob-hint">Die Prognose ist ein Szenario, keine Garantie. Renditen, Inflation und weitere Annahmen kannst du später anpassen.</p>`,
     foot:`<button type="button" class="btn btn-primary" data-act="next">Weiter</button><button type="button" class="ob-skip" data-act="skip">${mini?'Abbrechen':'Später planen'}</button>`};
 }
+/* ── Rente je erwachsener Person (A1/B2) ──
+   Gesetzliche Rente (bisher erreicht oder künftige Regelaltersrente), Beamtenpension, Versorgungswerk, schon laufende
+   Rente oder unbekannt. Für „Ich“ liegen Betrag und Gehalt in s.pension/s.pensionSalary. */
+const SETUP_PENSION_KINDS=[['statutory','Gesetzliche Rente'],['civil','Beamtenpension'],['chamber','Versorgungswerk'],['running','Bekomme schon Rente'],['none','Weiß nicht']];
+function _setupPen(s,k){
+  s.pens=s.pens||{};
+  const p=s.pens[k]||(s.pens[k]={kind:'statutory',basis:'now',amount:'',salary:'',pay:'',years:'',age:'',from:''});
+  if(k==='me'){p.amount=s.pension??'';p.salary=s.pensionSalary??'';}
+  return p;
+}
+function _setupPensionData(s){
+  const adults=_setupAdults(s),many=adults.length>1,out=[];
+  adults.forEach(a=>{
+    const p=_setupPen(s,a.k),pre=many?a.name+' · ':'';
+    if(p.kind==='statutory'){
+      const amount=_setupNum(p.amount,pre+'Rente pro Monat'),salary=p.basis==='future'?null:_setupNum(p.salary,pre+'Bruttogehalt im Jahr');
+      if(amount)out.push({k:a.k,kind:'statutory',basis:p.basis,amount,salary});
+    }else if(p.kind==='civil'){
+      const pay=_setupNum(p.pay,pre+'Bezüge pro Monat'),years=_setupNum(p.years,pre+'Dienstjahre bisher',0,50),age=_setupNum(p.age,pre+'Altersgrenze',55,70);
+      if(!pay&&years)throw new Error(pre+'Bitte die ruhegehaltfähigen Bezüge pro Monat eintragen.');
+      if(pay)out.push({k:a.k,kind:'civil',pay,years,age});
+    }else if(p.kind==='chamber'||p.kind==='running'){
+      const amount=_setupNum(p.amount,pre+'Rente pro Monat'),from=p.kind==='chamber'?_setupNum(p.from,pre+'Beginn mit',50,80):null;
+      if(amount)out.push({k:a.k,kind:p.kind,amount,from:from??67});
+    }
+  });
+  return out;
+}
 function _setupPensionView(s){
-  const last=s.mode!=='full';
-  /* P4: gefragt ist die bereits erreichte Anwartschaft; die „künftige Regelaltersrente“ setzt Beiträge bis zur
-     Regelaltersgrenze voraus und würde bei früherem Arbeitsende Punkte doppelt zählen */
-  return {title:'Deine gesetzliche Rente',sub:'Den Betrag findest du in deiner jährlichen Renteninformation unter „Ihre bislang erreichte Rentenanwartschaft entspräche einer monatlichen Rente von“.',
-    body:`<div class="ob-form"><label class="ob-form-row"><span class="ob-l">Bisher erreichte Rente<small>brutto pro Monat, laut Renteninformation</small></span>${_setupMoney('data-p="1"',s.pension,'Bisher erreichte Rente pro Monat')}</label>`
-      +`<label class="ob-form-row"><span class="ob-l">Bruttogehalt im Jahr<small>optional, für weitere Punkte bis zum Ende der Arbeit</small></span>${_setupMoney('data-p="salary"',s.pensionSalary,'Bruttogehalt im Jahr')}</label></div>`
-      +`<p class="ob-hint">Nicht die „künftige Regelaltersrente“ nehmen: Sie setzt voraus, dass du bis zur Regelaltersgrenze weiter einzahlst. Die App rechnet die weiteren Punkte selbst bis zu deinem Arbeitsende hoch.</p>`
-      +`<p class="ob-hint">Betriebsrente, private Renten oder die Rente deines Partners kannst du später unter Altersvorsorge ergänzen.</p>`,
+  const last=s.mode!=='full',adults=_setupAdults(s),many=adults.length>1;
+  const money=(k,f,v,label,hint)=>`<label class="ob-form-row"><span class="ob-l">${label}<small>${hint}</small></span>${_setupMoney(`data-pk="${k}" data-pf="${f}"`,v??'',label)}</label>`;
+  const num=(k,f,v,label,hint,unit,ph)=>`<label class="ob-form-row"><span class="ob-l">${label}<small>${hint}</small></span><span class="ob-money"><input class="ob-in" type="text" inputmode="decimal" autocomplete="off" data-pk="${k}" data-pf="${f}" value="${escHTML(v??'')}" placeholder="${ph}" aria-label="${escHTML(label)}"><i>${unit}</i></span></label>`;
+  const card=a=>{
+    const head=many?`<b class="ob-pen-name">${escHTML(a.name)}</b>`:'';
+    const p=_setupPen(s,a.k);
+    const kinds=`<div class="ob-pen-kinds" role="radiogroup" aria-label="${escHTML('Altersvorsorge · '+a.name)}">${SETUP_PENSION_KINDS.map(([v,t])=>`<button type="button" class="ob-pick${p.kind===v?' on':''}" role="radio" aria-checked="${p.kind===v}" data-act="pen-kind" data-k="${escHTML(a.k)}" data-v="${v}">${t}</button>`).join('')}</div>`;
+    let rows='',hint='';
+    if(p.kind==='statutory'){
+      const fut=p.basis==='future',b=v=>`<button type="button" data-act="pen-basis" data-k="${escHTML(a.k)}" data-v="${v}" class="${(v==='future')===fut?'on':''}" aria-pressed="${(v==='future')===fut}">`;
+      rows=`<div class="ob-form-row ob-pen-seg"><span class="ob-unitseg" role="group" aria-label="Betrag laut Renteninformation">${b('now')}Bisher erreicht</button>${b('future')}Künftige Rente</button></span></div>`
+        +money(a.k,'amount',p.amount,fut?'Künftige Regelaltersrente':'Bisher erreichte Rente','brutto pro Monat, laut Renteninformation')
+        +(fut?'':money(a.k,'salary',p.salary,'Bruttogehalt im Jahr','optional, für weitere Punkte bis zum Ende der Arbeit'));
+      hint=fut?'Näherung: Die künftige Rente setzt voraus, dass bis zur Regelaltersgrenze weiter eingezahlt wird. Wer früher aufhört, bekommt weniger. Genauer ist die bisher erreichte Rente.'
+        :'Steht in der Renteninformation unter „Ihre bislang erreichte Rentenanwartschaft entspräche einer monatlichen Rente von“. Die weiteren Punkte bis zum Arbeitsende rechnet die App selbst hoch.';
+    }else if(p.kind==='civil'){
+      rows=money(a.k,'pay',p.pay,'Ruhegehaltfähige Bezüge','brutto pro Monat, laut Bezügemitteilung')+num(a.k,'years',p.years,'Dienstjahre bisher','ruhegehaltfähig, bis heute','J.','0')
+        +num(a.k,'age',p.age,'Altersgrenze','optional, z. B. 62 im Polizeidienst','Jahre','67');
+      hint='Gerechnet nach Bundesrecht: 1,79375 % je Dienstjahr, höchstens 71,75 %; vor der Altersgrenze 3,6 % Abschlag je Jahr, frühestens mit 63. '+(a.k==='me'?'Die Pension beginnt mit deinem Ruhestand. ':'')+'Abschläge und Abzüge kannst du später unter Altersvorsorge anpassen.';
+    }else if(p.kind==='chamber'){
+      rows=money(a.k,'amount',p.amount,'Voraussichtliche Rente','netto pro Monat')+num(a.k,'from',p.from,'Beginn mit','Alter','Jahren','67');
+      hint='Das Versorgungswerk nennt meist den Bruttobetrag. Für netto rund 15–20 % für Kranken-, Pflegeversicherung und Steuer abziehen.';
+    }else if(p.kind==='running'){
+      rows=money(a.k,'amount',p.amount,'Rente heute','netto pro Monat, z. B. Alters- oder Erwerbsminderungsrente');
+      hint='Zählt ab heute dauerhaft. Eine Rente mit Ende, z. B. eine BU-Rente bis 65, kannst du später unter Altersvorsorge mit „bis Alter“ erfassen.';
+    }else hint=(many?escHTML(a.name)+': ':'')+'Ohne Angabe rechnet die Prognose ohne Rente. Du kannst sie später unter Altersvorsorge ergänzen.';
+    return `<div class="ob-pen">${head}${kinds}${rows?`<div class="ob-form">${rows}</div>`:''}<p class="ob-hint">${hint}</p></div>`;
+  };
+  const bav=s.mode==='full'&&s.assets.some(r=>r.category==='bav');
+  return {title:many?'Wie seid ihr fürs Alter abgesichert?':'Wie bist du fürs Alter abgesichert?',sub:(many?'Wähle je Person, woher die Rente kommt.':'Wähle, woher deine Rente kommt.')+' Ein Schätzwert genügt.',
+    body:adults.map(card).join('')+(bav?'<p class="ob-hint">Einen Vertrag, den du schon als Vermögen „Altersvorsorge“ eingetragen hast, hier nicht noch einmal als Rente angeben.</p>':'')
+      +'<p class="ob-hint">Betriebsrenten und private Renten kannst du später unter Altersvorsorge ergänzen.</p>',
     foot:`<button type="button" class="btn btn-primary" data-act="next">${last?'Übernehmen':'Weiter'}</button><button type="button" class="ob-skip" data-act="skip">Weiß ich nicht</button>`};
 }
 function _setupDoneView(s){
@@ -13203,19 +13477,42 @@ function _setupDoneView(s){
   }
   if(s.focus.future&&!s.futureSkipped){
     try{const f=_setupFuture(s);rows.push(['Ruhestand',`mit ${f.retireAge} · ${fmt(f.need)}/Monat`]);}catch(error){}
-    const p=_setupLenient(s.pension);if(p>0)rows.push(['Gesetzliche Rente',fmt(p)+' brutto bisher']);
+    let pd=[];try{pd=_setupPensionData(s);}catch(error){}
+    const adults=_setupAdults(s),who=k=>adults.length>1?' · '+(adults.find(a=>a.k===k)||{}).name:'';
+    const kindTxt={statutory:x=>fmt(x.amount)+(x.basis==='future'?' brutto künftig':' brutto bisher'),civil:x=>fmt(x.pay)+' Bezüge',chamber:x=>fmt(x.amount)+' netto ab '+x.from,running:x=>fmt(x.amount)+' netto'};
+    const kindName={statutory:'Gesetzliche Rente',civil:'Beamtenpension',chamber:'Versorgungswerk',running:'Laufende Rente'};
+    pd.forEach(x=>rows.push([kindName[x.kind]+who(x.k),kindTxt[x.kind](x)]));
   }
   const next=[];
   if(!n)next.push('Deinen ersten Vermögenswert anlegen');
   if(s.assets.some(r=>SETUP_MARKET_CATS.includes(r.category)&&!(s.history||{})[r.id]))next.push('Live-Kurse für Depot oder Krypto verbinden');
   if(!s.focus.budget||s.budgetSkipped)next.push('Dein Monatsbudget einrichten');else next.push('Das Budget in einzelne Posten aufteilen');
-  if(!s.focus.future||s.futureSkipped)next.push('Deine Zukunft planen');else if(!_setupLenient(s.pension))next.push('Deine gesetzliche Rente ergänzen');
-  if(debts>0)next.push('Kredite mit Zinsbindung genauer erfassen');
+  if(!s.focus.future||s.futureSkipped)next.push('Deine Zukunft planen');
+  else{
+    /* B5: fehlende Rente je Person statt pauschal „gesetzliche Rente“ */
+    let pd=[];try{pd=_setupPensionData(s);}catch(error){}
+    const adults=_setupAdults(s),miss=adults.filter(a=>!pd.some(x=>x.k===a.k));
+    if(miss.length)next.push(adults.length>1?'Rente ergänzen: '+miss.map(a=>a.name).join(', '):'Deine Rente ergänzen');
+  }
+  /* B5: Zinsbindung nur bei Immobilienkrediten; sonst fehlen höchstens Rate und Zins */
+  let dr=[];try{dr=_setupDebtRows(s);}catch(error){}
+  if(dr.some(d=>d.link==='realEstate'))next.push('Immobilienkredit mit Zinsbindung genauer erfassen');
+  else if(dr.some(d=>d.pay===null||d.rate===null))next.push('Rate und Zins deiner Kredite ergänzen');
   return {title:'Geschafft!',sub:'Dein Start steht. Mehr musst du heute nicht tun.',
     body:`<div class="ob-example ob-summary"><span class="ob-example-label">Nettovermögen</span><strong class="ob-example-total">${(assets-debts).toLocaleString('de-DE',{maximumFractionDigits:0})} <small>€</small></strong>${_setupSparkHTML(s)}${_guideRows(rows)}</div>`
+      +_setupAssumptionHTML(s)
       +((s.historyFailed||[]).length?`<p class="ob-hint ob-hint-warn">Für ${escHTML(s.historyFailed.join(', '))} konnten gerade keine Kurse geladen werden. Dort beginnt der Verlauf heute; den Kurs kannst du später auf der Daten-Seite verbinden.</p>`:'')
       +`<div class="ob-later"><b>Nach und nach, wann du magst</b><ul>${next.slice(0,3).map(t=>`<li>${escHTML(t)}</li>`).join('')}</ul><span>Diese Vorschläge findest du auf der Daten-Seite.</span></div>`,
     foot:`<button type="button" class="btn btn-primary" data-act="finish">Los geht’s</button><p class="ob-foot-note">Deine Daten bleiben auf diesem Gerät.</p>`};
+}
+/* A6: angenommenes Wachstum der gewählten Anlagen sichtbar machen (Standardwerte je Kategorie) */
+function _setupAssumptionHTML(s){
+  if(!s.focus.future||s.futureSkipped)return '';
+  const cats=[...new Set(s.assets.map(r=>r.category))].filter(c=>LT_CAT_DEFAULTS[c]&&!['realEstate','vehicle','illiquid'].includes(c));
+  if(!cats.length)return '';
+  const pc=v=>v.toLocaleString('de-DE')+' %';
+  const list=cats.map(c=>escHTML(CATEGORY_GROUPS[c]||c)+' '+pc(LT_CAT_DEFAULTS[c].ret)+(LT_CAT_DEFAULTS[c].vol>=40?' (stark schwankend)':'')).join(', ');
+  return `<p class="ob-hint">Die Prognose rechnet mit typischem Wachstum pro Jahr: ${list}. Das ist keine Zusage. Ändern kannst du es unter Prognose → Annahmen.</p>`;
 }
 function _setupView(key,s){
   if(key==='household')return _setupHouseholdView(s);
@@ -13236,7 +13533,9 @@ function _setupView(key,s){
 /* keep: Scroll-Position behalten (Umschalten innerhalb eines Schritts), ohne ein Feld zu öffnen */
 function _setupRender(focusSel,keep=false){
   const overlay=document.getElementById('onboardingOverlay'),s=_setup,steps=_setupSteps(),key=steps[s.i],v=_setupView(key,s),scroll=overlay.scrollTop;
-  const progress=steps.length>1?`<div class="ob-progress" role="progressbar" aria-label="Fortschritt der Einrichtung" aria-valuemin="1" aria-valuemax="${steps.length}" aria-valuenow="${s.i+1}">${steps.map((_,i)=>`<i class="${i<s.i?'filled':i===s.i?'current':''}"><b></b></i>`).join('')}</div>`:'';
+  /* B6: feste Kapitel, damit der Balken unterwegs nicht wächst; Verlauf zählt zu Vermögen, Rente zu Zukunft */
+  const chapters=s.mode==='full'?['household','focus','assets','debts','budget','future','done']:steps,ci=chapters.indexOf(key==='history'?'assets':key==='pension'&&s.mode==='full'?'future':key);
+  const progress=chapters.length>1?`<div class="ob-progress" role="progressbar" aria-label="Fortschritt der Einrichtung" aria-valuemin="1" aria-valuemax="${chapters.length}" aria-valuenow="${ci+1}">${chapters.map((_,i)=>`<i class="${i<ci?'filled':i===ci?'current':''}"><b></b></i>`).join('')}</div>`:'';
   overlay.innerHTML=`<div class="ob-screen ob-setup" data-step="${key}">${progress}<div class="ob-tour-top">${s.i>0?'<button type="button" class="ob-back" data-act="back">‹ Zurück</button>':'<span></span>'}<button type="button" class="ob-close" data-act="close" aria-label="Einrichtung schließen">×</button></div><h1 class="ob-title" tabindex="-1">${v.title}</h1>${v.sub?`<p class="ob-sub">${v.sub}</p>`:''}<div class="ob-setup-body">${v.body}</div><p id="onboardingError" class="ob-error" role="alert" tabindex="-1" hidden></p><div class="ob-setup-foot">${v.foot}</div></div>`;
   overlay.onclick=_setupClick;overlay.oninput=_setupInput;overlay.onchange=_setupInput;
   if(!overlay._setupBlur){overlay._setupBlur=true;overlay.addEventListener('focusout',_setupBlur);}
@@ -13270,7 +13569,8 @@ function _setupClick(e){
   if(act==='hh-child'){const id='k'+(++_setupSeq);s.household.children.push({id,name:'',by:''});return _setupRender(`[data-hh-row="${id}"] [data-hc="name"]`);}
   if(act==='hh-remove'){const k=b.dataset.k;if(k==='partner')s.household.partner=null;else s.household.children=s.household.children.filter(c=>c.id!==k);return _setupRender(null,true);}
   if(act==='add-asset'){
-    const [label,category,name]=SETUP_ASSETS[+b.dataset.i],id='a'+(++_setupSeq),mode=SETUP_QTY_DEFAULT.includes(category)?'qty':'eur';
+    /* B1: alle starten mit dem Euro-Wert; die Stückzahl ist eine Option (die meisten kennen nur den Wert) */
+    const [label,category,name]=SETUP_ASSETS[+b.dataset.i],id='a'+(++_setupSeq),mode='eur';
     const r={id,name:_setupName(s.assets,name||label),category,amount:'',qty:'',mode};s.assets.push(r);
     _setupRender(mode==='qty'&&!_setupInstrument(s,r)?`[data-row="${id}"] [data-h="query"]`:`[data-row="${id}"] [data-f="${mode==='qty'?'qty':'amount'}"]`);
     if(mode==='qty')_setupLoadQuote(r);
@@ -13304,12 +13604,20 @@ function _setupClick(e){
     if(act==='hist-pick'&&r&&r.mode==='qty')_setupLoadQuote(r);
     return;
   }
+  if(act==='b-rent'){s.budget.showRent=true;return _setupRender('[data-b="rent"]');}
+  if(act==='b-split'){
+    const b=_setupBudget(s,false);
+    if(b.split){const top=b.split.slice().sort((x,y)=>y.amount-x.amount)[0];s.budget.saving=b.saving?_moneyInput(b.saving):'';if(top&&top.amount>0)s.budget.target=top.target;s.budget.split=null;}
+    else s.budget.split=b.target?{[b.target]:s.budget.saving||''}:{};
+    return _setupRender(null,true);
+  }
+  if(act==='pen-kind'||act==='pen-basis'){const p=_setupPen(s,b.dataset.k);p[act==='pen-kind'?'kind':'basis']=b.dataset.v;return _setupRender(null,true);}
   if(act==='next')return _setupNext();
   if(act==='skip')return _setupSkip();
   if(act==='finish')return _setupFinish();
 }
 function _setupBlur(e){
-  const t=e.target;if(!_setup||!t.classList||!t.classList.contains('ob-in')||t.tagName!=='INPUT'||t.dataset.hh||t.dataset.hc||['birthYear','retireAge','rate','qty'].includes(t.dataset.fu||t.dataset.f))return;
+  const t=e.target;if(!_setup||!t.classList||!t.classList.contains('ob-in')||t.tagName!=='INPUT'||t.dataset.hh||t.dataset.hc||['years','from','age'].includes(t.dataset.pf)||['birthYear','retireAge','partnerRetire','rate','qty'].includes(t.dataset.fu||t.dataset.f))return;
   const n=_parseDec(t.value);if(t.value.trim()&&isFinite(n)&&n>=0){t.value=_moneyInput(n);_setupInput({target:t});}
 }
 function _setupInput(e){
@@ -13323,10 +13631,13 @@ function _setupInput(e){
   else if(row&&t.dataset.f){const r=[...s.assets,...s.debts].find(x=>x.id===row.dataset.row);if(r)r[t.dataset.f]=t.value;if(t.dataset.f==='qty')_setupPaintEntry(row.dataset.row);}
   else if(t.dataset.hh&&s.household.partner)s.household.partner[t.dataset.hh]=t.value;
   else if(t.dataset.hc){const id=t.closest('[data-hh-row]')?.dataset.hhRow,c=s.household.children.find(x=>x.id===id);if(c)c[t.dataset.hc]=t.value;const kg=document.getElementById('setupKg');if(kg)kg.textContent=_setupKgHint(_setupChildBenefit(s));}
+  else if(t.dataset.bo)(s.budget.others=s.budget.others||{})[t.dataset.bo]=t.value;
+  else if(t.dataset.bs){if(s.budget.split)s.budget.split[t.dataset.bs]=t.value;}
   else if(t.dataset.b)s.budget[t.dataset.b]=t.value;
   else if(t.dataset.fu){s.future[t.dataset.fu]=t.value;if(t.dataset.fu==='need'&&s.future.needFromBudget){s.future.needFromBudget=false;const h=document.getElementById('setupNeedHint');if(h)h.textContent='pro Monat, was du dann zum Leben brauchst';}}
-  else if(t.dataset.p){if(t.dataset.p==='salary')s.pensionSalary=t.value;else s.pension=t.value;}
+  else if(t.dataset.pk){const k=t.dataset.pk,f=t.dataset.pf;if(k==='me'&&f==='amount')s.pension=t.value;else if(k==='me'&&f==='salary')s.pensionSalary=t.value;else _setupPen(s,k)[f]=t.value;}
   else return;
+  const ss=document.getElementById('setupSaveSum');if(ss)ss.textContent=fmt(_setupBudget(s,false).saving);
   const total=document.getElementById('setupTotal');if(total)total.textContent=fmt(s.assets.reduce((a,r)=>a+_setupRowValue(s,r),0));
   const result=document.getElementById('setupResult');if(result)result.innerHTML=_setupResultHTML(_setupBudget(s,false));
   const err=document.getElementById('onboardingError');if(err)err.hidden=true;
@@ -13350,12 +13661,22 @@ function _nextSteps(){
   if(!m.forecast&&doc.retirement.primary.birthYear===undefined&&assets.length)out.push({id:'future',title:'Zukunft planen',text:'Mit drei Angaben siehst du, ob dein Vermögen für den Ruhestand reicht.',run:()=>startSetup('future')});
   const sp=doc.retirement.primary.statutoryPension;
   if(assets.length&&m.forecast&&!m.pension&&!(sp.points>0)&&!(sp.annualSalary>0)&&!doc.retirement.primary.civilServicePension&&!doc.retirement.incomes.length&&!doc.retirement.people.length)out.push({id:'pension',title:'Rente ergänzen',text:'Ein Betrag aus deiner Renteninformation macht die Prognose deutlich genauer.',run:()=>startSetup('pension')});
+  /* Vorrang vor Komfort-Vorschlägen: was die Prognose sonst verfälscht (fehlende Rente, Kredit ohne Rate und Zins) */
+  /* A1: weitere Person ohne jede Altersvorsorge (die Prognose rechnet für sie sonst still ohne Rente) */
+  if(assets.length&&m.forecast&&m.pension){
+    const bare=doc.retirement.people.find(p=>{const sp=p.statutoryPension||{};return !(sp.points>0)&&!(sp.annualSalary>0)&&!((p.civilServicePension||{}).pensionableSalary>0)&&!doc.retirement.incomes.some(i=>i.personId===p.id);});
+    if(bare)out.push({id:'pension-'+bare.id,title:'Rente für '+(bare.name||'Person')+' ergänzen',text:'Ohne Angabe rechnet die Prognose für '+(bare.name||'diese Person')+' ohne Rente.',run:()=>{_openDataSection('pension');if(!_editMode)enterEditMode();}});
+  }
+  /* B5: Darlehensvertrag und Zinsbindung nur bei Immobilienkrediten vorschlagen; sonst fehlen höchstens Rate und Zins */
+  const lp=getLoanParams(),isHome=p=>{const q=lp[p.id]||{},a=q.assetId&&pos.find(x=>x.id===q.assetId);return (a&&a.category==='realEstate')||/immobil|bau|haus|wohnung|hypothek/i.test(p.name);};
+  const loan=pos.find(p=>p.category==='liab'&&isHome(p)&&!LoanModel.configured(lp[p.id]||{}));
+  const bareLoan=pos.find(p=>p.category==='liab'&&!isHome(p)&&!hasLoanModel(lp[p.id]));
+  if(m.liab&&loan)out.push({id:'loan-'+loan.id,title:'„'+loan.name+'“ genauer erfassen',text:'Mit Darlehensvertrag und Zinsbindung berechnet die App die Restschuld jeden Monat selbst.',run:()=>openLoanSheet(loan.id)});
+  else if(m.liab&&bareLoan)out.push({id:'loan-'+bareLoan.id,title:'Rate und Zins für „'+bareLoan.name+'“',text:'Dann siehst du, wann du schuldenfrei bist.',run:()=>openLoanSheet(bareLoan.id)});
   if(assets.length&&m.pension&&m.forecast&&!(doc.retirement.pensionDepots||[]).length&&new Date().getFullYear()<=2028)out.push({id:'av-depot',title:'Altersvorsorgedepot planen',text:'Ab 2027 legt der Staat bis zu 540 € im Jahr auf deine Beiträge, dazu bis zu 300 € je Kind.',run:_nsAvDepot});
   const quote=assets.find(p=>SETUP_MARKET_CATS.includes(p.category)&&!p.instrument);
   if(quote)out.push({id:'quotes-'+quote.id,title:'Live-Kurs für „'+quote.name+'“',text:'Mit Ticker und Stückzahl hält sich der Wert von selbst aktuell.',run:()=>_nsQuote(quote.id)});
   if(m.budget&&items.some(r=>/^setup-(fixed|living)/.test(r.id)))out.push({id:'budget-split',title:'Budget genauer aufteilen',text:'Ersetze Fixkosten und Lebenshaltung nach und nach durch Posten wie Miete oder Versicherungen.',run:()=>_openDataSection('budget','ds-budget-items')});
-  const lp=getLoanParams(),loan=pos.find(p=>p.category==='liab'&&!LoanModel.configured(lp[p.id]||{}));
-  if(m.liab&&loan)out.push({id:'loan-'+loan.id,title:'„'+loan.name+'“ genauer erfassen',text:'Mit Darlehensvertrag und Zinsbindung berechnet die App die Restschuld jeden Monat selbst.',run:()=>openLoanSheet(loan.id)});
   const fs=doc.forecast.settings;
   if(assets.length&&m.forecast&&!['pensionStartAge','phase2WorkPercent','phase2SavingPercent','pensionSpending'].some(k=>k in fs))out.push({id:'phases',title:'Lebensphasen planen',text:'Ansparen, Weiterarbeiten, Vorruhestand und Rente – jede Phase mit eigenen Annahmen.',run:()=>openPhasesSheet()});
   if(assets.length&&m.forecast)out.push({id:'assumptions',title:'Annahmen prüfen',text:'Rendite je Anlage, Inflation und Sicherheit findest du unter Prognose & Annahmen.',run:()=>_v2OpenForecastSettings()});
@@ -13365,7 +13686,7 @@ function _nextSteps(){
 }
 function _nextStepsHTML(){
   const tips=_nextSteps();if(!tips.length)return '<div id="nextSteps"></div>';
-  return `<div id="nextSteps" class="ns-card"><div class="ns-head"><b>Nach und nach ergänzen</b><span>Kein Muss – wann immer du magst.</span></div>${tips.map(t=>`<div class="ns-item"><button type="button" class="ns-main" onclick="_nsRun('${escHTML(t.id)}')"><span class="ns-t">${escHTML(t.title)}</span><span class="ns-s">${escHTML(t.text)}</span></button><button type="button" class="ns-x" onclick="_nsDismiss('${escHTML(t.id)}')" aria-label="Vorschlag ausblenden">×</button></div>`).join('')}</div>`;
+  return `<div id="nextSteps" class="ns-card"><div class="ns-head"><b>Nach und nach ergänzen</b><span>Kein Muss – wann immer du magst.</span></div>${tips.map((t,i)=>`<div class="ns-item${i?' ns-short':''}"><button type="button" class="ns-main" onclick="_nsRun('${escHTML(t.id)}')"${i?` title="${escHTML(t.text)}"`:''}><span class="ns-t">${escHTML(t.title)}</span>${i?'':`<span class="ns-s">${escHTML(t.text)}</span>`}</button><button type="button" class="ns-x" onclick="_nsDismiss('${escHTML(t.id)}')" aria-label="Vorschlag ausblenden">×</button></div>`).join('')}</div>`;
 }
 function _nsQuote(id){
   openAssetSheet(id);

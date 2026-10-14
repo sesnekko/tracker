@@ -94,6 +94,33 @@ Gemeinsame Regeln:
 
 ---
 
+### 3.y Kompakte Darstellung (14.10.2026)
+
+- **Altersvorsorge ohne Bearbeiten:** je Person und Art eine Zeile mit dem Ergebnis (`_pensionSummaryHTML`: gesetzliche
+  Rente, EM-Rente, Beamtenpension, Altersvorsorgedepots, weitere Renten; gleiche Rechnung wie die Felder). Die Felder
+  (`.pv-fields`) erscheinen erst beim Bearbeiten; Antippen einer Zeile startet das Bearbeiten und scrollt zur passenden
+  Karte (`_pvJump`). Gespeichert wird unverändert über die Felder (`saveEntry`).
+- **Haushalt:** Lebensphasen als eine Textzeile mit „Lebensphasen ›“ statt Zeitstrahl; Geburtsjahr, Monat und weitere
+  Felder nur beim Bearbeiten (der Kopf nennt den Jahrgang).
+- **Nach und nach ergänzen:** nur der erste Vorschlag mit Erklärung, die weiteren einzeilig (Erklärung als Tooltip).
+- **Prognose & Annahmen:** nur noch eine Sprungzeile (`#dsForecastJump`, Unterzeile mit der Erfolgschance); der Abschnitt
+  selbst steht unten auf der Prognose-Seite (PROGNOSE.md, Abschnitt 2).
+- **Einheiten einheitlich:** Bestände „€“, monatliche Beträge „€/Monat“, jährliche „€/Jahr“ (z. B. „Brutto €/Jahr“,
+  „Bezüge brutto €/Monat“, „EM-Rente netto €/Monat“, „BBG €/Jahr“).
+
+### 3.x Persona-Befunde vom 14.10.2026 (Daten-Seite)
+
+- Kredit-Sheet: „Zinsbindung bis“ (Jahr) steht immer und gilt auch ohne Darlehensvertrag; „Zinsbindung in Jahren“ (ab der
+  ersten Rate) nur bei schon erfassten Krediten. Fehlt etwas für den Tilgungsplan, nennt die Meldung die Felder.
+  Ohne Vertrag „schuldenfrei ca. …“ (A12).
+- Weitere Renten & Einkünfte: Spalte „Netto €/Monat“, Info mit Abzügen für Betriebsrente und Versorgungswerk (A13);
+  Überschrift im Lesemodus nur mit Einträgen; Hinweis gegen Vertrag und Rente, wenn es Vermögen „Altersvorsorge“ gibt (A3).
+- Altersvorsorge im Lesemodus: eine leere eigene Karte der gesetzlichen Rente erscheint erst beim Bearbeiten (C12).
+- Vermögensart „Altersvorsorge“ ist wieder wählbar (A3).
+- Vorschläge: prognoserelevante zuerst, „Rente für <Person> ergänzen“, Zinsbindung nur beim Immobilienkredit (B5).
+- Lange Positionsnamen und Abschnitts-Unterzeilen zweizeilig statt abgeschnitten (C9).
+- „Alle Daten löschen“ entfernt auch die Kopie vor dem Update und die Gerätemerker (A7, siehe DATA_MODEL.md).
+
 ## 4. Speicherung (`data-store.js`)
 
 ### 4.1 Ein Dokument, Legacy-Schlüssel als Adapter
