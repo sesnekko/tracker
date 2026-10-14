@@ -112,7 +112,7 @@ Alter a (0 nach dem Arbeitsende), `_pensionFactor(prof, a)` = Anteil der heutige
 | `fieldConfig` (`_fc.fields`) | `_vf()` | Positionen, Gruppe (`displayGroup`), Kategorie, Liquidität; ausgeschaltete Bereiche fehlen |
 | `loanParams` | `getLoanParams()`, `LoanModel` | Darlehensverträge oder Altdaten (Zins, Rate, Zinsbindung, Anschlusszins, Sondertilgung) |
 | `lt-drv` | `getDrv()`, `calcDrvPension()` | gesetzliche Rente, optional laufende EM-Rente |
-| `lt-drv-extra` | `getDrvExtra()`, `calcDrvExtra()` | weitere Personen: Name, Geburtsjahr, gesetzliche Rente (+EM), Arbeiten bis (`until`), Rente ab (`age`), seit Schema 15 Arbeitszeit `w1`–`w4` und Altersvorsorge `pen2`–`pen4` je Phase. Das Gehalt kommt seit Schema 14 aus ihren Budget-Einnahmen |
+| `lt-drv-extra` | `getDrvExtra()`, `calcDrvExtra()` | weitere Personen: Name, Geburtsjahr, gesetzliche Rente (+EM), Arbeiten bis (`until`), Rente ab (`age`), seit Schema 15 Arbeitszeit `w1`–`w4` und Altersvorsorge `pen2`–`pen4` je Phase. Das Gehalt kommt seit Schema 14 aus ihren Budget-Einnahmen. Seit Schema 16 aus früheren Versionen: `ptFrom`/`ptPct` (Teilzeit ab Alter, schließt `w1`–`w4` aus) und `net` (noch nicht zugeordnetes Nettogehalt) |
 | `lt-beamte` | `getBeamte()`, `calcBeamtePension()` | Beamtenversorgung |
 | `lt-av-depots` | `getAvDepots()`, `calcAvDepot()` | Altersvorsorgedepots ab 2027 |
 | `budgetData` | `_retirementIncomes()`, `_planFunding()`, `_personSalary()` | Budget-Einnahmen mit „Auch im Ruhestand“; Überschuss des laufenden Jahres für die Finanzierungsprüfung der Sparraten (P24); Gehalt je Person (Ø ihrer zugeordneten Einnahmen), auch deins, wenn es dir zugeordnet ist |
@@ -221,6 +221,9 @@ Gruppenname. Ereignisse „extern → extern“ fallen weg. Alte Ereignisse ohne
 umgedeutet: positiv = Zufluss ins Cash, negativ = Ausgabe aus liquiden Mitteln. Die Teilauszahlung
 eines nicht verknüpften Altersvorsorgedepots wird als Ereignis „extern → liquide“ eingefügt.
 Gebucht wird nur der finanzierte Teil; der Rest ist ein Fehlbetrag (P22).
+Jedes Ereignis hat eine dauerhafte Kennung (`id`, neue Zeilen `event-…` beim Anlegen). Der Editor unter „Prognose &
+Annahmen“ ordnet Eingaben nach einer fremden Änderung allein über sie zu und überträgt erst auf ausdrücklichen Wunsch
+(Review P64, DATA_MODEL.md „Schreibrecht zwischen Fenstern“).
 
 ### 5.6 Renten und Einkommen (`plan.pensions`)
 
@@ -236,6 +239,7 @@ keinem Budget stehen.
 | Laufende EM-Rente (eigene Person) | `em` | voller Zahlbetrag (nach der Arbeit kein Hinzuverdienst) | ab 0 bis zum Ende der EM-Rente |
 | Beamtenpension (`calcBeamtePension`) | `bv` | netto, mit Abschlag | ab Pensionsalter, frühestens 63; 0 unter fünf Dienstjahren |
 | Altersvorsorgedepot (`calcAvDepot`) | `avd` (`always`) | Auszahlplan netto, real gleichbleibend; verknüpfte Depots aus dem simulierten Topf (`dyn`) | ab Auszahlung bis 85 (Alter der Person, umgerechnet) |
+| Weitere Personen, Beamtenpension (`calcBeamteExtra`, Schema 17) | `bv` | netto, Dienstjahre nach ihrer Arbeitszeit je Phase (Anteil Vollzeit) | ab ihrem Pensionsbeginn, umgerechnet auf dein Alter |
 | Weitere Personen, Rente (`calcDrvExtra`) | `drv`, `em` | Altersrente; EM-Rente mit Anrechnung, solange die Person arbeitet | umgerechnet auf das eigene Alter |
 | Weitere Personen, Gehalt (Schema 14/15) | `work` | Ø ihrer zugeordneten Budget-Einnahmen (`_personSalary`) × Arbeitszeit der Phase ÷ Arbeitszeit heute; ein Eintrag je Abschnitt gleicher Arbeitszeit (`_workSegs`) | ab 0 bis zum Arbeitsende der Person (eigenes Alter); zählt erst nach deinem Arbeitsende (P5) |
 | Kindergeld (Schema 14) | `kindergeld` | 259 € je Kind | ab 0 bis zum Monat des 18. (25.) Geburtstags; zählt nach deinem Arbeitsende; keine Rente (Phasentexte zeigen es getrennt) |
@@ -352,6 +356,10 @@ und externe Zuflüsse. Die Tests in `forecast-cashflow.test.cjs` prüfen das mit
   Restvermögen bei gedecktem Bedarf ist kein Fehlbetrag.
 - **Phasen-Karte, weitere Personen**: je Person eine Zeile mit `_personPhaseText` („Teilzeit 50 % bis 48 ·
   Vollzeit bis 67 · Rente ab 67“, ihr Alter) und ihrer gesetzlichen Rente netto.
+- **Erklärung der Erfolgschance** (`openSuccessExplain`, Tipp auf die Prozentzahl): was die Zahl bedeutet (x von 500
+  Durchläufen, Ziel), wie simuliert wird (Monte-Carlo, Jahresrendite je Gruppe, Korrelation 0,3, feste Zufallszahlen),
+  was jeden Monat passiert, wann ein Lauf scheitert, Tabelle der Annahmen je Anlage, „Sicher möglich ab“ und Grenzen –
+  mit den aktuellen Zahlen aus `_ltState`.
 - **Hinweise in der Ergebnis-Karte** (`_v2LtNotes`): Sparraten über dem Budgetüberschuss
   (Betrag der monatlichen Entnahme, P24), ein Startstand, der älter als der Vormonat ist (P28), und
   Änderungen des Haushaltseinkommens, während du arbeitest (Phasenwechsel, Arbeitsende weiterer
@@ -410,6 +418,10 @@ Ziel-Balken.
 
 ### 8.3 Einkommen im Ruhestand
 
+Seit 14.10.2026 je Person gegliedert (Ich, weitere Personen, Haushalt), jeweils mit Zwischensumme zum Rentenbeginn; jede
+Zeile trägt `who` ('' = ich, ID, 'hh' = Haushalt). Gehaltsabschnitte weiterer Personen erscheinen nur, soweit sie nach
+deinem Arbeitsende laufen. Beamtenpensionen weiterer Personen (Schema 17) stehen bei ihnen.
+
 Seit 14.10.2026 (`_incomeCard`, P11/P12): Die Karte zeigt die Summe **zum Beginn der Rentenphase**
 und darunter zwei Zeilen: „Mit X: deckt …“ (Deckung des Bedarfs der Rentenphase) und
 „Lebenslang ab Y: …“ (nur lebenslange Einkommen, sobald alle begonnen haben; befristete
@@ -423,21 +435,22 @@ gleicher Arbeitszeit in einer Zeile („Gehalt Anna (25 %)“ ab 50 bis 60 (Anna
 ### 8.4 Phasen-Sheet (`openPhasesSheet`)
 
 Alle Lebensphasen-Parameter an einer Stelle (Entscheidung 14.10.2026): die vier Phasen (in deinem
-Alter) mit Arbeitszeit und Altersvorsorge **je erwachsene Person** (Schema 15), darunter je weitere
-Person Arbeitsende und Rentenbeginn in ihrem Alter. Jeder Abschnitt ist ein ausklappbares
-`<details class="lp-sec">`; der Kopf zeigt Name, Dauer und eine Zusammenfassung (z. B. „bis 60 ·
-Ich 50 % · Anna Vollzeit · Sparen 20 %“, bei Personen „Teilzeit 50 % bis 48 · Vollzeit bis 67 · Rente
-ab 67“). Ohne Fokus sind alle Abschnitte zu; `openPhasesSheet(n)` öffnet Phase n,
-`openPhasesSheet('p-<id>')` die Person (aus der Prognose-Karte „Lebensphasen“ und der Haushaltskarte).
+Alter) mit Arbeitszeit, Altersvorsorge und Arbeitsende **je erwachsene Person** (Schema 15). Einen eigenen Abschnitt je
+Person gibt es nicht mehr: Das Arbeitsende weiterer Personen steht in Phase 2 in der Zeile „Arbeiten bis Alter“ neben
+deinem, ihr Rentenbeginn bei ihrer gesetzlichen Rente unter Daten → Altersvorsorge; ihr Zeitstrahl steht oben im Sheet.
+Jeder Abschnitt ist ein ausklappbares `<details class="lp-sec">`; der Kopf zeigt Name, Dauer und eine Zusammenfassung
+(z. B. „bis 60 · Ich 50 % · Anna Vollzeit · Sparen 20 %“). Ohne Fokus sind alle Abschnitte zu; `openPhasesSheet(n)`
+öffnet Phase n, `openPhasesSheet('p-<id>')` Phase 2 (aus der Prognose-Karte „Lebensphasen“ und der Haushaltskarte).
 
 | Feld im Sheet | Phasen | Datenmodell | leer |
 | --- | --- | --- | --- |
 | Arbeitszeit % „Ich“ (`lpw-me-<n>`) | 1, 2 | `forecast.settings.phase1WorkPercent`, `phase2WorkPercent` | Phase 1: 100, Phase 2: wie Phase 1 |
 | Arbeitszeit % weitere Person (`lpw-<id>-<n>`) | 1–4 | `people[].phase<n>WorkPercent` | wie in der Phase davor (Phase 1: 100) |
+| Arbeitszeit heute aus dem Budget (Schema 17) | 1 | `budget.items[].workPercent` beim Gehalt | ist sie dort angegeben, zeigt Phase 1 sie nur an (kein Feld) |
 | Altersvorsorge % „Ich“ (`lpv-me-<n>`) | 2, 3 | `phase2PensionPercent`, `phase3PensionPercent` | 100 %, solange du arbeitest, sonst 0 |
 | Altersvorsorge % weitere Person (`lpv-<id>-<n>`) | 2–4 | `people[].phase<n>PensionPercent` | 100 %, solange sie arbeitet, sonst 0 |
-| Arbeiten bis Alter (`lpp-<id>-until`) | – | `workUntilAge` | gleiches Alter wie dein Arbeitsende |
-| Rente ab Alter (`lpp-<id>-age`) | – | `statutoryPension.retirementAge` | Regelaltersgrenze der Person |
+| Arbeiten bis Alter, Phase 2: „Ich“ (`lp-a3`) und weitere Personen (`lpp-<id>-until`) | – | `retirementAge` bzw. `people[].workUntilAge` | deins Pflicht; weitere Personen: gleiches Alter wie du |
+| Rentenbeginn weiterer Personen | – | `statutoryPension.retirementAge` | nicht im Sheet, sondern bei ihrer gesetzlichen Rente (Daten → Altersvorsorge) |
 
 Arbeitszeit ist der Anteil einer Vollzeitstelle (0–100), Altersvorsorge der Anteil der heutigen
 Beiträge (0–200; Betriebsrenten-Sparraten zählen zu dir, Altersvorsorgedepots zu ihrer Person). Unter
@@ -462,13 +475,19 @@ Beim Speichern (`_savePhasesSheet`, in einer Transaktion):
   Dasselbe gilt für das Pensionsalter der Beamtenversorgung.
 - Weitere Personen werden mit ihren übrigen Feldern unverändert in `lt-drv-extra` zurückgeschrieben.
 - Danach ziehen Prognose, Daten-Seite und die Haushaltskarten nach (`_refreshHouseholdCards`).
+- Das Sheet beruht auf dem Stand beim Öffnen (Review P54). Wurde inzwischen in einem anderen Fenster gespeichert –
+  auch wenn dieses Fenster gerade das Schreibrecht übernommen hat –, speichert es nichts: Es öffnet mit dem aktuellen
+  Stand neu, trägt nur die hier geänderten Felder markiert wieder ein (Abschnitt aufgeklappt, bei gleichzeitiger
+  fremder Änderung mit „Inzwischen gespeichert: …“) und speichert erst beim erneuten „Sichern“ (DATA_MODEL.md,
+  „Schreibrecht zwischen Fenstern“).
 
 ### 8.5 Annahmen je Anlage (`buildAssetParamsTable`)
 
 Steht auf der Daten-Seite unter „Prognose & Annahmen“.
 - Je Gruppe gibt es eine aufklappbare Karte mit Sparrate, Rendite, Trend, Schwankung und
   Schwankungs-Trend, bei entnehmbaren Gruppen zusätzlich „Verfügbar ab“ und „Abzug“.
-- Jede Eingabe wird sofort in `lt-asset-params` gespeichert; ein leeres Feld setzt den Standardwert.
+- Jede Eingabe wird sofort in `lt-asset-params` gespeichert; ein leeres Feld setzt den Standardwert. Gespeichert wird nur
+  dieses eine Feld auf dem aktuellen Stand (Review P54); eine gleichzeitige fremde Änderung anderer Felder bleibt erhalten.
 - „Sparraten aus Budget übernehmen“ (`deriveSavingsFromBudget`) ordnet Budget-Sparposten den
   Gruppen zu: zuerst über das gespeicherte Ziel, sonst über Namensmuster.
 
@@ -723,6 +742,11 @@ mit +2 % p. a.
 - Weitere Personen haben denselben Geburtsmonat wie du. Ihre Arbeitszeit wechselt an deinen
   Phasengrenzen, ihr Arbeitsende in ihrem Alter. Solange du arbeitest, steckt ihr Gehalt im Budget;
   Änderungen gegenüber heute gleicht der Haushaltssaldo aus (siehe Fahrplan).
+- Daten aus früheren Versionen (Schema 16, Review P35–P37): Ein noch nicht zugeordnetes Nettogehalt aus Schema 13
+  zählt wie damals nur nach deinem Arbeitsende als Gehalt der Person, nicht im Budget und nicht in der
+  Einkommensänderung während deiner Arbeit. „Teilzeit ab Alter“ aus Schema 14 rechnet monatsgenau ab diesem Alter
+  (eigene Arbeitsgrenzen `wb` statt der Phasen); die Arbeitszeit je Phase gilt für diese Person erst nach dem
+  Umstellen. Ungeklärte Kinder-Jahrgänge an Depots zählen für die Kinderzulage wie in der früheren Version.
 - Dein eigenes Gehalt kennt die App nur, wenn es im Budget dir zugeordnet ist; sonst wirkt deine
   Arbeitszeit nur auf Rentenpunkte und Dienstjahre (Hinweis im Phasen-Sheet).
 - Betriebsrenten-Sparraten (Gruppen der Kategorie Betriebsrente) zählen zu dir; eine Zuordnung zu

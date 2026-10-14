@@ -1,7 +1,10 @@
 # Assets – Übersicht und Kontext
 
-Stand: 14.10.2026, Analyse auf Code-Stand `7504901` (Schema 12); danach Fehlerbehebung (noch nicht
-committet): Schema 15 (Personen und Kinder, Arbeitszeit je Lebensphase), Service-Worker-Cache `verm-v122`, `data-store.js?v=24`, `i18n-en.js?v=8`.
+Stand: 14.10.2026, Analyse auf Code-Stand `7504901` (Schema 12); Fehlerbehebung, Personenmodell und Lebensphasen
+in Commit `1b57aa8` (Schema 15). Danach Review-Runde P34–P38, Anmerkungen aus dem Test, Folge-Review P54, P55, P63 und
+Folge-Review 2 P64, P65 (noch nicht committet): Schema 17, Service-Worker-Cache `verm-v126`, `data-store.js?v=28`,
+`i18n-en.js?v=12`. Unabhängige Prüfberichte: [REVIEW_2026-10.md](REVIEW_2026-10.md),
+[REVIEW_2026-10_FOLGE.md](REVIEW_2026-10_FOLGE.md), [REVIEW_2026-10_FOLGE2.md](REVIEW_2026-10_FOLGE2.md).
 Status aller Befunde: [PROBLEME.md](PROBLEME.md), Abschnitt 0.
 Diese Datei ist der Einstieg in die Dokumentation in `.docs/`: Architektur, gemeinsame
 Begriffe, Arbeitsweise und alle Befunde der Analyse vom 14.10.2026 an einem Ort. Ergänzt um
@@ -75,6 +78,19 @@ die alte Fassung, der zweite die neue.
   - Jeder Schreibvorgang baut das Dokument neu, prüft es und schreibt es ganz – außer es hat sich
     nichts geändert. Hat ein anderes Fenster inzwischen gespeichert, lehnt der Speicher ab
     (`code: 'CONFLICT'`) und übernimmt den fremden Stand (P1).
+  - Seit Schema 16 (Review P34) schreibt nur das Fenster mit der Web Lock `vermoegen-writer`; weitere Fenster
+    zeigen „Nur ansehen“ und lehnen jedes Speichern mit `code: 'READ_ONLY'` ab („Hier bearbeiten“ übernimmt). Wer die
+    Seite verlässt, gibt das Schreibrecht wirklich ab (P63); Fehler und ausbleibende Antworten enden bestimmt, ohne Web
+    Locks gilt ein erklärter Lesemodus (P55). Zustände: DATA_MODEL.md „Schreibrecht zwischen Fenstern“.
+  - Jede Bearbeitung speichert mit ihrer Basis (`appStorage.withBase(revision, fn)`, ohne eigene Basis der zuletzt
+    angezeigte Stand). Beruht sie auf einem älteren Stand, schreibt der Speicher nichts (`code: 'STALE'`); die App
+    öffnet mit dem aktuellen Stand neu und trägt die eigenen Änderungen markiert wieder ein (P54). Neue Schreibwege
+    brauchen eine Basis: im Sheet über `_submitSheet`/`_sheetFail`, sonst `withBase` mit der Revision beim Beginn der
+    Bearbeitung oder `_fieldWrite` für einen einzelnen Wert ohne abgeleitete Daten. Listenzeilen werden im Abgleich nur
+    über ihre gespeicherte Kennung zugeordnet; neue Zeilen bekommen sie beim Anlegen (`_newRowId`, P64).
+  - Was eine Migration nicht eindeutig übertragen kann, bleibt als Originalwert erhalten und wird in der Karte
+    „Nach dem Update“ geklärt; vor dem ersten Speichern nach einem Update wird der alte Stand gesichert
+    (`vermoegen-data-v1-before-update`, Review P35–P37).
   - Mehrere Änderungen gehören in `beginTransaction()/commitTransaction()`.
   - Details: DATEN.md, Abschnitt 4.
 - **Live-Monat**: Der laufend aktualisierte Stand „Heute“ liegt unter dem **Folgemonat**
@@ -121,8 +137,11 @@ die alte Fassung, der zweite die neue.
 
 ### Tests
 
-- Aufruf: `node --test .tests/` – 27 Testdateien, 260 Tests, alle grün (14.10.2026 nach der
-  Fehlerbehebung, dem Personenmodell und den Lebensphasen mit Arbeitszeit je Person). Dazu `node .scripts/audit-forecast.cjs` (22 fachliche Sollwerte, 0 Abweichungen;
+- Aufruf: `node --test .tests/` – 29 Testdateien, 322 Tests, alle grün (14.10.2026 nach der Review-Runde
+  P34–P38, den Anmerkungen aus dem Test, dem Folge-Review P54, P55, P63 und dem Folge-Review 2 P64, P65;
+  `data-safety.test.cjs` für Fenster, Migrationen und Originalsicherung, `writer-lifecycle.test.cjs` für Schreibrecht,
+  Entwürfe, Lebenszyklus und Abgleich von Listen mit asynchronem Testbrowser; `mini-dom.cjs` ist eine Testhilfe, die aus
+  gerendertem HTML echte Elementbäume baut). Dazu `node .scripts/audit-forecast.cjs` (22 fachliche Sollwerte, 0 Abweichungen;
   Exit-Code 1 bei Abweichungen).
 - Neue fachliche Tests: `forecast-cashflow.test.cjs` und `pension-rules.test.cjs` auf der Fixture
   `forecast-fixture.cjs` (Rendite, Inflation, Abzug 0, damit jede Erwartung nachrechenbar ist),
@@ -169,7 +188,10 @@ Dokument.
 
 **Stand nach der Fehlerbehebung 14.10.2026:** P1–P5, P7–P9, P11–P13, P17–P29, B14, BU1, V1, V5, D6,
 D9, E1, E5 und DEMO-1 bis DEMO-4 sind behoben (PROBLEME.md, Abschnitt 0). Die Tabellen unten
-zeigen den Analysestand.
+zeigen den Analysestand. Aus dem unabhängigen Review vom 14.10.2026 ([REVIEW_2026-10.md](REVIEW_2026-10.md)) sind
+P34–P38 umgesetzt; aus dem Folge-Review ([REVIEW_2026-10_FOLGE.md](REVIEW_2026-10_FOLGE.md)) P54, P55 und P63, aus dem
+Folge-Review 2 ([REVIEW_2026-10_FOLGE2.md](REVIEW_2026-10_FOLGE2.md)) P64 und P65. Offen: P66–P68,
+P56–P62 und P39–P53.
 
 ### Zuerst angehen
 
@@ -219,7 +241,10 @@ Dazu kommen die Demo-Konflikte DEMO-1 bis DEMO-7.
 ### Testlücken (übergreifend)
 
 Seit 14.10.2026 abgedeckt: `calcFlows` (P2, P8), `findRetireAge` (P9, P23, Nichtmonotonie), zwei
-Fenster (P1), unveränderte Sheets (Browser), Ereignis im laufenden Jahr (P13). Weiter offen:
+Fenster (P1, gleichzeitiges Schreiben P34 mit simuliertem Browser aus gemeinsamem Speicher und Web Locks; P54, P55,
+P63 mit asynchronen Ereignissen, bfcache-Modell und echten Chrome-Läufen per HTTP und `file://`),
+Migrationen mit Originalwerten (P35–P37), Kursübernahme bei Instrument- und Datenwechsel (P38), unveränderte Sheets
+(Browser), Ereignis im laufenden Jahr (P13). Weiter offen:
 
 - Eigenschaften der Monte-Carlo-Simulation, `targetCapital`.
 - `_avgBudget` mit Lücken, Geldfluss.

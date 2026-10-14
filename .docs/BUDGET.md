@@ -188,6 +188,9 @@ Schlagwortliste:
     (verknüpft einen Kredit), „Beitrag für“ (verknüpft ein Depot), „Auch im Ruhestand“ (bei
     Einnahmen, mit Dublettenprüfung `_retIncomeDuplicate`).
   - Speichern in einer Transaktion. Die ID bleibt beim Bearbeiten erhalten.
+  - Beruht das Sheet (auch Konto, Dauerauftrag, Löschen nach Rückfrage) auf einem älteren Stand, weil inzwischen in
+    einem anderen Fenster gespeichert wurde, wird nichts gespeichert; das Sheet öffnet mit dem aktuellen Stand neu und
+    trägt die eigenen Änderungen markiert wieder ein (Review P54, DATA_MODEL.md „Schreibrecht zwischen Fenstern“).
 - **Konten** (`openAccountSheet`): Name und IBAN; Umbenennen zieht die Daueraufträge mit.
 - **Daueraufträge** (`openOrderSheet`): Von, Nach (Konto oder freie Bezeichnung), Betrag pro Monat.
 
@@ -255,6 +258,13 @@ zeigt „**Plan Nov**“. Folgen:
 **P26 – Verknüpfter Sparposten verschwand vor Beginn des Depots** (PROBLEME.md, P26).
 Behoben 14.10.2026: Der Posten entfällt nur, wenn im selben Monat eine automatische Depotzeile
 existiert. Vor 2027, nach dem letzten Beitragsjahr oder bei Beitrag 0 zählt der Posten weiter.
+
+**Arbeitszeit am Gehalt** (Schema 17, Entscheidung 14.10.2026): Ist eine Einnahme einer Person zugeordnet (und nicht
+„Auch im Ruhestand“), wählst du „Arbeitszeit“: Vollzeit oder Teilzeit mit Anteil 1–99 % (`budget.items[].workPercent`,
+Legacy `workPct`). Das ist die Arbeitszeit von heute; die Prognose nimmt sie als Arbeitszeit der Phase 1 und rechnet
+spätere Phasen im Verhältnis dazu (50 % Teilzeit mit 1.800 € → Vollzeit 3.600 €). Mehrere Gehälter einer Person zählen
+zusammen, höchstens 100 %. Ohne Auswahl gilt der Wert aus den Lebensphasen (sonst Vollzeit). Im Lebensphasen-Sheet steht
+die Arbeitszeit heute dann nur zur Ansicht.
 
 **Personen im Budget** (Schema 14, Entscheidung 14.10.2026): Im Budget-Eintrag wählst du bei Einnahmen die Person
 (Haushalt, Ich, weitere Personen). Das Gehalt einer weiteren Person ist der Ø ihrer zugeordneten Einnahmen ohne „Auch

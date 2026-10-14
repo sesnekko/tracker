@@ -48,7 +48,7 @@ test('Schema 14: ungültige Personenverweise werden beim Import abgelehnt', () =
     d => { d.budget.items[0].personId = 'person-x'; },
     d => { d.budget.items.find(i => i.name === 'Kindergeld').kind = 'expense'; d.budget.items.find(i => i.name === 'Kindergeld').personId = 'person-1'; },
     d => { d.retirement.incomes[1].personId = 'person-x'; },
-    d => { d.retirement.people[0].monthlyNetIncome = 1800; }
+    d => { d.retirement.people[0].monthlyNetIncome = -5; }
   ]) {
     const bad = s.exportBackup(); mutate(bad);
     assert.throws(() => s.importBackup(bad));
@@ -70,20 +70,21 @@ test('Migration 13 → 14: Nettogehalt wird dem passenden Budgetposten zugeordne
   assert.equal(doc.budget.items.find(i => i.name === 'Nettogehalt Anna').personId, 'person-1');
   assert.equal(doc.budget.items.length, 3, 'kein zusätzlicher Posten, nichts doppelt');
 });
-test('Migration 13 → 14: ohne passenden Posten entsteht ein Budgetposten mit dem Gehalt', () => {
+test('Migration 13 → 16: ohne eindeutig passenden Posten entsteht kein Budgetposten; der Betrag bleibt zur Zuordnung (P35)', () => {
+  // Bis Review 14.10.2026 entstand hier „Nettogehalt Kim“. Das konnte ein vorhandenes Gehalt mit anderem Namen
+  // verdoppeln (P35). Jetzt bleibt der alte Betrag erhalten und die App fragt nach.
   const old = v13({ name: 'Kim', monthlyNetIncome: 900 });
   const s = Data.createStore(new MemoryStorage({ [Data.KEY]: JSON.stringify(old) })), doc = s.document();
-  const added = doc.budget.items.filter(i => i.personId === 'person-1');
-  assert.equal(added.length, 1); assert.equal(added[0].name, 'Nettogehalt Kim');
-  assert.deepEqual(added[0].monthlyAmounts, Array(12).fill(900));
-  assert.equal(added[0].kind, 'income'); assert.equal(added[0].category, 'einkommen');
-  // ohne Budget: Budget mit diesem Posten
+  assert.deepEqual(doc.budget.items, old.budget.items, 'Budget unverändert');
+  assert.equal(doc.retirement.people[0].monthlyNetIncome, 900);
+  // ohne Budget: es entsteht auch kein Budget
   const nob = v13({ name: 'Kim', monthlyNetIncome: 900 }); nob.budget = null; nob.accounts = [];
   const d2 = Data.createStore(new MemoryStorage({ [Data.KEY]: JSON.stringify(nob) })).document();
-  assert.deepEqual(d2.budget.items.map(i => [i.name, i.personId, i.monthlyAmounts[0]]), [['Nettogehalt Kim', 'person-1', 900]]);
+  assert.equal(d2.budget, null);
+  assert.equal(d2.retirement.people[0].monthlyNetIncome, 900);
   // Import einer Schema-13-Sicherung migriert genauso
   const t = Data.createStore(new MemoryStorage()); t.importBackup(v13({ monthlyNetIncome: 1800 }));
-  assert.equal(t.document().budget.items.find(i => i.name === 'Nettogehalt Anna').personId, 'person-1');
+  assert.equal(t.document().budget.items.find(i => i.name === 'Nettogehalt Anna').personId, 'person-1', 'eindeutig gleicher Posten');
 });
 test('Migration 12 → 14: ältere Dokumente bleiben unverändert', () => {
   const doc = v13({}); doc.schemaVersion = 12;
@@ -166,22 +167,19 @@ test('Schema 15: ungültige Phasenwerte werden beim Import abgelehnt', () => {
     assert.equal(JSON.stringify(s.document()), raw);
   }
 });
-test('Migration 14 → 15: Teilzeit ab einem Alter wird zur Arbeitszeit der Phase, in der sie überwiegt', () => {
-  // ich: Jahrgang 1985 (Januar), Ansparen bis 55, Arbeitsende 62, Rente 67; Anna zwei Jahre jünger
+test('Migration 14 → 16: Teilzeit ab einem Alter bleibt genau erhalten (P36)', () => {
+  // Bis Review 14.10.2026 wurde Teilzeit der Phase zugeordnet, in der sie überwiegt; dabei ging der genaue Beginn
+  // verloren (P36). Jetzt bleibt er unverändert, bis die Umstellung in der App bestätigt wird.
   const v14 = people => {
     const d = store({ ...legacy, 'lt-save-until': '55', 'lt-withdraw-from': '62', 'lt-pension-age': '67' }).document();
     d.schemaVersion = 14; d.retirement.people = people.map((x, i) => ({ id: 'person-' + (i + 1), name: 'P' + i, birthYear: 1987, workUntilAge: 67, statutoryPension: {}, ...x }));
     Data.validate(d); return d;
   };
-  const migrated = people => Data.migrate(v14(people), new Date('2026-10-08')).retirement.people;
-  const m = migrated([{ partTimeFromAge: 60, partTimePercent: 50 }, { partTimeFromAge: 40, partTimePercent: 60 }, { partTimeFromAge: 52, partTimePercent: 80 }, { partTimeFromAge: 44, partTimePercent: 30 }]);
-  // 60 (dein 62) = Beginn Vorruhestand → Phase 3; schon in Teilzeit → Phase 1; 52 (dein 54) liegt am Ende von Phase 1
-  // → Phase 2; 44 (dein 46): Phase 1 (41,75–55) liegt zu mehr als der Hälfte in der Teilzeit → Phase 1
-  assert.deepEqual(m.map(p => [p.phase1WorkPercent, p.phase2WorkPercent, p.phase3WorkPercent, p.phase4WorkPercent]),
-    [[undefined, undefined, 50, undefined], [60, undefined, undefined, undefined], [undefined, 80, undefined, undefined], [30, undefined, undefined, undefined]]);
-  assert.ok(m.every(p => !('partTimeFromAge' in p) && !('partTimePercent' in p)));
-  // beim Laden eines gespeicherten Schema-14-Dokuments genauso, danach Version 15
-  const doc = Data.createStore(new MemoryStorage({ [Data.KEY]: JSON.stringify(v14([{ partTimeFromAge: 60, partTimePercent: 50 }])) })).document();
+  const cases = [{ partTimeFromAge: 60, partTimePercent: 50 }, { partTimeFromAge: 40, partTimePercent: 60 }, { partTimeFromAge: 52, partTimePercent: 80 }, { partTimeFromAge: 44, partTimePercent: 30 }];
+  const m = Data.migrate(v14(cases)).retirement.people;
+  assert.deepEqual(m.map(p => [p.partTimeFromAge, p.partTimePercent]), cases.map(c => [c.partTimeFromAge, c.partTimePercent]));
+  assert.ok(m.every(p => !Object.keys(p).some(k => /^phase\dWorkPercent$/.test(k))));
+  const doc = Data.createStore(new MemoryStorage({ [Data.KEY]: JSON.stringify(v14([cases[0]])) })).document();
   assert.equal(doc.schemaVersion, Data.VERSION);
-  assert.equal(doc.retirement.people[0].phase3WorkPercent, 50);
+  assert.deepEqual([doc.retirement.people[0].partTimeFromAge, doc.retirement.people[0].partTimePercent], [60, 50]);
 });

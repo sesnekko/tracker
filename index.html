@@ -1093,6 +1093,19 @@ input[aria-invalid="true"]{border-color:var(--red)!important;box-shadow:0 0 0 1p
 .hh-val{grid-column:2;text-align:right;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
 #page-import .hh-person .drvx-res{margin:0;padding:8px 0}
 body:not(.v2-editing) #page-import .hh-person .pc-name{display:none}/* Name steht im Kopf */
+.pv-row .plan-del{display:none!important}.plan-row[hidden]{display:none!important}
+body:not(.v2-editing) #page-import .pv-row.pv-empty{display:none}
+.pv-card{margin-bottom:8px}.pv-add{display:flex;flex-wrap:wrap;gap:6px}
+.mig-card .ns-head span{display:block}
+.v2-inc-g{display:flex;align-items:baseline;gap:8px;padding:14px 0 4px;font-size:13px;color:var(--muted)}.v2-inc-g span{flex:1;font-weight:500;color:var(--ink)}.v2-inc-g b{font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}.v2-inc-g small{font-size:11.5px}
+button.v2-ret-main{display:flex;align-items:baseline;gap:10px;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.v2-ret-more{font-size:12px;color:var(--muted);white-space:nowrap}
+.se-t{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}.se-t th,.se-t td{padding:4px 6px;text-align:right;border-bottom:.5px solid var(--sep)}.se-t th:first-child,.se-t td:first-child{text-align:left}
+.mig-opt{cursor:pointer}.mig-opt input{flex:0 0 auto;width:18px;height:18px;accent-color:var(--green)}
+.mig-pv{margin:12px 4px 0;padding:10px 12px;border-radius:12px;background:var(--fill);font-size:13px}
+.mig-pv>div{display:flex;justify-content:space-between;gap:12px;padding:3px 0}.mig-pv span{color:var(--muted)}.mig-pv b{font-weight:500;font-variant-numeric:tabular-nums;text-align:right}
+.ro-bar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--card,#222);color:var(--ink);font-size:13px;box-shadow:inset 0 -.5px 0 var(--sep)}
+.ro-bar span{flex:1;min-width:0}.ro-bar button{border:0;border-radius:999px;padding:6px 12px;font:inherit;font-weight:500;background:var(--fill);color:var(--ink);cursor:pointer;white-space:nowrap}
 .lp-sec{margin-top:10px;background:var(--fill);border-radius:12px}
 .lp-sec>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px}
 .lp-sec>summary::-webkit-details-marker{display:none}
@@ -1103,7 +1116,8 @@ body:not(.v2-editing) #page-import .hh-person .pc-name{display:none}/* Name steh
 .lp-sum-t i{flex:0 0 10px;height:10px;border-radius:3px}
 .lp-sec .lp-range{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;margin-left:auto}
 .lp-sec>.ds-group{margin:0 4px 6px;background:none}
-.lp-ptl{padding:0 8px 8px}.lp-ptl .hh-tl{display:none}
+.lp-ptl{padding:6px 0 0}.lp-ptl>b{display:block;font-weight:500;font-size:12px;color:var(--muted);margin-bottom:2px}
+.lp-cell.lp-ro b{display:block;min-width:72px;padding:8px 10px;text-align:right;font-weight:400;font-variant-numeric:tabular-nums;color:var(--muted)}
 .lp-mrow{flex-wrap:wrap}.lp-mrow .ds-l{flex:1 1 140px}
 .lp-cells{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin-left:auto}
 .lp-cell{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
@@ -1323,6 +1337,11 @@ body.ds-lock{overflow:hidden}
 .ds-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:6px 16px calc(28px + env(safe-area-inset-bottom))}
 .ds-error{background:color-mix(in srgb,var(--red) 14%,transparent);color:var(--red);border-radius:12px;padding:11px 14px;font-size:14px;line-height:1.45;margin:12px 0 0}
 .ds-error[hidden]{display:none}
+/* P54: nach einem abgelehnten veralteten Speichern wieder eingetragene eigene Änderung und der inzwischen gespeicherte Wert */
+.ds-mine{box-shadow:0 0 0 2px color-mix(in srgb,var(--red) 55%,transparent)!important;border-radius:8px}
+.ds-theirs{display:block;margin:4px 0 0;font-size:12px;color:var(--muted)}
+/* P64: Hinweis einer Live-Liste nach einem abgelehnten Schreibversuch */
+.plan-stale{margin:0 0 10px}.plan-stale ul{margin:6px 0 0 18px;padding:0}.plan-stale-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .ds-note{font-size:13px;color:var(--muted);line-height:1.5;margin:12px 4px 0}
 .ds-group-t{font-size:13px;color:var(--muted);margin:20px 4px 6px}
 .ds-group{background:var(--card);border-radius:14px;overflow:hidden;margin-top:12px}
@@ -1419,7 +1438,7 @@ body.dark .ask{background:var(--bg2);box-shadow:0 0 0 .5px var(--border),0 18px 
 .nav-btn,.sidebar-item{position:relative}
 .nav-btn.has-dot::after{content:'';position:absolute;top:7px;left:calc(50% + 9px);width:8px;height:8px;border-radius:50%;background:var(--red)}
 .sidebar-item.has-dot::after{content:'';position:absolute;top:50%;right:12px;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--red)}
-.ds-toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));z-index:450;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:999px;padding:9px 18px;font-size:14px;font-weight:500;transition:opacity .2s,transform .25s;white-space:nowrap}
+.ds-toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));z-index:450;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:20px;padding:9px 18px;font-size:14px;font-weight:500;transition:opacity .2s,transform .25s;width:max-content;max-width:calc(100vw - 32px);text-align:center}
 .ds-toast.show{opacity:1;transform:translate(-50%,0)}
 @media(min-width:768px){.ds-toast{bottom:32px}}
 @media(max-width:380px){.ds-in{width:124px}}
@@ -2217,8 +2236,6 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
     <span class="cat-label">Lebensplanung</span>
     <div class="lt-panel">
     <div class="input-grid">
-      <div class="input-group"><label data-info="lt-birth-year">Geburtsjahr</label><button type="button" class="num-input ds-date-btn is-empty" data-date-for="lt-birth-year" data-date-mode="year" data-date-title="Geburtsjahr" data-date-ph="Auswählen" data-date-optional="1" data-date-min="1920" data-date-max="2015">Auswählen</button><input type="hidden" id="lt-birth-year"></div>
-      <div class="input-group"><label data-info="lt-birth-month">Geburtsmonat</label><select class="num-input lt-set" id="lt-birth-month"></select></div>
       <div class="input-group"><label data-info="lt-life-expect">Lebenserwartung</label><input class="num-input lt-set" type="number" id="lt-life-expect" min="50" max="120"></div>
       <div class="input-group"><label data-info="lt-plan-horizon">Planen bis Alter</label><input class="num-input lt-set" type="number" id="lt-plan-horizon" min="60" max="120" placeholder="95"></div>
       <div class="input-group"><label data-info="lt-inflation">Inflation %</label><input class="num-input lt-set" type="text" inputmode="decimal" id="lt-inflation"></div>
@@ -2258,6 +2275,7 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 <div class="v2-list">
   <button class="v2-row v2-row-action" onclick="exportBackup()"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><polyline points="7 8 12 3 17 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span><span class="v2-t"><span class="v2-t1">Sicherung exportieren</span><span class="v2-t2" id="backupSub">Eine Datei mit allen Daten und Einstellungen</span></span><span class="v2-chev"></span></button>
   <label class="v2-row v2-row-action" style="cursor:pointer"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span><span class="v2-t"><span class="v2-t1">Sicherung wiederherstellen</span><span class="v2-t2">JSON-Sicherung oder alte CSV-Datei</span></span><span class="v2-chev"></span><input type="file" accept=".json,.csv,application/json,text/csv" id="csvInput2" style="display:none" onchange="document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
+  <button class="v2-row v2-row-action" id="beforeUpdateRow" hidden onclick="_downloadBeforeUpdate()"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><polyline points="7 8 12 3 17 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span><span class="v2-t"><span class="v2-t1">Stand vor dem Update sichern</span><span class="v2-t2" id="beforeUpdateSub">Unveränderte Daten vor der letzten Umstellung</span></span><span class="v2-chev"></span></button>
   <button class="v2-row ds-row-danger" id="resetBtn" onclick="_settingsRun(resetApp)"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5h9l1-12.5"/></svg></span><span class="v2-t"><span class="v2-t1">Alle Daten löschen</span></span></button>
 </div>
 <p class="ds-help">Deine Daten liegen nur auf diesem Gerät. Eine Sicherung ist eine einzelne Datei, mit der du auf einem anderen Gerät weitermachst.</p>
@@ -2573,8 +2591,8 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="i18n-en.js?v=8"></script>
-<script src="data-store.js?v=24"></script>
+<script src="i18n-en.js?v=12"></script>
+<script src="data-store.js?v=28"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
 <script src="asset-model.js?v=4"></script>
@@ -2582,10 +2600,16 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 /* ── Constants ── */
 /* One authoritative document; legacy keys below are calculation/UI adapters. */
 /* P1: Hat ein anderes Fenster (Tab, PWA, zweites Chrome-Fenster) gespeichert, übernimmt der Speicher dessen Stand und
-   lehnt die eigene Änderung ab (Fehlercode CONFLICT). Die Seite übernimmt den neuen Stand, sobald nichts mehr bearbeitet wird. */
+   lehnt die eigene Änderung ab (Fehlercode CONFLICT). Die Seite übernimmt den neuen Stand, sobald nichts mehr bearbeitet wird.
+   P34: Es schreibt immer nur ein Fenster (Web Lock „vermoegen-writer“, siehe data-store.js); weitere Fenster zeigen „Nur
+   ansehen“ und können die Bearbeitung übernehmen. Ohne nutzbare Web Locks bleibt die App im Lesemodus, bis man
+   ausdrücklich nur in diesem Fenster bearbeitet (P55).
+   P54: Jede Speicherung beruht auf der Revision, die angezeigt wurde (trackView) oder mit der eine Bearbeitung begann
+   (withBase). Ein inzwischen übernommener fremder Stand macht sie ungültig (STALE), statt still überschrieben zu werden. */
 let _extChange=false;
 const appStorage=(()=>{
-  try{return AssetsData.createStore(localStorage,{onConflict:()=>{_extChange=true;}});}
+  const locks=typeof navigator!=='undefined'&&navigator.locks&&typeof navigator.locks.request==='function'?navigator.locks:null;
+  try{return AssetsData.createStore(localStorage,{onConflict:()=>{_extChange=true;},onExternal:()=>{_extChange=true;},locks,requireLocks:true,trackView:true,isBusy:()=>_uiBusy(),onReadOnly:()=>setTimeout(()=>_showReadOnly(true),0)});}
   catch(error){
     const panel=document.createElement('div');panel.className='app-content';
     const title=document.createElement('h2');title.textContent='Daten konnten nicht geladen werden';
@@ -2831,7 +2855,7 @@ const SUN='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><
 
 /* ── Info-Texte: Tippen auf einen Feldnamen mit data-info öffnet die Erklärung ── */
 const INFO={
-  'drvx-persons':['Weitere Personen','<p>Zum Beispiel deine Partnerin oder dein Partner. Je Person: Geburtsjahr und gesetzliche Rente. Arbeitszeit und Altersvorsorge je Phase, Arbeitsende und Rentenbeginn stellst du unter Prognose → Lebensphasen ein.</p><p>Im Budget ordnest du ihr Gehalt zu (Eintrag → Person), unter „Weitere Renten &amp; Einkünfte“ und bei Altersvorsorgedepots ihre Renten. Die Prognose zählt das Gehalt nach deinem Arbeitsende bis zu ihrem Arbeitsende und ihre Renten ab ihrem Rentenbeginn.</p><p>Die Lebensphasen und der Bedarf richten sich nach dir.</p>'],
+  'drvx-persons':['Weitere Personen','<p>Zum Beispiel deine Partnerin oder dein Partner. Je Person hier Name und Geburtsjahr. Ihre gesetzliche Rente, Beamtenversorgung und Depots trägst du unter Altersvorsorge ein, Arbeitszeit und Arbeitsende unter Prognose → Lebensphasen.</p><p>Im Budget ordnest du ihr Gehalt zu (Eintrag → Person), unter „Weitere Renten &amp; Einkünfte“ und bei Altersvorsorgedepots ihre Renten. Die Prognose zählt das Gehalt nach deinem Arbeitsende bis zu ihrem Arbeitsende und ihre Renten ab ihrem Rentenbeginn.</p><p>Die Lebensphasen und der Bedarf richten sich nach dir.</p>'],
   'children':['Kinder','<p>Kinder im Haushalt. Daraus rechnet die App das Kindergeld (259 € je Kind und Monat, § 66 EStG) und die Kinderzulage der Altersvorsorgedepots.</p><p>Das Kindergeld erscheint automatisch im Budget und ersetzt einen eigenen Posten „Kindergeld“. In der Prognose zählt es nach deinem Arbeitsende weiter, bis das Kind 18 (in Ausbildung 25) ist.</p>'],
   'child-name':['Name','<p>Name des Kindes, damit du es im Budget und in der Prognose wiedererkennst.</p>'],
   'child-by':['Geburtsjahr','<p>Kindergeld gibt es ab dem Geburtsmonat.</p>'],
@@ -2887,7 +2911,8 @@ const INFO={
   'pen-amount':['Betrag €/Monat','<p>Netto pro Monat in heutiger Kaufkraft (nach Steuern und Krankenversicherung).</p>'],
   'pen-from':['ab Alter','<p>Ab diesem Alter fließt die Zahlung.</p>'],
   'pen-person':['Für','<p>Wem die Einkunft gehört. „ab Alter“ und „bis Alter“ gelten im Alter dieser Person; die Prognose rechnet es in dein Alter um.</p>'],
-  'b-person':['Person','<p>Wessen Einkommen das ist. Das Gehalt einer weiteren Person zählt in der Prognose nach deinem Arbeitsende weiter, bis zu ihrem Arbeitsende.</p><p>„Haushalt“ (z. B. Kindergeld) und dein eigenes Gehalt ändern die Prognose nicht: Solange du arbeitest, steckt das Budget in deinen Sparraten.</p>'],
+  'b-person':['Person','<p>Wessen Einkommen das ist. Mit dem Gehalt einer Person rechnet die Prognose ihre Arbeitszeit je Lebensphase: Arbeitet sie später weniger oder mehr, ändert sich das Einkommen entsprechend. Das Gehalt einer weiteren Person zählt nach deinem Arbeitsende weiter, bis zu ihrem Arbeitsende.</p><p>„Haushalt“ (z. B. Miete) ändert die Prognose nicht: Solange du arbeitest, steckt das Budget in deinen Sparraten.</p>'],
+  'b-work':['Arbeitszeit','<p>Ob dieses Gehalt zu einer Vollzeit- oder Teilzeitstelle gehört, z. B. Teilzeit 50 %. Das ist die Arbeitszeit von heute; die Prognose übernimmt sie automatisch für die erste Lebensphase und rechnet spätere Phasen im Verhältnis dazu (aus 50 % Teilzeit mit 1.800 € werden in Vollzeit 3.600 €).</p><p>Ohne Angabe gilt der Wert aus den Lebensphasen (sonst Vollzeit). Mehrere Gehälter einer Person zählen zusammen.</p>'],
   'pen-until':['bis Alter','<p>Optional: Bis zu diesem Alter fließt die Zahlung, z. B. ein Minijob oder eine befristete Vermietung. Leer = lebenslang.</p>'],
   'ev-name':['Einmalige Ereignisse','<p>Einmalige Geldbewegungen in einem bestimmten Jahr. Mit „Von“ und „Nach“ legst du fest, woher das Geld kommt und wohin es fließt – z. B. Erbschaft: Extern → ETF, Sanierung: Cash → Extern, Immobilienkauf: ETF → Immobilien.</p>'],
   'ev-year':['Jahr','<p>Kalenderjahr, in dem das Ereignis eintritt.</p>'],
@@ -2908,7 +2933,7 @@ const INFO={
   'loan-extra':['Sondertilgung €/Jahr','<p>Zusätzliche jährliche Tilgung, solange du arbeitest.</p>'],
   'loan-fixed':['Zinsbindung bis','<p>Jahr, in dem die Zinsbindung endet. Danach rechnet die Prognose mit dem Anschlusszins.</p>'],
   'loan-follow':['Anschlusszins %','<p>Erwarteter Zins nach Ende der Zinsbindung. Leer = gleicher Zins wie bisher.</p>'],
-  'lt-method':['So wird gerechnet','<p>Die Prognose simuliert dein Vermögen Jahr für Jahr in 500 zufälligen Marktverläufen. Die Linie zeigt den Median, das Band das 10. bis 90. Perzentil. Alle Werte sind in heutiger Kaufkraft.</p><p>Ablauf je Jahr: Wertentwicklung nach Rendite und Schwankung (Korrelation 0,3) → Kreditzins und Tilgung → Sparraten je Lebensphase (Ansparen voll, Weiterarbeiten und Vorruhestand mit dem jeweiligen Anteil) → einmalige Ereignisse → im Vorruhestand und in der Rente Entnahme von Bedarf minus Renten (plus laufende Kreditraten), anteilig aus den verfügbaren Anlagen, inkl. pauschalem Abzug.</p><p>Sachwerte werden nicht verkauft. Steuern sind pauschal abgebildet. Die Prognose ist eine Modellrechnung und keine Anlageberatung.</p>']
+  'lt-method':['So wird gerechnet','<p>Die Prognose simuliert dein Vermögen Monat für Monat in 500 zufälligen Marktverläufen: je Lebensjahr eine Zufallsrendite je Anlage aus Rendite und Schwankung (Korrelation 0,3), verteilt auf die Monate. Die Linie zeigt den Median, das Band das 10. bis 90. Perzentil. Alle Werte in heutiger Kaufkraft.</p><p>Solange du arbeitest, fließen die Sparraten deiner Phase aus dem Budget in die Anlagen; Änderungen des Haushaltseinkommens gleicht das Vermögen aus. Ab dem Vorruhestand wird der Bedarf abzüglich Renten und weiterer Einkommen anteilig aus den entnehmbaren Anlagen entnommen, mit pauschalem Abzug. Kredite laufen nach Vertrag, Ereignisse in ihrem Monat.</p><p>Sachwerte werden nicht verkauft. Steuern sind pauschal abgebildet. Die ausführliche Erklärung mit deinen Zahlen öffnet ein Tipp auf die Erfolgschance. Die Prognose ist eine Modellrechnung und keine Anlageberatung.</p>'],
 };
 function showInfo(key){
   const it=INFO[key];
@@ -3642,7 +3667,7 @@ function calcFlows(fromKey,toKey,onlyGroup){
 }
 /* Aufgeklappt/zugeklappt merken (nur Komfort, darf fehlen) */
 function _uiOpen(k){try{return appStorage.getItem('ui-open-'+k)==='1';}catch{return false;}}
-function _uiSetOpen(k,v){try{appStorage.setItem('ui-open-'+k,v?'1':'0');}catch{}}
+function _uiSetOpen(k,v){try{_fieldWrite(()=>appStorage.setItem('ui-open-'+k,v?'1':'0'));}catch{}}
 
 /* Vergleichszeitraum: frei wählbar (Von/Bis), Standard = die letzten 3 Monate bis zum gewählten Monat */
 let _flowFrom=null,_flowTo=null;
@@ -3962,13 +3987,13 @@ function setThemeMode(mode){
   if(!['light','dark','system'].includes(mode))return;
   const changedMode=themeMode!==mode;
   themeMode=mode;
-  appStorage.setItem('darkMode',mode==='dark'?'1':mode==='light'?'0':'2');
+  _fieldWrite(()=>appStorage.setItem('darkMode',mode==='dark'?'1':mode==='light'?'0':'2'));
   const changed=_applyDark(mode==='system'?_systemDark():mode==='dark');
   _renderThemeSetting();
   if(changed||changedMode)haptic('light');
 }
 /* Aktionen, die selbst ein Fenster öffnen oder neu laden: Einstellungen vorher schließen */
-function _settingsRun(fn){_closeSheet(true);fn();}
+function _settingsRun(fn){_closeSheet(true);if(_extChange&&!_uiBusy())_applyExternalChange();fn();}
 /* Daten-Seite → Darstellung: Standard je Seite wählen; die Änderung gilt sofort */
 function _chartDefaultsHTML(){
   const d=_chartDefaults(),m=_mods();
@@ -4101,8 +4126,10 @@ function parseCsvRows(text,sep){
 function handleCsvUpload(ev){
   const f=ev.target.files[0];if(!f)return;
   if(!_resolvePendingEdits(()=>handleCsvUpload(ev)))return;
+  /* P54: ergänzt wird der Stand, der beim Import angezeigt war */
+  const base=appStorage.shownRevision();
   const r=new FileReader();
-  r.onload=e=>{
+  r.onload=e=>appStorage.withBase(base,()=>{
     let committed=false;
     try{
     appStorage.beginTransaction();
@@ -4553,10 +4580,16 @@ function handleCsvUpload(ev){
       console.error('CSV Import Error:',err);
       if(committed){location.reload();return;}
       appStorage.rollbackTransaction();_fc=loadFieldConfig();
+      if(_isStale(err)){ev.target.value='';setTimeout(_importStale,0);return;}
       showImportError('Fehler beim Import: '+err.message+'. Der bisherige Datenbestand bleibt erhalten.');
     }
-  };
+  });
   r.readAsText(f);
+}
+/* P54: Während Import, Zurücksetzen oder Demo-Laden wurde anderswo gespeichert: nichts ersetzt, neuen Stand anzeigen */
+function _importStale(){
+  _extChange=true;_applyExternalChange();
+  showImportError(L('Nichts geändert: In einem anderen Fenster wurde inzwischen gespeichert. Der aktuelle Stand ist geladen – bitte prüfen und es dann noch einmal versuchen.','Nothing changed: data was saved in another window in the meantime. The current state is loaded – please check and try again.'));
 }
 function showImportError(message){
   hideOnboarding();
@@ -4599,8 +4632,9 @@ function _ask({title='',text='',ok='OK',cancel='Abbrechen',danger=false}={}){
   });
 }
 async function resetApp(){
+  const base=appStorage.shownRevision();
   if(!await _ask({title:'Alle Daten löschen?',text:'Vermögen, Budget, Prognose und Einstellungen werden unwiderruflich von diesem Gerät gelöscht.\nTipp: vorher unter „Daten“ eine Sicherung exportieren.',ok:'Alles löschen',danger:true}))return;
-  appStorage.clear();
+  try{appStorage.withBase(base,()=>appStorage.clear());}catch(error){if(_isStale(error)){_importStale();return;}throw error;}
   location.reload();
 }
 
@@ -4752,7 +4786,7 @@ async function _refreshAssetQuotes(fields){
     }catch(error){ids.forEach(id=>_quoteErrors.add(id));}
   }));
   // A draft on the Data page must never be overwritten by background quotes.
-  if(changed&&!_isEditing()){try{saveFieldConfig(_fc);}catch(error){console.warn('Kurs konnte nicht gespeichert werden:',error.message);}}
+  if(changed&&!_isEditing()&&appStorage.canWrite()){try{saveFieldConfig(_fc);}catch(error){console.warn('Kurs konnte nicht gespeichert werden:',error.message);}}
   updateLiveDot(ok);applyLivePrices();
 }
 async function livePriceTick(){
@@ -6479,8 +6513,30 @@ function _resolvePendingEdits(again){
   return false;
 }
 
+/* P54: Daten-Bearbeiten beruht auf dem angezeigten Stand beim Start; die Prognose-Annahmen (v2-live) speichern selbst */
+let _editBase=0,_editSnap=null;
+const _notLive=el=>!!(el.closest&&el.closest('.v2-live'));
 function enterEditMode(){
+  _editBase=appStorage.shownRevision();_editSnap=null;
+  const page=document.getElementById('page-import');
+  if(page&&page.addEventListener&&!page._p54){
+    page._p54=true;
+    ['pointerdown','focusin','keydown'].forEach(t=>page.addEventListener(t,e=>{if(_editMode&&!_editSnap&&!_notLive(e.target))_editSnap=_ctlState(page,_notLive);},true));
+    ['input','change','click'].forEach(t=>page.addEventListener(t,_touch,true));
+  }
   setFormReadOnly(false);
+}
+/* Speichern im veralteten Stand abgelehnt: Daten-Seite mit dem aktuellen Stand neu aufbauen, eigene Änderungen eintragen */
+function _editReconcile(){
+  const page=document.getElementById('page-import'),mine=_ctlChanges(page,_editSnap,_notLive);
+  _assetChecks.clear();_assetCheckRuns.clear();
+  setFormReadOnly(true);
+  _extChange=true;_applyExternalChange();
+  loadFormForMonth(selectedMonth);
+  enterEditMode();
+  _editSnap=_ctlState(page,_notLive);
+  const miss=_ctlApply(page,mine,_notLive);
+  _ask({title:L('Nicht gespeichert','Not saved'),cancel:null,ok:'OK',text:_staleNote(mine,miss)});
 }
 
 function cancelEditMode(){
@@ -6746,7 +6802,7 @@ function addCustomField(section='assets',opts={}){
     }
     if(opts.onCreate)opts.onCreate(id);
     appStorage.commitTransaction();
-  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();showCsvMsg('Anlegen fehlgeschlagen: '+error.message,'error');return false;}
+  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();if(_isStale(error)&&_sheetOpen){_sheetStaleHit=true;return false;}showCsvMsg('Anlegen fehlgeschlagen: '+error.message,'error');return false;}
   labelEl.value='';
   if(!liability){_assetChecks.delete('newAsset');
     ['value','quantity','symbol','since'].forEach(k=>{const el=_assetEl('newAsset',k);if(el)el.value=k==='symbol'&&_assetEl('newAsset','provider')?.value==='bitcoin'?'XBTEUR':'';});
@@ -6811,6 +6867,12 @@ function initCustomFields(){
 }
 
 function saveEntry(){
+  let stale=false;
+  const ok=appStorage.withBase(_editBase,()=>_saveEntryNow(()=>{stale=true;}));
+  if(stale)_editReconcile();
+  return ok;
+}
+function _saveEntryNow(onStale){
   try{
   appStorage.beginTransaction();
   const ym=selectedMonth;
@@ -6890,11 +6952,21 @@ function saveEntry(){
   appStorage.setItem('loanParams',JSON.stringify(lp));
   saveFieldConfig(_fc);
   if(document.getElementById('dp-drv-points'))appStorage.setItem('lt-drv',JSON.stringify(_drvFromInputs('dp')));
+  /* eigene Geburtsdaten (Ich-Karte); unverändert nichts schreiben, ohne Angabe gilt Januar */
+  const hby=document.getElementById('hh-birth-year'),hbm=document.getElementById('hh-birth-month');
+  if(hby&&hby.value&&hby.value!==appStorage.getItem('lt-birth-year')){const y=+hby.value;if(!(Number.isInteger(y)&&y>=1920&&y<=2015))throw new Error(L('Bitte ein Geburtsjahr wählen.','Please choose a year of birth.'));appStorage.setItem('lt-birth-year',String(y));}
+  if(hbm&&hbm.value!==(appStorage.getItem('lt-birth-month')??'1'))appStorage.setItem('lt-birth-month',hbm.value);
   if(document.getElementById('dp-bv-pay')){const bv=_bvFromInputs();if(bv.pay>0)appStorage.setItem('lt-beamte',JSON.stringify(bv));else appStorage.removeItem('lt-beamte');}
   const dpWrap=document.getElementById('dpPensions');
   if(dpWrap)appStorage.setItem('lt-pensions',JSON.stringify(_collectPlanRows(dpWrap,PENSION_COLS).filter(r=>r.name||r.amount)));
   const dxWrapS=document.getElementById('dpDrvExtra');
-  if(dxWrapS)appStorage.setItem('lt-drv-extra',JSON.stringify(_withPersonPhases(_collectPlanRows(dxWrapS,DRV_CARD_COLS)).map(_drvEmClean).filter(r=>r.name||r.points||r.salary||r.em||r.by||r.until)));
+  if(dxWrapS){
+    /* Haushalt: Person; Altersvorsorge: gesetzliche Rente und Beamtenversorgung je Person; der Rest bleibt gespeichert */
+    const pv=document.getElementById('dpDrvPeople'),pb=document.getElementById('dpBvPeople');
+    const drv=pv?Object.fromEntries([...pv.querySelectorAll('.plan-row')].map(r=>[r.dataset.rowId,_rowValues(r,PERSON_DRV_COLS)])):null;
+    const bvs=pb?Object.fromEntries([...pb.querySelectorAll('.plan-row')].map(r=>[r.dataset.rowId,r.hidden?null:_rowValues(r,PERSON_BV_COLS)])):null;
+    appStorage.setItem('lt-drv-extra',JSON.stringify(_mergePersonRows(_collectPlanRows(dxWrapS,DRV_CARD_COLS),drv,bvs)));
+  }
   const chWrapS=document.getElementById('dpChildren');
   if(chWrapS){const kids=_collectChildren(chWrapS);if(kids.some(c=>!(+c.by>1900)))throw new Error(L('Kinder: Bitte für jedes Kind das Geburtsjahr wählen.','Children: please choose the year of birth for each child.'));appStorage.setItem('lt-children',JSON.stringify(kids));}
   const avWrapS=document.getElementById('dpAvd');
@@ -6919,7 +6991,7 @@ function saveEntry(){
   const budgetPage=document.getElementById('page-budget');
   if(budgetPage&&budgetPage.classList.contains('active'))renderBudgetPage();
   return true;
-  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();showCsvMsg('Speichern fehlgeschlagen: '+error.message,'error');return false;}
+  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();if(_isStale(error)){onStale();return false;}showCsvMsg('Speichern fehlgeschlagen: '+error.message,'error');return false;}
 }
 
 function loadFormForMonth(ym){
@@ -6960,6 +7032,7 @@ function _lastBackup(){try{const t=localStorage.getItem(BACKUP_KEY);return t&&is
 function _refreshBackupInfo(){
   const t=_lastBackup(),days=t?Math.floor((Date.now()-t.getTime())/864e5):null;
   const tile=document.getElementById('dataTile');if(tile)tile.classList.toggle('has-badge',(!t||days>30)&&hasOnboardingData(appStorage.document()));
+  const bu=document.getElementById('beforeUpdateRow');if(bu){const b=appStorage.backupBeforeUpdate();bu.hidden=!b;const sub=document.getElementById('beforeUpdateSub');if(b&&sub&&b.version)sub.textContent=L('Unveränderte Daten der Version ','Unchanged data of version ')+b.version;}
   const el=document.getElementById('backupSub');if(!el)return;
   el.textContent=!t?'Noch keine Sicherung · empfohlen':'Zuletzt '+(days<1?'heute':days===1?'gestern':'vor '+days+' Tagen');
   el.classList.toggle('ds-warn',!t||days>30);
@@ -6985,14 +7058,19 @@ async function handleDataUpload(ev){
   const file=ev.target.files[0];if(!file)return;
   // Legacy CSV retains its existing merge semantics; JSON is a full restore.
   if(!file.name.toLowerCase().endsWith('.json')){handleCsvUpload(ev);return;}
+  /* P54: ersetzt wird der Stand, der beim Import angezeigt war; speichert inzwischen ein anderes Fenster, wird nichts importiert */
+  const base=appStorage.shownRevision();
   try{
     const doc=JSON.parse((await file.text()).replace(/^\uFEFF/,''));
     AssetsData.validate(doc);
     const date=doc.exportedAt?new Date(doc.exportedAt).toLocaleString('de-DE'):'';
     if(!await _ask({title:'Sicherung importieren?',text:(date?'Stand vom '+date+'\n':'')+doc.snapshots.length+' Monatsstände · '+doc.positions.filter(p=>!p.archived).length+' Positionen\n\nAlle Daten und Einstellungen auf diesem Gerät werden durch die Sicherung ersetzt. Tipp: vorher „Sicherung exportieren“ verwenden.',ok:'Importieren',danger:true}))return;
-    appStorage.importBackup(doc);
+    appStorage.withBase(base,()=>appStorage.importBackup(doc));
     location.reload();
-  }catch(error){showImportError('Import fehlgeschlagen: '+error.message+'. Deine gespeicherten Daten wurden nicht verändert.');}
+  }catch(error){
+    if(_isStale(error)){_importStale();return;}
+    showImportError('Import fehlgeschlagen: '+error.message+'. Deine gespeicherten Daten wurden nicht verändert.');
+  }
   finally{ev.target.value='';}
 }
 
@@ -7147,6 +7225,8 @@ function _uiBusy(){
 }
 function _externalChange(){
   _extChange=true;
+  /* vor dem ersten Aufbau der Seite nur vormerken; _startApp übernimmt danach */
+  if(!_initDone)return;
   /* ein verdecktes Fenster übernimmt erst, wenn es wieder sichtbar ist (visibilitychange) */
   if(document.hidden)return;
   if(_uiBusy()){_toast(L('In einem anderen Fenster gespeichert – wird übernommen, sobald du fertig bist.','Saved in another window – applied when you are done.'));return;}
@@ -7158,6 +7238,10 @@ function _applyExternalChange(){
   try{appStorage.reload();}catch(error){console.error(error);location.reload();return;}
   _extChange=false;
   if(_readLang()!==_lang){location.reload();return;}
+  /* P54: ab hier zeigt die Seite diesen Stand; erst jetzt dürfen Speicherungen ohne eigene Basis darauf aufbauen */
+  appStorage.markShown();
+  /* Wartung nach Erhalt des Schreibrechts, erst auf dem angezeigten Stand */
+  if(_pendingStartup&&appStorage.canWrite()){try{_startupWrites();_pendingStartup=false;}catch(error){console.warn(error);}}
   _fc=loadFieldConfig();_modsCache=null;_ltCalcCache=null;_orphanMemo={key:null,val:null};_loanShareMemo={key:null,val:null};
   _fc.fields.forEach(f=>{const key=f.unitId||f.id;if(AssetModel.valuation(f)==='market'&&f.lastQuote)livePrices[key]=f.lastQuote.priceEUR;else delete livePrices[key];});
   Object.keys(charts).forEach(c=>destroyChart(c));
@@ -7166,20 +7250,219 @@ function _applyExternalChange(){
   if(pg==='page-budget')renderBudgetPage();
   if(pg==='page-lifetime'){buildAssetParamsTable(true);renderLifetimePageCalcs();}
 }
-window.addEventListener('storage',e=>{if(e.key===null||e.key===AssetsData.KEY)_externalChange();});
-const _onConflict=reason=>{if(reason&&reason.code==='CONFLICT'){_externalChange();return true;}return false;};
+window.addEventListener('storage',e=>{
+  if(e.key==='vermoegen-writer'||e.key==='vermoegen-writer-request')appStorage.onStorage(e.key);
+  if(e.key===null||e.key===AssetsData.KEY)_externalChange();
+});
+/* P63: Navigation, Schließen und bfcache (pagehide) sowie ein vom Browser eingefrorener Tab (freeze) geben das
+   Schreibrecht wirklich ab, damit ein anderes Fenster sofort übernehmen kann. Die Rückkehr (pageshow aus dem bfcache,
+   resume) erwirbt es neu und lädt den aktuellen Stand; offene Eingaben behalten ihre Basis (P54). Ein nur verdeckter
+   Tab (visibilitychange) behält es und beantwortet weiter Übergabe-Bitten. */
+function _suspendWriting(){try{appStorage.suspend();}catch(error){console.warn(error);}}
+function _resumeWriting(){
+  if(appStorage.writerState()!=='suspended')return;
+  /* während der Abwesenheit gespeicherte Stände übernehmen; angezeigt wird, sobald nichts bearbeitet wird */
+  try{if(appStorage.reload())_extChange=true;}catch(error){_extChange=true;}
+  appStorage.resume().then(()=>{if(!_initDone)return;_showReadOnly(!appStorage.canWrite());if(_extChange&&!_uiBusy())_applyExternalChange();},error=>console.warn(error));
+}
+window.addEventListener('pagehide',_suspendWriting);
+window.addEventListener('pageshow',e=>{if(e&&e.persisted)_resumeWriting();});
+document.addEventListener('freeze',_suspendWriting);
+document.addEventListener('resume',_resumeWriting);
+/* falls eine Plattform beim Wechsel in den Hintergrund pagehide meldet, aber bei der Rückkehr nur sichtbar wird */
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)_resumeWriting();});
+const _onConflict=reason=>{
+  if(reason&&reason.code==='CONFLICT'){_externalChange();return true;}
+  if(reason&&reason.code==='READ_ONLY'){
+    _showReadOnly(true);
+    const st=appStorage.writerState();
+    _toast(st==='unsupported'?L('Nur ansehen – nicht gespeichert. Zum Bearbeiten oben „Nur hier bearbeiten …“ wählen.','View only – not saved. To edit, choose "Edit only here …" at the top.')
+      :st==='failed'?L('Nur ansehen – Speichern war nicht möglich. Nicht gespeichert.','View only – saving was not possible. Not saved.')
+      :L('Nur ansehen – in einem anderen Fenster geöffnet. Nicht gespeichert.','View only – open in another window. Not saved.'));
+    return true;
+  }
+  /* P54: eine Speicherung ohne eigene Basis traf auf einen noch nicht angezeigten Stand – erst anzeigen */
+  if(reason&&reason.code==='STALE'){_extChange=true;if(!_uiBusy())_applyExternalChange();return true;}
+  return false;
+};
+/* P34/P55: Hinweis im Lesemodus mit passender Aktion: „Hier bearbeiten“ (anderes Fenster schreibt), „Erneut versuchen“
+   (Übernahme gescheitert, z. B. Speicher voll) oder „Nur hier bearbeiten …“ (Browser ohne Web Locks) */
+function _showReadOnly(on){
+  let bar=document.getElementById('roBar');
+  if(!on){if(bar)bar.remove();document.body.classList.remove('read-only');return;}
+  document.body.classList.add('read-only');
+  const st=appStorage.writerState(),f=appStorage.writerFailure();
+  /* P65: ein gespeicherter Stand, den diese Version nicht lesen kann, bleibt unverändert */
+  const text=st==='failed'&&f&&f.code==='UNREADABLE'?L('Nur ansehen – die gespeicherten Daten konnten nicht gelesen werden (vielleicht von einer neueren App-Version) und bleiben unverändert.','View only – the saved data could not be read (perhaps from a newer app version) and stays unchanged.')
+    :st==='failed'?L('Nur ansehen – Speichern war nicht möglich (z. B. Speicher voll). Deine gespeicherten Daten sind unverändert.','View only – saving was not possible (e.g. storage full). Your saved data is unchanged.')+(f&&f.message?' ('+f.message+')':'')
+    :st==='unsupported'?L('Nur ansehen – dieser Browser kann nicht sicherstellen, dass nur ein Fenster speichert.','View only – this browser cannot make sure that only one window saves.')
+    :L('Nur ansehen – die Daten sind in einem anderen Fenster zum Bearbeiten geöffnet.','View only – the data is open for editing in another window.');
+  const label=st==='failed'?L('Erneut versuchen','Try again'):st==='unsupported'?L('Nur hier bearbeiten …','Edit only here …'):L('Hier bearbeiten','Edit here');
+  if(!bar){
+    bar=document.createElement('div');bar.id='roBar';bar.className='ro-bar';bar.setAttribute('role','status');
+    bar.innerHTML='<span></span><button type="button" id="roTake"></button>';
+    document.body.prepend(bar);
+    document.getElementById('roTake').addEventListener('click',_takeOverWriting);
+  }
+  bar.firstElementChild.textContent=text;
+  const b=document.getElementById('roTake');if(!_takingOver)b.textContent=label;
+}
+let _takingOver=false;
+async function _takeOverWriting(){
+  if(_takingOver)return;
+  const b=document.getElementById('roTake');
+  _takingOver=true;if(b)b.disabled=true;
+  let r='timeout';
+  try{
+    if(appStorage.writerState()==='unsupported'){
+      if(await _ask({title:L('Nur in diesem Fenster bearbeiten?','Edit only in this window?'),ok:L('Hier bearbeiten','Edit here'),cancel:L('Abbrechen','Cancel'),
+        text:L('Dieser Browser kann nicht verhindern, dass zwei Fenster gleichzeitig speichern. Bearbeite nur, wenn die App in keinem anderen Fenster und keinem anderen Tab geöffnet ist. Gleichzeitige Änderungen werden dann nur beim Speichern erkannt.','This browser cannot prevent two windows from saving at the same time. Only edit if the app is not open in any other window or tab. Simultaneous changes are then only detected when saving.')}))
+        r=appStorage.allowSingle()==='single'?'writer':'failed';
+      else r='cancel';
+    }else r=await appStorage.requestWrite();
+  }catch(error){console.warn(error);r='failed';}
+  finally{_takingOver=false;const nb=document.getElementById('roTake');if(nb)nb.disabled=false;}
+  if(r==='cancel')return;
+  if(r==='writer'){_showReadOnly(false);_toast(L('Du bearbeitest jetzt in diesem Fenster.','You are now editing in this window.'));return;}
+  _showReadOnly(!appStorage.canWrite());
+  const f=appStorage.writerFailure();
+  _ask({title:L('Bearbeitung nicht übernommen','Editing not taken over'),cancel:null,ok:'OK',text:r==='busy'
+    ?L('Im anderen Fenster wird gerade bearbeitet. Bitte dort sichern oder abbrechen und es dann noch einmal versuchen.','Something is being edited in the other window. Please save or cancel there and try again.')
+    :r==='denied'?L('Der Browser hat das Schreibrecht für dieses Fenster abgelehnt. Bitte lade die Seite neu und versuche es dann noch einmal.','The browser refused write access for this window. Please reload the page and try again.')
+    :r==='failed'&&f&&f.code==='UNREADABLE'?L('Die gespeicherten Daten konnten weiterhin nicht gelesen werden und bleiben unverändert. Bitte lade die Seite neu (dabei wird die neueste App-Version geladen) und versuche es dann noch einmal.','The saved data still could not be read and stays unchanged. Please reload the page (this loads the newest app version) and try again.')
+    :r==='failed'?L('Speichern war nicht möglich. Deine gespeicherten Daten sind unverändert. Bitte Speicherplatz freigeben (z. B. andere Website-Daten) und es dann noch einmal versuchen.','Saving was not possible. Your saved data is unchanged. Please free up storage (e.g. other website data) and try again.')+(f&&f.message?' ('+f.message+')':'')
+    :L('Das andere Fenster antwortet nicht. Bitte schließe es oder lade es neu und versuche es dann noch einmal.','The other window does not respond. Please close or reload it and try again.')});
+}
+let _initDone=false,_pendingStartup=false;
+appStorage.onWriterChange(state=>{
+  if(!_initDone||state==='suspended'||state==='pending')return;
+  _showReadOnly(!appStorage.canWrite());
+  /* Schreibrecht erhalten (auch „Nur hier bearbeiten“ ohne Web Locks): den übernommenen Stand anzeigen, danach die Wartung
+     nachholen (in _applyExternalChange) */
+  if(state==='writer'||state==='single'){_pendingStartup=true;_extChange=true;if(!_uiBusy())_applyExternalChange();}
+});
 window.addEventListener('unhandledrejection',e=>{if(_onConflict(e.reason))e.preventDefault();});
 window.addEventListener('error',e=>{if(_onConflict(e.error))e.preventDefault();});
 function _toast(text){
   const t=document.getElementById('dsToast');if(!t)return;
   t.textContent=text;t.classList.add('show');clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove('show'),2200);
 }
+/* Fehler beim Speichern eines Sheets: ein veralteter Stand (P54) wird abgeglichen statt nur gemeldet. In einer Speicher-
+   funktion merkt _sheetFail ihn für _submitSheet vor; Aktionen außerhalb (z. B. Löschen nach Rückfrage) gleichen sofort ab. */
+let _sheetStaleHit=false;
+function _sheetFail(error){if(_isStale(error)){_sheetStaleHit=true;return;}_sheetError(error.message);}
+function _sheetFailNow(error){if(_isStale(error)&&_sheetOpen){_sheetReconcile();return;}_sheetError(error.message);}
 function _sheetError(message){
   const el=document.getElementById('dsError');if(!el)return;
   el.textContent=message||'';el.hidden=!message;
   if(message){const b=document.getElementById('dsBody');if(b&&b.scrollTo)b.scrollTo({top:0,behavior:'smooth'});}
 }
-/* again: öffnet das Sheet erneut, falls vorher eine Rückfrage (ungesicherte Änderungen) nötig war */
+/* ══ P54: Bearbeitungen mit eigener Basis ══
+   Der Speicher zählt übernommene fremde Stände (appStorage.revision). Jede Bearbeitung merkt sich die Revision, mit der
+   ihre Eingaben angezeigt wurden: Sheets und Daten-Bearbeiten beim Öffnen, Einrichtung beim Start, Import vor der Auswahl
+   der Datei, die Ereignisliste der Prognose-Annahmen beim Zeichnen. Beruht eine Speicherung auf einem älteren Stand
+   (anderes Fenster, Übernahme des Schreibrechts, Rückkehr), lehnt der Speicher sie ab (STALE) und schreibt nichts. Sheet
+   bzw. Daten-Seite öffnen dann mit dem aktuellen Stand neu, tragen nur die hier geänderten Felder wieder ein (markiert,
+   mit dem inzwischen gespeicherten Wert daneben) und speichern erst, wenn man erneut speichert. */
+const _isStale=e=>!!e&&(e.code==='STALE'||e.code==='CONFLICT');
+/* Einzelwert, der nichts aus der Anzeige übernimmt (aufgeklappt, Thema, Sprache, Bereiche, ein Annahmefeld) */
+const _fieldWrite=fn=>appStorage.withBase(appStorage.revision(),fn);
+/* Felder, die bedient wurden (Eingabe, Auswahl, Datums- und Segmentwahl); nur diese zählen als eigene Änderung */
+let _touched=new WeakSet();
+function _touch(e){
+  const t=e.target;if(!t||!t.closest)return;
+  if(/^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName))_touched.add(t);
+  const seg=t.closest('[data-seg-for]'),date=t.closest('[data-date-for]'),f=seg||date;
+  if(f){const i=document.getElementById(f.dataset.segFor||f.dataset.dateFor);if(i)_touched.add(i);}
+}
+/* Bedienelemente eines Bereichs mit stabiler Kennung: id, name, Radiogruppe oder data-Attribute samt Zeilen-Kennung
+   (fortlaufend vergebene ids der Datumsfelder sind nach dem Neuzeichnen andere und zählen nicht) */
+function _ctlList(root,skip){
+  if(!root||typeof root.querySelectorAll!=='function')return [];
+  const out=[],seen={};
+  root.querySelectorAll('input,select,textarea').forEach(el=>{
+    if(/^(button|submit|reset|file|image)$/.test(el.type)||(skip&&skip(el)))return;
+    let k;
+    if(el.type==='radio'){if(!el.name)return;k='r:'+el.name;if(seen[k])return;seen[k]=1;out.push({key:k,el,radio:true});return;}
+    if(el.id&&!/^dt-\d+$/.test(el.id))k='#'+el.id;
+    else if(el.name)k='n:'+el.name;
+    else{
+      /* P64: Zeilen nur über ihre gespeicherte Kennung (Zeile, Sondertilgung), samt Liste, zu der sie gehören */
+      const row=el.closest&&el.closest('[data-row-id],[data-extra-id]'),rid=row?row.dataset.rowId||row.dataset.extraId||'':'';
+      const box=rid&&row.parentElement&&row.parentElement.closest?row.parentElement.closest('[id]'):null;
+      k='d:'+el.tagName+':'+(rid?(box?box.id+'/':'')+'row='+rid+'|':'')+Object.keys(el.dataset||{}).sort().map(d=>d+'='+el.dataset[d]).join('&');
+    }
+    seen[k]=(seen[k]||0)+1;out.push({key:k+'@'+(seen[k]-1),el,base:k});
+  });
+  /* P64: Eine Kennung, die mehrfach vorkommt, beweist keine Identität (Position ist keine): solche Felder werden nie übertragen */
+  out.forEach(c=>{c.ambiguous=!c.radio&&seen[c.base]>1;});
+  return out;
+}
+function _ctlRead(root,c){
+  if(c.radio){const r=[...root.querySelectorAll('input[type="radio"]')].find(x=>x.name===c.el.name&&x.checked);return r?r.value:'';}
+  return c.el.type==='checkbox'?(c.el.checked?'1':'0'):String(c.el.value??'');
+}
+function _ctlLabel(el){
+  const lab=(el.closest&&el.closest('label'))||(el.id?document.querySelector('label[for="'+el.id+'"]'):null);
+  let t='';
+  if(lab)lab.childNodes.forEach(n=>{if(n.nodeType===3)t+=n.textContent;else if(n.nodeType===1&&!/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(n.tagName)&&!n.querySelector('input,select,textarea'))t+=n.textContent;});
+  t=t.replace(/\s+/g,' ').trim()||el.getAttribute('aria-label')||el.placeholder||el.name||'';
+  return t.length>60?t.slice(0,57)+'…':t;
+}
+function _ctlShow(root,c,value){
+  if(c.radio){const r=[...root.querySelectorAll('input[type="radio"]')].find(x=>x.name===c.el.name&&x.value===value),l=r&&r.closest('label');return l?l.textContent.replace(/\s+/g,' ').trim():value;}
+  if(c.el.tagName==='SELECT'){const o=[...c.el.options].find(o=>o.value===value);return o?o.textContent.trim():value;}
+  if(c.el.type==='checkbox')return value==='1'?L('ja','yes'):L('nein','no');
+  const seg=c.el.id&&root.querySelector('[data-seg-for="'+c.el.id+'"]'),date=c.el.id&&root.querySelector('[data-date-for="'+c.el.id+'"]');
+  if(seg){const btn=[...seg.querySelectorAll('button')].find(x=>x.dataset.v===value);if(btn)return btn.textContent.trim();}
+  if(date&&value)return _dateLabel(value,date.dataset.dateMode)||value;
+  return value===''?L('leer','empty'):value;
+}
+function _ctlState(root,skip){const m={};_ctlList(root,skip).forEach(c=>{m[c.key]=_ctlRead(root,c);});return m;}
+/* Was hier seit dem ersten Bedienen geändert wurde (ohne Ausgangswerte: nichts) */
+function _ctlChanges(root,snap,skip){
+  if(!snap)return [];
+  const touched=c=>c.radio?[...root.querySelectorAll('input[type="radio"]')].some(x=>x.name===c.el.name&&_touched.has(x)):_touched.has(c.el);
+  return _ctlList(root,skip).filter(touched).map(c=>({c,value:_ctlRead(root,c)})).filter(x=>snap[x.c.key]===undefined?x.value!=='':snap[x.c.key]!==x.value)
+    .map(x=>({key:x.c.key,value:x.value,before:snap[x.c.key],label:_ctlLabel(x.c.el),show:_ctlShow(root,x.c,x.value),ambiguous:x.c.ambiguous}));
+}
+/* Änderungen in die neu gezeichneten Felder eintragen; liefert, was sich nicht zuordnen ließ */
+function _ctlApply(root,changes,skip){
+  const now={};_ctlList(root,skip).forEach(c=>{now[c.key]=c;});
+  const miss=[];
+  changes.forEach(ch=>{
+    const c=now[ch.key];if(!c||c.ambiguous||ch.ambiguous){miss.push(ch);return;}
+    const theirs=_ctlRead(root,c);
+    let el=c.el,mark=el;
+    const seg=el.id&&root.querySelector('[data-seg-for="'+el.id+'"]'),date=el.id&&root.querySelector('[data-date-for="'+el.id+'"]');
+    if(c.radio){el=[...root.querySelectorAll('input[type="radio"]')].find(x=>x.name===c.el.name&&x.value===ch.value);if(!el){miss.push(ch);return;}el.checked=true;mark=el.closest('label')||el;}
+    else if(seg){const btn=[...seg.querySelectorAll('button')].find(x=>x.dataset.v===ch.value);if(!btn){miss.push(ch);return;}_segPick(btn);mark=seg;}
+    else if(date){_setDateValue(date,ch.value);mark=date;}
+    else if(el.type==='checkbox')el.checked=ch.value==='1';
+    else el.value=ch.value;
+    if(!seg&&!date){el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));}
+    _touched.add(c.el);mark.classList.add('ds-mine');
+    /* zugeklappte Abschnitte mit einer eingetragenen Änderung öffnen, damit sie sichtbar ist */
+    for(let d=mark.closest('details');d;d=d.parentElement&&d.parentElement.closest('details'))d.open=true;
+    /* auch im anderen Fenster geändert: dessen Wert danebenstellen */
+    if(ch.before!==undefined&&theirs!==ch.before){
+      const hint=document.createElement('small');hint.className='ds-theirs';
+      hint.textContent=L('Inzwischen gespeichert: ','Saved meanwhile: ')+_ctlShow(root,c,theirs);
+      (c.radio||seg||date?mark:(el.closest('label')||el)).insertAdjacentElement('afterend',hint);
+    }
+  });
+  return miss;
+}
+function _staleNote(mine,miss){
+  const moved=mine.length-miss.length;
+  return L('Nicht gespeichert: In einem anderen Fenster wurde inzwischen gespeichert. Hier steht jetzt der aktuelle Stand.','Not saved: data was saved in another window in the meantime. This now shows the current state.')+' '
+    +(moved>0?L('Deine Änderungen sind wieder eingetragen und markiert – bitte prüfen und erneut speichern.','Your changes are filled in again and highlighted – please check and save again.')
+      :mine.length?'':L('Du hattest hier nichts geändert.','You had not changed anything here.'))
+    +(miss.length?' '+L('Nicht übertragen: ','Not transferred: ')+miss.map(m=>(m.label?m.label+' ':'')+'„'+m.show+'“').join(', '):'');
+}
+/* again: öffnet das Sheet erneut, falls vorher eine Rückfrage (ungesicherte Änderungen) nötig war – oder nach einer
+   abgelehnten veralteten Speicherung mit dem aktuellen Stand (P54) */
+let _sheetBase=0,_sheetSnap=null,_sheetAgain=null;
 function _openSheet(title,body,save,saveLabel='Speichern',again){
   if(_sheetOpen&&!_closeSheet(false,again))return false;
   if(_editMode&&!_resolvePendingEdits(again))return false;
@@ -7189,6 +7472,8 @@ function _openSheet(title,body,save,saveLabel='Speichern',again){
   b.innerHTML='<div class="ds-error" id="dsError" role="alert" hidden></div>'+body;
   b.scrollTop=0;
   _sheetSave=save;_sheetOpen=true;_sheetDirty=false;
+  /* P54: Basis dieser Bearbeitung ist der angezeigte Stand; Ausgangswerte beim ersten Bedienen (_initSheet) */
+  _sheetBase=appStorage.shownRevision();_sheetSnap=null;_sheetAgain=again||null;
   document.getElementById('dsOverlay').classList.add('show');
   document.getElementById('dsSheet').classList.add('show');
   document.body.classList.add('ds-lock');
@@ -7201,7 +7486,7 @@ function _closeSheet(force=false,again){
       .then(yes=>{if(yes&&_closeSheet(true)&&again)again();});
     return false;
   }
-  _sheetOpen=false;_sheetSave=null;_sheetDirty=false;_sheetCtx={};
+  _sheetOpen=false;_sheetSave=null;_sheetDirty=false;_sheetCtx={};_sheetSnap=null;_sheetAgain=null;
   document.getElementById('dsCancel').style.visibility='';
   _assetChecks.clear();_assetCheckRuns.clear();
   document.getElementById('dsOverlay').classList.remove('show');
@@ -7217,14 +7502,40 @@ function _submitSheet(){
   _sheetError('');
   const active=document.activeElement;if(active&&active.blur&&active.closest&&active.closest('#dsBody'))active.blur();
   let ok=false,result;
-  try{result=_sheetSave();ok=result!==false;}catch(error){_sheetError(error.message);return;}
+  _sheetStaleHit=false;
+  try{result=appStorage.withBase(_sheetBase,_sheetSave);ok=result!==false;}
+  catch(error){if(_isStale(error)){_sheetReconcile();return;}_sheetError(error.message);return;}
+  if(_sheetStaleHit){_sheetStaleHit=false;_sheetReconcile();return;}
   if(ok){_closeSheet(true);if(result!=='quiet')_toast('Gespeichert');}
+}
+/* P54: Der Entwurf beruht auf einem älteren Stand; gespeichert wurde nichts. Neu öffnen mit dem aktuellen Stand und nur die
+   hier geänderten Felder wieder eintragen. Lässt sich das Sheet nicht mehr öffnen (z. B. Eintrag gelöscht), die Eingaben
+   nennen, damit nichts unbemerkt verloren geht. */
+function _sheetReconcile(){
+  const b=document.getElementById('dsBody'),again=_sheetAgain,mine=_ctlChanges(b,_sheetSnap);
+  _closeSheet(true);
+  _extChange=true;_applyExternalChange();
+  if(again)again();
+  if(!_sheetOpen){
+    _ask({title:L('Nicht gespeichert','Not saved'),cancel:null,ok:'OK',text:L('In einem anderen Fenster wurde inzwischen gespeichert; dieser Eintrag lässt sich so nicht mehr öffnen. Es wurde nichts gespeichert.','Data was saved in another window in the meantime; this entry can no longer be opened like this. Nothing was saved.')
+      +(mine.length?'\n\n'+L('Deine Eingaben: ','Your entries: ')+mine.map(m=>(m.label?m.label+' ':'')+'„'+m.show+'“').join(', '):'')});
+    return;
+  }
+  const nb=document.getElementById('dsBody'),toast=document.getElementById('dsToast');
+  if(toast)toast.classList.remove('show');
+  _sheetSnap=_ctlState(nb);
+  const miss=_ctlApply(nb,mine);
+  _sheetDirty=mine.length>miss.length;
+  _sheetError(_staleNote(mine,miss));
 }
 function _initSheet(){
   const b=document.getElementById('dsBody');if(!b||b._ready)return;b._ready=true;
   document.addEventListener('click',e=>{const d=e.target.closest&&e.target.closest('[data-date-for]');if(d){e.preventDefault();_openDatePicker(d);}});
   document.getElementById('dsCancel').addEventListener('click',()=>_closeSheet());
   document.getElementById('dsSave').addEventListener('click',_submitSheet);
+  /* P54: Ausgangswerte festhalten, bevor zum ersten Mal etwas bedient wird */
+  ['pointerdown','focusin','keydown'].forEach(t=>b.addEventListener(t,()=>{if(_sheetOpen&&!_sheetSnap)_sheetSnap=_ctlState(b);},true));
+  ['input','change','click'].forEach(t=>b.addEventListener(t,_touch,true));
   document.getElementById('dsOverlay').addEventListener('click',()=>_closeSheet());
   document.addEventListener('keydown',e=>{if(_sheetOpen&&e.key==='Escape')_closeSheet();});
   b.addEventListener('keydown',e=>{const sw=e.target.closest&&e.target.closest('[data-mod-set]');if(sw&&(e.key===' '||e.key==='Enter')){e.preventDefault();sw.click();return;}_monthSheetKey(e);});
@@ -7619,7 +7930,7 @@ function _saveMonthSheet(){
     });
     recalcAggregates(e);data[ym]=e;saveData(data);
     appStorage.commitTransaction();
-  }catch(error){appStorage.rollbackTransaction();_sheetError(error.message);return false;}
+  }catch(error){appStorage.rollbackTransaction();_sheetFail(error);return false;}
   const live=ym===nextYM();
   if(live)try{localStorage.setItem(MONTH_DONE_KEY,ym);}catch(error){}
   _afterDataChange();_monthNotif();
@@ -7772,7 +8083,7 @@ function _saveHistorySheet(){
     });
     if(changed)saveData(data);
     appStorage.commitTransaction();
-  }catch(error){appStorage.rollbackTransaction();_sheetError(error.message);return false;}
+  }catch(error){appStorage.rollbackTransaction();_sheetFail(error);return false;}
   _afterDataChange();return true;
 }
 
@@ -7960,7 +8271,7 @@ function _saveAssetSheet(id){
       _confirmObserved(e,id,key);recalcAggregates(e);data[ym]=e;saveData(data);
     }
     appStorage.commitTransaction();
-  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();_sheetError(error.message);return false;}
+  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();_sheetFail(error);return false;}
   _afterDataChange();_offerQuoteHistory(id,before);return true;
 }
 /* Nach dem Umstellen auf Kurse oder einer neuen Kursquelle die früheren Monate anbieten (nach dem Schließen des Sheets) */
@@ -8053,7 +8364,7 @@ function _saveLoanSheet(id){
       if(bal!==_sheetCtx.balance){const data=loadData(),e=_monthEntryForEdit(data,selectedMonth);e._details[id]=bal;recalcAggregates(e);data[selectedMonth]=e;saveData(data);}
     }
     appStorage.commitTransaction();
-  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();_sheetError(error.message);return false;}
+  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();_sheetFail(error);return false;}
   _afterDataChange();return true;
 }
 function openAddLiabSheet(){
@@ -8078,7 +8389,7 @@ function _saveNewLiab(){
     const lp=getLoanParams();lp[id]=p;appStorage.setItem('loanParams',JSON.stringify(lp));
     if(bal){const data=loadData(),e=_monthEntryForEdit(data,selectedMonth);e._details[id]=bal;recalcAggregates(e);data[selectedMonth]=e;saveData(data);}
     appStorage.commitTransaction();
-  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();_sheetError(error.message);return false;}
+  }catch(error){appStorage.rollbackTransaction();_fc=loadFieldConfig();_sheetFail(error);return false;}
   _afterDataChange();return true;
 }
 
@@ -8175,7 +8486,7 @@ function _saveAccountSheet(){
     bd.accounts=next;
     if(old&&old!==name)(bd.standingOrders||[]).forEach(o=>{if(o.from===old)o.from=name;if(o.to===old)o.to=name;});
     _storeBudget(bd);
-  }catch(error){_sheetError(error.message);return false;}
+  }catch(error){_sheetFail(error);return false;}
   _afterDataChange();return true;
 }
 async function _deleteAccount(){
@@ -8184,7 +8495,7 @@ async function _deleteAccount(){
   const used=(bd.standingOrders||[]).filter(o=>o.from===name||o.to===name).length;
   if(!await _ask({title:`Konto „${name}“ löschen?`,text:used?`${used===1?'Ein Dauerauftrag nutzt':used+' Daueraufträge nutzen'} dieses Konto. Sie bleiben mit der Bezeichnung „${name}“ erhalten.`:'',ok:'Löschen',danger:true}))return;
   delete bd.accounts[name];
-  try{_storeBudget(bd);}catch(error){_sheetError(error.message);return;}
+  try{_storeBudget(bd);}catch(error){_sheetFailNow(error);return;}
   _closeSheet(true);_afterDataChange();_toast('Gelöscht');
 }
 function openOrderSheet(id){
@@ -8213,7 +8524,7 @@ function _saveOrderSheet(){
     const entry={id:_sheetCtx.order.id||'order-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),from,to,amount};
     const i=bd.standingOrders.findIndex(o=>o.id===entry.id);if(i>=0)bd.standingOrders[i]=entry;else bd.standingOrders.push(entry);
     _storeBudget(bd);
-  }catch(error){_sheetError(error.message);return false;}
+  }catch(error){_sheetFail(error);return false;}
   _afterDataChange();return true;
 }
 async function _deleteOrder(){
@@ -8221,7 +8532,7 @@ async function _deleteOrder(){
   const bd=loadBudgetData();if(!bd)return;
   if(!await _ask({title:'Dauerauftrag löschen?',ok:'Löschen',danger:true}))return;
   bd.standingOrders=(bd.standingOrders||[]).filter(o=>o.id!==id);
-  try{_storeBudget(bd);}catch(error){_sheetError(error.message);return;}
+  try{_storeBudget(bd);}catch(error){_sheetFailNow(error);return;}
   _closeSheet(true);_afterDataChange();_toast('Gelöscht');
 }
 /* Von der Budget-Seite an die passende Stelle der Daten-Seite springen */
@@ -8266,11 +8577,11 @@ function _loanLinkHint(id){
 /* opts: {} neu, {ref:'kategorie:id'} wiederkehrend bearbeiten, {once:id} einmalig bearbeiten, {mode:'once'} neu einmalig */
 function openBudgetSheet(opts={}){
   const bd=loadBudgetData()||{};
-  let mode=opts.mode||'recurring',isNew=true,type='expense',cost='fixe',name='',amount=0,rhythm='month',start=+selectedMonth.slice(5)-1,month=selectedMonth,target=null,subcat='',values=Array(12).fill(0),origKind=null,loanId='',depotId='',retire=false,person='';
+  let mode=opts.mode||'recurring',isNew=true,type='expense',cost='fixe',name='',amount=0,rhythm='month',start=+selectedMonth.slice(5)-1,month=selectedMonth,target=null,subcat='',values=Array(12).fill(0),origKind=null,loanId='',depotId='',retire=false,person='',workPct=null;
   if(opts.ref){
     const [key,rid]=opts.ref.split(':'),r=(bd[key]||[]).find(x=>x.id===rid);if(!r)return;
     isNew=false;mode='recurring';type=key==='einkommen'?'income':key==='sparen'?'saving':'expense';cost=key==='variable'?'variable':'fixe';
-    name=r.name;subcat=r.subcat||'';target=r.targetGroupId??null;origKind=r.kind||null;values=r.values.map(x=>+x||0);loanId=r.loanId||'';depotId=r.depotId||'';retire=!!r.retirement;person=r.person||'';
+    name=r.name;subcat=r.subcat||'';target=r.targetGroupId??null;origKind=r.kind||null;values=r.values.map(x=>+x||0);loanId=r.loanId||'';depotId=r.depotId||'';retire=!!r.retirement;person=r.person||'';workPct=+r.workPct>0?+r.workPct:null;
     const rh=_budgetRhythm(values);rhythm=rh.rhythm;amount=rh.amount;if(rh.rhythm!=='month')start=rh.start;
   }
   if(opts.once){
@@ -8294,6 +8605,8 @@ function openBudgetSheet(opts={}){
     <div class="ds-row" id="b-costRow"><span class="ds-l">Kosten</span>${_seg('b-cost',[['fixe','Fix'],['variable','Variabel']],cost)}</div>
     <label class="ds-row" id="b-amountRow"><span class="ds-l">Betrag €</span><input class="ds-in ds-money" type="text" inputmode="decimal" id="b-amount" value="${amount?_moneyInput(amount):''}" placeholder="0"></label>
     <label class="ds-row" id="b-personRow"><span class="ds-l" data-info="b-person">Person</span><select class="ds-in ds-wide" id="b-person">${[['','Haushalt'],[_ownPersonId(),'Ich'],..._personOptions('').slice(1)].map(([v,l])=>`<option value="${escHTML(v)}"${v===person?' selected':''}>${escHTML(l)}</option>`).join('')}</select></label>
+    <div class="ds-row" id="b-workRow"><span class="ds-l" data-info="b-work">${L('Arbeitszeit','Working time')}<small>${L('für die Prognose: Gehalt bei Vollzeit oder Teilzeit','for the forecast: salary at full-time or part-time')}</small></span>${_seg('b-work',[['full',L('Vollzeit','Full-time')],['part',L('Teilzeit','Part-time')]],workPct==null?'':workPct>=100?'full':'part')}</div>
+    <label class="ds-row" id="b-workPctRow"><span class="ds-l">${L('Teilzeit %','Part-time %')}<small>${L('Anteil einer Vollzeitstelle','share of a full-time position')}</small></span><input class="ds-in" type="text" inputmode="decimal" id="b-workPct" value="${workPct!=null&&workPct<100?_numStr(workPct):''}" placeholder="50"></label>
     <div class="ds-row" id="b-retRow" data-b-ret style="cursor:pointer"><span class="ds-l">Auch im Ruhestand<small id="b-retHint"></small></span><span class="v2-switch" role="switch" tabindex="0" id="b-retOn" aria-checked="${retire}" aria-label="Auch im Ruhestand"><i></i></span></div>
     ${liabs.length?`<label class="ds-row" id="b-loanRow"><span class="ds-l">Kreditrate für<small id="b-loanHint">${escHTML(_loanLinkHint(loanId))}</small></span><select class="ds-in ds-wide" id="b-loan"><option value="">Kein Kredit</option>${loanId==='*'?'<option value="*" selected>Mehrere Kredite (anteilig)</option>':''}${liabs.map(f=>`<option value="${escHTML(f.id)}"${f.id===loanId?' selected':''}>${escHTML(f.label)}</option>`).join('')}</select></label>`:''}
     ${depots.length?`<label class="ds-row" id="b-depotRow"><span class="ds-l">Beitrag für<small id="b-depotHint">${escHTML(_depotLinkHint(depotId))}</small></span><select class="ds-in ds-wide" id="b-depot"><option value="">Kein Altersvorsorgedepot</option>${depots.map(d=>`<option value="${escHTML(d.id)}"${d.id===depotId?' selected':''}>${escHTML((d.name||'').trim()||'Altersvorsorgedepot')}</option>`).join('')}</select></label>`:''}
@@ -8346,6 +8659,9 @@ function _budgetSheetUpdate(){
   const custom=mode==='recurring'&&_switchOn('b-customOn');
   show('b-recurring',mode==='recurring');show('b-once',mode==='once');show('b-customWrap',mode==='recurring');
   show('b-costRow',type==='expense');show('b-retRow',type==='income'&&mode==='recurring');show('b-personRow',type==='income'&&mode==='recurring');
+  /* Arbeitszeit nur beim Gehalt einer Person (nicht „Auch im Ruhestand“) */
+  const sal=type==='income'&&mode==='recurring'&&!!v('b-person')&&!_switchOn('b-retOn');
+  show('b-workRow',sal);show('b-workPctRow',sal&&v('b-work')==='part');
   const retHint=document.getElementById('b-retHint');
   if(retHint){
     const dup=_switchOn('b-retOn')?_retIncomeDuplicate(v('b-name')):null;
@@ -8398,12 +8714,18 @@ function _saveBudgetSheet(){
       if(type==='expense'&&loanSel!==null&&loanSel!=='*')kind=loanSel?'loanPayment':'expense';
       const depotRow=document.getElementById('b-depotRow'),depotSel=depotRow&&!depotRow.hidden?v('b-depot'):'';
       const row={id,name,subcat:v('b-subcat'),kind,targetGroupId:type==='saving'?target:(old&&kind!==type?old.targetGroupId??null:null),values,...(type==='expense'&&loanSel&&loanSel!=='*'?{loanId:loanSel}:{}),...(type==='saving'&&depotSel?{depotId:depotSel}:{}),...(type==='income'&&_switchOn('b-retOn')?{retirement:true}:{}),...(type==='income'&&v('b-person')?{person:v('b-person')}:{})};
+      /* Arbeitszeit zum Gehalt (Schema 17): Vollzeit 100, Teilzeit 1–99 %; ohne Auswahl keine Angabe */
+      const salRow=document.getElementById('b-workRow');
+      if(type==='income'&&salRow&&!salRow.hidden&&v('b-work')){
+        if(v('b-work')==='full')row.workPct=100;
+        else{const n=_parseDec(v('b-workPct'));if(!(isFinite(n)&&n>0&&n<100))throw new Error(L('Teilzeit: bitte einen Anteil zwischen 1 und 99 % eingeben.','Part-time: please enter a share between 1 and 99 %.'));row.workPct=n;}
+      }
       bd[category]=bd[category]||[];
       if(pos>=0)bd[category].splice(pos,0,row);else bd[category].push(row);
     }
     appStorage.beginTransaction();
     try{saveBudgetData(bd);appStorage.commitTransaction();}catch(error){appStorage.rollbackTransaction();throw error;}
-  }catch(error){_sheetError(error.message);return false;}
+  }catch(error){_sheetFail(error);return false;}
   _afterDataChange();return true;
 }
 async function _deleteBudgetEntry(){
@@ -8413,7 +8735,7 @@ async function _deleteBudgetEntry(){
   if(!await _ask({title:`„${label}“ löschen?`,ok:'Löschen',danger:true}))return;
   if(ctx.once)bd.oneTime=(bd.oneTime||[]).filter(o=>o.id!==ctx.once);
   else if(ctx.ref){const [key,rid]=ctx.ref.split(':');bd[key]=(bd[key]||[]).filter(r=>r.id!==rid);}
-  try{saveBudgetData(bd);}catch(error){_sheetError(error.message);return;}
+  try{saveBudgetData(bd);}catch(error){_sheetFailNow(error);return;}
   _closeSheet(true);_afterDataChange();_toast('Gelöscht');
 }
 
@@ -8461,6 +8783,7 @@ function buildDynamicForm(){
   html+=`<button class="v2-textbtn v2-muted" id="btnCancel" onclick="cancelEditMode()" style="display:none">Abbrechen</button>`;
   html+=`<button class="v2-textbtn v2-strong" id="btnSave" onclick="saveEntry()" style="display:none">Speichern</button></span></div>`;
   html+=_monthCardHTML(allData);
+  html+=_migrationCardHTML();
   html+=_nextStepsHTML();
   html+=`<div class="sec-h">Bereiche</div>`;
 
@@ -8484,11 +8807,18 @@ function buildDynamicForm(){
   html+=`<div class="divider"></div>`;
   html+=`<details class="input-collapsible" data-mod="pension">${_v2Sum('pension','Altersvorsorge')}<div class="input-collapsible-body">`;
   html+=`<div class="ds-sec-actions"><button type="button" class="v2-textbtn" onclick="enterEditMode()">Bearbeiten</button></div>`;
-  html+=`<div class="lt-block-label">Gesetzliche Rente</div>`+_drvFieldsHTML(getDrv(),'dp','form');
-  /* Beamtenversorgung: nur sichtbar, wenn eingetragen; sonst im Bearbeiten-Modus hinzufügbar */
-  const bvOn=hasBeamte();
-  html+=`<div id="dpBv"${bvOn?'':' hidden'}><div class="lt-block-label">Beamtenversorgung</div>${_bvFieldsHTML(getBeamte())}</div>`;
-  if(!bvOn)html+=`<button class="btn btn-ghost plan-add edit-only" id="dpBvAdd">+ Beamtenversorgung</button>`;
+  /* Jede Altersvorsorge gehört zu einer Person: gesetzliche Rente und Beamtenversorgung je Person als Karte (14.10.2026).
+     Rentenwert, Durchschnittsentgelt und BBG stehen bei dir und gelten für alle. */
+  const ppl=getDrvExtra().filter(p=>p.id);
+  html+=`<div class="lt-block-label">Gesetzliche Rente</div><div class="hh-card pv-card"><div class="hh-head">${_hhHeadHTML(L('Ich','Me'),L('Gesetzliche Rente','State pension'))}</div>`+_drvFieldsHTML(getDrv(),'dp','form')+`</div>`;
+  html+=`<div id="dpDrvPeople">${_pvDrvRowsHTML(ppl)}</div>`;
+  if(ppl.length)html+=`<p class="ds-help edit-only">${L('Rentenwert, Ø-Entgelt und BBG trägst du bei dir ein; sie gelten für alle.','Pension value, average salary and contribution ceiling are entered with yours; they apply to everyone.')}</p>`;
+  /* Beamtenversorgung: je Person nur sichtbar, wenn eingetragen; im Bearbeiten-Modus hinzufügbar */
+  const bvOn=hasBeamte(),bvPeople=ppl.filter(p=>p.bv&&+p.bv.pay>0);
+  html+=`<div class="lt-block-label${bvOn||bvPeople.length?'':' edit-only'}">${L('Beamtenversorgung','Civil service pension')}</div>`;
+  html+=`<div id="dpBv" class="hh-card pv-card"${bvOn?'':' hidden'}><div class="hh-head">${_hhHeadHTML(L('Ich','Me'),L('Beamtenversorgung','Civil service pension'))}</div>${_bvFieldsHTML(getBeamte())}</div>`;
+  html+=`<div id="dpBvPeople">${_pvBvRowsHTML(ppl)}</div>`;
+  html+=`<div class="pv-add edit-only">${bvOn?'':`<button class="btn btn-ghost plan-add" id="dpBvAdd">+ ${L('Beamtenversorgung · Ich','Civil service pension · Me')}</button>`}${ppl.filter(p=>!(p.bv&&+p.bv.pay>0)).map(p=>`<button class="btn btn-ghost plan-add" data-bv-add="${escHTML(p.id)}">+ ${L('Beamtenversorgung · ','Civil service pension · ')}${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</button>`).join('')}</div>`;
   const avds=getAvDepots();
   html+=`<div class="lt-block-label${avds.length?'':' edit-only'}" id="dpAvdLabel">Altersvorsorgedepots</div><div id="dpAvd">${_avdRowsHTML(avds)}</div>`;
   html+=`<button class="btn btn-ghost plan-add edit-only" id="dpAvdAdd">+ Altersvorsorgedepot</button>`;
@@ -8514,6 +8844,15 @@ function buildDynamicForm(){
   _updateBvResult();
   const bvAdd=document.getElementById('dpBvAdd');
   if(bvAdd)bvAdd.addEventListener('click',()=>{document.getElementById('dpBv').hidden=false;bvAdd.remove();document.getElementById('dp-bv-pay').focus();});
+  /* gesetzliche Rente und Beamtenversorgung weiterer Personen: Ergebnis live */
+  const pvDrv=document.getElementById('dpDrvPeople'),pvBv=document.getElementById('dpBvPeople');
+  if(pvDrv){
+    pvDrv.querySelectorAll('[data-k="salary"],[data-k="emLimit"]').forEach(i=>{const n=_parseDec(i.value);if(isFinite(n)&&n>0)i.value=Math.round(n).toLocaleString('de-DE');});
+    pvDrv.querySelectorAll('input,select').forEach(inp=>inp.addEventListener(inp.tagName==='SELECT'?'change':'input',()=>_pvResults()));
+  }
+  if(pvBv)pvBv.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>_pvResults()));
+  container.querySelectorAll('[data-bv-add]').forEach(b=>b.addEventListener('click',()=>{const r=pvBv&&pvBv.querySelector(`.plan-row[data-row-id="${CSS.escape(b.dataset.bvAdd)}"]`);if(r){r.hidden=false;const i=r.querySelector('[data-k="bvPay"]');if(i)i.focus();}b.remove();}));
+  _pvResults();
   const dpWrap=document.getElementById('dpPensions');
   const bindDp=()=>{
     dpWrap.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
@@ -8527,7 +8866,7 @@ function buildDynamicForm(){
     dpWrap.addEventListener('input',e=>{if(e.target.matches('[data-k="name"]'))_syncPensionHints(dpWrap);});
     bindDp();
     document.getElementById('dpPensionAdd').addEventListener('click',()=>{
-      const rows=_collectPlanRows(dpWrap,PENSION_COLS);rows.push({name:'',amount:0,from:65});
+      const rows=_collectPlanRows(dpWrap,PENSION_COLS);rows.push({id:_newRowId('income-'),name:'',amount:0,from:65});
       dpWrap.innerHTML=_planRowsHTML(rows,PENSION_COLS,'form');bindDp();setFormReadOnly(!_editMode);
     });
   }
@@ -8536,17 +8875,18 @@ function buildDynamicForm(){
   if(dxWrap){
     const bindDx=()=>{
       dxWrap.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
+        const gone=b.closest('.plan-row').dataset.rowId;
         b.closest('.plan-row').remove();
+        /* ihre Altersvorsorge-Karten verschwinden mit (gespeichert wird beim Speichern) */
+        if(gone)document.querySelectorAll(`#dpDrvPeople .plan-row[data-row-id="${CSS.escape(gone)}"],#dpBvPeople .plan-row[data-row-id="${CSS.escape(gone)}"]`).forEach(r=>r.remove());
         dxWrap.innerHTML=_v2DrvExtraRowsHTML(_collectPlanRows(dxWrap,DRV_CARD_COLS));bindDx();setFormReadOnly(!_editMode);
       }));
       dxWrap.querySelectorAll('input,select').forEach(inp=>inp.addEventListener(inp.tagName==='SELECT'?'change':'input',()=>_v2DrvExtraResults(dxWrap)));
       _v2DrvExtraResults(dxWrap);
     };
     bindDx();
-    /* Gehalt mit Tausenderpunkt anzeigen (_parseDec liest "36.000" korrekt zurück) */
-    dxWrap.querySelectorAll('[data-k="salary"],[data-k="emLimit"]').forEach(i=>{const n=_parseDec(i.value);if(isFinite(n)&&n>0)i.value=Math.round(n).toLocaleString('de-DE');});
     document.getElementById('dpDrvExtraAdd').addEventListener('click',()=>{
-      const rows=_collectPlanRows(dxWrap,DRV_CARD_COLS);rows.push({name:'',by:'',points:0,salary:0,deduct:20});
+      const rows=_collectPlanRows(dxWrap,DRV_CARD_COLS);rows.push({name:'',by:''});
       dxWrap.innerHTML=_v2DrvExtraRowsHTML(rows);bindDx();setFormReadOnly(!_editMode);
     });
   }
@@ -8633,31 +8973,79 @@ function _syncPensionHints(wrap){
 }
 /* Weitere gesetzliche Renten als Karten (leere Werte bleiben leer statt "0") */
 function _v2DrvExtraRowsHTML(rows){
-  const clean=rows.map(r=>Object.assign({},r,{by:+r.by||'',em:+r.em||'',emUntil:+r.emUntil||'',emLimit:+r.emLimit||''}));
+  const clean=rows.map(r=>({...(r.id?{id:r.id}:{}),name:r.name||'',by:+r.by||''}));
   return _planRowsHTML(clean,DRV_CARD_COLS,'form','drvx');
+}
+/* Personen speichern: Haushalt (Name, Geburtsjahr) + Altersvorsorge-Karten (gesetzliche Rente, Beamtenversorgung, je
+   Person-ID). Fehlt ein Bereich (z. B. Altersvorsorge ausgeschaltet: drv/bvs null), bleibt sein gespeicherter Stand. */
+function _mergePersonRows(base,drv,bvs){
+  return _withPersonPhases(base).map(r=>{
+    const x=Object.assign({},r,drv&&r.id&&drv[r.id]?drv[r.id]:{});delete x.id;if(r.id)x.id=r.id;
+    ['points','salary','deduct','em','emUntil','emLimit'].forEach(k=>{if(x[k]==='')delete x[k];});if(x.age===''||x.age===0)delete x.age;
+    if(bvs&&r.id&&r.id in bvs){const b=bvs[r.id];delete x.bv;if(b&&+b.bvPay>0)x.bv={pay:+b.bvPay,...(+b.bvYears>0?{years:+b.bvYears}:{}),...(+b.bvAge>0?{age:+b.bvAge}:{}),...(+b.bvFrom>0?{from:+b.bvFrom}:{}),...(b.bvDeduct!==''&&b.bvDeduct!=null&&isFinite(+b.bvDeduct)?{deduct:+b.bvDeduct}:{})};}
+    ['bvPay','bvYears','bvAge','bvFrom','bvDeduct'].forEach(k=>delete x[k]);
+    return _drvEmClean(x);
+  }).filter(r=>r.name||r.points||r.salary||r.em||r.by||r.until);
+}
+/* Werte einer Kartenzeile lesen (Text, Auswahl, Zahl; leer bleibt leer) */
+function _rowValues(row,cols){
+  const p={};if(row.dataset.rowId)p.id=row.dataset.rowId;
+  cols.forEach(c=>{const inp=row.querySelector(`[data-k="${c.key}"]`);if(!inp)return;p[c.key]=c.type==='text'||c.type==='select'?inp.value.trim():(()=>{const n=_parseDec(inp.value);return isFinite(n)?n:'';})();});
+  return p;
 }
 function _v2DrvExtraResults(wrap){
   const s=getLifetimeSettings();
   wrap.querySelectorAll('.plan-row').forEach(row=>{
-    const p={};if(row.dataset.rowId)p.id=row.dataset.rowId;
-    DRV_CARD_COLS.forEach(c=>{const inp=row.querySelector(`[data-k="${c.key}"]`);if(!inp)return;p[c.key]=c.type==='text'||c.type==='select'?inp.value.trim():(()=>{const n=_parseDec(inp.value);return isFinite(n)?n:'';})();});
-    Object.assign(p,_withPersonPhases([p])[0]);
-    /* Erwerbsminderung: Detailfelder wie bei der eigenen Rente nur bei teilweise/voll */
-    const t=+p.emType||0,show=(k,on)=>{const g=row.querySelector('.pc-'+k);if(g)g.hidden=!on;};
-    show('em',t);show('emUntil',t);show('emLimit',t===1);
-    let el=row.querySelector('.drvx-res');
-    if(!el){el=document.createElement('div');el.className='lt-result drvx-res';row.insertBefore(el,row.querySelector('.plan-del'));}
-    _drvEmClean(p);
-    el.innerHTML=_drvResultHTML(p,calcDrvExtra(s,p),+p.until>0?+p.until:s.workEnd);
+    const p=_withPersonPhases([_rowValues(row,DRV_CARD_COLS)])[0];
     /* Karte der Person: Kopf mit Name und Jahrgang, unten was ihr zugeordnet ist (Haushalt, Schema 14) */
     row.classList.add('hh-person');
     let hd=row.querySelector('.hh-head');if(!hd){hd=document.createElement('div');hd.className='hh-head';row.prepend(hd);}
     hd.innerHTML=_hhHeadHTML(p.name,L('Weitere Person','Other person')+(+p.by>1900?L(' · Jahrgang ',' · born ')+p.by:''));
     let tl=row.querySelector('.hh-time');if(!tl){tl=document.createElement('div');tl.className='hh-time';hd.after(tl);}
-    tl.innerHTML=_personTimelineHTML(s,p)+(p.id?`<button type="button" class="hh-link" data-f="p-${escHTML(p.id)}" onclick="openPhasesSheet(this.dataset.f)">${L('In den Lebensphasen ändern','Change in life phases')}</button>`:`<div class="hh-tl">${L('Arbeitsende, Teilzeit und Rentenbeginn stellst du nach dem Speichern in den Lebensphasen ein.','After saving, set end of work, part-time and pension start in life phases.')}</div>`);
+    tl.innerHTML=_personTimelineHTML(s,p)+(p.id?`<button type="button" class="hh-link" onclick="openPhasesSheet(2)">${L('In den Lebensphasen ändern','Change in life phases')}</button>`:`<div class="hh-tl">${L('Arbeitszeit und Arbeitsende stellst du nach dem Speichern in den Lebensphasen ein.','After saving, set working time and end of work in life phases.')}</div>`);
     let ctx=row.querySelector('.hh-ctx');if(!ctx){ctx=document.createElement('div');ctx.className='hh-ctx';row.insertBefore(ctx,row.querySelector('.plan-del'));}
-    ctx.innerHTML=row.dataset.rowId?_personContextHTML(row.dataset.rowId):L('Nach dem Speichern lassen sich Gehalt, Depots und Einkünfte dieser Person zuordnen.','After saving you can assign salary, depots and income to this person.');
+    ctx.innerHTML=row.dataset.rowId?_personContextHTML(row.dataset.rowId):L('Nach dem Speichern lassen sich Gehalt, Altersvorsorge und Einkünfte dieser Person zuordnen.','After saving you can assign salary, pensions and income to this person.');
   });
+}
+/* Altersvorsorge weiterer Personen als Karten unter Altersvorsorge (14.10.2026): gesetzliche Rente mit Rentenbeginn und
+   Erwerbsminderung, Beamtenversorgung. Kopf mit Name, Ergebnis live; leere Felder bleiben leer (= Standardwert). */
+function _pvDrvRowsHTML(ppl){
+  const v=x=>+x||'';
+  return _planRowsHTML(ppl.map(p=>({id:p.id,points:v(p.points),salary:v(p.salary),age:v(p.age),deduct:p.deduct===''||p.deduct==null?'':+p.deduct,emType:String(+p.emType||0),em:v(p.em),emUntil:v(p.emUntil),emLimit:v(p.emLimit)})),PERSON_DRV_COLS,'form','drvx pv-row');
+}
+function _pvBvRowsHTML(ppl){
+  return ppl.map(p=>{const b=p.bv||{},v=x=>+x||'';
+    const h=_planRowsHTML([{id:p.id,bvPay:v(b.pay),bvYears:v(b.years),bvAge:v(b.age),bvFrom:v(b.from),bvDeduct:b.deduct==null?'':+b.deduct}],PERSON_BV_COLS,'form','pv-row pv-bv');
+    return +b.pay>0?h:h.replace('<div class="plan-row','<div hidden class="plan-row');}).join('');
+}
+function _pvResults(){
+  const s=getLifetimeSettings(),st=Object.fromEntries(getDrvExtra().filter(p=>p.id).map(p=>[p.id,p]));
+  const head=(row,name,sub)=>{let hd=row.querySelector('.hh-head');if(!hd){hd=document.createElement('div');hd.className='hh-head';row.prepend(hd);}hd.innerHTML=_hhHeadHTML(name,sub);};
+  const res=row=>{let el=row.querySelector('.drvx-res');if(!el){el=document.createElement('div');el.className='lt-result drvx-res';row.insertBefore(el,row.querySelector('.plan-del'));}return el;};
+  document.querySelectorAll('#dpDrvPeople .plan-row').forEach(row=>{
+    const o=st[row.dataset.rowId]||{},p=_drvEmClean(Object.assign({},o,_rowValues(row,PERSON_DRV_COLS)));
+    const t=+p.emType||0,show=(k,on)=>{const g=row.querySelector('.pc-'+k);if(g)g.hidden=!on;};
+    show('em',t);show('emUntil',t);show('emLimit',t===1);
+    head(row,o.name,L('Gesetzliche Rente','State pension'));
+    res(row).innerHTML=_drvResultHTML(p,calcDrvExtra(s,p),+p.until>0?+p.until:s.workEnd);
+    row.classList.toggle('pv-empty',!(+p.points>0||+p.salary>0||+p.em>0));
+  });
+  document.querySelectorAll('#dpBvPeople .plan-row').forEach(row=>{
+    const o=st[row.dataset.rowId]||{},v=_rowValues(row,PERSON_BV_COLS);
+    const p=Object.assign({},o,{bv:{pay:+v.bvPay||0,years:+v.bvYears||0,age:+v.bvAge||0,from:+v.bvFrom||0,...(v.bvDeduct===''?{}:{deduct:+v.bvDeduct})}});
+    head(row,o.name,L('Beamtenversorgung','Civil service pension'));
+    const r=calcBeamteExtra(s,p);
+    res(row).innerHTML=r?_bvResultLine(p.bv,r):L('Bezüge und Dienstjahre eintragen, um die Pension hochzurechnen.','Enter salary and years of service to project the pension.');
+  });
+}
+/* Beamtenversorgung einer weiteren Person in ihrem Alter; Dienstjahre nach ihrer Arbeitszeit je Phase (Anteil Vollzeit) */
+function calcBeamteExtra(s,p){
+  const raw=p&&p.bv;if(!raw||!(+raw.pay>0))return null;
+  const b=Object.assign({},BV_DEFAULTS);Object.keys(BV_DEFAULTS).forEach(k=>{if(raw[k]!==undefined&&raw[k]!==''&&isFinite(+raw[k]))b[k]=+raw[k];});
+  const prof=_personWork(s,p),wb=prof.wb||prof.b;
+  const segs=[[-Infinity,wb[0]],[wb[0],wb[1]],[wb[1],wb[2]],[wb[2],Infinity]].map(([a,e],i)=>[a-prof.shift,Math.min(e,prof.workEndMain)-prof.shift,prof.w[i]]);
+  const r=calcBeamtePension(Object.assign({},s,{birthYear:prof.by,pensionAge:regelaltersgrenze(prof.by),workSegs:null,workSegsAbs:segs}),b);
+  return Object.assign(r,{fromMain:r.age+prof.shift,name:(p.name||'').trim()||'Weitere Person',personId:p.id,by:prof.by});
 }
 /* Altersvorsorgedepots als Karten; leere Felder bleiben leer (= Standardwert der App) */
 function _avdRowsHTML(rows){
@@ -8667,7 +9055,7 @@ function _avdRowsHTML(rows){
 function _avdFromRow(row){
   const o={};if(row.dataset.rowId)o.id=row.dataset.rowId;
   /* Die Verknüpfung mit einer Position wird im Sheet gesetzt und bleibt beim Bearbeiten erhalten */
-  if(o.id){const st=getAvDepots().find(x=>x.id===o.id);if(st&&st.pos)o.pos=st.pos;}
+  if(o.id){const st=getAvDepots().find(x=>x.id===o.id);if(st&&st.pos)o.pos=st.pos;if(st&&Array.isArray(st.kidsOpen))o.kidsOpen=st.kidsOpen.slice();}
   AVD_COLS.forEach(c=>{
     const inp=row.querySelector(`[data-k="${c.key}"]`);if(!inp)return;
     if(c.type==='text'||c.type==='select')o[c.key]=inp.value.trim();
@@ -8767,7 +9155,7 @@ function initDataEntryForm(){
    Alle Geldbeträge in den Einstellungen sind in heutiger Kaufkraft (EUR von heute). */
 function _lsNum(k,def){const v=parseFloat(String(appStorage.getItem(k)??'').replace(',','.'));return isFinite(v)?v:def;}
 function _lsJSON(k,def){try{const v=JSON.parse(appStorage.getItem(k));return v??def;}catch{return def;}}
-const LT_SET_KEYS=['lt-birth-year','lt-birth-month','lt-life-expect','lt-plan-horizon','lt-inflation','lt-save-until','lt-savings-growth','lt-withdraw-from','lt-monthly-withdraw','lt-safety'];
+const LT_SET_KEYS=['lt-life-expect','lt-plan-horizon','lt-inflation','lt-save-until','lt-savings-growth','lt-withdraw-from','lt-monthly-withdraw','lt-safety'];
 /* Lebensphasen (Schema 10): eigene Schlüssel, bearbeitet im Phasen-Sheet */
 const LT_PHASE_KEYS=['lt-save-until','lt-savings-growth','lt-withdraw-from','lt-pension-age','lt-monthly-withdraw','lt-pension-spending','lt-p2-saving','lt-p2-work','lt-p2-withdraw','lt-p2-pension','lt-p3-saving','lt-p3-pension'];
 function getLifetimeSettings(){
@@ -8777,7 +9165,7 @@ function getLifetimeSettings(){
   const drvAge=+((_lsJSON('lt-drv',{})||{}).age)||0;
   const need=_lsNum('lt-monthly-withdraw',2000);
   /* Arbeitszeit der eigenen Person je Phase (Schema 15): Phase 1 leer = 100 %, Phase 2 leer = wie Phase 1 */
-  const p1Work=Math.min(1,Math.max(0,_lsNum('lt-p1-work',100)/100));
+  const bw=_budgetWorkShare(_ownPersonId()),p1Work=bw!=null?bw:Math.min(1,Math.max(0,_lsNum('lt-p1-work',100)/100));
   const s=_ltPhases({
     birthYear,
     /* Geburtsmonat (P17): bestimmt das genaue heutige Alter und alle Monatsgrenzen */
@@ -8842,18 +9230,32 @@ function _ownWork(s){
 /* weitere Person: Arbeitsende leer = gleiches Alter wie dein Arbeitsende */
 function _personWork(s,p){
   const by=+p.by>1900?+p.by:s.birthYear,shift=by-s.birthYear,until=+p.until>0?+p.until:(s.workEnd??s.saveUntil);
-  const b=[s.phase2From,s.workEnd,s.phase4From],w=_workPlan([p.w1,p.w2,p.w3,p.w4]);
+  const b=[s.phase2From,s.workEnd,s.phase4From];
   const pen=[null,p.pen2,p.pen3,p.pen4].map(v=>v===''||v==null||!isFinite(+v)?null:Math.max(0,+v)/100);
+  const legacy=_legacyPartTime(p);
+  if(legacy){
+    /* P36: Teilzeit ab einem Alter der Person aus Schema 14, genau wie damals: voll bis zum Beginn, danach der Anteil;
+       hat sie schon begonnen, ist das Budget-Gehalt bereits das Teilzeitgehalt. Grenzen wb statt der Phasen. */
+    const fromMain=legacy.from+shift,started=fromMain<=_curAgeOf(s)+1e-9;
+    const w=started?[legacy.pct,legacy.pct,legacy.pct,legacy.pct]:[1,legacy.pct,legacy.pct,legacy.pct];
+    return{w,b,wb:started?[Infinity,Infinity,Infinity]:[fromMain,Infinity,Infinity],ref:w[0],pen,workEndMain:until+shift,until,by,shift,legacy};
+  }
+  /* Phase 1 = heute: Arbeitszeit aus dem Budget-Gehalt, sonst der eingetragene Wert */
+  const bw=_budgetWorkShare(p.id),w=_workPlan([bw!=null?bw*100:p.w1,p.w2,p.w3,p.w4]);
   return{w,b,ref:w[_phaseIdx(b,_curAgeOf(s))],pen,workEndMain:until+shift,until,by,shift};
 }
+/* Teilzeit ab Alter aus Schema 14 (bis zur bewussten Umstellung auf Lebensphasen, P36) */
+function _legacyPartTime(p){return p&&+p.ptFrom>0&&p.ptPct!==''&&p.ptPct!=null&&isFinite(+p.ptPct)?{from:+p.ptFrom,pct:Math.min(1,Math.max(0,+p.ptPct/100))}:null;}
+/* Anteil einer Vollzeitstelle in deinem Alter a (0 nach dem Arbeitsende) */
+function _workShare(prof,a){return a>=prof.workEndMain-1e-9?0:prof.w[_phaseIdx(prof.wb||prof.b,a)];}
 /* Anteil des heutigen Gehalts in deinem Alter a */
-function _workFactor(prof,a){if(a>=prof.workEndMain-1e-9)return 0;return prof.ref>0?prof.w[_phaseIdx(prof.b,a)]/prof.ref:0;}
+function _workFactor(prof,a){if(a>=prof.workEndMain-1e-9)return 0;return prof.ref>0?prof.w[_phaseIdx(prof.wb||prof.b,a)]/prof.ref:0;}
 /* Altersvorsorge in deinem Alter a: in Phase 2–4 der eingetragene Anteil, sonst solange die Person arbeitet */
 function _pensionFactor(prof,a){const i=_phaseIdx(prof.b,a),v=prof.pen[i];return i>0&&v!=null?v:(a<prof.workEndMain-1e-9?1:0);}
 /* Arbeitsabschnitte ab heute bis zum Arbeitsende, gleiche Arbeitszeit zusammengefasst: fromMain/toMain in deinem Alter,
    from/to im Alter der Person, w = Anteil Vollzeit, f = Faktor zum heutigen Gehalt */
 function _workSegs(prof,curMain){
-  const bd=[curMain,...prof.b,Infinity],out=[];
+  const bd=[curMain,...(prof.wb||prof.b),Infinity],out=[];
   for(let i=0;i<4;i++){
     const a=Math.max(bd[i],curMain),e=Math.min(bd[i+1],prof.workEndMain);if(e-a<=1e-9)continue;
     const w=prof.w[i],f=prof.ref>0?w/prof.ref:0,last=out[out.length-1];
@@ -8865,7 +9267,8 @@ function _workSegs(prof,curMain){
 /* Arbeitsjahre von cur bis end: Rentenpunkte relativ zum heutigen Gehalt (Bezug), Dienstjahre (abs) als Anteil einer
    Vollzeitstelle. workSegs (weitere Personen) = [von, bis, Faktor] in ihrem Alter. */
 function _workYears(s,cur,end,abs){
-  if(s.workSegs)return s.workSegs.reduce((x,g)=>x+Math.max(0,Math.min(g[1],end)-Math.max(g[0],cur))*g[2],0);
+  const segs=abs?s.workSegsAbs:s.workSegs;
+  if(segs)return segs.reduce((x,g)=>x+Math.max(0,Math.min(g[1],end)-Math.max(g[0],cur))*g[2],0);
   const p2=s.phase2From??s.saveUntil,we=s.workEnd??s.saveUntil,w1=s.p1Work??1,w2=s.p2Work??1,ref=abs?1:(s.workRef??w1);
   const f=w=>ref>0?w/ref:0;
   return Math.max(0,Math.min(p2,end)-cur)*f(w1)+Math.max(0,Math.min(we,end)-Math.max(p2,cur))*f(w2);
@@ -8998,32 +9401,50 @@ const DRV_EXTRA_COLS=[
   {key:'until',label:'Arbeiten bis Alter',info:'drvx-until',ph:'wie eigene'},
   {key:'points',label:'Rentenpunkte',info:'drv-points',ph:'0'},
   {key:'salary',label:'Brutto/Jahr €',info:'drv-salary',ph:'0'},
-  {key:'age',label:'Regelalter',info:'drv-age',ph:'automatisch'},
+  {key:'age',label:'Rentenbeginn',info:'drv-age',ph:'automatisch'},
   {key:'deduct',label:'Abzüge %',info:'drv-deduct',ph:'20'},
   {key:'emType',label:'Erwerbsminderung',info:'drv-emType',type:'select',options:()=>[['0','Keine'],['1','Teilweise'],['2','Voll']]},
   {key:'em',label:'EM-Rente netto €',info:'drv-em',ph:'0'},
   {key:'emUntil',label:'Läuft bis Jahr',info:'drv-emUntil',ph:'bis Regelalter'},
   {key:'emLimit',label:'Hinzuverdienst­grenze €',info:'drv-emLimit',ph:'41.528'}
 ];
-/* Haushaltskarte ohne Phasenfelder: Arbeitsende, Teilzeit und Rentenbeginn stehen im Lebensphasen-Sheet (14.10.2026) */
-const DRV_CARD_COLS=DRV_EXTRA_COLS.filter(c=>!['until','age'].includes(c.key));
+/* Haushaltskarte: nur die Person (Name, Geburtsjahr). Ihre Altersvorsorge steht unter Altersvorsorge (je Person eine
+   Karte für gesetzliche Rente und Beamtenversorgung), Arbeitsende und Arbeitszeit in den Lebensphasen (14.10.2026). */
+const DRV_CARD_COLS=DRV_EXTRA_COLS.filter(c=>['name','by'].includes(c.key));
+const PERSON_DRV_COLS=DRV_EXTRA_COLS.filter(c=>['points','salary','age','deduct','emType','em','emUntil','emLimit'].includes(c.key)).map(c=>c.key==='age'?Object.assign({},c,{label:'Rentenbeginn'}):c);
+const PERSON_BV_COLS=[{key:'bvPay',label:'Bezüge/Monat €',info:'bv-pay',ph:'0'},{key:'bvYears',label:'Dienstjahre bisher',info:'bv-years',ph:'0'},
+  {key:'bvAge',label:'Altersgrenze',info:'bv-age',ph:'automatisch'},{key:'bvFrom',label:'Pension ab Alter',info:'bv-from',ph:'wie Grenze'},{key:'bvDeduct',label:'Abzüge %',info:'bv-deduct',ph:'25'}];
 function getDrvExtra(){const l=_lsJSON('lt-drv-extra',[]);return Array.isArray(l)?l:[];}
 /* ══ Personen (Schema 14) ══
    „Ich“ ist die eigene Person (retirement.primary), weitere Personen stehen unter Altersvorsorge → Weitere Personen.
    Budget-Einnahmen und weitere Einkünfte lassen sich einer Person zuordnen. Die Lebensphasen und der Bedarf richten
    sich nach dir; eine weitere Person bringt ihr Gehalt bis zu ihrem Arbeitsende und ihre Renten ab ihrem Rentenbeginn. */
-function _ownPersonId(){try{return appStorage.document().retirement.primary.id;}catch(error){return 'person-main';}}
+function _ownPersonId(){try{return appStorage.primaryId?appStorage.primaryId():appStorage.document().retirement.primary.id;}catch(error){return 'person-main';}}
 function _personName(id){const p=getDrvExtra().find(r=>r.id===id);return p?((p.name||'').trim()||'Weitere Person'):'';}
 /* Auswahl für Zuordnungen: own = Beschriftung der eigenen Person bzw. des leeren Werts */
 function _personOptions(own){return [['',own],...getDrvExtra().filter(r=>r.id).map(r=>[r.id,(r.name||'').trim()||'Weitere Person'])];}
 /* Altersabstand: Alter einer Person + Abstand = dein Alter */
 function _personShift(s,id){const p=id?getDrvExtra().find(r=>r.id===id):null;return p&&+p.by>1900?+p.by-s.birthYear:0;}
-/* Nettogehalt einer Person: Ø ihrer wiederkehrenden Budget-Einnahmen (ohne „Auch im Ruhestand“) */
-function _personSalary(id){
-  if(!id||!_mod('budget'))return 0;
-  const bd=loadBudgetData();if(!bd)return 0;
-  return (bd.einkommen||[]).filter(r=>r.person===id&&!r.retirement&&(r.kind||'income')==='income'&&!_childBenefitReplaced(r)).reduce((a,r)=>a+_yearSum(r.values)/12,0);
+/* Nettogehalt einer Person: Ø ihrer wiederkehrenden Budget-Einnahmen (ohne „Auch im Ruhestand“). Solange ein Nettogehalt
+   aus Schema 13 noch keinem Budgetposten zugeordnet ist (P35), zählt wie damals dieser Betrag – nur in der Prognose. */
+function _personSalaryItems(id){
+  if(!id||!_mod('budget'))return [];
+  const bd=loadBudgetData();if(!bd)return [];
+  return (bd.einkommen||[]).filter(r=>r.person===id&&!r.retirement&&(r.kind||'income')==='income'&&!_childBenefitReplaced(r));
 }
+function _pendingNet(id){const p=id?getDrvExtra().find(r=>r.id===id):null;return p&&+p.net>0?+p.net:0;}
+function _personSalary(id){
+  const items=_personSalaryItems(id);
+  return items.length?items.reduce((a,r)=>a+_yearSum(r.values)/12,0):_pendingNet(id);
+}
+/* Arbeitszeit heute aus dem Budget (Schema 17): beim Gehalt „Vollzeit“ (100) oder „Teilzeit x %“. Mehrere Gehälter einer
+   Person zählen zusammen (zwei Teilzeitstellen), höchstens 100 %. Ohne Angabe null: dann gilt der Wert der Phase 1. */
+function _budgetWorkShare(id){
+  const items=_personSalaryItems(id).filter(r=>+r.workPct>0);
+  return items.length?Math.min(1,items.reduce((a,r)=>a+Math.min(100,+r.workPct),0)/100):null;
+}
+/* steckt das Gehalt im heutigen Budget? (nicht bei einem noch nicht zugeordneten Nettogehalt) */
+function _salaryInBudget(id){return _personSalaryItems(id).length>0;}
 /* ══ Kinder (Schema 14) ══
    Kindergeld nach § 66 Abs. 1 EStG: 259 € je Kind und Monat (Stand 2026), gezahlt vom Geburtsmonat bis zu dem Monat, in dem
    das Kind 18 wird (§ 66 Abs. 2, § 32 Abs. 3); während einer Ausbildung bis 25 (§ 32 Abs. 4 Nr. 2, Angabe je Kind).
@@ -9053,7 +9474,10 @@ function _collectChildren(wrap){
 function _segWorkTxt(w){return w>=1-1e-9?L('Vollzeit','full-time'):w>0?L('Teilzeit ','part-time ')+_numStr(Math.round(w*1000)/10)+' %':L('ohne Arbeit','not working');}
 /* Kurztext der Phasen einer weiteren Person in ihrem Alter, z. B. „Teilzeit 50 % bis 52 · Vollzeit bis 67 · Rente ab 67“ */
 function _personPhaseText(s,p){
-  const r=calcDrvExtra(s,p),segs=_workSegs(r.prof,_curAgeOf(s)),parts=segs.map(g=>_segWorkTxt(g.w)+L(' bis ',' until ')+_ageTxt(g.to));
+  const r=calcDrvExtra(s,p),segs=_workSegs(r.prof,_curAgeOf(s));
+  /* Teilzeit ab Alter (Schema 14, P36): genau mit diesem Alter */
+  const lg=r.prof.legacy,parts=lg&&segs.length?[L('Teilzeit ','part-time ')+_numStr(Math.round(lg.pct*1000)/10)+' %'+L(' ab ',' from ')+_ageTxt(lg.from),L('Arbeit bis ','work until ')+_ageTxt(r.workUntil)]
+    :segs.map(g=>_segWorkTxt(g.w)+L(' bis ',' until ')+_ageTxt(g.to));
   if(!segs.length)parts.push(L('arbeitet nicht mehr','no longer working'));
   else if(r.age>r.workUntil+0.01)parts.push(L('ohne Arbeit bis ','not working until ')+_ageTxt(r.age));
   parts.push(L('Rente ab ','pension from ')+_ageTxt(r.age));
@@ -9102,6 +9526,12 @@ function _personContextHTML(id){
     const d=calcDrvPension(s,getDrv());if(d.netto>0)lines.push(L('Gesetzliche Rente ','State pension ')+`<b>${fmt(d.netto)}</b>`+L(' netto ab ',' net from ')+fmtAge(d.age));
     if(hasBeamte()){const b=calcBeamtePension(s,getBeamte());if(b.netto>0)lines.push(L('Pension ','Civil service pension ')+`<b>${fmt(b.netto)}</b>`+L(' netto ab ',' net from ')+fmtAge(b.age));}
   }
+  /* weitere Person: gesetzliche Rente und Beamtenversorgung (unter Altersvorsorge), Alter in ihrem Alter */
+  if(!own&&_mod('pension')){
+    const p=getDrvExtra().find(r=>r.id===id);
+    if(p){const d=calcDrvExtra(s,p);if(d.netto>0)lines.push(L('Gesetzliche Rente ','State pension ')+`<b>${fmt(d.netto)}</b>`+L(' netto ab ',' net from ')+_ageTxt(d.age));
+      const b=calcBeamteExtra(s,p);if(b&&b.netto>0)lines.push(L('Pension ','Civil service pension ')+`<b>${fmt(b.netto)}</b>`+L(' netto ab ',' net from ')+_ageTxt(b.age));}
+  }
   if(_mod('pension')){
     getAvDepots().filter(d=>(d.person||'')===id&&+d.contrib>0).forEach(d=>lines.push(escHTML((d.name||'').trim()||L('Altersvorsorgedepot','Retirement depot'))+` <b>${fmt(+d.contrib)}</b>/`+L('Monat','month')));
     (s.pensions||[]).filter(p=>(p.person||'')===id&&+p.amount>0).forEach(p=>lines.push(escHTML(p.name||L('Weitere Rente','Other pension'))+` <b>${fmt(+p.amount)}</b>`+L(' ab ',' from ')+_ageTxt(+p.from||67)+(+p.until>0?L(' bis ',' until ')+_ageTxt(+p.until):'')));
@@ -9113,14 +9543,16 @@ function _personContextHTML(id){
 }
 /* Karte „Ich“: Geburtsdaten aus „Prognose & Annahmen“, Kontext wie bei den anderen Personen */
 function _meCardHTML(){
-  const s=getLifetimeSettings(),m=MONTH_FULL[(s.birthMonth||1)-1],now=new Date(),cur=_ageAt(s,now.getFullYear(),now.getMonth());
+  const s=getLifetimeSettings(),now=new Date(),cur=_ageAt(s,now.getFullYear(),now.getMonth());
   const b=_phaseBounds(s,cur,Math.max(Math.round(s.planHorizon),Math.ceil(cur)+1));
-  const row=(label,val)=>`<div class="input-group"><label>${label}</label><span class="hh-val">${escHTML(String(val))}</span></div>`;
-  return `<div class="hh-card hh-me"><div class="hh-head">${_hhHeadHTML(L('Ich','Me'),L('Jahrgang ','Born ')+s.birthYear)}</div>`
+  /* Geburtsdaten der eigenen Person: hier bearbeitbar wie bei allen Personen (Bearbeiten-Modus, 14.10.2026) */
+  const by=appStorage.getItem('lt-birth-year'),bm=appStorage.getItem('lt-birth-month');
+  return `<div class="hh-card hh-me"><div class="hh-head">${_hhHeadHTML(L('Ich','Me'),by?L('Jahrgang ','Born ')+s.birthYear:L('Geburtsjahr fehlt','Year of birth missing'))}</div>`
     +`<div class="hh-time">${_phaseBarHTML(b).replace('class="lp-bar"','class="lp-bar hh-bar"')}<div class="hh-tl">${escHTML(_ownPhaseText(b))}</div>`
     +`<button type="button" class="hh-link" onclick="openPhasesSheet()">${L('In den Lebensphasen ändern','Change in life phases')}</button></div>`
-    +row(L('Geburtsjahr','Year of birth'),s.birthYear)+row(L('Geburtsmonat','Birth month'),m)
-    +`<div class="hh-ctx">${_personContextHTML('')}<div>${L('Geburtsdaten änderst du unter „Prognose &amp; Annahmen“.','Change birth data under "Forecast &amp; assumptions".')}</div></div></div>`;
+    +`<div class="input-group"><label data-info="lt-birth-year">${L('Geburtsjahr','Year of birth')}</label>${_dateFieldHTML({id:'hh-birth-year',value:by||'',mode:'year',cls:'num-input form-store',title:L('Geburtsjahr','Year of birth'),placeholder:L('Auswählen','Choose'),min:1920,max:2015})}</div>`
+    +`<div class="input-group"><label data-info="lt-birth-month">${L('Geburtsmonat','Birth month')}</label><select class="num-input form-store" id="hh-birth-month">${MONTH_FULL.map((x,i)=>`<option value="${i+1}"${i+1===(+bm||1)?' selected':''}>${x}</option>`).join('')}</select></div>`
+    +`<div class="hh-ctx">${_personContextHTML('')}</div></div>`;
 }
 /* Kopf und Kindergeld je Kinderkarte */
 function _childResults(wrap){
@@ -9152,7 +9584,7 @@ function calcDrvExtra(s,p){
   /* weitere Personen: eigene Regelaltersgrenze, arbeiten bis „Arbeiten bis“ (leer = gleiches Alter wie dein Arbeitsende),
      Arbeitszeit je Lebensphase (Schema 15). Budget-Gehalt und Brutto gelten für die Arbeitszeit von heute. */
   const prof=_personWork(s,p),until=prof.until;
-  const segs=[[-Infinity,prof.b[0]],[prof.b[0],prof.b[1]],[prof.b[1],prof.b[2]],[prof.b[2],Infinity]].map(([a,e],i)=>[a-prof.shift,Math.min(e,prof.workEndMain)-prof.shift,prof.ref>0?prof.w[i]/prof.ref:0]);
+  const wb=prof.wb||prof.b,segs=[[-Infinity,wb[0]],[wb[0],wb[1]],[wb[1],wb[2]],[wb[2],Infinity]].map(([a,e],i)=>[a-prof.shift,Math.min(e,prof.workEndMain)-prof.shift,prof.ref>0?prof.w[i]/prof.ref:0]);
   const s2=Object.assign({},s,{birthYear:by,saveUntil:until,withdrawFrom:until,phase2From:until,workEnd:until,p2Work:1,pensionAge:regelaltersgrenze(by),workSegs:segs});
   const d=Object.assign({},base,{points:+p.points||0,salary:+p.salary||0,age:+p.age||0,deduct:isFinite(+p.deduct)&&p.deduct!==''&&p.deduct!=null?+p.deduct:base.deduct});
   DRV_EM_KEYS.forEach(k=>{delete d[k];if(k in p)d[k]=p[k];});
@@ -9164,7 +9596,7 @@ function calcDrvExtra(s,p){
   r.workEndMain=until+(by-s.birthYear);
   r.workUntil=until;r.by=by;r.prof=prof;
   /* Nettogehalt bis „Arbeiten bis Alter“: die Budget-Einnahmen, die dieser Person zugeordnet sind (P5, Schema 14) */
-  r.net=_personSalary(p.id);
+  r.net=_personSalary(p.id);r.netInBudget=_salaryInBudget(p.id);r.personId=p.id;
   r.name=(p.name||'').trim()||'Weitere Rente';
   return r;
 }
@@ -9236,8 +9668,9 @@ function _avdParams(s,d){
   const ownWork=s.workEnd??s.saveUntil;
   const workUntil=person?(+person.until>0?+person.until:ownWork):ownWork;
   const own=Math.max(0,_avdNum(d.contrib,0))*12;
-  /* Kinder dieser Person (Kinderzulage bei …); leer = ich */
-  const kids=getChildren().filter(c=>(c.parent||'')===(d.person||''));
+  /* Kinder dieser Person (Kinderzulage bei …); leer = ich. Dazu noch ungeklärte Jahrgänge früherer Versionen (P37), so
+     gerechnet wie damals: die vierstellige Jahreszahl im Text, z. B. „2019.5“ → 2019 */
+  const kids=[...getChildren().filter(c=>(c.parent||'')===(d.person||'')),..._openChildKids(d.person||'')];
   const start=Math.max(AVD_START,_avdNum(d.start,0)>0?Math.round(+d.start):AVD_START);
   /* Beiträge folgen den Lebensphasen: Altersvorsorge in % je Phase, leer = solange die Person arbeitet (Schema 15) */
   const phased=!!prof;
@@ -9248,6 +9681,162 @@ function _avdParams(s,d){
     lastYear:(phased?by+from:Math.min(by+workUntil,by+from))-1,/* letztes mögliches Beitragsjahr */
     /* Anteil des Beitrags in einem Kalenderjahr (Alter zur Jahresmitte) */
     factor:y=>phased?_pensionFactor(prof,y-by+0.5+prof.shift):1};
+}
+/* ══ Klärung nach dem Update (Review 14.10.2026, P35–P37) ══
+   Was eine Migration nicht eindeutig übertragen kann, bleibt als Originalwert erhalten und rechnet wie in der früheren
+   Version weiter. Geändert wird erst, wenn du es hier bestätigst – mit Vorher/Nachher. */
+function _migrationTasks(){
+  const out=[];
+  getDrvExtra().forEach(p=>{if(p.id&&+p.net>0)out.push({kind:'net',personId:p.id,name:_personName(p.id),amount:+p.net});});
+  getAvDepots().forEach(d=>(Array.isArray(d.kidsOpen)?d.kidsOpen:[]).forEach(v=>out.push({kind:'kid',depotId:d.id,depot:(d.name||'').trim()||'Altersvorsorgedepot',value:v,person:d.person||''})));
+  getDrvExtra().forEach(p=>{const lg=p.id&&_legacyPartTime(p);if(lg)out.push({kind:'pt',personId:p.id,name:_personName(p.id),from:lg.from,pct:Math.round(lg.pct*1000)/10,optional:true});});
+  return out;
+}
+/* P35: Nettogehalt aus Schema 13 einem Budgetposten zuordnen oder als neuen Posten anlegen */
+function _budgetIncomeAvg(bd){return ((bd&&bd.einkommen)||[]).filter(r=>(r.kind||'income')==='income'&&!_childBenefitReplaced(r)).reduce((a,r)=>a+_yearSum(r.values)/12,0);}
+function _netIncomeCandidates(pid){
+  const bd=loadBudgetData(),p=getDrvExtra().find(r=>r.id===pid),amount=_pendingNet(pid),name=((p&&p.name)||'').replace(/\(.*?\)/g,'').trim().toLowerCase();
+  return ((bd&&bd.einkommen)||[]).filter(r=>(r.kind||'income')==='income'&&!r.person&&!r.retirement&&!_childBenefitReplaced(r)).map(r=>{
+    const avg=_yearSum(r.values)/12;
+    return{id:r.id,name:r.name||'',amount:avg,suggested:Math.abs(avg-amount)<0.5||(!!name&&String(r.name||'').toLowerCase().includes(name))};
+  });
+}
+function _netIncomePreview(pid,target){
+  const bd=loadBudgetData()||{einkommen:[]},amount=_pendingNet(pid),before=_budgetIncomeAvg(bd);
+  const item=target==='new'?null:(bd.einkommen||[]).find(r=>r.id===target);
+  if(target!=='new'&&!item)throw new Error(L('Budgetposten nicht gefunden.','Budget entry not found.'));
+  const assigned=_personSalaryItems(pid).reduce((a,r)=>a+_yearSum(r.values)/12,0),r2=v=>Math.round(v*100)/100;
+  return{amount,item:item?item.name:null,incomeBefore:r2(before),incomeAfter:r2(before+(target==='new'?amount:0)),salaryBefore:r2(_personSalary(pid)),salaryAfter:r2(assigned+(target==='new'?amount:_yearSum(item.values)/12))};
+}
+function _assignNetIncome(pid,target){
+  const amount=_pendingNet(pid);if(!(amount>0))throw new Error(L('Kein offenes Nettogehalt.','No open net salary.'));
+  const bd=loadBudgetData()||{einkommen:[],fixe:[],variable:[],sparen:[],accounts:{},standingOrders:[]};bd.einkommen=bd.einkommen||[];
+  appStorage.beginTransaction();
+  try{
+    if(target==='new')bd.einkommen.push({id:'budget-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),name:'Nettogehalt '+_personName(pid),subcat:'',kind:'income',targetGroupId:null,values:Array(12).fill(amount),person:pid});
+    else{const it=bd.einkommen.find(r=>r.id===target);if(!it||it.person||(it.kind||'income')!=='income')throw new Error(L('Dieser Posten ist schon einer Person zugeordnet.','This entry is already assigned to a person.'));it.person=pid;}
+    saveBudgetData(bd);
+    appStorage.setItem('lt-drv-extra',JSON.stringify(getDrvExtra().map(r=>{if(r.id!==pid)return r;const x=Object.assign({},r);delete x.net;return x;})));
+    appStorage.commitTransaction();
+  }catch(error){appStorage.rollbackTransaction();throw error;}
+}
+/* P36: Teilzeit ab Alter (Schema 14) auf Lebensphasen umstellen – Vorher/Nachher und nur nach Bestätigung */
+function _partTimePreview(pid,phase){
+  const p=getDrvExtra().find(r=>r.id===pid),lg=_legacyPartTime(p);if(!lg)throw new Error(L('Keine Teilzeit ab Alter.','No part-time from age.'));
+  const s=getLifetimeSettings(),prof=_personWork(s,p),curMain=_curAgeOf(s),cur=curMain-prof.shift;
+  const started=lg.from<=cur+1e-9;
+  if(started&&phase!==1)throw new Error(L('Die Teilzeit läuft schon; sie gilt ab heute (Phase 1).','Part-time has already started; it applies from today (phase 1).'));
+  const startMain=[curMain,s.phase2From,s.workEnd,s.phase4From][phase-1],fromAfter=Math.max(cur,startMain-prof.shift);
+  const fromBefore=started?cur:lg.from,lo=Math.max(cur,Math.min(fromBefore,fromAfter)),hi=Math.min(prof.until,Math.max(fromBefore,fromAfter));
+  const months=Math.max(0,Math.round((hi-lo)*12)),perMonth=started?0:_personSalary(pid)*(1-lg.pct);
+  return{phase,started,fromBefore:lg.from,fromAfter:Math.round(fromAfter*100)/100,fromToday:fromAfter<=cur+1e-6,months,perMonth,incomeDelta:Math.round((fromAfter>fromBefore?1:-1)*months*perMonth*100)/100};
+}
+function _convertPartTime(pid,phase){
+  _partTimePreview(pid,phase);
+  appStorage.setItem('lt-drv-extra',JSON.stringify(getDrvExtra().map(r=>{if(r.id!==pid)return r;const x=Object.assign({},r);x['w'+phase]=+r.ptPct;delete x.ptFrom;delete x.ptPct;return x;})));
+}
+/* P37: ungeklärten Kinder-Jahrgang klären – ganzes Geburtsjahr oder nicht übernehmen; nie gerundet */
+function _resolveChildYear(depotId,value,year){
+  if(year!==null&&!(String(year).trim()!==''&&Number.isInteger(+year)&&+year>=1900&&+year<=2200))throw new Error(L('Bitte ein ganzes Geburtsjahr zwischen 1900 und 2200 eingeben.','Please enter a whole year of birth between 1900 and 2200.'));
+  const list=getAvDepots(),d=list.find(x=>x.id===depotId),open=d&&Array.isArray(d.kidsOpen)?d.kidsOpen:[],i=open.findIndex(v=>v===value);
+  if(i<0)throw new Error(L('Dieser Jahrgang ist bereits geklärt.','This year has already been resolved.'));
+  appStorage.beginTransaction();
+  try{
+    const rest=open.slice();rest.splice(i,1);
+    appStorage.setItem('lt-av-depots',JSON.stringify(list.map(x=>{if(x!==d)return x;const y=Object.assign({},x);if(rest.length)y.kidsOpen=rest;else delete y.kidsOpen;return y;})));
+    if(year!==null){const kids=_lsJSON('lt-children',[]);kids.push({name:'Kind ('+(+year)+')',by:+year,...(d.person?{parent:d.person}:{})});appStorage.setItem('lt-children',JSON.stringify(kids));}
+    appStorage.commitTransaction();
+  }catch(error){appStorage.rollbackTransaction();throw error;}
+}
+/* Karte „Nach dem Update“ oben auf der Daten-Seite: was zu klären ist, jeweils mit eigenem Sheet und Vorher/Nachher */
+function _migrationCardHTML(){
+  const tasks=_migrationTasks(),bk=appStorage.backupBeforeUpdate();
+  if(!tasks.length)return '<div id="migCard"></div>';
+  const item=(t,i)=>{
+    const title=t.kind==='net'?L(`Gehalt von ${t.name} zuordnen`,`Assign the salary of ${t.name}`)
+      :t.kind==='kid'?L(`Kinder-Jahrgang „${_numStr(t.value)}“ klären`,`Resolve child year "${_numStr(t.value)}"`)
+      :L(`Teilzeit von ${t.name} ab ${_ageTxt(t.from)}`,`Part-time of ${t.name} from ${_ageTxt(t.from)}`);
+    const sub=t.kind==='net'?L(`${fmt(t.amount)}/Monat aus der früheren Version – zählt bis dahin weiter als Gehalt`,`${fmt(t.amount)}/month from the previous version – keeps counting as salary until then`)
+      :t.kind==='kid'?L(`am Depot „${t.depot}“: kein gültiges Geburtsjahr – gerechnet wird weiter wie bisher`,`on depot "${t.depot}": not a valid year of birth – calculated as before`)
+      :L(`${_numStr(t.pct)} % genau ab diesem Alter – gilt weiter; optional auf Lebensphasen umstellen`,`${_numStr(t.pct)} % from exactly this age – still applies; optionally switch to life phases`);
+    return `<div class="ns-item"><button type="button" class="ns-main" onclick="_migRun(${i})"><span class="ns-t">${escHTML(title)}</span><span class="ns-s">${escHTML(sub)}</span></button></div>`;
+  };
+  const dl=bk?`<div class="ns-item"><button type="button" class="ns-main" onclick="_downloadBeforeUpdate()"><span class="ns-t">${L('Stand vor dem Update sichern','Save the state before the update')}</span><span class="ns-s">${L('unveränderte Daten','unchanged data')}${bk.version?L(' der Version ',' of version ')+bk.version:''}</span></button></div>`:'';
+  return `<div id="migCard" class="ns-card mig-card"><div class="ns-head"><b>${L('Nach dem Update','After the update')}</b><span>${L('Diese Angaben ließen sich nicht eindeutig übernehmen. Bis du sie klärst, rechnet die App wie bisher.','These entries could not be carried over unambiguously. Until you resolve them, the app calculates as before.')}</span></div>${tasks.map(item).join('')}${dl}</div>`;
+}
+function _migRun(i){const t=_migrationTasks()[i];if(!t)return;if(t.kind==='net')openNetIncomeSheet(t.personId);else if(t.kind==='kid')openChildYearSheet(t.depotId,t.value);else openPartTimeSheet(t.personId);}
+function _afterMigrationChange(){_ltCalcCache=null;_afterDataChange();const el=document.getElementById('migCard');if(el)el.outerHTML=_migrationCardHTML();if(document.getElementById('page-lifetime')?.classList.contains('active'))renderLifetimePageCalcs();}
+/* unveränderter Stand vor dem letzten Update als Datei (Rohtext, genau wie gespeichert) */
+function _downloadBeforeUpdate(){
+  const b=appStorage.backupBeforeUpdate();if(!b)return;
+  const url=URL.createObjectURL(new Blob([b.raw],{type:'application/json;charset=utf-8'}));
+  const a=document.createElement('a');a.href=url;a.download='vermoegen_vor-update'+(b.version?'_v'+b.version:'')+'.json';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function _migOpt(name,v,label,sub,checked){return `<label class="ds-row mig-opt"><input type="radio" name="${name}" value="${escHTML(v)}"${checked?' checked':''}><span class="ds-l">${escHTML(label)}<small>${escHTML(sub)}</small></span></label>`;}
+const _migPvHTML=rows=>rows.map(([l,v])=>`<div><span>${escHTML(l)}</span><b>${escHTML(v)}</b></div>`).join('');
+/* P35: Gehalt zuordnen – vorhandener Posten oder neuer Posten; Vorher/Nachher für Budget und Prognose */
+function openNetIncomeSheet(pid){
+  const amount=_pendingNet(pid),name=_personName(pid);if(!(amount>0))return;
+  const cands=_netIncomeCandidates(pid),sug=cands.find(c=>c.suggested&&Math.abs(c.amount-amount)<0.5)||cands.find(c=>c.suggested);
+  const body=`<p class="ds-note">${escHTML(L(`In der früheren Version war für ${name} ein Nettogehalt von ${fmt(amount)}/Monat eingetragen. Gehälter kommen jetzt aus dem Budget. Welcher Budgetposten ist dieses Gehalt?`,`The previous version had a net salary of ${fmt(amount)}/month for ${name}. Salaries now come from the budget. Which budget entry is this salary?`))}</p>`
+    +`<div class="ds-group">${cands.map(c=>_migOpt('migNet',c.id,c.name||L('Einnahme','Income'),fmt(Math.round(c.amount*100)/100)+L('/Monat','/month')+(c.suggested?L(' · Vorschlag',' · suggestion'):''),sug&&c.id===sug.id)).join('')}`
+    +_migOpt('migNet','new',L('Noch nicht im Budget','Not in the budget yet'),L(`als neuen Posten „Nettogehalt ${name}“ mit ${fmt(amount)}/Monat anlegen`,`create a new entry "Net salary ${name}" with ${fmt(amount)}/month`),!sug)+`</div>`
+    +`<div class="mig-pv" id="migPv"></div><p class="ds-help">${escHTML(L(`Bis du hier zuordnest, rechnet die Prognose weiter mit ${fmt(amount)} als Gehalt von ${name}; das Budget bleibt unverändert.`,`Until you assign it here, the forecast keeps using ${fmt(amount)} as salary of ${name}; the budget stays unchanged.`))}</p>`;
+  const pick=()=>{const v=document.querySelector('input[name="migNet"]:checked');return v?v.value:null;};
+  if(!_openSheet(L('Gehalt zuordnen','Assign salary'),body,()=>{const v=pick();if(!v)throw new Error(L('Bitte eine Möglichkeit wählen.','Please choose an option.'));_assignNetIncome(pid,v);setTimeout(_afterMigrationChange,0);},L('Zuordnen','Assign'),()=>openNetIncomeSheet(pid)))return;
+  const upd=()=>{const v=pick(),el=document.getElementById('migPv');if(!v||!el)return;const p=_netIncomePreview(pid,v);
+    el.innerHTML=_migPvHTML([[L('Budget-Einnahmen pro Monat','Budget income per month'),fmt(p.incomeBefore)+' → '+fmt(p.incomeAfter)],[L(`Gehalt ${name} in der Prognose`,`Salary ${name} in the forecast`),fmt(p.salaryBefore)+' → '+fmt(p.salaryAfter)]]);};
+  document.getElementById('dsBody').addEventListener('change',e=>{if(e.target.name==='migNet')upd();});
+  upd();
+}
+/* P37: Kinder-Jahrgang klären – ganzes Geburtsjahr eintragen oder nicht übernehmen; nie automatisch gerundet */
+function openChildYearSheet(depotId,value){
+  /* nur solange der Jahrgang noch offen ist (auch beim erneuten Öffnen nach einer Änderung in einem anderen Fenster) */
+  const d=getAvDepots().find(x=>x.id===depotId);if(!d||!(Array.isArray(d.kidsOpen)&&d.kidsOpen.some(v=>v===value)))return;
+  const eff=(String(value).match(/\d{4}/g)||[])[0]||null,dep=(d.name||'').trim()||'Altersvorsorgedepot';
+  const body=`<p class="ds-note">${escHTML(L(`Am Depot „${dep}“ stand in der früheren Version der Kinder-Jahrgang „${_numStr(value)}“. Das ist kein gültiges Geburtsjahr. `,`On depot "${dep}" the previous version had the child year "${_numStr(value)}". That is not a valid year of birth. `)+(eff?L(`Gerechnet wurde damit wie mit ${eff} – so rechnet die App auch jetzt, bis du es klärst.`,`It was calculated like ${eff} – the app keeps doing so until you resolve it.`):L('Für die Kinderzulage zählte es nicht.','It did not count for the child subsidy.')))}</p>`
+    +`<div class="ds-group">`+_migOpt('migKid','year',L('Geburtsjahr des Kindes','Year of birth of the child'),L('ganzes Jahr, z. B. ','whole year, e.g. ')+(eff||'2019'),false)
+    +`<div class="ds-row"><span class="ds-l">${L('Geburtsjahr','Year of birth')}${eff?`<small><button type="button" class="hh-link" id="migKidEff">${L('Jahrgang ','Use ')}${eff}${L(' übernehmen','')}</button></small>`:''}</span><input class="ds-in" id="migKidYear" type="text" inputmode="numeric" autocomplete="off" placeholder="${eff||''}"></div>`
+    +_migOpt('migKid','none',L('Nicht übernehmen','Do not carry over'),L('kein Kind für dieses Depot','no child for this depot'),false)+`</div>`
+    +`<div class="mig-pv" id="migPv"></div><p class="ds-help"><button type="button" class="hh-link" onclick="_downloadBeforeUpdate()">${L('Stand vor dem Update sichern','Save the state before the update')}</button></p>`;
+  const pick=()=>{const v=document.querySelector('input[name="migKid"]:checked');return v?v.value:null;};
+  const save=()=>{const v=pick();if(!v)throw new Error(L('Bitte eine Möglichkeit wählen.','Please choose an option.'));_resolveChildYear(depotId,value,v==='none'?null:(document.getElementById('migKidYear').value||'').trim());setTimeout(_afterMigrationChange,0);};
+  if(!_openSheet(L('Kinder-Jahrgang klären','Resolve child year'),body,save,L('Übernehmen','Apply'),()=>openChildYearSheet(depotId,value)))return;
+  const upd=()=>{const v=pick(),el=document.getElementById('migPv');if(!el)return;const y=(document.getElementById('migKidYear').value||'').trim(),ok=/^\d{4}$/.test(y);
+    const after=v==='none'?L('kein Kind','no child'):v==='year'&&ok?L(`Kind Jahrgang ${y} (Kinderzulage bis ${+y+18})`,`child born ${y} (child subsidy until ${+y+18})`):'—';
+    el.innerHTML=_migPvHTML([[L('Kinderzulage bisher','Child subsidy so far'),eff?L(`wie Jahrgang ${eff} (bis ${+eff+18})`,`like ${eff} (until ${+eff+18})`):L('keine','none')],[L('Nachher','Afterwards'),after]]);};
+  const body2=document.getElementById('dsBody');
+  body2.addEventListener('change',e=>{if(e.target.name==='migKid')upd();});
+  body2.addEventListener('input',e=>{if(e.target.id==='migKidYear'){const r=body2.querySelector('input[name="migKid"][value="year"]');if(r)r.checked=true;upd();}});
+  const effBtn=document.getElementById('migKidEff');if(effBtn)effBtn.addEventListener('click',()=>{document.getElementById('migKidYear').value=eff;const r=body2.querySelector('input[name="migKid"][value="year"]');if(r)r.checked=true;upd();});
+  upd();
+}
+/* P36: Teilzeit ab Alter auf Lebensphasen umstellen – nur nach Auswahl und Bestätigung, mit der Wirkung aufs Einkommen */
+function openPartTimeSheet(pid){
+  const p=getDrvExtra().find(r=>r.id===pid),lg=_legacyPartTime(p);if(!lg)return;
+  const name=_personName(pid),pct=_numStr(Math.round(lg.pct*1000)/10);
+  const opts=[1,2,3,4].map(i=>{try{return _partTimePreview(pid,i);}catch(e){return null;}}).filter(Boolean)
+    .filter((o,i,a)=>o.started||o.phase===1||a.findIndex(x=>Math.abs(x.fromAfter-o.fromAfter)<0.01)===i);
+  const eff=o=>o.started?L('unverändert, sie läuft schon','unchanged, it is already running'):!o.months?L('Einkommen unverändert','income unchanged')
+    :(o.incomeDelta>0?L(`${o.months} Monate länger volles Gehalt: +`,`${o.months} more months of full salary: +`)+fmt(o.incomeDelta):L(`${o.months} Monate früher Teilzeit: −`,`${o.months} months earlier part-time: −`)+fmt(-o.incomeDelta));
+  const body=`<p class="ds-note">${escHTML(L(`Für ${name} gilt aus der früheren Version: Teilzeit ${pct} % genau ab ${_ageTxt(lg.from)}. Das rechnet die App unverändert weiter.`,`From the previous version, ${name} has part-time ${pct} % from exactly ${_ageTxt(lg.from)}. The app keeps calculating it unchanged.`))}</p>`
+    +`<p class="ds-note">${escHTML(L('Mit Lebensphasen stellst du die Arbeitszeit je Phase ein, wie bei allen anderen Personen. Ab welcher Phase soll die Teilzeit dann gelten?','With life phases you set the working time per phase, like for everyone else. From which phase should the part-time then apply?'))}</p>`
+    +`<div class="ds-group">${opts.map(o=>_migOpt('migPt',String(o.phase),`${o.phase} · ${LT_PHASE_NAMES[o.phase-1]} – `+L('Teilzeit ab ','part-time from ')+(o.fromToday?L('heute','today'):_ageTxt(o.fromAfter))+L(' statt ',' instead of ')+_ageTxt(o.fromBefore),eff(o),false)).join('')}</div>`
+    +`<p class="ds-help">${escHTML(L('Ohne Auswahl bleibt alles wie bisher.','Without a choice everything stays as before.'))}</p>`;
+  _openSheet(L('Teilzeit umstellen','Switch part-time'),body,()=>{const v=document.querySelector('input[name="migPt"]:checked');if(!v)throw new Error(L('Bitte eine Phase wählen – oder abbrechen, dann bleibt alles wie bisher.','Please choose a phase – or cancel to keep everything as before.'));_convertPartTime(pid,+v.value);setTimeout(_afterMigrationChange,0);},L('Umstellen','Switch'),()=>openPartTimeSheet(pid));
+}
+/* Ungeklärte Kinder-Jahrgänge einer Person (P37) als vorläufige Kinder: je Jahrgang so oft wie in einem ihrer Depots,
+   höchstens so viele, wie zusammen mit den erfassten Kindern dieses Jahrgangs nötig sind (wie die Migration) */
+function _openChildKids(person){
+  const max={};
+  getAvDepots().filter(d=>(d.person||'')===person&&Array.isArray(d.kidsOpen)).forEach(d=>{
+    const c={};d.kidsOpen.forEach(v=>(String(v).match(/\d{4}/g)||[]).forEach(y=>{c[y]=(c[y]||0)+1;}));
+    Object.entries(c).forEach(([y,n])=>{max[y]=Math.max(max[y]||0,n);});
+  });
+  const out=[];
+  Object.entries(max).forEach(([y,n])=>{const have=getChildren().filter(c=>(c.parent||'')===person&&+c.by===+y).length;for(let i=have;i<n;i++)out.push({by:+y,open:true});});
+  return out;
 }
 /* Zulagen eines Kalenderjahres für alle Depots (P25): Eigenbeiträge je Person zusammenführen, Zulagen je Person
    berechnen, jedes Kind genau einmal (bei dem Elternteil, dem es zugeordnet ist), Berufseinsteigerbonus einmal je Person;
@@ -9427,7 +10016,7 @@ function _retirementIncomes(s){
   if(!_mod('budget'))return[];
   const bd=loadBudgetData();if(!bd)return[];
   return(bd.einkommen||[]).filter(r=>r.retirement).map(r=>({name:r.name||'Einnahme',amount:_yearSum(r.values)/12,
-    duplicate:_retIncomeDuplicate(r.name),until:_isEmName(r.name)?regelaltersgrenze(s.birthYear):undefined})).filter(r=>r.amount>0);
+    duplicate:_retIncomeDuplicate(r.name),until:_isEmName(r.name)?regelaltersgrenze(s.birthYear):undefined,person:r.person||''})).filter(r=>r.amount>0);
 }
 
 /* ══ Prognose: Planmodell ══
@@ -9595,6 +10184,9 @@ function buildPlan(sIn,opt={}){
        nicht mehr arbeitest (P5); vorher steckt es im Budget */
     if(r.net>0)_workSegs(r.prof,currentAge).forEach(g=>{if(g.f>0)pensions.push({amount:r.net*g.f,from:g.fromMain,until:g.toMain,end:r.workEndMain,kind:'work',person:r.name,pct:Math.round(g.w*1000)/10});});
   });
+  /* Beamtenversorgung weiterer Personen (Schema 17): ab ihrem Pensionsbeginn, umgerechnet auf dein Alter */
+  const bvExtra=penOn?(opt.people||getDrvExtra()).map(p=>calcBeamteExtra(s,p)).filter(r=>r&&r.netto>0):[];
+  bvExtra.forEach(r=>pensions.push({amount:r.netto,from:r.fromMain,drv:true,kind:'bv',person:r.name}));
   /* Kindergeld je Kind bis zum Monat des 18. (25.) Geburtstags; zählt wie anderes Einkommen nach deinem Arbeitsende */
   getChildren().forEach(c=>{const e=_childEnd(c),until=_ageAt(s,+e.slice(0,4),+e.slice(5));if(until>currentAge)pensions.push({amount:CHILD_BENEFIT,from:0,until,kind:'kindergeld',person:_childName(c)});});
   /* Budget-Einnahmen, die im Ruhestand weiterlaufen (ohne doppelt erfasste Renten); eine Erwerbsminderungsrente endet
@@ -9603,7 +10195,7 @@ function buildPlan(sIn,opt={}){
   retInc.forEach(r=>{if(!r.duplicate)pensions.push({amount:r.amount,from:0,until:r.until,budget:true,kind:'budget'});});
   /* eigenes Nettogehalt (Budget-Einnahmen, die dir zugeordnet sind): ändert sich mit deiner Arbeitszeit je Phase */
   const ownNet=_personSalary(_ownPersonId()),ownWork=_ownWork(s);
-  const plan={drv,bv,drvExtra,ownNet,ownWork,avd,avdAll,retInc,s,data,sorted,latestKey,ym0,latestNet:calc(data[latestKey]).net,currentAge,firstAge,horizonAge,nSteps,nMonths,
+  const plan={drv,bv,drvExtra,bvExtra,ownNet,ownWork,avd,avdAll,retInc,s,data,sorted,latestKey,ym0,latestNet:calc(data[latestKey]).net,currentAge,firstAge,horizonAge,nSteps,nMonths,
     groups,buckets,lnr,vol,events,pensions,dynDepots,depositIdx,depositBucket,opt:{drv:opt.drv,bv:opt.bv,people:opt.people}};
   plan.funding=opt.funding||_planFunding(plan);
   return plan;
@@ -9618,7 +10210,7 @@ function _salaryFactor(r,a){return _workFactor(r.prof,a);}
    Erwachsenen nach ihrer Arbeitszeit je Phase und ihrem Arbeitsende */
 function _incomeChange(plan,a){
   let d=plan.ownNet>0?plan.ownNet*(_workFactor(plan.ownWork,a)-1):0;
-  (plan.drvExtra||[]).forEach(r=>{if(r.net>0)d+=r.net*(_salaryFactor(r,a)-1);});
+  (plan.drvExtra||[]).forEach(r=>{if(r.net>0&&r.netInBudget)d+=r.net*(_salaryFactor(r,a)-1);});
   return d;
 }
 function _planFunding(plan){
@@ -10007,8 +10599,9 @@ function initLifetimePage(){
     if(!el)return;
     el.addEventListener('input',()=>{
       const raw=el.value.trim();
-      if(raw===''){appStorage.removeItem(k);}
-      else{const n=el.type==='number'?Number(raw):_parseDec(raw);if(!isFinite(n))return;appStorage.setItem(k,String(n));}
+      /* ein einzelner Wert, auf dem aktuellen Stand gespeichert (P54) */
+      if(raw===''){_fieldWrite(()=>appStorage.removeItem(k));}
+      else{const n=el.type==='number'?Number(raw):_parseDec(raw);if(!isFinite(n))return;_fieldWrite(()=>appStorage.setItem(k,String(n)));}
       if(k==='lt-birth-year'||k==='lt-birth-month'||k==='lt-save-until')_updateDrvResult();
       _ltScheduleRender();
     });
@@ -10036,7 +10629,7 @@ function _drvFieldsHTML(d,prefix,mode){
   let h=`<div class="input-grid">`;
   h+=f('points','Rentenpunkte',_numStr(d.points||''),'0');
   h+=f('salary','Brutto/Jahr €',d.salary?Math.round(d.salary).toLocaleString('de-DE'):'','0');
-  h+=f('age','Regelalter',d.age>0?_numStr(d.age):'',String(Math.round(regelaltersgrenze(s.birthYear)*10)/10).replace('.',','));
+  h+=f('age','Rentenbeginn',d.age>0?_numStr(d.age):'',String(Math.round(regelaltersgrenze(s.birthYear)*10)/10).replace('.',','));
   h+=f('deduct','Abzüge %',_numStr(d.deduct),'20');
   h+=f('rw','Rentenwert €',_numStr(d.rw),'42,52');
   h+=f('de','Ø-Entgelt €',Math.round(d.de).toLocaleString('de-DE'),'51.944');
@@ -10180,6 +10773,9 @@ function _bvFromInputs(){
 function _bvResultText(b){
   const s=getLifetimeSettings(),r=calcBeamtePension(s,b);
   if(!(b.pay>0))return L('Bezüge und Dienstjahre eintragen, um die Pension hochzurechnen.','Enter salary and years of service to project the pension.');
+  return _bvResultLine(b,r);
+}
+function _bvResultLine(b,r){
   if(r.eligible===false)return L(`Bis zum Pensionsbeginn ${_pts(r.total)} Dienstjahre: unter fünf Jahren kein Anspruch auf Ruhegehalt (§ 4 BeamtVG).`,`${_pts(r.total)} years of service until the pension: below five years there is no pension entitlement (§ 4 BeamtVG).`);
   const pc=v=>v.toLocaleString('de-DE',{maximumFractionDigits:2})+' %';
   const yrs=r.total.toLocaleString('de-DE',{maximumFractionDigits:1});
@@ -10230,41 +10826,111 @@ function _planRowsHTML(rows,cols,mode,rowCls){
     return `<div class="input-group pc-${c.key}"><label data-info="${c.info}">${c.label}</label><input class="num-input${mode==='form'?' form-store':''}" type="text" ${c.type==='text'?'':'inputmode="decimal"'} data-k="${c.key}" value="${esc(v)}" placeholder="${c.ph}"></div>`;
   }).join('')+`<button class="plan-del${mode==='form'?' edit-only':''}" data-del="${i}" aria-label="Entfernen">×</button></div>`).join('');
 }
+/* P64: Kennung einer neuen Listenzeile, schon beim Anlegen vergeben und dauerhaft (der Speicher behält sie). Eine gelöschte
+   Kennung wird so nie für eine andere, neue Zeile wiederverwendet. */
+function _newRowId(prefix){return prefix+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+/* Wert eines Listenfelds wie gespeichert (Text und Auswahl als Text, sonst Zahl) */
+function _planCell(inp,c){
+  if(c.type==='text'||c.type==='select')return inp.value.trim();
+  const n=_parseDec(inp.value);return isFinite(n)?n:0;
+}
 function _collectPlanRows(container,cols){
   return[...container.querySelectorAll('.plan-row')].map(row=>{
     const o={};if(row.dataset.rowId)o.id=row.dataset.rowId;
     cols.forEach(c=>{
       const inp=row.querySelector(`[data-k="${c.key}"]`);
       if(!inp)return;
-      if(c.type==='text'||c.type==='select')o[c.key]=inp.value.trim();
-      else{const n=_parseDec(inp.value);o[c.key]=isFinite(n)?n:0;}
+      o[c.key]=_planCell(inp,c);
     });
     return o;
   });
 }
-/* Live-Editor (Prognose): speichert bei jeder Eingabe */
-function _planListEditor(containerId,storeKey,rows,cols,addLabel,newRow,title,rowCls){
+/* Live-Editor (Prognose): speichert bei jeder Eingabe.
+   P54/P64: Die Liste speichert alle Zeilen so, wie sie gezeichnet wurden; ihre Basis ist der Stand beim Zeichnen. Ist er
+   inzwischen ein anderer, wird nichts geschrieben. Die Liste zeigt dann den aktuellen Stand, ein Hinweis nennt die eigenen
+   Eingaben. Übertragen wird eine Eingabe nur auf dieselbe Zeile – erkannt allein an ihrer gespeicherten ID, nie an
+   Position, Anzahl oder Name – und erst mit „Meine Eingaben übernehmen“. load liefert die Zeilen des aktuellen Stands. */
+function _planListEditor(containerId,storeKey,rows,cols,addLabel,newRow,title,rowCls,load=()=>_lsJSON(storeKey,[])){
   const el=document.getElementById(containerId);
   if(!el)return;
   el.innerHTML=(title?`<div class="lt-block-label">${escHTML(title)}</div>`:'')+`<div class="plan-rows">${_planRowsHTML(rows,cols,'live',rowCls)}</div><button class="btn btn-ghost plan-add">+ ${addLabel}</button>`;
-  const save=()=>{appStorage.setItem(storeKey,JSON.stringify(_collectPlanRows(el,cols)));_ltScheduleRender();};
+  const rev=appStorage.revision(),drawn=_collectPlanRows(el,cols);
+  const redraw=list=>_planListEditor(containerId,storeKey,list,cols,addLabel,newRow,title,rowCls,load);
+  const write=list=>{try{appStorage.withBase(rev,()=>appStorage.setItem(storeKey,JSON.stringify(list)));return true;}catch(error){if(!_isStale(error))throw error;return false;}};
+  const stale=extra=>_planListNote(el,_planListMine(el,cols,drawn),cols,redraw,load,storeKey,extra);
+  const save=()=>{if(write(_collectPlanRows(el,cols)))_ltScheduleRender();else stale();};
   el.querySelectorAll('.plan-row input').forEach(inp=>inp.addEventListener('input',save));
   el.querySelectorAll('.plan-row select').forEach(sel=>sel.addEventListener('change',save));
   el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
-    b.closest('.plan-row').remove();save();
-    _planListEditor(containerId,storeKey,_lsJSON(storeKey,[]),cols,addLabel,newRow,title,rowCls);
+    const r=b.closest('.plan-row'),name=(drawn[+r.dataset.i]||{}).name||'';
+    r.remove();
+    if(!write(_collectPlanRows(el,cols))){stale(L('Entfernen von „','Removing "')+name+L('“ wurde nicht ausgeführt.','" was not carried out.'));return;}
+    _ltScheduleRender();redraw(load());
   }));
   el.querySelector('.plan-add').addEventListener('click',()=>{
     const list=_collectPlanRows(el,cols);list.push(newRow());
-    appStorage.setItem(storeKey,JSON.stringify(list));
-    _planListEditor(containerId,storeKey,list,cols,addLabel,newRow,title,rowCls);
+    if(!write(list)){stale(L('Die neue Zeile wurde nicht angelegt.','The new row was not added.'));return;}
+    /* neu zeichnen aus dem gespeicherten Stand: auch die neue Zeile trägt so ihre gespeicherte ID */
+    redraw(load());
+  });
+}
+/* Eigene Eingaben: Felder, die von der gezeichneten Fassung abweichen. Die Zeile wird über ihren Zeichen-Index (data-i)
+   der gezeichneten Fassung zugeordnet, die Identität im Speicher allein über data-row-id. */
+function _planListMine(el,cols,drawn){
+  const rows=[...el.querySelectorAll('.plan-row')],count={};
+  rows.forEach(r=>{const id=r.dataset.rowId;if(id)count[id]=(count[id]||0)+1;});
+  const mine=[];
+  rows.forEach(r=>{
+    const d=drawn[+r.dataset.i];if(!d)return;
+    cols.forEach(c=>{
+      const inp=r.querySelector(`[data-k="${c.key}"]`);if(!inp)return;
+      const v=_planCell(inp,c);if(v===d[c.key])return;
+      const opt=c.type==='select'?[...inp.options].find(o=>o.value===inp.value):null;
+      mine.push({id:r.dataset.rowId||'',unique:!!r.dataset.rowId&&count[r.dataset.rowId]===1,key:c.key,col:c,value:v,before:d[c.key],
+        text:opt?opt.textContent.trim():inp.value.trim()||L('leer','empty'),name:d.name||''});
+    });
+  });
+  return mine;
+}
+/* Nach einem abgelehnten Schreibversuch: aktuellen Stand zeichnen und die eigenen Eingaben nennen. Speichert selbst nichts. */
+function _planListNote(el,mine,cols,redraw,load,storeKey,extra){
+  const fresh=load(),hits=id=>fresh.filter(x=>x.id===id).length;
+  redraw(fresh);
+  const rev=appStorage.revision();
+  const freshRow=id=>[...el.querySelectorAll('.plan-row')].find(r=>r.dataset.rowId===id);
+  const ok=[],lines=[];
+  mine.forEach(m=>{
+    const head=(m.name?'„'+escHTML(m.name)+'“ · ':'')+escHTML(m.col.label)+': '+L('deine Eingabe','your entry')+' „'+escHTML(m.text)+'“';
+    const why=!m.unique||hits(m.id)>1?L('nicht übertragen – ohne eindeutige Kennung','not transferred – no unique identifier')
+      :hits(m.id)===0?L('nicht übertragen – dieser Eintrag wurde in einem anderen Fenster entfernt','not transferred – this entry was removed in another window'):'';
+    if(why){lines.push(head+' – '+why+'.');return;}
+    ok.push(m);
+    const r=freshRow(m.id),inp=r&&r.querySelector(`[data-k="${m.key}"]`);
+    const theirs=inp&&_planCell(inp,m.col)!==m.before?(m.col.type==='select'?([...inp.options].find(o=>o.value===inp.value)||{}).textContent:inp.value):null;
+    lines.push(head+(theirs!=null?' – '+L('inzwischen gespeichert: ','saved meanwhile: ')+escHTML(String(theirs).trim()||L('leer','empty')):'')+'.');
+  });
+  el.insertAdjacentHTML('afterbegin',`<div class="ds-error plan-stale" role="alert"><div>${L('Nicht gespeichert: Die Liste wurde inzwischen in einem anderen Fenster geändert. Hier steht jetzt der aktuelle Stand.','Not saved: the list was changed in another window in the meantime. This now shows the current state.')}</div>`
+    +(lines.length?`<ul>${lines.map(t=>`<li>${t}</li>`).join('')}</ul>`:'')+(extra?`<div>${escHTML(extra)}</div>`:'')
+    +`<div class="plan-stale-act">${ok.length?`<button type="button" class="btn btn-ghost" data-plan-apply>${L('Meine Eingaben übernehmen','Apply my entries')}</button>`:''}<button type="button" class="btn btn-ghost" data-plan-dismiss>${ok.length?L('Verwerfen','Discard'):'OK'}</button></div></div>`);
+  const box=el.querySelector('.plan-stale'),toast=document.getElementById('dsToast');
+  if(toast&&toast.classList)toast.classList.remove('show');
+  box.querySelector('[data-plan-dismiss]').addEventListener('click',()=>box.remove());
+  const apply=box.querySelector('[data-plan-apply]');
+  if(apply)apply.addEventListener('click',()=>{
+    /* nur die übertragbaren Felder, je Zeile über ihre ID, auf den gespeicherten Stand; andere Felder bleiben, wie sie sind */
+    const list=_lsJSON(storeKey,[]);
+    ok.forEach(m=>{const r=list.filter(x=>x.id===m.id);if(r.length===1)r[0][m.key]=m.value;});
+    try{appStorage.withBase(rev,()=>appStorage.setItem(storeKey,JSON.stringify(list)));}
+    catch(error){if(!_isStale(error))throw error;_planListNote(el,mine,cols,redraw,load,storeKey,extra);return;}
+    _ltScheduleRender();redraw(load());
+    _toast(L('Übernommen','Applied'));
   });
 }
 function renderPensionEditor(){
-  _planListEditor('lt-pensions','lt-pensions',getLifetimeSettings().pensions,PENSION_COLS,'Rente / Einkommen',()=>({name:'',amount:0,from:65}),'Weitere Renten & Einkünfte');
+  _planListEditor('lt-pensions','lt-pensions',getLifetimeSettings().pensions,PENSION_COLS,'Rente / Einkommen',()=>({id:_newRowId('income-'),name:'',amount:0,from:65}),'Weitere Renten & Einkünfte',undefined,()=>getLifetimeSettings().pensions);
 }
 function renderEventEditor(){
-  _planListEditor('lt-events','lt-events',getLifetimeSettings().events.map(_normEvent),EVENT_COLS,'Ereignis',()=>({name:'',year:new Date().getFullYear()+5,amount:'',from:'',to:''}),null,'ev');
+  _planListEditor('lt-events','lt-events',getLifetimeSettings().events.map(_normEvent),EVENT_COLS,'Ereignis',()=>({id:_newRowId('event-'),name:'',year:new Date().getFullYear()+5,amount:'',from:'',to:''}),null,'ev',()=>getLifetimeSettings().events.map(_normEvent));
 }
 
 /* Sparraten aus dem Budget je Gruppe ableiten (Ø der 12 Planmonate) */
@@ -10361,7 +11027,8 @@ function buildAssetParamsTable(force){
     if(inp.value.trim()==='')delete cur[key][f];
     else if(isFinite(n))cur[key][f]=Math.round(n*100)/100;
     else return;
-    appStorage.setItem('lt-asset-params',JSON.stringify(cur));
+    /* nur dieses Feld, auf dem aktuellen Stand (P54) */
+    _fieldWrite(()=>appStorage.setItem('lt-asset-params',JSON.stringify(cur)));
     _ltScheduleRender(400);
   };
   wrap.querySelectorAll('.lt-ap-input').forEach(inp=>{
@@ -10374,7 +11041,8 @@ function buildAssetParamsTable(force){
     if(!await _ask({title:'Sparraten aus dem Budget übernehmen?',text:msg,ok:'Übernehmen'}))return;
     const cur=_lsJSON('lt-asset-params',{});
     Object.entries(bud.byGroup).forEach(([k,v])=>{if(!cur[k])cur[k]={};cur[k].saving=Math.round(v);});
-    appStorage.setItem('lt-asset-params',JSON.stringify(cur));
+    /* genau die bestätigten Sparraten, auf dem aktuellen Stand (P54) */
+    _fieldWrite(()=>appStorage.setItem('lt-asset-params',JSON.stringify(cur)));
     buildAssetParamsTable(true);
     renderLifetimePageCalcs();
   });
@@ -10386,27 +11054,33 @@ function buildAssetParamsTable(force){
 function _incomeCard(plan){
   const s=plan.s,rows=[],cur=plan.currentAge;
   const who=(name,own)=>name&&own!=null?' ('+name+' '+_ageTxt(own)+')':'';
-  const add=(n,v,from,until,o)=>{const r=Object.assign({n,v,from,until},o||{});r.on=age=>age>=r.from-1e-9&&!(r.until!=null&&r.until<=age+1e-9);rows.push(r);};
+  /* who: zu wem die Zeile gehört ('' = ich, ID einer weiteren Person, 'hh' = Haushalt) – für die Gliederung je Person */
+  let owner='';
+  const add=(n,v,from,until,o)=>{const r=Object.assign({n,v,from,until,who:owner},o||{});r.on=age=>age>=r.from-1e-9&&!(r.until!=null&&r.until<=age+1e-9);rows.push(r);};
   const d=plan.drv;
   if(d&&d.em&&d.em.gross>0&&d.em.until>cur)add('Erwerbsminderungsrente',d.em.gross,0,d.em.until,{temp:true,when:L('bis ','until ')+fmtAge(d.em.until)+(d.em.full>0?L(', danach Altersrente',', then old-age pension'):''),ex:_explainEm(d,'',true)});
   if(d&&d.netto>0)add('Gesetzliche Rente',d.netto,d.age,null,{when:L('ab ','from ')+fmtAge(d.age),ex:_explainDrv(d)});
   if(plan.bv&&plan.bv.netto>0)add('Beamtenpension',plan.bv.netto,plan.bv.age,null,{when:L('ab ','from ')+fmtAge(plan.bv.age),ex:_explainBv(plan.bv)});
   (plan.drvExtra||[]).forEach(r=>{
+    owner=r.personId||'';
     if(r.em&&r.em.gross>0&&r.em.untilMain>cur)add(L('EM-Rente ','Disability pension ')+r.name,r.workEndMain>s.workEnd?r.em.amount:r.em.gross,0,r.em.untilMain,{temp:true,when:L('bis ','until ')+fmtAge(r.em.untilMain)+who(r.name,r.em.until)+(r.em.full>0?L(', danach Altersrente',', then old-age pension'):''),ex:_explainEm(r,r.name,r.workEndMain<=s.workEnd)});
     /* Gehalt je Abschnitt nach der Arbeitszeit je Lebensphase bis zum Arbeitsende (Schema 15) */
     if(r.net>0){
       const segs=_workSegs(r.prof,cur).filter(g=>g.f>0),nm=escHTML(r.name),list=_salarySegsTxt(r.net,segs);
       const ex=L(`<p>${nm} verdient heute <strong>${fmt(r.net)}</strong> netto/Monat (Ø der Budget-Einnahmen, die ${nm} zugeordnet sind). Nach der Arbeitszeit je Lebensphase: ${list} (Alter von ${nm}).</p><p>Solange du selbst arbeitest, steckt das Gehalt im Budget; ändert es sich vorher, gleicht die Prognose das mit dem Vermögen aus. Danach deckt es einen Teil des Haushaltsbedarfs.</p>`,`<p>${nm} earns <strong>${fmt(r.net)}</strong> net/month today (average of the budget income assigned to ${nm}). By working time per life phase: ${list} (age of ${nm}).</p><p>While you work yourself, the salary is part of the budget; if it changes earlier, the forecast balances it with your wealth. After that it covers part of the household need.</p>`);
-      segs.forEach(g=>add(L('Gehalt ','Salary ')+r.name+(g.w<1-1e-9?' ('+_numStr(Math.round(g.w*1000)/10)+' %)':''),r.net*g.f,g.fromMain>cur+0.01?g.fromMain:0,g.toMain,{temp:true,work:true,
+      /* nur Abschnitte, die nach deinem Arbeitsende noch laufen (vorher steckt das Gehalt im Budget) */
+      segs.filter(g=>g.toMain>s.workEnd+1e-9).forEach(g=>add(L('Gehalt ','Salary ')+r.name+(g.w<1-1e-9?' ('+_numStr(Math.round(g.w*1000)/10)+' %)':''),r.net*g.f,g.fromMain>cur+0.01?g.fromMain:0,g.toMain,{temp:true,work:true,
         when:(g.fromMain>cur+0.01?L('ab ','from ')+fmtAge(g.fromMain)+L(' bis ',' to '):L('Nettogehalt bis ','Net salary until '))+fmtAge(g.toMain)+who(r.name,g.to),ex}));
     }
     if(r.netto>0)add(L('Rente ','Pension ')+r.name,r.netto,r.fromMain,null,{when:L('ab ','from ')+fmtAge(r.fromMain)+who(r.name,r.age),ex:_explainDrv(r,r.name)});
   });
-  (plan.avd||[]).forEach(r=>{const nm=r.person?((getDrvExtra().find(p=>p.id===r.person)||{}).name||''):'';
+  (plan.bvExtra||[]).forEach(r=>(owner=r.personId||'',add(L('Beamtenpension ','Civil service pension ')+r.name,r.netto,r.fromMain,null,{when:L('ab ','from ')+fmtAge(r.fromMain)+who(r.name,r.age),ex:_explainBv(r)})));
+  (plan.avd||[]).forEach(r=>{owner=r.person||'';const nm=r.person?((getDrvExtra().find(p=>p.id===r.person)||{}).name||''):'';
     add(r.name,r.netto,r.started?0:r.fromMain,r.untilMain,{when:(r.started?L('läuft · bis ','running · until '):L('ab ','from ')+fmtAge(r.fromMain)+L(' bis ',' to '))+fmtAge(r.untilMain)+(nm?' ('+nm.trim()+' '+_ageTxt(r.from)+'–'+r.until+')':''),ex:_explainAvd(r)});});
-  if(_mod('pension'))(s.pensions||[]).filter(p=>(+p.amount||0)>0).forEach(p=>{const sh=_personShift(s,p.person),nm=p.person?_personName(p.person):'',from=(+p.from||67)+sh,until=+p.until>0?+p.until+sh:null;
+  if(_mod('pension'))(s.pensions||[]).filter(p=>(+p.amount||0)>0).forEach(p=>{owner=p.person||'';const sh=_personShift(s,p.person),nm=p.person?_personName(p.person):'',from=(+p.from||67)+sh,until=+p.until>0?+p.until+sh:null;
     add((p.name||'Weitere Rente')+(nm&&!(p.name||'').includes(nm)?' '+nm:''),+p.amount,from,until,{when:L('ab ','from ')+fmtAge(from)+(until?L(' bis ',' to ')+fmtAge(until):'')+(nm?' ('+nm+' '+_ageTxt(+p.from||67)+(until?'–'+_ageTxt(+p.until):'')+')':''),ex:L(`<p>Eingetragen unter Daten → Altersvorsorge → Weitere Renten &amp; Einkünfte: <strong>${fmt(+p.amount)}</strong> netto/Monat ab ${fmtAge(from)}${until?' bis '+fmtAge(until):''}.</p><p>Der Betrag gilt in heutiger Kaufkraft und steigt in der Prognose mit der Inflation.</p>`,`<p>Entered under Data → Pensions → Other pensions &amp; income: <strong>${fmt(+p.amount)}</strong> net/month from ${fmtAge(from)}${until?' to '+fmtAge(until):''}.</p><p>The amount is in today's money and rises with inflation in the forecast.</p>`)});});
-  (plan.retInc||[]).filter(r=>!r.duplicate).forEach(r=>add(r.name,r.amount,0,r.until??null,{budget:true,when:L('aus dem Budget','from the budget')+(r.until?L(' · bis ',' · until ')+fmtAge(r.until):''),ex:L(`<p>Aus dem Budget: Ø <strong>${fmt(Math.round(r.amount))}</strong>/Monat (Summe der zwölf Planmonate ÷ 12), markiert als „Auch im Ruhestand“.</p><p>Zählt in der Prognose ab dem Ende der Arbeit${r.until?' bis '+fmtAge(r.until):''}, in heutiger Kaufkraft. Was schon unter Altersvorsorge erfasst ist, zählt nicht doppelt.</p>`,`<p>From the budget: avg <strong>${fmt(Math.round(r.amount))}</strong>/month (sum of the twelve plan months ÷ 12), marked as "Also in retirement".</p><p>Counts in the forecast from the end of work${r.until?' until '+fmtAge(r.until):''}, in today's money. Anything already recorded under Pensions is not counted twice.</p>`)}));
+  const ownId=_ownPersonId();
+  (plan.retInc||[]).filter(r=>!r.duplicate).forEach(r=>(owner=r.person===ownId?'':(r.person||'hh'),add(r.name,r.amount,0,r.until??null,{budget:true,when:L('aus dem Budget','from the budget')+(r.until?L(' · bis ',' · until ')+fmtAge(r.until):''),ex:L(`<p>Aus dem Budget: Ø <strong>${fmt(Math.round(r.amount))}</strong>/Monat (Summe der zwölf Planmonate ÷ 12), markiert als „Auch im Ruhestand“.</p><p>Zählt in der Prognose ab dem Ende der Arbeit${r.until?' bis '+fmtAge(r.until):''}, in heutiger Kaufkraft. Was schon unter Altersvorsorge erfasst ist, zählt nicht doppelt.</p>`,`<p>From the budget: avg <strong>${fmt(Math.round(r.amount))}</strong>/month (sum of the twelve plan months ÷ 12), marked as "Also in retirement".</p><p>Counts in the forecast from the end of work${r.until?' until '+fmtAge(r.until):''}, in today's money. Anything already recorded under Pensions is not counted twice.</p>`)})));
   const need=+s.pensionSpending||0;
   const at=age=>{const sum=rows.filter(r=>r.on(age)).reduce((x,r)=>x+r.v,0);return{age,sum,cov:need>0?sum/need:0};};
   const a4=Math.max(s.phase4From??s.pensionAge??67,cur);
@@ -10516,7 +11190,12 @@ function renderLifetimePageCalcs(){
       h+=`<div class="v2-inc-bar">${inc.map((x,i)=>x.on(A.age)?`<i style="width:${(x.v/base*100).toFixed(2)}%;background:${shade(i)}"></i>`:'').join('')}</div>`;
       if(ic.need>0)h+=`<div class="v2-inc-cap">${L('Mit ','At ')}${_ageTxt(A.age)}: ${A.cov>=1?L('deckt deinen Bedarf von ','covers your need of ')+fmt(ic.need):L('deckt ','covers ')+Math.round(A.cov*100)+L(' % deines Bedarfs von ',' % of your need of ')+fmt(ic.need)}</div>`;
       if(ic.steady&&(Math.abs(ic.steady.sum-A.sum)>0.5||Math.abs(ic.steady.age-A.age)>1e-9))h+=`<div class="v2-inc-cap">${L('Lebenslang ab ','Lifelong from ')}${_ageTxt(ic.steady.age)}: ${fmt(Math.round(ic.steady.sum))}${ic.need>0?' ('+Math.round(ic.steady.cov*100)+' %)':''}</div>`;
-      h+=`<div class="v2-inc-rows">${inc.map((x,i)=>`<button type="button" class="v2-inc-row" data-inc="${i}"><i style="background:${x.on(A.age)?shade(i):'var(--fill)'}"></i><span class="n">${escHTML(x.n)}<small>${escHTML(x.when)}</small></span><span class="v">${fmt(Math.round(x.v))}</span></button>`).join('')}</div>`;
+      /* je Person gegliedert (14.10.2026): Ich, weitere Personen, Haushalt; Zwischensumme zum Rentenbeginn */
+      const rowHTML=(x,i)=>`<button type="button" class="v2-inc-row" data-inc="${i}"><i style="background:${x.on(A.age)?shade(i):'var(--fill)'}"></i><span class="n">${escHTML(x.n)}<small>${escHTML(x.when)}</small></span><span class="v">${fmt(Math.round(x.v))}</span></button>`;
+      const order=['',...getDrvExtra().filter(p=>p.id).map(p=>p.id),'hh'],whoName=w=>w===''?L('Ich','Me'):w==='hh'?L('Haushalt','Household'):_personName(w)||L('Weitere Person','Other person');
+      inc.forEach(x=>{if(!order.includes(x.who??''))order.push(x.who);});
+      const grp=order.map(w=>({w,items:inc.map((x,i)=>({x,i})).filter(o=>(o.x.who??'')===w)})).filter(g=>g.items.length);
+      h+=`<div class="v2-inc-rows">${grp.length>1?grp.map(g=>`<div class="v2-inc-g"><span>${escHTML(whoName(g.w))}</span><b>${fmt(Math.round(g.items.filter(o=>o.x.on(A.age)).reduce((a,o)=>a+o.x.v,0)))}</b><small>${L('mit ','at ')}${_ageTxt(A.age)}</small></div>`+g.items.map(o=>rowHTML(o.x,o.i)).join('')).join(''):inc.map(rowHTML).join('')}</div>`;
       h+=`<p class="v2-inc-note">${L('Alle Altersangaben in deinem Alter, bei weiteren Personen deren Alter in Klammern. Eine Erwerbsminderungsrente endet mit Beginn der Altersrente und wird nicht zusätzlich gezählt.','All ages are your age; for other people their own age in brackets. A disability pension ends when the old-age pension starts and is not counted on top.')}</p>`;
       h+=`</div>`;
       _incExplain=inc.map(x=>({t:x.n,h:x.ex||''}));
@@ -10652,7 +11331,7 @@ function renderLifetimePageCalcs(){
   document.getElementById('ltLogToggleBtn').classList.toggle('active',ltUseLog);
   document.querySelectorAll('[data-lt-range]').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.ltRange)===ltRange));
 
-  _ltState={plan,det,mc,tc,real,infl,currentAge,allAges,histLine,projLine,projHi,projLo,histAssetMaps,availAtR,coverage,R};
+  _ltState={plan,det,mc,tc,real,infl,currentAge,allAges,histLine,projLine,projHi,projLo,histAssetMaps,availAtR,coverage,R,retireAge};
   _v2LtSummary({s,plan,mc,tc,retireAge,availAtR,coverage,R,currentAge});
   _v2LtPhases({s,plan,mc,currentAge,infl});
   const psBtn=document.getElementById('psOpen');if(psBtn)psBtn.hidden=false;
@@ -10698,7 +11377,7 @@ function _v2LtSummary(o){
   const cov=Math.max(0,Math.min(100,coverage*100));
   el.innerHTML=
     `<div class="v2-ret-head"><span class="v2-ret-title">${s.phase4From>s.workEnd+0.01?'Vorruhestand':'Ruhestand'} mit ${_ageTxt(R)}</span><span class="v2-chip ${ok?'up':'down'}">${ok?'Abgesichert':'Noch nicht abgesichert'}</span></div>`+
-    `<div class="v2-ret-main" data-info="lt-safety"><span class="v2-ret-big">${pct}<small>%</small></span><span class="v2-ret-lbl">Erfolgschance</span></div>`+
+    `<button type="button" class="v2-ret-main" onclick="openSuccessExplain()" aria-label="${L('Erfolgschance erklären','Explain the probability of success')}"><span class="v2-ret-big">${pct}<small>%</small></span><span class="v2-ret-lbl">${L('Erfolgschance','Probability of success')} <span class="v2-ret-more">${L('So wird gerechnet ›','How it is calculated ›')}</span></span></button>`+
     `<div class="v2-gauge ${ok?'up':'down'}"><i style="width:${pct}%"></i><b style="left:${safety}%"></b></div>`+
     `<div class="v2-gauge-cap"><span style="left:${safety}%">Ziel ${safety} %</span></div>`+
     `<p class="v2-ret-text">In ${pct} von 100 simulierten Marktverläufen reicht dein Geld bis ${plan.horizonAge}.</p>`+
@@ -10712,6 +11391,55 @@ function _v2LtSummary(o){
   const pt=document.getElementById('v2-prev-txt');
   if(pt)pt.textContent='Erfolgschance bis '+plan.horizonAge+' · Ziel '+safety+' %';
   _v2SyncSwitches();
+}
+/* Ausführliche Erklärung der Erfolgschance mit den aktuellen Zahlen (14.10.2026): was die Zahl bedeutet, wie simuliert
+   wird, was jeden Monat passiert, Annahmen je Anlage, „Sicher möglich ab“ und Grenzen des Modells */
+function openSuccessExplain(){
+  const st=_ltState;if(!st||!st.plan||!st.mc)return;
+  const s=getLifetimeSettings(),{plan,mc,R,retireAge}=st,runs=MC_RUNS,ok=Math.round(mc.success*runs),pct=Math.round(mc.success*100),safety=Math.round(s.safety);
+  const pc=v=>_numStr(Math.round(v*1000)/10)+' %',early=s.phase4From>s.workEnd+0.01;
+  const fail=mc.failAge50!=null&&isFinite(mc.failAge50)?Math.floor(mc.failAge50+1e-9):null;
+  const groups=plan.groups.filter(g=>g.gross>0||g.saving>0);
+  const rows=groups.map(g=>`<tr><td>${escHTML(g.key)}</td><td>${pc(g.ret)}</td><td>${pc(g.vol)}</td><td>${g.saving>0?fmt(Math.round(g.saving)):'–'}</td><td>${g.avail>=120?L('nicht (gebunden)','no (tied up)'):g.avail>0?L('ab ','from ')+_ageTxt(g.avail):L('sofort','now')}</td></tr>`).join('');
+  const need3=fmt(Math.round(s.monthlyWithdraw)),need4=fmt(Math.round(s.pensionSpending));
+  const h=L(
+`<p><strong>${pct} %</strong> heißt: In <strong>${ok} von ${runs}</strong> simulierten Zukünften reicht dein Geld bis zum Alter ${plan.horizonAge}. „Reicht“ bedeutet: In jedem Monat bis dahin decken Einkommen und entnehmbares Vermögen deinen Bedarf. Dein Ziel liegt bei ${safety} % (Sicherheit, einstellbar unter Daten → Prognose &amp; Annahmen)${mc.success>=s.safety/100?' – das ist erreicht.':' – das ist noch nicht erreicht.'}</p>
+<p>Gerechnet ist mit ${early?'dem Vorruhestand ab '+_ageTxt(R)+' und der Rente ab '+_ageTxt(s.phase4From):'dem Ruhestand ab '+_ageTxt(R)}, so wie unter Lebensphasen eingestellt.</p>
+<h3>Wie simuliert wird</h3>
+<p>Die Prognose ist eine Monte-Carlo-Simulation: ${runs} Durchläufe, jeder Monat für Monat von heute bis ${plan.horizonAge}. In jedem Durchlauf bekommt jede Anlagegruppe je Lebensjahr eine zufällige Rendite aus ihrer erwarteten Rendite und Schwankung (Tabelle unten). Die Gruppen hängen zu 30 % an einem gemeinsamen Markt (Korrelation 0,3): Ein schlechtes Börsenjahr trifft meist mehrere Anlagen. Die Jahresrendite verteilt sich gleichmäßig auf die zwölf Monate. Die Zufallszahlen sind fest, damit sich zwei Einstellungen fair vergleichen lassen.</p>
+<h3>Was jeden Monat passiert</h3>
+<ul><li><strong>Solange du arbeitest</strong>: Die Sparraten deiner Phase fließen in die Anlagen, bezahlt aus dem Budgetüberschuss. Ändert sich das Haushaltseinkommen (Teilzeit, Arbeitsende einer Person), kommt eine Lücke aus dem Vermögen, Mehreinkommen wird zusätzlich angelegt.</li>
+<li><strong>Ab dem ${early?'Vorruhestand':'Ruhestand'}</strong>: Dein Bedarf (${need3}${s.pensionSpending!==s.monthlyWithdraw?', in der Rente '+need4:''}) abzüglich Renten, Pensionen, Depot-Auszahlungen, Gehältern weiterer Personen und Kindergeld wird aus dem Vermögen entnommen – anteilig aus allen entnehmbaren Anlagen, mit dem pauschalen Abzug je Anlage (z. B. Steuern).</li>
+<li><strong>Kredite</strong> laufen nach Vertrag, <strong>einmalige Ereignisse</strong> fallen in ihrem Monat an, <strong>Altersvorsorgedepots</strong> wandeln sich zum Auszahlungsbeginn in eine Monatsrente.</li>
+<li>Alle Beträge in <strong>heutiger Kaufkraft</strong>; der Bedarf steigt mit der Inflation von ${_numStr(s.inflation)} %.</li></ul>
+<h3>Wann ein Durchlauf scheitert</h3>
+<p>Sobald in einem Monat der Bedarf nicht mehr gedeckt ist, weil das entnehmbare Vermögen aufgebraucht ist. Gebundene Werte wie Immobilien, Fahrzeuge oder Betriebsrenten vor ihrer Freigabe werden nicht verkauft.${fail!=null?` In der Hälfte der Durchläufe gab es spätestens mit ${fail} einen ersten Fehlbetrag.`:''}</p>
+<h3>Annahmen je Anlage</h3>
+<table class="se-t"><tr><th>Gruppe</th><th>Rendite</th><th>Schwankung</th><th>Sparrate</th><th>Entnehmbar</th></tr>${rows}</table>
+<p>Ändern unter Daten → Prognose &amp; Annahmen → Rendite &amp; Sparrate je Asset.</p>
+<h3>„Sicher möglich ab“</h3>
+<p>${retireAge==null?'Bis '+plan.horizonAge+' gibt es kein Alter mit mindestens '+safety+' % Erfolgschance.':'Das früheste ganze Alter, ab dem mindestens '+safety+' % der Durchläufe reichen: <strong>'+(retireAge<=Math.ceil(plan.currentAge)?'sofort':retireAge)+'</strong>.'} Für jedes geprüfte Alter rechnet die App einen eigenen Plan: Rentenpunkte, Dienstjahre, Depotbeiträge und Phasen passen dann zu diesem Arbeitsende.</p>
+<h3>Was das Modell nicht abbildet</h3>
+<p>Steuern und Sozialabgaben nur pauschal, kein Umschichten zwischen Anlagen, keine Pflege- oder Krankheitskosten, keine Änderungen von Gesetzen. Die Prognose ist eine Modellrechnung und keine Anlageberatung.</p>`,
+`<p><strong>${pct} %</strong> means: in <strong>${ok} of ${runs}</strong> simulated futures your money lasts until age ${plan.horizonAge}. "Lasts" means: in every month until then income and withdrawable wealth cover your need. Your target is ${safety} % (safety, adjustable under Data → Forecast &amp; assumptions)${mc.success>=s.safety/100?' – it is reached.':' – it is not reached yet.'}</p>
+<p>Calculated with ${early?'early retirement from '+_ageTxt(R)+' and the pension from '+_ageTxt(s.phase4From):'retirement from '+_ageTxt(R)}, as set under life phases.</p>
+<h3>How it is simulated</h3>
+<p>The forecast is a Monte Carlo simulation: ${runs} runs, each month by month from today until ${plan.horizonAge}. In each run every asset group gets a random return per year of life from its expected return and volatility (table below). The groups depend 30 % on a common market (correlation 0.3): a bad stock market year usually hits several assets. The annual return is spread evenly over the twelve months. The random numbers are fixed so that two settings can be compared fairly.</p>
+<h3>What happens every month</h3>
+<ul><li><strong>While you work</strong>: the savings of your phase go into the investments, paid from the budget surplus. If household income changes (part-time, a person's end of work), a gap comes from your wealth, extra income is invested additionally.</li>
+<li><strong>From ${early?'early retirement':'retirement'}</strong>: your need (${need3}${s.pensionSpending!==s.monthlyWithdraw?', in retirement '+need4:''}) minus pensions, depot payouts, salaries of other people and child benefit is withdrawn from your wealth – proportionally from all withdrawable investments, with the flat deduction per investment (e.g. taxes).</li>
+<li><strong>Loans</strong> run as per contract, <strong>one-off events</strong> happen in their month, <strong>retirement depots</strong> turn into a monthly pension when payout starts.</li>
+<li>All amounts in <strong>today's money</strong>; the need rises with inflation of ${_numStr(s.inflation)} %.</li></ul>
+<h3>When a run fails</h3>
+<p>As soon as in one month the need is no longer covered because withdrawable wealth is used up. Tied-up values such as real estate, vehicles or company pensions before release are not sold.${fail!=null?` In half of the runs a first shortfall occurred by ${fail} at the latest.`:''}</p>
+<h3>Assumptions per investment</h3>
+<table class="se-t"><tr><th>Group</th><th>Return</th><th>Volatility</th><th>Saving</th><th>Withdrawable</th></tr>${rows}</table>
+<p>Change under Data → Forecast &amp; assumptions → Return &amp; saving per asset.</p>
+<h3>"Safely possible from"</h3>
+<p>${retireAge==null?'Until '+plan.horizonAge+' there is no age with at least '+safety+' % probability of success.':'The earliest whole age from which at least '+safety+' % of runs last: <strong>'+(retireAge<=Math.ceil(plan.currentAge)?'now':retireAge)+'</strong>.'} For every age checked the app calculates its own plan: pension points, service years, depot contributions and phases then match that end of work.</p>
+<h3>What the model does not cover</h3>
+<p>Taxes and social contributions only as a flat rate, no rebalancing between investments, no care or illness costs, no changes in law. The forecast is a model calculation, not investment advice.</p>`);
+  showInfoHTML(L(`Erfolgschance ${pct} %`,`Probability of success ${pct} %`),h);
 }
 /* Senkrechte Markierungen für die Phasenwechsel, beschriftet in der Phasenfarbe über dem Chart */
 const _ltMarkerPlugin={
@@ -10998,6 +11726,8 @@ function _ownPhaseText(b){
    mit Zusammenfassung im Kopf; Arbeitszeit und Altersvorsorge je erwachsene Person (Schema 15), darunter je weitere Person
    Arbeitsende und Rentenbeginn in ihrem Alter. Beim Tippen rechnet eine Vorschau die Erfolgschance. */
 function openPhasesSheet(focus){
+  /* früher eigener Abschnitt je Person: Arbeitszeit und Arbeitsende stehen jetzt in den Phasen (Phase 2) */
+  if(String(focus||'').startsWith('p-'))focus=2;
   const s=getLifetimeSettings(),cur=_curAgeOf(s);
   const plan=_mod('assets')?buildPlan():null,drv=getDrv(),rag=regelaltersgrenze(s.birthYear),auto=drv.age>0?drv.age:rag;
   const end=plan?plan.horizonAge:Math.max(Math.round(s.planHorizon),Math.ceil(cur)+1);
@@ -11011,31 +11741,38 @@ function openPhasesSheet(focus){
   /* Ausklappbare Abschnitte: Kopf mit Zusammenfassung, offen nur der gewählte */
   const sec=(key,title,mark,inner)=>`<details class="lp-sec" id="lp-sec-${key}"${String(focus)===String(key)?' open':''}><summary><span class="lp-sum-t">${mark}<span><b>${title}</b><small id="lp-s-${key}"></small></span></span><span class="lp-range" id="lp-r-${key}"></span></summary><div class="ds-group">${inner}</div></details>`;
   const people=getDrvExtra().filter(r=>r.id);
-  const adults=[{key:'me',name:L('Ich','Me')},...people.map(p=>({key:p.id,name:(p.name||'').trim()||L('Weitere Person','Other person'),p}))];
+  const adults=[{key:'me',name:L('Ich','Me')},...people.filter(p=>!_legacyPartTime(p)).map(p=>({key:p.id,name:(p.name||'').trim()||L('Weitere Person','Other person'),p}))];
   /* je erwachsene Person ein Feld in einer Zeile (Arbeitszeit bzw. Altersvorsorge der Phase) */
-  const cell=(id,name,val)=>`<label class="lp-cell"><small>${escHTML(name)}</small><input class="ds-in" id="${id}" type="text" inputmode="decimal" autocomplete="off" value="${escHTML(val)}" data-lp></label>`;
+  const cell=(id,name,val,ph)=>`<label class="lp-cell"><small>${escHTML(name)}</small><input class="ds-in" id="${id}" type="text" inputmode="decimal" autocomplete="off" value="${escHTML(val)}"${ph?` placeholder="${escHTML(ph)}"`:''} data-lp></label>`;
+  /* Arbeitszeit heute steht beim Gehalt im Budget (Schema 17): dann hier nur angezeigt */
+  const roCell=(name,val)=>`<span class="lp-cell lp-ro"><small>${escHTML(name)}</small><b>${escHTML(val)}</b></span>`;
   const mrow=(id,label,help,cells)=>cells.length?`<div class="ds-row lp-mrow"><span class="ds-l">${label}<small id="${id}-h">${help}</small></span><span class="lp-cells">${cells.join('')}</span></div>`:'';
-  const work=i=>mrow('lpw-'+i,L('Arbeitszeit %','Working time %'),i===1?L('heute, in % einer Vollzeitstelle · leer = 100','today, in % of full-time · empty = 100'):L('leer = wie in der Phase davor','empty = as in the previous phase'),
-    adults.filter(a=>a.key!=='me'||i<=2).map(a=>cell(`lpw-${a.key}-${i}`,a.name,a.key==='me'?stored('lt-p'+i+'-work'):opt(a.p['w'+i]))));
+  const bwOf=a=>_budgetWorkShare(a.key==='me'?_ownPersonId():a.key),pc=w=>_numStr(Math.round(w*1000)/10)+' %';
+  const anyBw=adults.some(a=>bwOf(a)!=null);
+  const work=i=>mrow('lpw-'+i,L('Arbeitszeit %','Working time %'),i===1?(anyBw?L('heute, in % einer Vollzeitstelle · beim Gehalt im Budget eingestellt, sonst hier','today, in % of full-time · set with the salary in the budget, otherwise here'):L('heute, in % einer Vollzeitstelle · leer = 100 · oder beim Gehalt im Budget','today, in % of full-time · empty = 100 · or with the salary in the budget')):L('leer = wie in der Phase davor','empty = as in the previous phase'),
+    adults.filter(a=>a.key!=='me'||i<=2).map(a=>{const bw=i===1?bwOf(a):null;return bw!=null?roCell(a.name,pc(bw)):cell(`lpw-${a.key}-${i}`,a.name,a.key==='me'?stored('lt-p'+i+'-work'):opt(a.p['w'+i]));}));
   const pens=(i,help)=>mrow('lpv-'+i,L('Altersvorsorge %','Pension savings %'),help+L(' · leer = 100 %, solange die Person arbeitet',' · empty = 100 % while the person works'),
     adults.filter(a=>a.key!=='me'||i<=3).map(a=>cell(`lpv-${a.key}-${i}`,a.name,a.key==='me'?stored('lt-p'+i+'-pension'):opt(a.p['pen'+i]))));
   const eff=i=>`<p class="lp-eff" id="lp-e-${i}"></p>`;
-  const prow=(p,k,label,help,val,ph)=>row('lpp-'+p.id+'-'+k,label,help,val,ph);
-  const persons=people.map(p=>{const by=+p.by>1900?+p.by:s.birthYear,n=(p.name||'').trim();return sec('p-'+p.id,escHTML(n||L('Weitere Person','Other person')),`<span class="hh-ava sm" aria-hidden="true">${escHTML((n[0]||'?').toUpperCase())}</span>`,
-    `<div class="lp-ptl" id="lpp-${p.id}-tl"></div>`+
-    prow(p,'until',L('Arbeiten bis Alter','Work until age'),L('Alter der Person · leer = gleiches Alter wie dein Arbeitsende','age of the person · empty = same age as your end of work'),+p.until>0?_numStr(+p.until):'',_ageTxt(s.workEnd))+
-    prow(p,'age',L('Rente ab Alter','Pension from age'),L('Regelaltersgrenze ','Statutory retirement age ')+_ageTxt(regelaltersgrenze(by))+L(' · früher mit Abschlag, frühestens 63',' · earlier with reduction, from 63'),+p.age>0?_numStr(+p.age):'',_ageTxt(regelaltersgrenze(by))));}).join('');
+  /* Arbeitsende je Person in einer Zeile: deins beendet das Weiterarbeiten, weitere Personen in ihrem Alter */
+  const workEnd=people.length?mrow('lp-a3',L('Arbeiten bis Alter','Work until age'),L('du: danach beginnt der Vorruhestand · weitere Personen in ihrem Alter, leer = gleiches Alter wie du','you: then early retirement begins · other people in their own age, empty = same age as you'),
+    [cell('lp-a3',L('Ich','Me'),_numStr(s.workEnd)),...people.map(p=>cell('lpp-'+p.id+'-until',(p.name||'').trim()||L('Weitere Person','Other person'),+p.until>0?_numStr(+p.until):'',_ageTxt(s.workEnd)))])
+    :row('lp-a3','Weiterarbeiten bis Alter','Danach beginnt der Vorruhestand',_numStr(s.workEnd),'60');
+  /* Teilzeit ab Alter aus Schema 14 (P36): gilt genau so weiter, bis sie umgestellt wird */
+  const legacyNotes=people.filter(p=>_legacyPartTime(p)).map(p=>`<p class="lp-eff">${escHTML(L(`${(p.name||'').trim()||'Weitere Person'}: Teilzeit ${_numStr(+p.ptPct)} % genau ab ${_ageTxt(+p.ptFrom)} aus der früheren Version – gilt unverändert; Arbeitszeit je Phase nach dem Umstellen.`,`${(p.name||'').trim()||'Other person'}: part-time ${_numStr(+p.ptPct)} % from exactly ${_ageTxt(+p.ptFrom)} from the previous version – still applies; working time per phase after switching.`))} <button type="button" class="hh-link" data-f="${escHTML(p.id)}" onclick="openPartTimeSheet(this.dataset.f)">${L('Umstellen …','Switch …')}</button></p>`).join('');
+  /* Zeitstrahl je weiterer Person oben im Kopf (ihr Alter) */
+  const ptl=people.map(p=>`<div class="lp-ptl"><b>${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</b><div id="lpp-${p.id}-tl"></div></div>`).join('');
   const body=
-    `<div class="lp-head"><div class="lp-card"><div id="lpTime">${_phaseBarHTML(b)}</div><div class="lp-pv"><b id="lpPct">—</b><span id="lpPctT">Erfolgschance wird berechnet …</span></div></div></div>`+
+    `<div class="lp-head"><div class="lp-card"><div id="lpTime">${_phaseBarHTML(b)}</div>${ptl}<div class="lp-pv"><b id="lpPct">—</b><span id="lpPctT">Erfolgschance wird berechnet …</span></div></div></div>`+
     `<p class="ds-note">Jede Phase beginnt, wo die vorige endet. Gleiches Alter wie bei der Phase davor: Die Phase entfällt.</p>`+
-    (people.length?`<p class="ds-note">${L('Die Phasen richten sich nach deinem Alter. Arbeitszeit und Altersvorsorge stellst du je Person ein; Arbeitsende und Rentenbeginn weiterer Personen unten in ihrem Alter.','The phases follow your age. Working time and pension savings are set per person; end of work and pension start of other people below in their age.')}</p>`:'')+
+    (people.length?`<p class="ds-note">${L('Die Phasen richten sich nach deinem Alter. Arbeitszeit, Altersvorsorge und Arbeitsende stellst du je Person ein; den Rentenbeginn weiterer Personen bei ihrer gesetzlichen Rente unter Daten → Altersvorsorge.','The phases follow your age. Working time, pension savings and end of work are set per person; the pension start of other people with their state pension under Data → Pensions.')}</p>`:'')+
     sec(1,`1 · ${LT_PHASE_NAMES[0]}`,'<i class="lp-p1"></i>',
       row('lp-a2','Ansparen bis Alter',save>0?L('Du sparst ','You save ')+fmt(Math.round(save))+L('/Monat','/month'):L('Sparraten wie unter Annahmen','Savings as under assumptions'),_numStr(s.phase2From),'60')+
       work(1)+
       row('lp-growth','Sparrate steigt % pro Jahr','z. B. mit Gehaltserhöhungen',s.savingsGrowth?_numStr(s.savingsGrowth):'','0')+eff(1))+
     sec(2,`2 · ${LT_PHASE_NAMES[1]}`,'<i class="lp-p2"></i>',
-      row('lp-a3','Weiterarbeiten bis Alter','Danach beginnt der Vorruhestand',_numStr(s.workEnd),'60')+
-      work(2)+
+      workEnd+
+      work(2)+legacyNotes+
       row('lp-saving','Private Vermögensbildung %',sv.priv>0?'der heutigen '+fmt(Math.round(sv.priv))+'/Monat · 0 = eingestellt':'der heutigen Sparraten · 0 = eingestellt',pct(s.p2Saving,0),'0')+
       pens(2,sv.pens>0?L('der heutigen ','of today\'s ')+fmt(Math.round(sv.pens))+L('/Monat (Betriebsrente, Altersvorsorgedepots)','/month (company pension, retirement depots)'):L('Betriebsrente und Altersvorsorgedepots','company pension and retirement depots'))+
       row('lp-draw',L('Zusätzliche Entnahme €/Monat','Additional withdrawal €/month'),L('z. B. für Reisen · Einkommenslücken rechnet die App selbst','e.g. for travel · income gaps are calculated by the app'),s.p2Withdraw>0?_moneyInput(s.p2Withdraw):'','0',true)+eff(2))+
@@ -11048,19 +11785,21 @@ function openPhasesSheet(focus){
     sec(4,`4 · ${LT_PHASE_NAMES[3]}`,'<i class="lp-p4"></i>',
       row('lp-need4','Bedarf €/Monat','',storedN4?_moneyInput(s.pensionSpending):'','wie im Vorruhestand',true)+
       work(4)+pens(4,L('solange die Person noch arbeitet','while the person still works')))+
-    (persons?`<div class="ds-group-t">${L('Weitere Personen','Other people')}</div>`+persons:'')+
     `<p class="ds-help">Beträge in heutiger Kaufkraft. Gesetzliche Rente, Betriebsrente und Altersvorsorgedepots pflegst du unter Daten → Altersvorsorge, Renditen und Sparraten je Anlage unter Prognose &amp; Annahmen.</p>`;
   if(!_openSheet('Lebensphasen',body,_savePhasesSheet,'Sichern',()=>openPhasesSheet(focus)))return;
   _sheetCtx={phases:{base:null,drvAge:drv.age,oldA4:s.pensionAge,rag,bvFrom:getBeamte().from,people:people.map(p=>p.id)}};
   _phasesPreview();
   if(focus){const el=document.getElementById('lp-sec-'+focus);if(el&&el.scrollIntoView)requestAnimationFrame(()=>el.scrollIntoView({block:'start'}));}
 }
-/* Phasenfelder weiterer Personen gehören ins Lebensphasen-Sheet; die Haushaltskarte behält sie beim Speichern */
-const PERSON_PHASE_KEYS=['until','age','w1','w2','w3','w4','pen2','pen3','pen4'];
+/* Phasenfelder weiterer Personen gehören ins Lebensphasen-Sheet; die Haushaltskarte behält sie beim Speichern.
+   Ebenso Werte aus früheren Versionen, die erst geklärt werden (Teilzeit ab Alter, nicht zugeordnetes Nettogehalt). */
+const PERSON_PHASE_KEYS=['until','w1','w2','w3','w4','pen2','pen3','pen4'],PERSON_KEEP_KEYS=['ptFrom','ptPct','net'];
 function _withPersonPhases(rows){
   const st=Object.fromEntries(getDrvExtra().filter(r=>r.id).map(r=>[r.id,r]));
   /* 0 heißt bei Arbeitsende und Rentenbeginn „automatisch“, bei Arbeitszeit und Altersvorsorge „keine“ */
-  return rows.map(r=>{const o=r.id&&st[r.id];if(!o)return r;const x=Object.assign({},r);PERSON_PHASE_KEYS.forEach(k=>{const v=o[k];if(v!==undefined&&v!==''&&v!==null&&(v!==0||!['until','age'].includes(k)))x[k]=v;else delete x[k];});return x;});
+  /* gespeicherte Zeile als Grundlage, die Karte überschreibt nur ihre eigenen Felder (Phasen, Rente, Beamtenversorgung,
+     Werte früherer Versionen bleiben erhalten) */
+  return rows.map(r=>{const o=r.id&&st[r.id];if(!o)return r;const x=Object.assign({},o,r);['until','age'].forEach(k=>{if(x[k]===''||x[k]===0||x[k]===null)delete x[k];});return x;});
 }
 /* Eingaben lesen; strict = Fehler melden (Sichern), sonst null bei ungültigen Werten (Vorschau) */
 function _phasesDraft(strict){
@@ -11085,7 +11824,9 @@ function _phasesDraft(strict){
   const drvLinked=ctx.drvAge>0&&Math.abs(ctx.drvAge-ctx.oldA4)<1e-9;
   const a4=a4in??(drvLinked?ctx.rag:(ctx.drvAge>0?ctx.drvAge:ctx.rag));
   if(!(a2<=a3+1e-9&&a3<=a4+1e-9)){bad('Die Phasen folgen aufeinander: Ansparen bis ≤ Weiterarbeiten bis ≤ Rente ab.');return null;}
-  const p1Work=(w1??100)/100,p2Work=(w2??w1??100)/100;
+  /* Arbeitszeit heute aus dem Budget-Gehalt, sonst die Eingabe (Phase 1); Phase 2 leer = wie Phase 1 */
+  const bwMe=_budgetWorkShare(_ownPersonId()),hasW1=!!document.getElementById('lpw-me-1');
+  const p1Work=bwMe!=null?bwMe:(w1??100)/100,p2Work=w2!=null?w2/100:p1Work;
   const d=_ltPhases(Object.assign({},s,{saveUntil:a2,withdrawFrom:a3,pensionAge:a4,savingsGrowth:growth,p1Work,p2Work,p2Saving:sav/100,p2Pension:(pen2??100)/100,p3Saving:sav3/100,p3Pension:(pen3??0)/100,p2Withdraw:draw,monthlyWithdraw:need3,pensionSpending:need4??need3}));
   d.workRef=_workRef(d);
   const drv=getDrv(),bv=getBeamte();
@@ -11097,15 +11838,17 @@ function _phasesDraft(strict){
   for(const p of getDrvExtra()){
     if(!p.id||!(ctx.people||[]).includes(p.id)){people.push(p);continue;}
     const pre='lpp-'+p.id+'-',nm=(p.name||'').trim()||'Weitere Person';
-    const until=num(pre+'until',nm+': Arbeiten bis Alter',15,110,''),age=num(pre+'age',nm+': Rente ab Alter',50,80,'');
+    const until=num(pre+'until',nm+': Arbeiten bis Alter',15,110,'');
     const ws=[1,2,3,4].map(i=>wIn(p.id,i,nm)),ps=[2,3,4].map(i=>pIn(p.id,i,nm));
-    if([until,age,...ws,...ps].some(v=>Number.isNaN(v)))return null;
-    const x=Object.assign({},p);PERSON_PHASE_KEYS.forEach(k=>delete x[k]);
-    if(until!=='')x.until=until;if(age!=='')x.age=age;
+    if([until,...ws,...ps].some(v=>Number.isNaN(v)))return null;
+    /* Felder, die das Sheet nicht zeigt (Arbeitszeit heute aus dem Budget, Teilzeit ab Alter), bleiben wie gespeichert */
+    const x=Object.assign({},p),shown=k=>!!document.getElementById(k[0]==='w'?`lpw-${p.id}-${k.slice(1)}`:`lpv-${p.id}-${k.slice(3)}`);
+    PERSON_PHASE_KEYS.forEach(k=>{if(k==='until'||shown(k))delete x[k];});
+    if(until!=='')x.until=until;
     ws.forEach((v,i)=>{if(v!=null)x['w'+(i+1)]=v;});ps.forEach((v,i)=>{if(v!=null)x['pen'+(i+2)]=v;});
     people.push(x);
   }
-  return{s:d,a2,a3,a4,a4in,growth,sav,sav3,draw,need3,need4,w1,w2,pen2,pen3,drv,bv,drvLinked,bvLinked,people};
+  return{s:d,a2,a3,a4,a4in,growth,sav,sav3,draw,need3,need4,w1,w2,pen2,pen3,hasW1,drv,bv,drvLinked,bvLinked,people};
 }
 let _lpTimer=0;
 function _phasesInput(e){
@@ -11117,7 +11860,7 @@ function _phaseWorkTxt(s,people,i){
   const at=[-Infinity,s.phase2From,s.workEnd,s.phase4From][i-1],wt=w=>w>=1-1e-9?L('Vollzeit','full-time'):w>0?_numStr(Math.round(w*1000)/10)+' %':L('keine Arbeit','not working');
   const list=[];
   if(i<=2)list.push([L('Ich','Me'),_ownWork(s).w[i-1]]);
-  people.filter(p=>p.id).forEach(p=>{const pr=_personWork(s,p);if(at<pr.workEndMain-1e-9)list.push([(p.name||'').trim()||L('Weitere Person','Other person'),pr.w[i-1]]);});
+  people.filter(p=>p.id).forEach(p=>{const pr=_personWork(s,p),a=Math.max(at,_curAgeOf(s));if(a<pr.workEndMain-1e-9)list.push([(p.name||'').trim()||L('Weitere Person','Other person'),_workShare(pr,a)]);});
   if(!list.length)return '';
   if(list.length===1&&i<=2&&!people.some(p=>p.id))return list[0][1]>=1-1e-9?L('Vollzeit','full-time'):list[0][1]>0?L('Teilzeit ','part-time ')+wt(list[0][1]):L('keine Arbeit','not working');
   return list.map(([n,w])=>n+' '+wt(w)).join(' · ');
@@ -11179,7 +11922,6 @@ function _phasesPreview(){
     for(let i=2;i<=4;i++)setPh(`lpv-${p.id}-${i}`,starts[i-1]<pr.workEndMain-1e-9?'100':'0');
     const tl=document.getElementById('lpp-'+p.id+'-tl');
     if(tl)tl.innerHTML=_personTimelineHTML(d.s,p);
-    setT('lp-s-p-'+p.id,_personPhaseText(d.s,p));
     setPh('lpp-'+p.id+'-until',_ageTxt(d.s.workEnd));
   });
   const h4=document.getElementById('lp-need4-h');
@@ -11207,7 +11949,7 @@ function _savePhasesSheet(){
     put('lt-savings-growth',d.growth,0);
     appStorage.setItem('lt-monthly-withdraw',String(d.need3));
     put('lt-pension-spending',d.need4,d.need3);
-    opt('lt-p1-work',d.w1);opt('lt-p2-work',d.w2);opt('lt-p2-pension',d.pen2);opt('lt-p3-pension',d.pen3);
+    if(d.hasW1)opt('lt-p1-work',d.w1);opt('lt-p2-work',d.w2);opt('lt-p2-pension',d.pen2);opt('lt-p3-pension',d.pen3);
     put('lt-p2-saving',d.sav,0);put('lt-p2-withdraw',d.draw,0);put('lt-p3-saving',d.sav3,0);
     if(d.drvLinked){const raw=_lsJSON('lt-drv',{});if(d.drv.age>0)raw.age=d.drv.age;else delete raw.age;appStorage.setItem('lt-drv',JSON.stringify(raw));}
     if(d.bvLinked){const raw=_lsJSON('lt-beamte',{});raw.from=d.a4;appStorage.setItem('lt-beamte',JSON.stringify(raw));}
@@ -11275,7 +12017,7 @@ function _v2SetMod(k,on){
   const cur=_mods();
   const next={assets:cur.assets,liab:cur.liab,pension:cur.pension,budget:cur.budget,forecast:cur.forecast};
   next[k]=on;
-  appStorage.setItem(V2_MODS_KEY,JSON.stringify(next));
+  _fieldWrite(()=>appStorage.setItem(V2_MODS_KEY,JSON.stringify(next)));
   _modsCache=null;
   _orphanMemo={key:null,val:null};_loanShareMemo={key:null,val:null};_ltCalcCache=null;
   Object.keys(charts).forEach(c=>destroyChart(c));
@@ -11628,8 +12370,9 @@ function _initNotifSwipe(el){
 }
 function finishOnboarding(){
   try{
+    /* ohne eigene Eingaben: auf dem aktuellen Stand (P54) */
     const doc=prepareOnboardingDocument(appStorage.document(),[],currentYM(),nextYM());
-    appStorage.importBackup(doc);
+    appStorage.withBase(appStorage.revision(),()=>appStorage.importBackup(doc));
     _fc=loadFieldConfig();_modsCache=null;_ltCalcCache=null;
     selectedMonth=nextYM();picker.setVal(selectedMonth);
     buildDynamicForm();updateLifetimeInputs();_v2ApplyModules();_v2SyncSwitches();render();
@@ -11802,8 +12545,21 @@ function startSetup(mode='full'){
     if(st.monthlySpending!==undefined)_setup.future.need=String(st.monthlySpending);
     else _setupPrefillNeed(_setup);
   }
+  /* P54: Basis der Einrichtung und die vorbelegten Werte (sie folgen einem neueren Stand, solange sie unverändert sind) */
+  _setup.base=appStorage.shownRevision();_setup.prefill={..._setup.future};
   if(document.getElementById('onboardingOverlay').style.display!=='block')_openOnboardingOverlay();
   _setupRender();
+}
+/* P54: Während der Einrichtung wurde anderswo gespeichert; nichts gespeichert. Unveränderte vorbelegte Angaben folgen dem
+   aktuellen Stand, eigene Angaben bleiben. Erneutes Bestätigen ergänzt sie auf dem aktuellen Stand. */
+function _setupStale(s){
+  _extChange=true;
+  const doc=appStorage.document(),st=doc.forecast.settings,f=s.future,pre=s.prefill||{};
+  const now={birthYear:doc.retirement.primary.birthYear,retireAge:st.retirementAge,need:st.monthlySpending};
+  Object.keys(now).forEach(k=>{if(k in pre&&f[k]===pre[k]&&now[k]!==undefined)f[k]=String(now[k]);});
+  s.prefill={...f};s.base=appStorage.revision();
+  _setupRender();
+  _guideError(new Error(L('Nicht gespeichert: In einem anderen Fenster wurde inzwischen gespeichert. Nicht geänderte Angaben zeigen jetzt den aktuellen Stand, deine eigenen Angaben sind noch da. Bitte prüfen und erneut bestätigen.','Not saved: data was saved in another window in the meantime. Unchanged entries now show the current state, your own entries are still there. Please check and confirm again.')));
 }
 function _setupClose(){
   const full=_setup&&_setup.mode==='full';_setup=null;
@@ -12101,13 +12857,14 @@ function _setupFinish(){
   const s=_setup;
   try{
     const doc=buildSetupDocument(appStorage.document(),s,currentYM(),nextYM());
-    appStorage.importBackup(doc);
-  }catch(error){_guideError(error);return;}
+    appStorage.withBase(s.base??appStorage.shownRevision(),()=>appStorage.importBackup(doc));
+  }catch(error){if(_isStale(error)){_setupStale(s);return;}_guideError(error);return;}
   _fc=loadFieldConfig();_modsCache=null;_ltCalcCache=null;_orphanMemo={key:null,val:null};_loanShareMemo={key:null,val:null};
   Object.keys(charts).forEach(c=>destroyChart(c));
   if(s.mode==='full'){selectedMonth=nextYM();picker.setVal(selectedMonth);}
   buildDynamicForm();updateLifetimeInputs();_v2ApplyModules();_v2SyncSwitches();render();
   hideOnboarding();
+  if(appStorage.shownRevision()!==appStorage.revision()){_extChange=true;_applyExternalChange();}
   if(s.mode==='full'){
     navigateToPage('home');
     document.getElementById('onboardingNextStep').hidden=false;
@@ -12157,7 +12914,7 @@ function _monthChangePrice(prices,m){const p=prices&&prices[LoanModel.addMonths(
 const _monthYearFull=m=>MONTH_FULL[+m.slice(5)-1]+' '+m.slice(0,4);
 /* Änderungen für gespeicherte Monate vor dem Live-Monat mit Stückzahl > 0 und bekanntem Kurs; alles andere bleibt */
 function quoteHistoryChanges(id,prices){
-  const f=_fc.fields.find(x=>x.id===id),out={changes:[],skipped:0};
+  const f=loadFieldConfig().fields.find(x=>x.id===id),out={changes:[],skipped:0};
   if(!f||AssetModel.valuation(f)!=='market')return out;
   const key=f.unitId||f.id,data=loadStoredData(),live=nextYM();
   Object.keys(data).filter(m=>m<live).sort().forEach(m=>{
@@ -12168,35 +12925,68 @@ function quoteHistoryChanges(id,prices){
   });
   return out;
 }
-function applyQuoteHistory(id,changes){
+/* P38: Kennung des Instruments einer Position und Prüfstand der betroffenen Monatsstände (Stückzahl und Wert je Monat
+   vor dem Live-Monat). Beides wird beim Abruf, vor der Rückfrage und nach der Bestätigung verglichen. */
+function _quoteIdent(id){
+  const f=loadFieldConfig().fields.find(x=>x.id===id),i=f&&AssetModel.valuation(f)==='market'?AssetModel.instrument(f):null;
+  return i?JSON.stringify([i.provider||'',i.symbol||'',i.currency||'',f.unitId||f.id]):null;
+}
+function _quoteStamp(id){
+  const f=loadFieldConfig().fields.find(x=>x.id===id);if(!f)return null;
+  const key=f.unitId||f.id,data=loadStoredData(),live=nextYM();
+  return JSON.stringify([live,Object.keys(data).filter(m=>m<live).sort().map(m=>[m,((data[m]||{})._units||{})[key]??null,((data[m]||{})._details||{})[id]??null])]);
+}
+function applyQuoteHistory(id,changes,stamp){
   appStorage.beginTransaction();
   try{
+    /* bestätigt wurde ein bestimmter Stand: hat er sich geändert, wird nichts geschrieben */
+    if(stamp!==undefined&&_quoteStamp(id)!==stamp){const e=new Error(L('Die Daten wurden inzwischen geändert.','The data has changed in the meantime.'));e.code='STALE';throw e;}
     const data=loadData();
     changes.forEach(c=>{const e=_monthEntryForEdit(data,c.month);e._details[id]=c.value;recalcAggregates(e);data[c.month]=e;});
     saveData(data);
     appStorage.commitTransaction();
   }catch(error){appStorage.rollbackTransaction();throw error;}
 }
-/* Fragt vor dem Überschreiben; ohne Bestätigung, ohne Kurse oder ohne Abweichung ändert sich nichts */
+/* Fragt vor dem Überschreiben; ohne Bestätigung, ohne Kurse oder ohne Abweichung ändert sich nichts.
+   P38: Die Kurse gehören zum Instrument beim Abruf. Hat sich das Instrument bis zur Antwort oder während der Rückfrage
+   geändert, wird für das neue Instrument neu abgerufen; ändern sich die betroffenen Monatsstände während der Rückfrage,
+   wird neu berechnet und erneut gefragt. Geschrieben wird nur der zuletzt bestätigte Stand. */
 async function quoteHistoryFlow(id){
-  const f=_fc.fields.find(x=>x.id===id),inst=f&&AssetModel.valuation(f)==='market'?AssetModel.instrument(f):null;
-  if(!inst)return false;
-  let prices;
-  try{prices=await fetchMonthlyPricesEUR(_historySymbol(inst));}
-  catch(error){_toast(L('Kursverlauf nicht erreichbar – der Verlauf bleibt unverändert.','Price history unavailable – the history stays unchanged.'));return false;}
-  const{changes,skipped}=quoteHistoryChanges(id,prices);
-  if(!changes.length){_toast(L('Der Verlauf passt bereits zu den Kursen.','The history already matches the prices.'));return false;}
+  for(let fetches=0;fetches<3;fetches++){
+    const ident=_quoteIdent(id);if(!ident)return false;
+    const f=loadFieldConfig().fields.find(x=>x.id===id),inst=AssetModel.instrument(f);
+    let prices;
+    try{prices=await fetchMonthlyPricesEUR(_historySymbol(inst));}
+    catch(error){_toast(L('Kursverlauf nicht erreichbar – der Verlauf bleibt unverändert.','Price history unavailable – the history stays unchanged.'));return false;}
+    /* Antwort für ein inzwischen gewechseltes Instrument: verwerfen und neu abrufen */
+    if(_quoteIdent(id)!==ident)continue;
+    for(let round=0;round<3;round++){
+      const stamp=_quoteStamp(id),base=appStorage.revision(),{changes,skipped}=quoteHistoryChanges(id,prices);
+      if(!changes.length){_toast(L('Der Verlauf passt bereits zu den Kursen.','The history already matches the prices.'));return false;}
+      const yes=await _ask(_quoteHistoryQuestion(id,changes,skipped,round>0));
+      if(yes!==true)return false;
+      if(_quoteIdent(id)!==ident)break;
+      if(_quoteStamp(id)!==stamp)continue;
+      /* P54: auch jede andere fremde Speicherung während der Rückfrage führt zu einer neuen Rückfrage */
+      try{appStorage.withBase(base,()=>applyQuoteHistory(id,changes,stamp));}catch(error){if(_isStale(error))continue;throw error;}
+      _afterDataChange();
+      const n=changes.length;
+      _toast(L(`${n} ${n===1?'Monat':'Monate'} neu berechnet`,`${n} ${n===1?'month':'months'} recalculated`));
+      return true;
+    }
+    if(_quoteIdent(id)===ident){_toast(L('Die Daten ändern sich laufend – der Verlauf bleibt unverändert.','The data keeps changing – the history stays unchanged.'));return false;}
+  }
+  _toast(L('Das Instrument hat sich mehrfach geändert – der Verlauf bleibt unverändert.','The instrument changed several times – the history stays unchanged.'));
+  return false;
+}
+function _quoteHistoryQuestion(id,changes,skipped,again){
+  const f=loadFieldConfig().fields.find(x=>x.id===id);
   const ex=changes.reduce((a,c)=>Math.abs(c.value-c.old)>Math.abs(a.value-a.old)?c:a);
   const span=changes.length===1?_monthYearFull(changes[0].month):_monthYearFull(changes[0].month)+L(' bis ',' to ')+_monthYearFull(changes[changes.length-1].month);
-  const n=changes.length,name=f.label;
-  const text=L(`${n} ${n===1?'Monat':'Monate'} von ${name} (${span}) ${n===1?'wird':'werden'} neu berechnet: Stückzahl des jeweiligen Monatsstands × Kurs zum Monatswechsel, umgerechnet mit dem damaligen Wechselkurs.\nGrößte Änderung: Stand ${_monthYearFull(ex.month)} ${fmt(ex.old)} → ${fmt(ex.value)}.`+(skipped?`\n${skipped} ${skipped===1?'Monat ohne Kurs bleibt':'Monate ohne Kurs bleiben'} unverändert.`:'')+`\nDie bisherigen Werte werden überschrieben. Tipp: vorher unter Daten → Sicherung exportieren.`,
+  const n=changes.length,name=f?f.label:'';
+  const text=(again?L('Die Daten wurden während der Rückfrage geändert. Neu berechnet:\n','The data was changed while asking. Recalculated:\n'):'')+L(`${n} ${n===1?'Monat':'Monate'} von ${name} (${span}) ${n===1?'wird':'werden'} neu berechnet: Stückzahl des jeweiligen Monatsstands × Kurs zum Monatswechsel, umgerechnet mit dem damaligen Wechselkurs.\nGrößte Änderung: Stand ${_monthYearFull(ex.month)} ${fmt(ex.old)} → ${fmt(ex.value)}.`+(skipped?`\n${skipped} ${skipped===1?'Monat ohne Kurs bleibt':'Monate ohne Kurs bleiben'} unverändert.`:'')+`\nDie bisherigen Werte werden überschrieben. Tipp: vorher unter Daten → Sicherung exportieren.`,
     `${n} ${n===1?'month':'months'} of ${name} (${span}) ${n===1?'is':'are'} recalculated: quantity of each month × price at the month change, converted at the exchange rate of that time.\nLargest change: ${_monthYearFull(ex.month)} ${fmt(ex.old)} → ${fmt(ex.value)}.`+(skipped?`\n${skipped} ${skipped===1?'month without a price stays':'months without a price stay'} unchanged.`:'')+`\nThe previous values are overwritten. Tip: export a backup first under Data → Backup.`);
-  const yes=await _ask({title:L('Verlauf mit Kursen neu berechnen?','Recalculate the history from prices?'),text,ok:L('Überschreiben','Overwrite'),cancel:L('Nicht ändern','Keep'),danger:true});
-  if(yes!==true)return false;
-  applyQuoteHistory(id,changes);
-  _afterDataChange();
-  _toast(L(`${n} ${n===1?'Monat':'Monate'} neu berechnet`,`${n} ${n===1?'month':'months'} recalculated`));
-  return true;
+  return{title:L('Verlauf mit Kursen neu berechnen?','Recalculate the history from prices?'),text,ok:L('Überschreiben','Overwrite'),cancel:L('Nicht ändern','Keep'),danger:true};
 }
 function _historySymbol(instrument){
   if(instrument.provider==='bitcoin')return 'BTC-EUR';
@@ -12622,21 +13412,22 @@ function _loadDemoScript(){
     document.head.appendChild(s);
   });
 }
-async function _v2RestoreDemo(){
+async function _v2RestoreDemo(base=appStorage.shownRevision()){
   if(!await _ask({title:'Demo-Daten laden?',text:'Alle aktuellen Daten (Vermögen, Budget, Prognose) werden durch die Demo-Daten ersetzt.\nTipp: vorher eine Sicherung exportieren.',ok:'Demo laden',danger:true}))return;
   try{
     const doc=await _loadDemoBackup();
     doc.preferences.theme=appStorage.document().preferences.theme;
-    appStorage.importBackup(doc);location.reload();
-  }catch(error){showImportError('Demo konnte nicht geladen werden: '+error.message+'. Deine Daten bleiben erhalten.');}
+    appStorage.withBase(base,()=>appStorage.importBackup(doc));location.reload();
+  }catch(error){if(_isStale(error)){_importStale();return;}showImportError('Demo konnte nicht geladen werden: '+error.message+'. Deine Daten bleiben erhalten.');}
 }
 async function _v2LoadDemo(){
-  if(appStorage.document().snapshots.length){await _v2RestoreDemo();return;}
+  const base=appStorage.shownRevision();
+  if(appStorage.document().snapshots.length){await _v2RestoreDemo(base);return;}
   try{
     const doc=await _loadDemoBackup();
     doc.preferences.theme=appStorage.document().preferences.theme;
-    appStorage.importBackup(doc);location.reload();
-  }catch(error){showImportError('Demo konnte nicht geladen werden: '+error.message);}
+    appStorage.withBase(base,()=>appStorage.importBackup(doc));location.reload();
+  }catch(error){if(_isStale(error)){_importStale();return;}showImportError('Demo konnte nicht geladen werden: '+error.message);}
 }
 /* Läuft die App über einen Monatswechsel hinweg (z. B. PWA im Hintergrund),
    fehlt sonst der neue Folgemonat und Live-Kurse würden nicht mehr übernommen. */
@@ -12647,7 +13438,8 @@ function _handleMonthRollover(){
   const prev=_lastNextYM;
   _lastNextYM=nxt;
   if(prev===null)return;
-  ensureNextMonth();
+  /* ein noch nicht angezeigter fremder Stand (z. B. hinter einem offenen Sheet) wird erst danach fortgeschrieben (P54) */
+  if(appStorage.canWrite()){try{ensureNextMonth();}catch(error){if(!_isStale(error))throw error;_lastNextYM=prev;return;}}
   if(selectedMonth===prev){
     selectedMonth=nxt;
     picker.setVal(selectedMonth);
@@ -12667,7 +13459,7 @@ const L=(de,en)=>_lang==='en'?en:de;
 function _readLang(){try{return appStorage.getItem('appLang')==='en'?'en':'de';}catch(e){return 'de';}}
 function setLanguage(lang){
   if(lang!=='de'&&lang!=='en'||lang===_lang)return;
-  appStorage.setItem('appLang',lang);
+  _fieldWrite(()=>appStorage.setItem('appLang',lang));
   location.reload();
 }
 /* Platzhalter beim Nachschlagen: Zahlen und (bereits englische) Monatsnamen, in der Reihenfolge ihres Auftretens */
@@ -12714,19 +13506,40 @@ function _i18nStart(){
     else m.addedNodes.forEach(_trTree);
   }}).observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:_TR_ATTRS});
 }
+/* Wartung beim Start (Gruppierung, alter Theme-Wert, Live-Monat, alte Kreditparameter, doppelte Annahmen). Schreibt nur
+   das Fenster mit Schreibrecht; ein lesendes Fenster holt sie nach, sobald es übernimmt (P34). Alles ist wiederholbar. */
+function _startupWrites(){
+  try{const regrouped=regroupByCategory(appStorage.document());if(regrouped){appStorage.importBackup(regrouped);_fc=loadFieldConfig();}}
+  catch(error){console.warn('Gruppierung nach Art übersprungen:',error);}
+  const dm=appStorage.getItem('darkMode');
+  if(dm&&dm!=='0'&&dm!=='1'&&dm!=='2')appStorage.removeItem('darkMode');
+  ensureNextMonth();
+  migrateLoanParams();
+  /* Deduplicate lt-asset-params keys (fix for lowercase/capitalized duplicates) */
+  try{
+    const ap=JSON.parse(appStorage.getItem('lt-asset-params')||'{}');
+    const merged={};let dirty=false;
+    Object.entries(ap).forEach(([key,p])=>{
+      const existing=Object.keys(merged).find(k=>k.toLowerCase()===key.toLowerCase());
+      if(existing){
+        dirty=true;
+        const m=merged[existing];
+        Object.keys(p).forEach(f=>{if((m[f]==null||m[f]===''||m[f]===0)&&p[f]!=null&&p[f]!=='')m[f]=p[f];});
+      }else{merged[key]={...p};}
+    });
+    if(dirty)appStorage.setItem('lt-asset-params',JSON.stringify(merged));
+  }catch(e){}
+}
 function initApp(){
   _lang=_readLang();
   if(_lang==='en')_i18nStart();
+  /* P54: die Seite wird jetzt aus diesem Stand aufgebaut */
+  appStorage.markShown();
   try{
-    try{const regrouped=regroupByCategory(appStorage.document());if(regrouped){appStorage.importBackup(regrouped);_fc=loadFieldConfig();}}
-    catch(error){console.warn('Gruppierung nach Art übersprungen:',error);}
+    if(appStorage.canWrite())_startupWrites();
     /* Theme: default to dark mode, allow manual override */
     let stored=appStorage.getItem('darkMode');
-    // Clean up ANY old value that's not '0' or '1'
-    if(stored&&stored!=='0'&&stored!=='1'&&stored!=='2'){
-      appStorage.removeItem('darkMode');
-      stored=null;
-    }
+    if(stored&&stored!=='0'&&stored!=='1'&&stored!=='2')stored=null;
     if(stored==='0'){isDark=false;themeMode='light';}
     else if(stored==='1'){isDark=true;themeMode='dark';}
     else if(stored==='2'){isDark=_systemDark();themeMode='system';}
@@ -12744,26 +13557,9 @@ function initApp(){
 
     /* Month Picker */
     picker=buildPicker();
-    ensureNextMonth();
-    migrateLoanParams();
     selectedMonth=nextYM();
     _lastNextYM=selectedMonth;
     picker.setVal(selectedMonth);
-
-    /* Deduplicate lt-asset-params keys (fix for lowercase/capitalized duplicates) */
-    try{
-      const ap=JSON.parse(appStorage.getItem('lt-asset-params')||'{}');
-      const merged={};let dirty=false;
-      Object.entries(ap).forEach(([key,p])=>{
-        const existing=Object.keys(merged).find(k=>k.toLowerCase()===key.toLowerCase());
-        if(existing){
-          dirty=true;
-          const m=merged[existing];
-          Object.keys(p).forEach(f=>{if((m[f]==null||m[f]===''||m[f]===0)&&p[f]!=null&&p[f]!=='')m[f]=p[f];});
-        }else{merged[key]={...p};}
-      });
-      if(dirty)appStorage.setItem('lt-asset-params',JSON.stringify(merged));
-    }catch(e){}
 
     /* Event Handlers */
     document.getElementById('themeToggle').addEventListener('click',toggleTheme);
@@ -12880,10 +13676,22 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=1.0')
 /* ── Start ── */
 /* Deferred Chart.js scripts finish executing before DOMContentLoaded fires,
    so wait for it to ensure Chart is available when charts are first rendered. */
+/* P34: erst starten, wenn feststeht, ob dieses Fenster schreibt (Web Locks antworten sofort). ready() endet immer
+   (spätestens nach 2,5 s, P55); antwortet der Browser trotzdem nicht, startet die App nach 3 s zum Ansehen und das
+   Schreibrecht folgt, sobald es kommt. */
+function _startApp(){
+  let started=false;
+  const go=()=>{
+    if(started)return;started=true;initApp();_initDone=true;_showReadOnly(!appStorage.canWrite());
+    /* während des Starts gespeicherte Stände anderer Fenster jetzt übernehmen */
+    if(_extChange&&!_uiBusy())_applyExternalChange();
+  };
+  Promise.resolve(appStorage.ready()).then(go,go);setTimeout(go,3000);
+}
 if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',initApp);
+  document.addEventListener('DOMContentLoaded',_startApp);
 }else{
-  initApp();
+  _startApp();
 }
 </script>
 </body>

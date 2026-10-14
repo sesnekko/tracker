@@ -5,11 +5,11 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `master_export_YYYY-MM-DD.json` (bis Oktober 2026 `vermoegen_YYYY-MM-DD.json`). Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 15
+## Struktur, Version 17
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `15`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `17`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
@@ -98,7 +98,103 @@ Schemaänderungen oder Änderungen der Bedeutung von Standardwerten erfordern
 eine neue `schemaVersion` und eine explizite Migration. Unbekannte zukünftige
 Versionen dürfen nicht stillschweigend gelesen oder heruntergestuft werden.
 
-**Mehrere Fenster (seit Version 13 der App, ohne Formatänderung):** Alle Fenster derselben
+### Schreibrecht zwischen Fenstern (P34, überarbeitet nach P54, P55 und P63)
+
+Lesen und Schreiben von localStorage bilden zwischen Fenstern keine gemeinsame Operation; ein Vergleich vor dem
+Schreiben verkleinert das Zeitfenster nur. Deshalb schreibt nur das Fenster, das die exklusive Web Lock
+`vermoegen-writer` hält (`createWriterGate` in `data-store.js`). Weitere Fenster lesen mit und zeigen „Nur ansehen“;
+jeder Schreibweg (`setItem`, `removeItem`, `clear`, Transaktion, Import, Umbenennen, Erstübernahme alter Schlüssel)
+lehnt dort mit `code: 'READ_ONLY'` ab. Das Dokumentformat ändert sich dadurch nicht (weiter Version 17).
+
+| Zustand | Bedeutung | darf schreiben |
+| --- | --- | --- |
+| `pending` | Start oder Rückkehr: Antwort auf die Sperranfrage steht aus, höchstens `timing.start` (2,5 s), dann `reader` | nein |
+| `writer` | hält die Sperre und hat den neuesten Stand geladen | ja |
+| `reader` | ein anderes Fenster schreibt; dieses wartet im Hintergrund eingereiht auf die Sperre | nein |
+| `failed` | Sperre erhalten, die Übernahme scheiterte – Speicher voll beim ersten Speichern alter Schlüssel oder ein gespeichertes Dokument, das diese Version nicht lesen kann (`code: 'UNREADABLE'`, z. B. von einer neueren App-Version, P65): Sperre wieder frei, alte Schlüssel und Dokument bytegleich unverändert, nicht eingereiht | nein |
+| `suspended` | Seite verlassen (`pagehide`, `freeze`, auch bfcache): Sperre wirklich freigegeben, nicht eingereiht | nein |
+| `unsupported` | keine nutzbaren Web Locks (fehlen, abgelehnt, Ausnahme): geschützter, erklärter Lesemodus | nein |
+| `single` | ohne Sperren vorgesehen (Tests, Werkzeuge) oder nach ausdrücklicher Entscheidung „Nur hier bearbeiten …“: nur Konflikterkennung P1 und Basisprüfung P54 | ja |
+
+| Übergang | Auslöser |
+| --- | --- |
+| `pending` → `writer` | Sperre sofort frei (`ifAvailable`); vorher wird die Abgabe-Marke eines vorherigen Fensters abgewartet (höchstens `timing.handover`, 0,6 s), dann der Stand geladen |
+| `pending` → `reader` | Sperre belegt (dann eingereiht) oder keine Antwort innerhalb von `timing.start` (kommt die Sperre später doch, wird übernommen) |
+| `pending`/`reader` → `unsupported` | Lock-API fehlt oder lehnt die erste Anfrage ab |
+| `reader` → `writer` | eingereihte Anfrage erteilt (das schreibende Fenster hat abgegeben, wurde verlassen, geschlossen oder ist abgestürzt) |
+| `pending`/`reader` → `failed` | Sperre erteilt, Laden des gespeicherten Dokuments oder Erstübernahme wirft; die Sperre wird sofort wieder freigegeben |
+| `failed` → `reader` → … | `requestWrite()` („Erneut versuchen“) stellt neu an |
+| `writer` → `reader` | Bitte eines anderen Fensters (`vermoegen-writer-request`), wenn hier nichts bearbeitet wird: erst Abgabe-Marke, dann Sperre frei, wieder einreihen |
+| jeder Zustand außer `unsupported`/`single` → `suspended` | `pagehide`, `freeze`: Abgabe-Marke (falls Writer), wartende Anfrage abbrechen, Sperre frei, neue Epoche |
+| `suspended` → `pending` | `pageshow` mit `persisted`, `resume` oder wieder sichtbar (`visibilitychange`): neu erwerben, Stand neu laden |
+| `unsupported` → `single` | nur nach ausdrücklicher Bestätigung im Dialog („Nur in diesem Fenster bearbeiten?“) |
+
+**Übernahme und Erstübernahme (P65).** Beim Erhalt der Sperre lädt das Fenster das gespeicherte Dokument, wenn es sich
+seit dem eigenen letzten Stand geändert hat. Kann es das nicht lesen, endet die Übernahme als `failed` (kein Schreibrecht,
+Sperre frei, nichts verändert, „Erneut versuchen“). Hat das Fenster beim Start kein Dokument vorgefunden und die
+Übernahme alter Einzelschlüssel vorgemerkt, gilt: Liegt beim Erhalt der Sperre inzwischen ein Dokument vor, wird nur dieses
+übernommen; die vorgemerkte Erstübernahme entfällt und die alten Schlüssel bleiben unberührt. Ein älteres Schema wird
+dabei nicht sofort neu geschrieben, sondern erst bei der nächsten regulären Speicherung – und davor wie jedes ältere
+Dokument unverändert unter `vermoegen-data-v1-before-update` gesichert (P37). Nur wenn kein Dokument vorliegt, werden die
+alten Schlüssel übernommen und erst nach dem erfolgreichen Schreiben des Dokuments entfernt.
+
+Ein **nur verdecktes** Fenster (`visibilitychange` hidden) behält das Schreibrecht und beantwortet weiter
+Übergabe-Bitten; erst ein **verlassenes oder eingefrorenes** Dokument gibt es ab. Jedes Verlassen beginnt eine neue
+Epoche: Ein Rückruf der Lock-API aus einer früheren Epoche (z. B. eine verspätet erteilte Sperre ohne Abbruch-Unterstützung)
+gibt die Sperre sofort zurück und ändert den Zustand nicht. Alle Lock-Aufrufe sind gegen Ablehnung und synchrone
+Ausnahmen abgesichert; `ready()` endet immer (spätestens nach `timing.start`), `requestWrite()` antwortet immer
+innerhalb von `timing.request` (2,5 s, einschließlich des Wartens auf die erste Antwort) mit `writer`, `busy`,
+`timeout`, `failed`, `denied` (Anfrage abgelehnt), `unsupported` oder `suspended`. Die App startet nach spätestens 3 s
+zum Ansehen, auch wenn der Browser nie antwortet; das Schreibrecht folgt dann, sobald es kommt.
+
+**Basis jeder Bearbeitung (P54).** Der Speicher zählt mit `revision()` die Stände, die ein Fenster von außen übernimmt
+(fremde Speicherung per `reload()`, Übernahme des Schreibrechts, Rückkehr, Konflikt). Eine Bearbeitung beruht auf der
+Revision, mit der ihre Eingaben angezeigt wurden, und speichert mit `withBase(revision, fn)`. Ist der Stand inzwischen
+ein anderer, schreibt der Speicher nichts und wirft `code: 'STALE'`; die Übernahme des Schreibrechts aktualisiert den
+Stand, aber nie die Basis einer offenen Bearbeitung. Ohne eigene Basis gilt mit `trackView` die Revision, die die Seite
+zuletzt angezeigt hat (`markShown()` beim Aufbau der Seite und nach jeder übernommenen fremden Änderung). So schreiben
+auch Hintergrundvorgänge (z. B. Kurse) nie aus einem veralteten Zwischenspeicher der Seite. Transaktionen merken sich ihre
+Revision beim Beginn. Basen in der App: Sheets (beim Öffnen, für Speichern, Löschen und Anlegen im Sheet), Daten-Bearbeiten
+(beim Start), Einrichtung (beim Start, vorbelegte unveränderte Werte folgen dem neuen Stand), JSON-/CSV-Import, Zurücksetzen
+und Demo (vor der Rückfrage), Kursverlauf (bei der Rückfrage), Ereignisliste der Prognose-Annahmen (beim Zeichnen).
+Einzelwerte, die nichts aus der Anzeige übernehmen (aufgeklappt, Thema, Sprache, Bereiche, ein einzelnes Annahmefeld, die
+bestätigten Sparraten aus dem Budget), gelten auf dem aktuellen Stand.
+
+Wird eine Speicherung als veraltet abgelehnt, öffnet die App das Sheet bzw. die Daten-Seite mit dem aktuellen Stand neu
+und trägt nur die Felder wieder ein, die in diesem Fenster bedient **und** geändert wurden (Ausgangswerte beim ersten
+Bedienen, markiert, Abschnitte aufgeklappt). Hat das andere Fenster dasselbe Feld geändert, steht dessen Wert daneben
+(„Inzwischen gespeichert: …“). Gespeichert wird erst, wenn man erneut speichert. Lässt sich das Sheet nicht mehr öffnen
+(Eintrag inzwischen gelöscht), nennt ein Dialog die eigenen Eingaben. Ein Import, ein Zurücksetzen oder das Laden der
+Demo wird abgelehnt („Nichts geändert …“).
+
+Die **Ereignisliste** (und der gleich gebaute Editor weiterer Renten/Einkünfte) speichert bei jeder Eingabe die ganze Liste.
+Beruht sie auf einem älteren Stand, schreibt sie nichts, zeichnet den aktuellen Stand und nennt in einem Hinweis alle
+eigenen Eingaben, die von der gezeichneten Fassung abweichen (P64). Eine Eingabe gehört allein über die gespeicherte
+Kennung der Zeile zu einem Eintrag – nie über Position, Anzahl oder Namen. Fehlt die Zeile inzwischen, ist die Kennung
+leer oder mehrfach vorhanden, wird die Eingabe nur genannt („nicht übertragen …“). Sonst bietet der Hinweis „Meine
+Eingaben übernehmen“: Erst dieser Klick schreibt genau die genannten Felder in die Zeile mit derselben Kennung; andere,
+inzwischen fremd geänderte Felder dieser Zeile bleiben. Neue Zeilen erhalten ihre Kennung beim Anlegen (`event-…`,
+`income-…`, eindeutig, nie die einer gelöschten Zeile) und werden danach aus dem gespeicherten Stand gezeichnet. Auch der
+allgemeine Abgleich von Sheets und Daten-Bearbeiten ordnet Zeilen nur über ihre Kennung (`data-row-id`, bei
+Sondertilgungen `data-extra-id`) zu; Felder, deren Kennung mehrfach vorkommt, werden nie übertragen.
+
+**Bekannte offene Lücken des Abgleichs (Folge-Review 2):** Eigene Änderungen an selbstgebauten Schaltern (z. B. „Auch im
+Ruhestand“) werden nicht erkannt (P66); bei einem zweiten Konflikt in der Einrichtung kann eine eigene Angabe dem neuen
+Stand weichen (P67); ein Sprachwechsel in einem anderen Fenster lädt neu und verliert einen offenen Entwurf (P68).
+
+**Tests und Nachweise.** Automatisiert: `.tests/writer-lifecycle.test.cjs` mit einem Testbrowser, der storage-Ereignisse
+und Sperr-Rückrufe asynchron liefert, bfcache-Seiten keine Ereignisse zustellt und nach jedem Ereignis prüft, dass höchstens
+ein Fenster schreibt und es die Sperre hält; dazu `.tests/data-safety.test.cjs` (P34). Für den Abgleich von Listen baut
+`.tests/mini-dom.cjs` aus dem gerenderten HTML echte Elementbäume (Kontrollen, Listener, Neuzeichnen, Ereignisse mit
+Bubbling); es ist kein vollständiger Browser. Einzelheiten der Gegenproben am jeweiligen Vorher-Stand: PROBLEME.md. Im Browser geprüft (Chrome 155 headless, eigenes leeres Profil): `http://127.0.0.1:8124`
+mit der Demo und `file://` mit einer Kopie unter `/tmp` und synthetischen Daten – Kontrollfall P54, eigene Änderung mit
+fremdem Wert, Navigation weg und zurück, gleichzeitige Übernahmeanfragen, Lesemodus ohne Web Locks; Writer-Intervalle aller
+Tabs ohne Überschneidung; P64 mit echten Klicks und Eingaben (CDP) einschließlich Neuladen. bfcache ist nur für HTTP belegt (`pagehide`/`pageshow` mit `persisted: true`,
+Navigationstyp `BackForwardCacheRestore`); Chrome nutzt ihn für `file://` nicht (`SchemeNotHTTPOrHTTPS`), dort lädt die
+Rückkehr neu. Nicht geprüft: Safari (macOS/iOS), iPhone-PWA, Firefox, ein vom Browser eingefrorener Hintergrund-Tab
+(`freeze`, nur im Testbrowser) und ein echter Betriebssystem-Absturz.
+
+**Mehrere Fenster (seit Version 13 der App, ohne Formatänderung; bleibt als zweite Sicherung):** Alle Fenster derselben
 Herkunft teilen sich einen Speicher. Der Speicher merkt sich den zuletzt gelesenen Stand und
 prüft vor jedem Schreiben, ob ein anderes Fenster inzwischen gespeichert hat. Dann übernimmt er
 dessen Stand und lehnt die eigene Änderung ab (Fehler mit `code: 'CONFLICT'`), statt sie darüber
@@ -123,7 +219,8 @@ tatsächlichen Export-/Importfunktionen. `demo_backup.json` ist die Demo für
 die App und die **Quelle**: Sie wird in der App bearbeitet und exportiert.
 `.scripts/build-demo.cjs` ändert keine Inhalte, sondern normalisiert die Datei (aktuelle
 `schemaVersion`, ohne `exportedAt`, ohne den Live-Monat eines Exports) und erzeugt daraus
-`demo_backup.js` für die lokal geöffnete App. Inhalte ändern nur bewusste, einzeln dokumentierte
+`demo_backup.js` für die lokal geöffnete App. Die Demo-Datei steht derzeit auf Schema 15 (in der Review-Runde
+P34–P38 bewusst nicht verändert); die App lädt sie verlustfrei in Version 16. Inhalte ändern nur bewusste, einzeln dokumentierte
 Schritte wie `.scripts/demo-quote-history.cjs` (Historie aus Kursen). `.tests/demo_export.csv` bleibt eine Test- und
 Kompatibilitätsvorlage; die frühere CSV-basierte Fassung des Skripts steht in der Git-Historie
 (`7504901`).
@@ -553,6 +650,49 @@ diesen Monat wechselt. Historische Kurswerte rechnen deshalb mit dem Schlusskurs
 (VERMOEGEN.md, 4.6). Budget und Prognose leiten den Kalendermonat daraus ab (`_budgetYM()`,
 `latestKey`).
 
+## Altersvorsorge je Person und Arbeitszeit am Gehalt (Version 17)
+
+Entscheidung 14.10.2026: Jede Altersvorsorge gehört zu einer Person; die Arbeitszeit von heute steht beim Gehalt.
+
+| Feld (seit Version 17) | Inhalt | Legacy |
+| --- | --- | --- |
+| `retirement.people[].civilServicePension` | Beamtenversorgung einer weiteren Person, Felder wie bei `primary.civilServicePension` (`pensionableSalary`, `serviceYears`, `retirementAge`, `startAge`, `deductionPercent`). Dienstjahre wachsen nach ihrer Arbeitszeit je Phase (Anteil Vollzeit), Pension ab ihrem Pensionsbeginn | `lt-drv-extra[].bv` = `{pay, years, age, from, deduct}` |
+| `budget.items[].workPercent` | Arbeitszeit zum Gehalt in % einer Vollzeitstelle (> 0 bis 100), nur bei Einnahmen mit `personId` und ohne `retirementIncome`. Die Summe je Person (höchstens 100) ist ihre Arbeitszeit heute (Phase 1); fehlt sie, gilt `phase1WorkPercent` bzw. 100. Wird die Person gelöscht, entfallen `personId` und `workPercent` | `budgetData.einkommen[].workPct` |
+
+- Migration 16 → 17: keine Umwandlung nötig (nur neue, optionale Felder); ältere Dokumente lesen sich unverändert.
+- Die Eingabefelder: Beamtenversorgung je Person unter Daten → Altersvorsorge, Arbeitszeit im Budget-Eintrag des Gehalts.
+- Tests: `.tests/household.test.cjs` (Beamtenversorgung weiterer Personen, Arbeitszeit am Gehalt), `.tests/civil-pension.test.cjs`.
+
+## Daten aus früheren Versionen erhalten (Version 16)
+
+Unabhängiges Review vom 14.10.2026, Befunde P35–P37 (siehe PROBLEME.md, Abschnitt 0): Eine Migration verändert
+nichts fachlich. Was sich nicht eindeutig übertragen lässt, bleibt als Originalwert stehen, rechnet wie in der früheren
+Version und wird in der App unter Daten → „Nach dem Update“ geklärt, jeweils mit Vorher/Nachher.
+
+| Feld (seit Version 16) | Inhalt | Legacy (`lt-drv-extra`, `lt-av-depots`) |
+| --- | --- | --- |
+| `retirement.people[].monthlyNetIncome` | Nettogehalt aus Schema 13, noch keinem Budgetposten zugeordnet (≥ 0). Zählt wie damals nur in der Prognose als Gehalt der Person (nicht im Budget und nicht in der Einkommensänderung während deiner Arbeit), solange ihr kein Budgetposten zugeordnet ist | `net` |
+| `retirement.people[].partTimeFromAge`, `partTimePercent` | Teilzeit ab einem Alter der Person aus Schema 14 (beide zusammen, Alter > 0, Anteil 0 bis unter 100, vor `workUntilAge`). Rechnet genau wie in Schema 14: voll bis zum Beginn, danach der Anteil; hat sie schon begonnen, ist das Budget-Gehalt bereits das Teilzeitgehalt. Schließt `phase<n>WorkPercent` aus | `ptFrom`, `ptPct` |
+| `retirement.pensionDepots[].unresolvedChildBirthYears` | frühere Kinder-Jahrgänge, die kein ganzes Jahr 1900–2200 sind (z. B. 2019.5), unverändert. Für die Kinderzulage zählen sie wie in der früheren Version (vierstellige Jahreszahl im Text, je Person höchstens so oft wie in einem ihrer Depots) | `kidsOpen` |
+
+- **Migration ≤ 13 → 16:** gültige Kinder-Jahrgänge an Depots werden Kinder (wie in Version 14), die übrigen kommen nach
+  `unresolvedChildBirthYears`. Das Laden scheitert daran nicht mehr.
+- **Migration 13 → 16:** `monthlyNetIncome` wird nur dann einem Budgetposten zugeordnet (und entfernt), wenn genau ein
+  freier Einnahmeposten den Namen der Person enthält und denselben Monatsbetrag hat. Es entsteht nie ein zusätzlicher
+  Budgetposten; neue Posten legt nur die Klärung in der App an, wenn du es auswählst.
+- **Migration 14 → 16:** Teilzeit ab Alter bleibt. Die Umstellung („Teilzeit umstellen“) setzt `phase<n>WorkPercent` der
+  gewählten Phase und entfernt beide Felder.
+- **Stand vor dem Update:** Vor dem ersten Speichern eines Dokuments älterer Version legt der Speicher dessen
+  unveränderten Rohtext unter `vermoegen-data-v1-before-update` ab (nur der letzte; kein Teil der Sicherungsdatei). Das
+  gilt auch für ein älteres Dokument, das ein anderes Fenster ablegt, während dieses noch auf das Schreibrecht wartet (P65).
+  Herunterladen über die Karte „Nach dem Update“ oder Daten → Sicherung („Stand vor dem Update sichern“).
+- **Weitere Schlüssel (kein Teil des Dokuments, Review P34):** `vermoegen-writer` (Marke des schreibenden Fensters:
+  `id`, `state` active/released, `at`, bei Ablehnung einer Bitte `busyFor` und `req`) und `vermoegen-writer-request`
+  (Bitte um Übergabe: `id`, `at`). Beide sind nur Hinweise für die Übergabe; die Web Lock selbst schützt (siehe
+  „Schreibrecht zwischen Fenstern“).
+  Siehe „Mehrere Fenster“ unter „Migration und Import“.
+- Tests: `.tests/data-safety.test.cjs`, `.tests/persons.test.cjs`.
+
 ## Arbeitszeit und Altersvorsorge je Lebensphase (Version 15)
 
 Entscheidung 14.10.2026: Alle Lebensphasen-Parameter stehen im Lebensphasen-Sheet der Prognose. Für jede erwachsene
@@ -569,10 +709,9 @@ Arbeitszeit und einen Anteil der Altersvorsorge, z. B. Phase 1: du Vollzeit, Ann
 
 - Das Budget-Gehalt einer Person gilt für die Arbeitszeit der Phase, in der heute liegt; in anderen Phasen zählt
   Gehalt × Arbeitszeit ÷ Arbeitszeit heute. Nach `workUntilAge` arbeitet die Person nicht mehr.
-- **Migration 14 → 15:** `partTimeFromAge`/`partTimePercent` (nur in Version 14) werden zur Arbeitszeit der ersten
-  Phase, die mindestens zur Hälfte in der Teilzeit liegt (Phasen in deinem Alter ab heute, ohne Rentenbeginn 67);
-  die folgenden Phasen übernehmen sie. Danach sind die beiden Felder nicht mehr erlaubt. Eigene Werte bleiben, wo sie
-  waren; ihre Standardwerte rechnen wie bisher.
+- **Migration 14 → 15 (historisch, ersetzt):** Im Stand `1b57aa8` wurden `partTimeFromAge`/`partTimePercent` der
+  Phase zugeordnet, in der die Teilzeit überwiegt. Das verlor den genauen Beginn (Review P36). Seit Version 16 bleiben
+  beide Felder erhalten, siehe unten. Ein bereits so migriertes Dokument lässt sich nicht automatisch zurückholen.
 - Tests: `.tests/household.test.cjs` (Arbeitszeit je Phase), `.tests/persons.test.cjs` (Schema 15, Migration).
 
 ## Personen und Kinder (Version 14)

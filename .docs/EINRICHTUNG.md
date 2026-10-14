@@ -27,6 +27,12 @@ onboarding“). Grundsätze im Code:
 
 Erscheint beim Start, solange `hasOnboardingData(doc)` falsch ist, also keine Positionen,
 Monate, Gruppen, Konten, Budgetposten, Kredite, Renten oder Prognose-Einstellungen vorhanden sind.
+Willkommen, Rundgang und Einrichtung zählen als Bearbeitung: Solange sie offen sind, gibt das Fenster sein
+Schreibrecht nicht an ein anderes Fenster ab (Review P34, „Hier bearbeiten“ meldet dann „beschäftigt“). In einem
+Fenster, das nur ansieht, scheitert das Speichern der Einrichtung mit der Meldung „Nur ansehen …“. Die Einrichtung
+beruht auf dem Stand bei ihrem Start (Review P54): Wurde inzwischen in einem anderen Fenster gespeichert, speichert
+„Fertig“ nichts, sondern meldet es; unveränderte vorbelegte Angaben (Geburtsjahr, Arbeitsende, Bedarf) zeigen dann den
+aktuellen Stand, eigene Angaben bleiben, und erneutes Bestätigen ergänzt sie auf dem aktuellen Stand.
 
 - Hintergrund: animierte Kurvenlinien wie Charts (`WELCOME_SERIES`, `_drawWelcomeWaves`,
   Splines), die nur einblenden.
