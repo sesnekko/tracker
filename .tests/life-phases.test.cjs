@@ -96,7 +96,7 @@ test('the sheet saves all phases at once, removes defaults and moves a linked st
   a.run('renderLifetimePageCalcs=()=>{}');/* Chart and cards need the real DOM */
   a.run('openPhasesSheet()');
   const fill = v => { for (const [k, x] of Object.entries(v)) a.el(k).value = x; };
-  fill({ 'lp-a2': '55', 'lp-growth': '', 'lp-a3': '62', 'lp-work': '70', 'lp-saving': '', 'lp-draw': '0', 'lp-a4': '66', 'lp-need3': '3.200', 'lp-need4': '' });
+  fill({ 'lp-a2': '55', 'lp-growth': '', 'lp-a3': '62', 'lpw-me-2': '70', 'lp-saving': '', 'lp-draw': '0', 'lp-a4': '66', 'lp-need3': '3.200', 'lp-need4': '' });
   a.run('_savePhasesSheet()');
   const doc = a.json('appStorage.document()');
   const fs = doc.forecast.settings;

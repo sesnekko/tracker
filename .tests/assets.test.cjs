@@ -49,7 +49,9 @@ test('changing symbol invalidates confirmation and malformed numbers fail withou
   const a=context();fill(a,{name:'ETF',category:'etf',provider:'yahoo',symbol:'OTHER.DE',valuation:'market',quantity:'2'});
   a.context.result={instrument,quote};a.run("_assetChecks.set('newAsset',{requestKey:'yahoo|TEST.DE',...result})");a.el('newAsset-confirm').checked=true;
   const before=a.storage.getItem(Data.KEY);a.run('addCustomField()');assert.equal(a.storage.getItem(Data.KEY),before);
-  for(const bad of ['1,2,3','NaN','-2','1.000.000','2abc']){a.context.bad=bad;assert.throws(()=>a.run('_assetNumber(bad,true)'));}
+  /* Deutsches Zahlenmodell (P10, Entscheidung 14.10.2026): „1.000.000“ Stück ist eine Million und gültig; früher abgelehnt */
+  for(const bad of ['1,2,3','NaN','-2','1.5','2abc']){a.context.bad=bad;assert.throws(()=>a.run('_assetNumber(bad,true)'));}
+  assert.equal(a.run("_assetNumber('1.000.000',true)"),1000000);
   assert.throws(()=>a.run("_assetNumber('1000.50')"));assert.equal(a.run("_assetNumber('1.234,50')"),1234.5);
 });
 test('liquidity override drives KPIs, filters and forecast independently of category',()=>{

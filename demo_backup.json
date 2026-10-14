@@ -1,6 +1,6 @@
 {
   "format": "vermoegen-backup",
-  "schemaVersion": 12,
+  "schemaVersion": 15,
   "currency": "EUR",
   "groups": [
     {
@@ -66,7 +66,7 @@
       "assumptions": {
         "returnPercent": 3,
         "volatilityPercent": 3,
-        "monthlySaving": 70,
+        "monthlySaving": 0,
         "volatilityTrendPercent": 0,
         "returnTrendPercent": 0,
         "availableFromAge": 67,
@@ -114,6 +114,12 @@
         "volatilityPercent": 0,
         "monthlySaving": 0
       }
+    },
+    {
+      "id": "group-7",
+      "name": "Kredit Garagen",
+      "defaultProfile": null,
+      "assumptions": {}
     }
   ],
   "positions": [
@@ -175,11 +181,11 @@
         "name": "iShares Core MSCI World UCITS ETF USD (Acc)"
       },
       "lastQuote": {
-        "priceEUR": 132.12,
-        "price": 132.12,
+        "priceEUR": 131.74,
+        "price": 131.74,
         "currency": "EUR",
-        "asOf": "2026-10-13T10:36:49.000Z",
-        "fetchedAt": "2026-10-13T10:52:59.677Z"
+        "asOf": "2026-10-13T15:36:06.000Z",
+        "fetchedAt": "2026-10-13T19:49:29.076Z"
       }
     },
     {
@@ -204,11 +210,11 @@
         "name": "iShares Core S&P 500 UCITS ETF USD (Acc)"
       },
       "lastQuote": {
-        "priceEUR": 752.8,
-        "price": 752.8,
+        "priceEUR": 751.08,
+        "price": 751.08,
         "currency": "EUR",
-        "asOf": "2026-10-13T10:37:36.000Z",
-        "fetchedAt": "2026-10-13T10:52:59.677Z"
+        "asOf": "2026-10-13T15:35:56.000Z",
+        "fetchedAt": "2026-10-13T19:49:29.076Z"
       }
     },
     {
@@ -233,11 +239,11 @@
         "name": "Bitcoin"
       },
       "lastQuote": {
-        "priceEUR": 74430.5,
-        "price": 74430.5,
+        "priceEUR": 74217.9,
+        "price": 74217.9,
         "currency": "EUR",
-        "asOf": "2026-10-13T10:53:49.676Z",
-        "fetchedAt": "2026-10-13T10:52:59.677Z"
+        "asOf": "2026-10-13T19:49:39.101Z",
+        "fetchedAt": "2026-10-13T19:49:39.101Z"
       }
     },
     {
@@ -253,30 +259,6 @@
         "key": "gold"
       },
       "liquidity": "liquid",
-      "valuation": "manual"
-    },
-    {
-      "id": "bausparvertrag",
-      "name": "Betriebliche Altersvorsorge",
-      "category": "bav",
-      "groupId": "group-5",
-      "archived": false,
-      "custom": false,
-      "ticker": null,
-      "unit": null,
-      "liquidity": "illiquid",
-      "valuation": "manual"
-    },
-    {
-      "id": "rente-privat",
-      "name": "Rente Privat",
-      "category": "bav",
-      "groupId": "group-5",
-      "archived": false,
-      "custom": false,
-      "ticker": null,
-      "unit": null,
-      "liquidity": "illiquid",
       "valuation": "manual"
     },
     {
@@ -310,19 +292,26 @@
       "groupId": "group-stock",
       "archived": false,
       "custom": true,
-      "ticker": null,
+      "ticker": "APC.DE",
       "unit": {
         "name": "Stück",
         "key": "aktie-apple"
       },
       "liquidity": "liquid",
-      "valuation": "manual",
+      "valuation": "market",
       "instrument": {
         "provider": "yahoo",
         "symbol": "APC.DE",
         "exchange": "XETRA",
         "currency": "EUR",
-        "name": "Apple"
+        "name": "Apple Inc."
+      },
+      "lastQuote": {
+        "priceEUR": 308.3,
+        "price": 308.3,
+        "currency": "EUR",
+        "asOf": "2026-10-13T15:35:49.000Z",
+        "fetchedAt": "2026-10-13T19:49:29.076Z"
       }
     },
     {
@@ -332,19 +321,26 @@
       "groupId": "group-stock",
       "archived": false,
       "custom": true,
-      "ticker": null,
+      "ticker": "AMZ.DE",
       "unit": {
         "name": "Stück",
         "key": "aktie-amazon"
       },
       "liquidity": "liquid",
-      "valuation": "manual",
+      "valuation": "market",
       "instrument": {
         "provider": "yahoo",
         "symbol": "AMZ.DE",
         "exchange": "XETRA",
         "currency": "EUR",
-        "name": "Amazon"
+        "name": "Amazon.com, Inc."
+      },
+      "lastQuote": {
+        "priceEUR": 233.15,
+        "price": 233.15,
+        "currency": "EUR",
+        "asOf": "2026-10-13T15:35:58.000Z",
+        "fetchedAt": "2026-10-13T19:49:29.077Z"
       }
     },
     {
@@ -354,19 +350,26 @@
       "groupId": "group-stock",
       "archived": false,
       "custom": true,
-      "ticker": null,
+      "ticker": "NESR.DE",
       "unit": {
         "name": "Stück",
         "key": "aktie-nestle"
       },
       "liquidity": "liquid",
-      "valuation": "manual",
+      "valuation": "market",
       "instrument": {
         "provider": "yahoo",
         "symbol": "NESR.DE",
         "exchange": "XETRA",
         "currency": "EUR",
-        "name": "Nestlé"
+        "name": "Nestlé S.A."
+      },
+      "lastQuote": {
+        "priceEUR": 82.71,
+        "price": 82.71,
+        "currency": "EUR",
+        "asOf": "2026-10-13T15:35:43.000Z",
+        "fetchedAt": "2026-10-13T19:49:29.077Z"
       }
     },
     {
@@ -382,13 +385,20 @@
         "key": "ethereum"
       },
       "liquidity": "liquid",
-      "valuation": "manual",
+      "valuation": "market",
       "instrument": {
         "provider": "kraken",
         "symbol": "ETHEUR",
         "exchange": "Kraken",
         "currency": "EUR",
-        "name": "Ethereum / EUR"
+        "name": "ETH / EUR"
+      },
+      "lastQuote": {
+        "priceEUR": 2234.18,
+        "price": 2234.18,
+        "currency": "EUR",
+        "asOf": "2026-10-13T19:49:39.102Z",
+        "fetchedAt": "2026-10-13T19:49:39.102Z"
       }
     },
     {
@@ -421,6 +431,62 @@
       "unit": null,
       "liquidity": "illiquid",
       "valuation": "manual"
+    },
+    {
+      "id": "custom-1791920281538",
+      "name": "Garagen",
+      "category": "realEstate",
+      "groupId": "group-6",
+      "archived": false,
+      "custom": true,
+      "ticker": null,
+      "unit": {
+        "name": "Stück",
+        "key": "custom-1791920281538"
+      },
+      "liquidity": "illiquid",
+      "valuation": "manual",
+      "depreciation": {
+        "method": "percent",
+        "amount": 0.2,
+        "interval": "month",
+        "startMonth": "2026-01",
+        "startValue": 60000
+      }
+    },
+    {
+      "id": "custom-1791920340184",
+      "name": "Kredit Garagen",
+      "category": "liab",
+      "groupId": "group-7",
+      "archived": false,
+      "custom": true,
+      "ticker": null,
+      "unit": null
+    },
+    {
+      "id": "rente-privat",
+      "name": "Rente Privat",
+      "category": "bav",
+      "groupId": "group-5",
+      "archived": true,
+      "custom": false,
+      "ticker": null,
+      "unit": null,
+      "liquidity": "illiquid",
+      "valuation": "manual"
+    },
+    {
+      "id": "bausparvertrag",
+      "name": "Betriebliche Altersvorsorge",
+      "category": "bav",
+      "groupId": "group-5",
+      "archived": true,
+      "custom": false,
+      "ticker": null,
+      "unit": null,
+      "liquidity": "illiquid",
+      "valuation": "manual"
     }
   ],
   "snapshots": [
@@ -441,26 +507,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 560,
-          "value": 47040
+          "value": 46065.6,
+          "quantity": 560
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 55,
-          "value": 25850
+          "value": 24972.2,
+          "quantity": 55
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.3,
-          "value": 11700
+          "value": 11487.55,
+          "quantity": 0.3
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 1800
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2200
+          "positionId": "gold",
+          "value": 9500,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -471,9 +534,24 @@
           "value": 239500
         },
         {
+          "positionId": "aktie-apple",
+          "value": 7008.8,
+          "quantity": 40
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 6236.1,
+          "quantity": 45
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 8080,
+          "quantity": 80
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.5,
-          "value": 3150
+          "value": 3100.49,
+          "quantity": 1.5
         },
         {
           "positionId": "familienauto",
@@ -484,24 +562,16 @@
           "value": 0
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 40,
-          "value": 6800
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 45,
-          "value": 6300
+          "positionId": "rente-privat",
+          "value": 2200
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 80,
-          "value": 8080
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 9500
+          "positionId": "bausparvertrag",
+          "value": 1800
         }
       ]
     },
@@ -522,26 +592,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 569.7,
-          "value": 47974.44
+          "value": 48449.57,
+          "quantity": 569.7
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 56.12,
-          "value": 27256.09
+          "value": 26518.38,
+          "quantity": 56.12
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.3076,
-          "value": 10643.87
+          "value": 12123.6,
+          "quantity": 0.3076
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 1820
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2200
+          "positionId": "gold",
+          "value": 9792.03,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -552,9 +619,24 @@
           "value": 238998.54
         },
         {
+          "positionId": "aktie-apple",
+          "value": 7011.82,
+          "quantity": 41
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 6624.92,
+          "quantity": 46
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 8161.84,
+          "quantity": 81
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.527,
-          "value": 3259.1
+          "value": 3243.24,
+          "quantity": 1.527
         },
         {
           "positionId": "familienauto",
@@ -565,24 +647,16 @@
           "value": 0
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 41,
-          "value": 7318.82
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 46,
-          "value": 5915.39
+          "positionId": "rente-privat",
+          "value": 2200
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 81,
-          "value": 8161.84
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 9792.03
+          "positionId": "bausparvertrag",
+          "value": 1820
         }
       ]
     },
@@ -603,26 +677,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 579.39,
-          "value": 50700.1
+          "value": 51101.04,
+          "quantity": 579.39
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 57.24,
-          "value": 29089.45
+          "value": 28243.36,
+          "quantity": 57.24
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.3152,
-          "value": 17420.16
+          "value": 17850.99,
+          "quantity": 0.3152
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 1840
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2200
+          "positionId": "gold",
+          "value": 9891.14,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -633,9 +704,24 @@
           "value": 238495.62
         },
         {
+          "positionId": "aktie-apple",
+          "value": 7001.4,
+          "quantity": 42
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 7578.28,
+          "quantity": 47
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 8077.59,
+          "quantity": 82
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.555,
-          "value": 4273.01
+          "value": 5006.89,
+          "quantity": 1.555
         },
         {
           "positionId": "familienauto",
@@ -646,24 +732,16 @@
           "value": 0
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 42,
-          "value": 7703.67
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 47,
-          "value": 6852.31
+          "positionId": "rente-privat",
+          "value": 2200
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 82,
-          "value": 8077.59
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 9891.14
+          "positionId": "bausparvertrag",
+          "value": 1840
         }
       ]
     },
@@ -684,26 +762,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 589.09,
-          "value": 49144.45
+          "value": 53873.46,
+          "quantity": 589.09
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 58.36,
-          "value": 28670.66
+          "value": 29851.14,
+          "quantity": 58.36
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.3227,
-          "value": 14101.73
+          "value": 21327.31,
+          "quantity": 0.3227
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 1860
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2200
+          "positionId": "gold",
+          "value": 10626.95,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -714,9 +789,24 @@
           "value": 237991.23
         },
         {
+          "positionId": "aktie-apple",
+          "value": 6659.52,
+          "quantity": 42
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 7827.38,
+          "quantity": 47
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 7650.6,
+          "quantity": 83
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.582,
-          "value": 4231.09
+          "value": 5346.71,
+          "quantity": 1.582
         },
         {
           "positionId": "familienauto",
@@ -727,24 +817,16 @@
           "value": 0
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 42,
-          "value": 7280.91
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 47,
-          "value": 7379.1
+          "positionId": "rente-privat",
+          "value": 2200
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 83,
-          "value": 7650.6
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 10626.95
+          "positionId": "bausparvertrag",
+          "value": 1860
         }
       ]
     },
@@ -765,26 +847,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 598.79,
-          "value": 51661.12
+          "value": 53637.21,
+          "quantity": 598.79
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 59.48,
-          "value": 29738.41
+          "value": 29774.5,
+          "quantity": 59.48
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.3303,
-          "value": 16323.02
+          "value": 18777.44,
+          "quantity": 0.3303
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 1880
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2400
+          "positionId": "gold",
+          "value": 10725.07,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -795,9 +874,24 @@
           "value": 237485.37
         },
         {
+          "positionId": "aktie-apple",
+          "value": 6998.68,
+          "quantity": 43
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 8049.6,
+          "quantity": 48
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 8165.42,
+          "quantity": 84
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.609,
-          "value": 4896.9
+          "value": 4691.99,
+          "quantity": 1.609
         },
         {
           "positionId": "familienauto",
@@ -808,24 +902,16 @@
           "value": 0
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 43,
-          "value": 7975.68
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 48,
-          "value": 9207.22
+          "positionId": "rente-privat",
+          "value": 2400
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 84,
-          "value": 8165.42
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 10725.07
+          "positionId": "bausparvertrag",
+          "value": 1880
         }
       ]
     },
@@ -846,26 +932,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 608.48,
-          "value": 54188.09
+          "value": 55204.96,
+          "quantity": 608.48
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 60.61,
-          "value": 30697.87
+          "value": 30685.63,
+          "quantity": 60.61
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.3379,
-          "value": 14397.18
+          "value": 21003.67,
+          "quantity": 0.3379
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 1900
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2400
+          "positionId": "gold",
+          "value": 11058.21,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -876,9 +959,24 @@
           "value": 236978.04
         },
         {
+          "positionId": "aktie-apple",
+          "value": 7720.24,
+          "quantity": 44
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 7891.94,
+          "quantity": 49
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 8141.97,
+          "quantity": 85
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.636,
-          "value": 4972.87
+          "value": 5699.57,
+          "quantity": 1.636
         },
         {
           "positionId": "familienauto",
@@ -889,24 +987,16 @@
           "value": 0
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 44,
-          "value": 9040.3
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 49,
-          "value": 9662.85
+          "positionId": "rente-privat",
+          "value": 2400
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 85,
-          "value": 8141.97
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 11058.21
+          "positionId": "bausparvertrag",
+          "value": 1900
         }
       ]
     },
@@ -927,26 +1017,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 618.18,
-          "value": 53542.62
+          "value": 58842.08,
+          "quantity": 618.18
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 61.73,
-          "value": 30968.92
+          "value": 33426.8,
+          "quantity": 61.73
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.3455,
-          "value": 15929.92
+          "value": 20172.28,
+          "quantity": 0.3455
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 1920
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2400
+          "positionId": "gold",
+          "value": 11239.63,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -957,9 +1044,24 @@
           "value": 236469.23
         },
         {
+          "positionId": "aktie-apple",
+          "value": 8995.5,
+          "quantity": 45
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 9154,
+          "quantity": 50
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 7583.92,
+          "quantity": 85
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.664,
-          "value": 6024.23
+          "value": 5321.12,
+          "quantity": 1.664
         },
         {
           "positionId": "familienauto",
@@ -970,24 +1072,16 @@
           "value": 0
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 45,
-          "value": 9266.32
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 50,
-          "value": 10754.94
+          "positionId": "rente-privat",
+          "value": 2400
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 85,
-          "value": 7583.92
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 11239.63
+          "positionId": "bausparvertrag",
+          "value": 1920
         }
       ]
     },
@@ -1008,26 +1102,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 627.88,
-          "value": 51701.08
+          "value": 59883.43,
+          "quantity": 627.88
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 62.85,
-          "value": 29277.61
+          "value": 33878.66,
+          "quantity": 62.85
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.353,
-          "value": 14368.7
+          "value": 21074.39,
+          "quantity": 0.353
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 1940
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2400
+          "positionId": "gold",
+          "value": 11491.82,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -1038,9 +1129,24 @@
           "value": 235958.93
         },
         {
+          "positionId": "aktie-apple",
+          "value": 9267.75,
+          "quantity": 45
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 8631,
+          "quantity": 50
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 7538.35,
+          "quantity": 86
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.691,
-          "value": 5841.77
+          "value": 4163.57,
+          "quantity": 1.691
         },
         {
           "positionId": "familienauto",
@@ -1051,24 +1157,16 @@
           "value": 0
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 45,
-          "value": 9016.54
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 50,
-          "value": 9506.33
+          "positionId": "rente-privat",
+          "value": 2400
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 86,
-          "value": 7538.35
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 11491.82
+          "positionId": "bausparvertrag",
+          "value": 1940
         }
       ]
     },
@@ -1089,26 +1187,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 637.58,
-          "value": 53831.31
+          "value": 60654.26,
+          "quantity": 637.58
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 63.97,
-          "value": 30774.15
+          "value": 34222.67,
+          "quantity": 63.97
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.3606,
-          "value": 15125.37
+          "value": 19225.66,
+          "quantity": 0.3606
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 1960
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2600
+          "positionId": "gold",
+          "value": 11500.65,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -1119,9 +1214,24 @@
           "value": 235447.14
         },
         {
+          "positionId": "aktie-apple",
+          "value": 9496.7,
+          "quantity": 46
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 8092.68,
+          "quantity": 51
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 7415.6,
+          "quantity": 87
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.718,
-          "value": 7345.83
+          "value": 3776.59,
+          "quantity": 1.718
         },
         {
           "positionId": "familienauto",
@@ -1132,24 +1242,16 @@
           "value": 0
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 46,
-          "value": 10413.54
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 51,
-          "value": 9847.6
+          "positionId": "rente-privat",
+          "value": 2600
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 87,
-          "value": 7415.6
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 11500.65
+          "positionId": "bausparvertrag",
+          "value": 1960
         }
       ]
     },
@@ -1170,26 +1272,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 647.27,
-          "value": 56187.44
+          "value": 62394.24,
+          "quantity": 647.27
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 65.09,
-          "value": 30982.25
+          "value": 35421.98,
+          "quantity": 65.09
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.3682,
-          "value": 17404.45
+          "value": 20938.05,
+          "quantity": 0.3682
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 1980
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2600
+          "positionId": "gold",
+          "value": 12010.58,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -1200,9 +1299,24 @@
           "value": 234933.86
         },
         {
+          "positionId": "aktie-apple",
+          "value": 9787.75,
+          "quantity": 47
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 8633.04,
+          "quantity": 52
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 7794.03,
+          "quantity": 88
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.745,
-          "value": 7378.56
+          "value": 3881.02,
+          "quantity": 1.745
         },
         {
           "positionId": "familienauto",
@@ -1213,24 +1327,16 @@
           "value": 0
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 47,
-          "value": 10909.87
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 52,
-          "value": 11475.4
+          "positionId": "rente-privat",
+          "value": 2600
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 88,
-          "value": 7794.03
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 12010.58
+          "positionId": "bausparvertrag",
+          "value": 1980
         }
       ]
     },
@@ -1251,26 +1357,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 656.97,
-          "value": 60743.27
+          "value": 64101.88,
+          "quantity": 656.97
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 66.21,
-          "value": 35303.74
+          "value": 36988.88,
+          "quantity": 66.21
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.3758,
-          "value": 29950.7
+          "value": 24243.73,
+          "quantity": 0.3758
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2000
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2600
+          "positionId": "gold",
+          "value": 11707.94,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -1281,9 +1384,24 @@
           "value": 234419.08
         },
         {
+          "positionId": "aktie-apple",
+          "value": 10058.4,
+          "quantity": 48
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 9110.7,
+          "quantity": 53
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 8326.63,
+          "quantity": 89
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.773,
-          "value": 9232.89
+          "value": 4005.61,
+          "quantity": 1.773
         },
         {
           "positionId": "familienauto",
@@ -1294,24 +1412,16 @@
           "value": 0
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 48,
-          "value": 12208.6
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 53,
-          "value": 12836.35
+          "positionId": "rente-privat",
+          "value": 2600
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 89,
-          "value": 8326.63
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 11707.94
+          "positionId": "bausparvertrag",
+          "value": 2000
         }
       ]
     },
@@ -1332,26 +1442,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 666.67,
-          "value": 61372.45
+          "value": 69870.35,
+          "quantity": 666.67
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 67.33,
-          "value": 36639.23
+          "value": 40793.9,
+          "quantity": 67.33
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.3833,
-          "value": 28103.16
+          "value": 34948.87,
+          "quantity": 0.3833
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2020
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2600
+          "positionId": "gold",
+          "value": 11644.1,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -1362,9 +1469,24 @@
           "value": 231402.8
         },
         {
+          "positionId": "aktie-apple",
+          "value": 10756.8,
+          "quantity": 48
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 10359.38,
+          "quantity": 53
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 7897.61,
+          "quantity": 90
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.8,
-          "value": 10064.04
+          "value": 6335.42,
+          "quantity": 1.8
         },
         {
           "positionId": "familienauto",
@@ -1375,24 +1497,16 @@
           "value": 0
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 48,
-          "value": 12279.61
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 53,
-          "value": 12184.87
+          "positionId": "rente-privat",
+          "value": 2600
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 90,
-          "value": 7897.61
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 11644.1
+          "positionId": "bausparvertrag",
+          "value": 2020
         }
       ]
     },
@@ -1413,26 +1527,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 676.36,
-          "value": 62661.11
+          "value": 70064.13,
+          "quantity": 676.36
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 68.45,
-          "value": 38210.87
+          "value": 41123.39,
+          "quantity": 68.45
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.3909,
-          "value": 27605.08
+          "value": 35286.5,
+          "quantity": 0.3909
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2040
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2800
+          "positionId": "gold",
+          "value": 11791.84,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -1443,9 +1554,24 @@
           "value": 230877.72
         },
         {
+          "positionId": "aktie-apple",
+          "value": 11860.45,
+          "quantity": 49
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 11461.5,
+          "quantity": 54
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 7828.3,
+          "quantity": 91
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.827,
-          "value": 11634.91
+          "value": 6442.83,
+          "quantity": 1.827
         },
         {
           "positionId": "familienauto",
@@ -1456,24 +1582,16 @@
           "value": 19700
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 49,
-          "value": 12770.35
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 54,
-          "value": 12857.73
+          "positionId": "rente-privat",
+          "value": 2800
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 91,
-          "value": 7828.3
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 11791.84
+          "positionId": "bausparvertrag",
+          "value": 2040
         }
       ]
     },
@@ -1494,26 +1612,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 686.06,
-          "value": 62998.4
+          "value": 74217.97,
+          "quantity": 686.06
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 69.58,
-          "value": 38837.73
+          "value": 43405.4,
+          "quantity": 69.58
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.3985,
-          "value": 20933.82
+          "value": 39384.64,
+          "quantity": 0.3985
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2060
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2800
+          "positionId": "gold",
+          "value": 12382.34,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -1524,9 +1639,24 @@
           "value": 230351.11
         },
         {
+          "positionId": "aktie-apple",
+          "value": 11507.5,
+          "quantity": 50
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 12658.25,
+          "quantity": 55
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 7856.22,
+          "quantity": 92
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.855,
-          "value": 9911.2
+          "value": 5193.05,
+          "quantity": 1.855
         },
         {
           "positionId": "familienauto",
@@ -1537,24 +1667,16 @@
           "value": 19398.5
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 50,
-          "value": 12436.85
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 55,
-          "value": 12003.07
+          "positionId": "rente-privat",
+          "value": 2800
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 92,
-          "value": 7856.22
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 12382.34
+          "positionId": "bausparvertrag",
+          "value": 2060
         }
       ]
     },
@@ -1575,26 +1697,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 695.76,
-          "value": 60481.67
+          "value": 73420.07,
+          "quantity": 695.76
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 70.7,
-          "value": 36778.65
+          "value": 42499.18,
+          "quantity": 70.7
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.4061,
-          "value": 20138.8
+          "value": 33014.96,
+          "quantity": 0.4061
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2080
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2800
+          "positionId": "gold",
+          "value": 12874.99,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -1605,9 +1724,24 @@
           "value": 229822.97
         },
         {
+          "positionId": "aktie-apple",
+          "value": 11630.55,
+          "quantity": 51
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 11300.8,
+          "quantity": 56
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 7708.61,
+          "quantity": 93
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.882,
-          "value": 10178.54
+          "value": 4554.32,
+          "quantity": 1.882
         },
         {
           "positionId": "familienauto",
@@ -1618,24 +1752,16 @@
           "value": 19095.49
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 51,
-          "value": 12356.52
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 56,
-          "value": 11041.53
+          "positionId": "rente-privat",
+          "value": 2800
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 93,
-          "value": 7708.61
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 12874.99
+          "positionId": "bausparvertrag",
+          "value": 2080
         }
       ]
     },
@@ -1656,26 +1782,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 705.45,
-          "value": 56987.49
+          "value": 68554.22,
+          "quantity": 705.45
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 71.82,
-          "value": 36439.68
+          "value": 39286.98,
+          "quantity": 71.82
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.4136,
-          "value": 16600.28
+          "value": 31560.19,
+          "quantity": 0.4136
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2100
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 2800
+          "positionId": "gold",
+          "value": 12897.15,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -1686,9 +1809,24 @@
           "value": 229293.29
         },
         {
+          "positionId": "aktie-apple",
+          "value": 10363.2,
+          "quantity": 51
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 9723.84,
+          "quantity": 56
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 7362.44,
+          "quantity": 94
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.909,
-          "value": 9515.63
+          "value": 2740.89,
+          "quantity": 1.909
         },
         {
           "positionId": "familienauto",
@@ -1699,24 +1837,16 @@
           "value": 18790.97
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 51,
-          "value": 10700.71
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 56,
-          "value": 9442.8
+          "positionId": "rente-privat",
+          "value": 2800
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 94,
-          "value": 7362.44
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 12897.15
+          "positionId": "bausparvertrag",
+          "value": 2100
         }
       ]
     },
@@ -1737,26 +1867,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 715.15,
-          "value": 61919.92
+          "value": 66766.4,
+          "quantity": 715.15
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 72.94,
-          "value": 41285.77
+          "value": 37761.04,
+          "quantity": 72.94
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.4212,
-          "value": 18512.36
+          "value": 35046.39,
+          "quantity": 0.4212
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2120
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3000
+          "positionId": "gold",
+          "value": 13161.72,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -1767,9 +1894,24 @@
           "value": 228762.06
         },
         {
+          "positionId": "aktie-apple",
+          "value": 9647.04,
+          "quantity": 52
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 9149.64,
+          "quantity": 57
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 7939.36,
+          "quantity": 95
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.936,
-          "value": 8742.72
+          "value": 3092.75,
+          "quantity": 1.936
         },
         {
           "positionId": "familienauto",
@@ -1780,24 +1922,16 @@
           "value": 18484.92
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 52,
-          "value": 12121.75
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 57,
-          "value": 9682.28
+          "positionId": "rente-privat",
+          "value": 3000
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 95,
-          "value": 7939.36
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 13161.72
+          "positionId": "bausparvertrag",
+          "value": 2120
         }
       ]
     },
@@ -1818,26 +1952,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 724.85,
-          "value": 62991.47
+          "value": 71983.4,
+          "quantity": 724.85
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 74.06,
-          "value": 43558.48
+          "value": 40978.88,
+          "quantity": 74.06
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.4288,
-          "value": 17013.59
+          "value": 39540.19,
+          "quantity": 0.4288
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2140
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3000
+          "positionId": "gold",
+          "value": 13371.12,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -1848,9 +1979,24 @@
           "value": 228229.28
         },
         {
+          "positionId": "aktie-apple",
+          "value": 9293.02,
+          "quantity": 53
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 10435.36,
+          "quantity": 58
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 8930,
+          "quantity": 95
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.964,
-          "value": 8501.95
+          "value": 4387.52,
+          "quantity": 1.964
         },
         {
           "positionId": "familienauto",
@@ -1861,24 +2007,16 @@
           "value": 18177.34
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 53,
-          "value": 12957.38
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 58,
-          "value": 11125.91
+          "positionId": "rente-privat",
+          "value": 3000
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 95,
-          "value": 7990.68
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 13371.12
+          "positionId": "bausparvertrag",
+          "value": 2140
         }
       ]
     },
@@ -1899,26 +2037,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 734.55,
-          "value": 64076.74
+          "value": 73568.86,
+          "quantity": 734.55
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 75.18,
-          "value": 45386.07
+          "value": 42224.1,
+          "quantity": 75.18
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.4364,
-          "value": 19034.54
+          "value": 39667.61,
+          "quantity": 0.4364
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2160
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3000
+          "positionId": "gold",
+          "value": 14292.82,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -1929,9 +2064,24 @@
           "value": 227694.95
         },
         {
+          "positionId": "aktie-apple",
+          "value": 9191.88,
+          "quantity": 54
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 11101.44,
+          "quantity": 59
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 8097.6,
+          "quantity": 96
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 1.991,
-          "value": 12246.02
+          "value": 4345.63,
+          "quantity": 1.991
         },
         {
           "positionId": "familienauto",
@@ -1942,24 +2092,16 @@
           "value": 17868.23
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 54,
-          "value": 12638.38
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 59,
-          "value": 12335.75
+          "positionId": "rente-privat",
+          "value": 3000
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 96,
-          "value": 7451.95
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 14292.82
+          "positionId": "bausparvertrag",
+          "value": 2160
         }
       ]
     },
@@ -1980,26 +2122,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 744.24,
-          "value": 66274.77
+          "value": 78137.76,
+          "quantity": 744.24
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 76.3,
-          "value": 48939.76
+          "value": 45461.07,
+          "quantity": 76.3
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.4439,
-          "value": 26097.09
+          "value": 44988.86,
+          "quantity": 0.4439
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2180
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3000
+          "positionId": "gold",
+          "value": 14745.62,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -2010,9 +2149,24 @@
           "value": 227159.06
         },
         {
+          "positionId": "aktie-apple",
+          "value": 9848.52,
+          "quantity": 54
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 12047.8,
+          "quantity": 59
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 7400.13,
+          "quantity": 97
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.018,
-          "value": 11766.3
+          "value": 6090.68,
+          "quantity": 2.018
         },
         {
           "positionId": "familienauto",
@@ -2023,24 +2177,16 @@
           "value": 17557.57
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 54,
-          "value": 12785.32
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 59,
-          "value": 13279.48
+          "positionId": "rente-privat",
+          "value": 3000
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 97,
-          "value": 7640.44
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 14745.62
+          "positionId": "bausparvertrag",
+          "value": 2180
         }
       ]
     },
@@ -2061,26 +2207,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 753.94,
-          "value": 68767.53
+          "value": 78850.81,
+          "quantity": 753.94
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 77.42,
-          "value": 49039.45
+          "value": 45615.86,
+          "quantity": 77.42
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.4515,
-          "value": 26101.59
+          "value": 41803.12,
+          "quantity": 0.4515
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2200
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3200
+          "positionId": "gold",
+          "value": 14538.1,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -2091,9 +2234,24 @@
           "value": 226621.61
         },
         {
+          "positionId": "aktie-apple",
+          "value": 10914.2,
+          "quantity": 55
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 11739.6,
+          "quantity": 60
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 7915.46,
+          "quantity": 98
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.045,
-          "value": 11890.91
+          "value": 7679.56,
+          "quantity": 2.045
         },
         {
           "positionId": "familienauto",
@@ -2104,24 +2262,16 @@
           "value": 17245.36
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 55,
-          "value": 13231.26
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 60,
-          "value": 12974.68
+          "positionId": "rente-privat",
+          "value": 3200
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 98,
-          "value": 7801.94
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 14538.1
+          "positionId": "bausparvertrag",
+          "value": 2200
         }
       ]
     },
@@ -2142,26 +2292,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 763.64,
-          "value": 68616.43
+          "value": 81858.39,
+          "quantity": 763.64
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 78.55,
-          "value": 48827.37
+          "value": 47582.45,
+          "quantity": 78.55
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.4591,
-          "value": 32667.76
+          "value": 44623.25,
+          "quantity": 0.4591
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2220
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3200
+          "positionId": "gold",
+          "value": 15153.45,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -2172,9 +2319,24 @@
           "value": 226082.59
         },
         {
+          "positionId": "aktie-apple",
+          "value": 12160.4,
+          "quantity": 56
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 11377.72,
+          "quantity": 61
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 7741.8,
+          "quantity": 99
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.073,
-          "value": 12086.32
+          "value": 7992.1,
+          "quantity": 2.073
         },
         {
           "positionId": "familienauto",
@@ -2185,24 +2347,16 @@
           "value": 16931.59
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 56,
-          "value": 14795.16
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 61,
-          "value": 11997.34
+          "positionId": "rente-privat",
+          "value": 3200
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 99,
-          "value": 7903.87
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 15153.45
+          "positionId": "bausparvertrag",
+          "value": 2220
         }
       ]
     },
@@ -2223,26 +2377,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 773.33,
-          "value": 70430.56
+          "value": 86485.36,
+          "quantity": 773.33
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 79.67,
-          "value": 49354.81
+          "value": 50550.62,
+          "quantity": 79.67
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.4667,
-          "value": 27030.54
+          "value": 44081.1,
+          "quantity": 0.4667
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2240
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3200
+          "positionId": "gold",
+          "value": 15632.97,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -2253,9 +2404,24 @@
           "value": 225542
         },
         {
+          "positionId": "aktie-apple",
+          "value": 13474.8,
+          "quantity": 57
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 13233.9,
+          "quantity": 62
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 8291,
+          "quantity": 100
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.1,
-          "value": 11496.42
+          "value": 7124.91,
+          "quantity": 2.1
         },
         {
           "positionId": "familienauto",
@@ -2266,24 +2432,16 @@
           "value": 16616.25
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 57,
-          "value": 14800.05
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 62,
-          "value": 11069.26
+          "positionId": "rente-privat",
+          "value": 3200
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 100,
-          "value": 7953.35
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 15632.97
+          "positionId": "bausparvertrag",
+          "value": 2240
         }
       ]
     },
@@ -2304,26 +2462,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 783.03,
-          "value": 73002.74
+          "value": 87280.44,
+          "quantity": 783.03
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 80.79,
-          "value": 52662.49
+          "value": 51010.81,
+          "quantity": 80.79
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.4742,
-          "value": 26332.4
+          "value": 36949.14,
+          "quantity": 0.4742
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2260
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3200
+          "positionId": "gold",
+          "value": 15732.46,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -2334,9 +2489,24 @@
           "value": 221999.83
         },
         {
+          "positionId": "aktie-apple",
+          "value": 13583.1,
+          "quantity": 57
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 12434.1,
+          "quantity": 62
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 8655.7,
+          "quantity": 101
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.127,
-          "value": 11375.01
+          "value": 5485.89,
+          "quantity": 2.127
         },
         {
           "positionId": "familienauto",
@@ -2347,24 +2517,16 @@
           "value": 16299.33
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 57,
-          "value": 12728.97
+          "positionId": "custom-1791920340184",
+          "value": 0
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 62,
-          "value": 13439.98
+          "positionId": "rente-privat",
+          "value": 3200
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 101,
-          "value": 8103.2
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 15732.46
+          "positionId": "bausparvertrag",
+          "value": 2260
         }
       ]
     },
@@ -2385,26 +2547,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 792.73,
-          "value": 74996.45
+          "value": 88607.4,
+          "quantity": 792.73
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 81.91,
-          "value": 53363.68
+          "value": 51539.41,
+          "quantity": 81.91
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.4818,
-          "value": 23414.17
+          "value": 35935.81,
+          "quantity": 0.4818
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2280
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3400
+          "positionId": "gold",
+          "value": 15089.45,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -2415,9 +2574,24 @@
           "value": 221447.33
         },
         {
+          "positionId": "aktie-apple",
+          "value": 13482.1,
+          "quantity": 58
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 12422.34,
+          "quantity": 63
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 8607.78,
+          "quantity": 102
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.155,
-          "value": 9555.52
+          "value": 5782.26,
+          "quantity": 2.155
         },
         {
           "positionId": "familienauto",
@@ -2428,24 +2602,16 @@
           "value": 15980.83
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 58,
-          "value": 13573.33
+          "positionId": "custom-1791920340184",
+          "value": 59925
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 63,
-          "value": 15104.27
+          "positionId": "rente-privat",
+          "value": 3400
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 102,
-          "value": 8767.84
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 15089.45
+          "positionId": "bausparvertrag",
+          "value": 2280
         }
       ]
     },
@@ -2466,26 +2632,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 802.42,
-          "value": 74805.31
+          "value": 90095.72,
+          "quantity": 802.42
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 83.03,
-          "value": 55514.46
+          "value": 51998.37,
+          "quantity": 83.03
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.4894,
-          "value": 22684.26
+          "value": 32459.96,
+          "quantity": 0.4894
         },
         {
-          "positionId": "bausparvertrag",
-          "value": 2300
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3400
+          "positionId": "gold",
+          "value": 15280.08,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -2496,9 +2659,24 @@
           "value": 220893.22
         },
         {
+          "positionId": "aktie-apple",
+          "value": 12770.55,
+          "quantity": 59
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 12969.6,
+          "quantity": 64
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 8277.08,
+          "quantity": 103
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.182,
-          "value": 10984.77
+          "value": 4177.44,
+          "quantity": 2.182
         },
         {
           "positionId": "familienauto",
@@ -2509,24 +2687,16 @@
           "value": 15660.73
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 59,
-          "value": 12961.19
+          "positionId": "custom-1791920340184",
+          "value": 59849.78
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 64,
-          "value": 13873.41
+          "positionId": "rente-privat",
+          "value": 3400
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 103,
-          "value": 9149.56
-        },
-        {
-          "positionId": "gold",
-          "quantity": 5,
-          "value": 15280.08
+          "positionId": "bausparvertrag",
+          "value": 2300
         }
       ]
     },
@@ -2547,31 +2717,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 812.12,
-          "value": 81048.38
+          "value": 92204.04,
+          "quantity": 812.12
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 84.15,
-          "value": 55745.83
+          "value": 52511.28,
+          "quantity": 84.15
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.497,
-          "value": 25248.26
+          "value": 28174.77,
+          "quantity": 0.497
         },
         {
           "positionId": "gold",
-          "quantity": 5,
-          "value": 14833.77
-        },
-        {
-          "positionId": "bausparvertrag",
-          "value": 2320
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3400
+          "value": 14833.77,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -2582,9 +2744,24 @@
           "value": 220337.49
         },
         {
+          "positionId": "aktie-apple",
+          "value": 13677,
+          "quantity": 60
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 11456.9,
+          "quantity": 65
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 9623.12,
+          "quantity": 104
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.209,
-          "value": 10369.93
+          "value": 3642.63,
+          "quantity": 2.209
         },
         {
           "positionId": "familienauto",
@@ -2595,19 +2772,16 @@
           "value": 14339.03
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 60,
-          "value": 14923.9
+          "positionId": "custom-1791920340184",
+          "value": 59774.34
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 65,
-          "value": 15450.41
+          "positionId": "rente-privat",
+          "value": 3400
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 104,
-          "value": 8999.16
+          "positionId": "bausparvertrag",
+          "value": 2320
         }
       ]
     },
@@ -2628,31 +2802,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 821.82,
-          "value": 82693.31
+          "value": 88801.76,
+          "quantity": 821.82
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 85.27,
-          "value": 57453.41
+          "value": 51172.23,
+          "quantity": 85.27
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.5045,
-          "value": 29448.86
+          "value": 29743.19,
+          "quantity": 0.5045
         },
         {
           "positionId": "gold",
-          "quantity": 5,
-          "value": 15098.46
-        },
-        {
-          "positionId": "bausparvertrag",
-          "value": 2340
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3400
+          "value": 15098.46,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -2663,9 +2829,24 @@
           "value": 219780.14
         },
         {
+          "positionId": "aktie-apple",
+          "value": 12930,
+          "quantity": 60
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 11631.1,
+          "quantity": 65
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 8911.35,
+          "quantity": 105
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.236,
-          "value": 11170.27
+          "value": 4097.13,
+          "quantity": 2.236
         },
         {
           "positionId": "familienauto",
@@ -2676,19 +2857,16 @@
           "value": 14010.73
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 60,
-          "value": 13925.06
+          "positionId": "custom-1791920340184",
+          "value": 59698.68
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 65,
-          "value": 15183.4
+          "positionId": "rente-privat",
+          "value": 3400
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 105,
-          "value": 8711.7
+          "positionId": "bausparvertrag",
+          "value": 2340
         }
       ]
     },
@@ -2709,31 +2887,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 831.52,
-          "value": 87148.65
+          "value": 97316.94,
+          "quantity": 831.52
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 86.39,
-          "value": 60340.93
+          "value": 56721.95,
+          "quantity": 86.39
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.5121,
-          "value": 34244.32
+          "value": 33315.68,
+          "quantity": 0.5121
         },
         {
           "positionId": "gold",
-          "quantity": 5,
-          "value": 15668.72
-        },
-        {
-          "positionId": "bausparvertrag",
-          "value": 2360
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3600
+          "value": 15668.72,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -2744,9 +2914,24 @@
           "value": 219221.17
         },
         {
+          "positionId": "aktie-apple",
+          "value": 14127.6,
+          "quantity": 61
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 14503.5,
+          "quantity": 66
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 9033.15,
+          "quantity": 105
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.264,
-          "value": 10921.86
+          "value": 4482.66,
+          "quantity": 2.264
         },
         {
           "positionId": "familienauto",
@@ -2757,19 +2942,16 @@
           "value": 13680.78
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 61,
-          "value": 13515.12
+          "positionId": "custom-1791920340184",
+          "value": 59622.8
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 66,
-          "value": 15440.65
+          "positionId": "rente-privat",
+          "value": 3600
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 105,
-          "value": 8639.02
+          "positionId": "bausparvertrag",
+          "value": 2360
         }
       ]
     },
@@ -2790,31 +2972,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 841.21,
-          "value": 93918.04
+          "value": 103822.14,
+          "quantity": 841.21
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 87.52,
-          "value": 62991.59
+          "value": 61167.73,
+          "quantity": 87.52
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.5197,
-          "value": 44623.31
+          "value": 32825.4,
+          "quantity": 0.5197
         },
         {
           "positionId": "gold",
-          "quantity": 5,
-          "value": 15883.61
-        },
-        {
-          "positionId": "bausparvertrag",
-          "value": 2380
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3600
+          "value": 15883.61,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -2825,9 +2999,24 @@
           "value": 218660.57
         },
         {
+          "positionId": "aktie-apple",
+          "value": 16554,
+          "quantity": 62
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 15644.5,
+          "quantity": 67
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 9190.2,
+          "quantity": 106
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.291,
-          "value": 9397.56
+          "value": 3941.81,
+          "quantity": 2.291
         },
         {
           "positionId": "familienauto",
@@ -2838,19 +3027,16 @@
           "value": 13349.18
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 62,
-          "value": 14401.04
+          "positionId": "custom-1791920340184",
+          "value": 59546.7
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 67,
-          "value": 16633.41
+          "positionId": "rente-privat",
+          "value": 3600
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 106,
-          "value": 8685.84
+          "positionId": "bausparvertrag",
+          "value": 2380
         }
       ]
     },
@@ -2871,31 +3057,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 850.91,
-          "value": 97152.54
+          "value": 106393.53,
+          "quantity": 850.91
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 88.64,
-          "value": 64929.27
+          "value": 62489.43,
+          "quantity": 88.64
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.5273,
-          "value": 39617
+          "value": 27054.92,
+          "quantity": 0.5273
         },
         {
           "positionId": "gold",
-          "quantity": 5,
-          "value": 16710.86
-        },
-        {
-          "positionId": "bausparvertrag",
-          "value": 2400
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3600
+          "value": 16710.86,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -2906,9 +3084,24 @@
           "value": 218098.33
         },
         {
+          "positionId": "aktie-apple",
+          "value": 15910.65,
+          "quantity": 63
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 14218.8,
+          "quantity": 68
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 9634.28,
+          "quantity": 107
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.318,
-          "value": 8921.99
+          "value": 3613.78,
+          "quantity": 2.318
         },
         {
           "positionId": "familienauto",
@@ -2919,19 +3112,16 @@
           "value": 13015.93
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 63,
-          "value": 14770.7
+          "positionId": "custom-1791920340184",
+          "value": 59470.38
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 68,
-          "value": 15724.57
+          "positionId": "rente-privat",
+          "value": 3600
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 107,
-          "value": 9259.1
+          "positionId": "bausparvertrag",
+          "value": 2400
         }
       ]
     },
@@ -2952,31 +3142,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 860.61,
-          "value": 101748.77
+          "value": 106965.22,
+          "quantity": 860.61
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 89.76,
-          "value": 67150.92
+          "value": 62494.5,
+          "quantity": 89.76
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.5348,
-          "value": 45988.3
+          "value": 29118.7,
+          "quantity": 0.5348
         },
         {
           "positionId": "gold",
-          "quantity": 5,
-          "value": 17117.68
-        },
-        {
-          "positionId": "bausparvertrag",
-          "value": 2420
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3600
+          "value": 17117.68,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -2987,9 +3169,24 @@
           "value": 215034.45
         },
         {
+          "positionId": "aktie-apple",
+          "value": 16572.15,
+          "quantity": 63
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 15759,
+          "quantity": 68
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 9404.64,
+          "quantity": 108
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.345,
-          "value": 7833.26
+          "value": 3824.08,
+          "quantity": 2.345
         },
         {
           "positionId": "familienauto",
@@ -3000,19 +3197,16 @@
           "value": 12681.01
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 63,
-          "value": 14772.97
+          "positionId": "custom-1791920340184",
+          "value": 59393.84
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 68,
-          "value": 14284.31
+          "positionId": "rente-privat",
+          "value": 3600
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 108,
-          "value": 9110.31
+          "positionId": "bausparvertrag",
+          "value": 2420
         }
       ]
     },
@@ -3033,31 +3227,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 870.3,
-          "value": 105535.95
+          "value": 110323.58,
+          "quantity": 870.3
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 90.88,
-          "value": 67648.18
+          "value": 64715.65,
+          "quantity": 90.88
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.5424,
-          "value": 41799.16
+          "value": 36670.87,
+          "quantity": 0.5424
         },
         {
           "positionId": "gold",
-          "quantity": 5,
-          "value": 17820.52
-        },
-        {
-          "positionId": "bausparvertrag",
-          "value": 2440
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3800
+          "value": 17820.52,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -3068,9 +3254,24 @@
           "value": 214461.63
         },
         {
+          "positionId": "aktie-apple",
+          "value": 17356.8,
+          "quantity": 64
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 15504.3,
+          "quantity": 69
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 9134.2,
+          "quantity": 109
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.373,
-          "value": 7091.57
+          "value": 5138.08,
+          "quantity": 2.373
         },
         {
           "positionId": "familienauto",
@@ -3081,19 +3282,16 @@
           "value": 12344.42
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 64,
-          "value": 15132.33
+          "positionId": "custom-1791920340184",
+          "value": 59317.07
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 69,
-          "value": 14762.62
+          "positionId": "rente-privat",
+          "value": 3800
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 109,
-          "value": 9199.66
+          "positionId": "bausparvertrag",
+          "value": 2440
         }
       ]
     },
@@ -3114,31 +3312,23 @@
         },
         {
           "positionId": "msci-world-a0rpwh",
-          "quantity": 880,
-          "value": 115280
+          "value": 113638.8,
+          "quantity": 880
         },
         {
           "positionId": "s-p-500-a0yedg",
-          "quantity": 92,
-          "value": 69000
+          "value": 67415.76,
+          "quantity": 92
         },
         {
           "positionId": "bitcoin",
-          "quantity": 0.55,
-          "value": 40700
+          "value": 40570.99,
+          "quantity": 0.55
         },
         {
           "positionId": "gold",
-          "quantity": 5,
-          "value": 18500
-        },
-        {
-          "positionId": "bausparvertrag",
-          "value": 2460
-        },
-        {
-          "positionId": "rente-privat",
-          "value": 3800
+          "value": 18500,
+          "quantity": 5
         },
         {
           "positionId": "wohnung-marktwert",
@@ -3149,9 +3339,24 @@
           "value": 213887.14
         },
         {
+          "positionId": "aktie-apple",
+          "value": 19324.5,
+          "quantity": 65
+        },
+        {
+          "positionId": "aktie-amazon",
+          "value": 15491,
+          "quantity": 70
+        },
+        {
+          "positionId": "aktie-nestle",
+          "value": 8893.5,
+          "quantity": 110
+        },
+        {
           "positionId": "ethereum",
-          "quantity": 2.4,
-          "value": 7920
+          "value": 5813.68,
+          "quantity": 2.4
         },
         {
           "positionId": "familienauto",
@@ -3162,19 +3367,16 @@
           "value": 12006.14
         },
         {
-          "positionId": "aktie-apple",
-          "quantity": 65,
-          "value": 14820
+          "positionId": "custom-1791920340184",
+          "value": 59240.08
         },
         {
-          "positionId": "aktie-amazon",
-          "quantity": 70,
-          "value": 14350
+          "positionId": "rente-privat",
+          "value": 3800
         },
         {
-          "positionId": "aktie-nestle",
-          "quantity": 110,
-          "value": 9240
+          "positionId": "bausparvertrag",
+          "value": 2460
         }
       ]
     }
@@ -3233,7 +3435,8 @@
           3200,
           3200,
           3200
-        ]
+        ],
+        "personId": "person-main"
       },
       {
         "id": "budget-2",
@@ -3255,29 +3458,31 @@
           1800,
           1800,
           1800
-        ]
+        ],
+        "personId": "person-1"
       },
       {
-        "id": "budget-3",
-        "name": "Kindergeld",
+        "id": "budget-mv734m0iqcn1",
+        "name": "Miete Garage",
         "category": "einkommen",
         "subcategory": "",
         "kind": "income",
         "targetGroupId": null,
         "monthlyAmounts": [
-          250,
-          250,
-          250,
-          250,
-          250,
-          250,
-          250,
-          250,
-          250,
-          250,
-          250,
-          250
-        ]
+          125,
+          125,
+          125,
+          125,
+          125,
+          125,
+          125,
+          125,
+          125,
+          125,
+          125,
+          125
+        ],
+        "retirementIncome": true
       },
       {
         "id": "budget-5",
@@ -3740,28 +3945,6 @@
           25,
           25
         ]
-      },
-      {
-        "id": "budget-pension",
-        "name": "Altersvorsorge-Beiträge",
-        "category": "sparen",
-        "subcategory": "",
-        "kind": "saving",
-        "targetGroupId": "group-5",
-        "monthlyAmounts": [
-          70,
-          70,
-          70,
-          70,
-          70,
-          70,
-          70,
-          70,
-          70,
-          70,
-          70,
-          70
-        ]
       }
     ],
     "standingOrders": [
@@ -3843,14 +4026,14 @@
   "loans": [
     {
       "positionId": "kredit-wohnung",
-      "linkedAssetId": "wohnung-marktwert",
-      "principalAmount": 240000,
       "interestPercent": 3.5,
-      "initialRepaymentPercent": 2.5,
       "monthlyPayment": 1200,
-      "firstPaymentMonth": "2024-01",
-      "fixedInterestYears": 10,
       "followUpInterestPercent": 4,
+      "principalAmount": 240000,
+      "initialRepaymentPercent": 2.5,
+      "fixedInterestYears": 10,
+      "linkedAssetId": "wohnung-marktwert",
+      "firstPaymentMonth": "2024-01",
       "extraPayments": [
         {
           "id": "extra-home-2024",
@@ -3871,13 +4054,13 @@
     },
     {
       "positionId": "kredit-auto",
-      "linkedAssetId": "familienauto",
-      "principalAmount": 20000,
       "interestPercent": 6,
-      "initialRepaymentPercent": 18,
       "monthlyPayment": 400,
-      "firstPaymentMonth": "2025-01",
+      "principalAmount": 20000,
+      "initialRepaymentPercent": 18,
       "fixedInterestYears": 5,
+      "linkedAssetId": "familienauto",
+      "firstPaymentMonth": "2025-01",
       "extraPayments": [
         {
           "id": "extra-car-2026",
@@ -3885,6 +4068,16 @@
           "amount": 1000
         }
       ]
+    },
+    {
+      "positionId": "custom-1791920340184",
+      "interestPercent": 3.5,
+      "monthlyPayment": 250,
+      "principalAmount": 60000,
+      "initialRepaymentPercent": 1.5,
+      "linkedAssetId": "custom-1791920281538",
+      "firstPaymentMonth": "2026-01",
+      "extraPayments": []
     }
   ],
   "retirement": {
@@ -3894,7 +4087,6 @@
       "statutoryPension": {
         "points": 17.4,
         "annualSalary": 58000,
-        "retirementAge": 67,
         "deductionPercent": 20,
         "pensionPointValue": 42.52,
         "averageSalary": 51944,
@@ -3905,10 +4097,11 @@
     "people": [
       {
         "id": "person-1",
-        "name": "Anna (Demo)",
+        "name": "Anna",
         "statutoryPension": {
           "points": 12.8,
           "annualSalary": 36000,
+          "retirementAge": 0,
           "deductionPercent": 20
         },
         "birthYear": 1987,
@@ -3926,18 +4119,23 @@
     "pensionDepots": [
       {
         "id": "depot-1",
-        "name": "AV-Depot Max (Demo)",
+        "name": "AV-Depot Max",
         "personId": "person-main",
         "monthlyContribution": 150
       },
       {
         "id": "depot-2",
-        "name": "AV-Depot Anna (Demo)",
+        "name": "AV-Depot Anna",
         "personId": "person-1",
-        "monthlyContribution": 50,
-        "childBirthYears": [
-          2019
-        ]
+        "monthlyContribution": 50
+      }
+    ],
+    "children": [
+      {
+        "id": "child-1",
+        "name": "Lena",
+        "birthYear": 2019,
+        "allowanceParentId": "person-1"
       }
     ]
   },
@@ -3946,28 +4144,16 @@
       "lifeExpectancyAge": 85,
       "planningHorizonAge": 95,
       "inflationPercent": 2,
-      "saveUntilAge": 55,
-      "savingsGrowthPercent": 1.5,
-      "retirementAge": 62,
+      "saveUntilAge": 50,
+      "savingsGrowthPercent": 1,
+      "retirementAge": 60,
       "monthlySpending": 3200,
       "safetyPercent": 85,
-      "pensionStartAge": 67,
-      "phase2WorkPercent": 70,
-      "pensionSpending": 2900
+      "pensionSpending": 3000,
+      "phase2SavingPercent": 20,
+      "phase2WorkPercent": 50
     },
     "events": [
-      {
-        "id": "event-1",
-        "name": "Neues Auto",
-        "year": 2029,
-        "amount": 28000,
-        "from": {
-          "type": "liquid"
-        },
-        "to": {
-          "type": "external"
-        }
-      },
       {
         "id": "event-2",
         "name": "Renovierung",

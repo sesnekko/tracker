@@ -4,7 +4,7 @@
   'use strict';
   const KEY = 'vermoegen-data-v1';
   const FORMAT = 'vermoegen-backup';
-  const VERSION = 12;
+  const VERSION = 15;
   const CATEGORIES = ['cash', 'etf', 'stock', 'bitcoin', 'crypto', 'metal', 'realEstate', 'vehicle', 'other', 'bav', 'illiquid', 'liab'];
   const BUDGET_CATEGORIES = ['einkommen', 'fixe', 'variable', 'sparen'];
   const MODULES = ['assets', 'liab', 'pension', 'budget', 'forecast'];
@@ -23,7 +23,16 @@
     'lt-p2-saving': 'phase2SavingPercent', 'lt-p2-work': 'phase2WorkPercent', 'lt-p2-withdraw': 'phase2MonthlyWithdrawal',
     // Version 11: Altersvorsorge (Betriebsrente, Altersvorsorgedepots) getrennt vom privaten Sparen,
     // im Weiterarbeiten und im Vorruhestand je in % der heutigen Beiträge.
-    'lt-p2-pension': 'phase2PensionPercent', 'lt-p3-saving': 'phase3SavingPercent', 'lt-p3-pension': 'phase3PensionPercent'
+    'lt-p2-pension': 'phase2PensionPercent', 'lt-p3-saving': 'phase3SavingPercent', 'lt-p3-pension': 'phase3PensionPercent',
+    // Version 15: Arbeitszeit der eigenen Person schon in Phase 1 (leer = 100 %); in Phase 2 leer = wie in Phase 1.
+    // Altersvorsorge leer = solange die Person arbeitet 100 %, danach keine.
+    'lt-p1-work': 'phase1WorkPercent'
+  };
+  // Version 15: weitere Personen je Lebensphase (Phasen und Alter der eigenen Person): Arbeitszeit in % einer Vollzeitstelle
+  // (leer = wie in der Phase davor, Phase 1: 100) und Altersvorsorge in % der heutigen Beiträge (leer = solange sie arbeitet).
+  const PERSON_PHASES = {
+    w1: 'phase1WorkPercent', w2: 'phase2WorkPercent', w3: 'phase3WorkPercent', w4: 'phase4WorkPercent',
+    pen2: 'phase2PensionPercent', pen3: 'phase3PensionPercent', pen4: 'phase4PensionPercent'
   };
   const ASSUMPTIONS = {
     ret: 'returnPercent', vol: 'volatilityPercent', saving: 'monthlySaving',
@@ -57,7 +66,7 @@
     from: 'startAge', deduct: 'deductionPercent'
   };
   const LEGACY_KEYS = ['fieldConfig', 'finData', 'budgetData', 'loanParams',
-    'lt-drv', 'lt-drv-extra', 'lt-av-depots', 'lt-beamte', 'lt-pensions', 'lt-events', 'lt-asset-params',
+    'lt-drv', 'lt-drv-extra', 'lt-children', 'lt-av-depots', 'lt-beamte', 'lt-pensions', 'lt-events', 'lt-asset-params',
     'lt-birth-year', 'lt-birth-month', 'v2-modules', 'darkMode', 'appLang', 'customFields',
     ...Object.keys(SETTINGS)];
   const copy = value => JSON.parse(JSON.stringify(value));
@@ -256,6 +265,8 @@
         if (row.depotId && kind === 'saving') item.depotId = row.depotId;
         // Version 11: an income may continue in retirement and then counts as retirement income.
         if (row.retirement && kind === 'income') item.retirementIncome = true;
+        // Version 14: an income belongs to a person (salary until that person's end of work); checked below.
+        if (row.person && kind === 'income') item.personId = String(row.person);
         doc.budget.items.push(item);
       }
       const orderId = idsFor('order-', previous.budget ? previous.budget.standingOrders : []);
@@ -272,6 +283,11 @@
     primary.name = previous.retirement.primary.name;
     for (const [key, field] of [['lt-birth-year', 'birthYear'], ['lt-birth-month', 'birthMonth']]) {
       const n = number(values[key]);
+      // Ein ungültiger Geburtsmonat aus der App überschreibt den gespeicherten Wert nicht (der Import prüft streng).
+      if (field === 'birthMonth' && n !== undefined && !(Number.isInteger(n) && n >= 1 && n <= 12)) {
+        if (own(previous.retirement.primary, 'birthMonth')) primary.birthMonth = previous.retirement.primary.birthMonth;
+        continue;
+      }
       if (n !== undefined) primary[field] = n;
     }
     primary.statutoryPension = mapped(parse(values, 'lt-drv', {}), DRV);
@@ -283,6 +299,8 @@
       const by = number(r.by), until = number(r.until);
       if (by !== undefined) p.birthYear = by;
       if (until !== undefined) p.workUntilAge = until;
+      Object.assign(p, mapped(r, PERSON_PHASES));
+      // Version 14: das Gehalt einer Person kommt aus ihren Budget-Einnahmen (budget.items[].personId), nicht mehr aus „net“.
       return p;
     });
     const depotId = idsFor('depot-', previous.retirement.pensionDepots || []);
@@ -297,11 +315,35 @@
       if (r.pos && doc.positions.some(p => p.id === r.pos && p.category !== 'liab')) d.positionId = r.pos;
       return d;
     });
+    // Version 14: Kinder als Personen. Kindergeld und Kinderzulage werden aus ihnen abgeleitet; Zeilen ohne Geburtsjahr
+    // fehlen noch (z. B. während der Eingabe) und werden nicht gespeichert. Ohne gültigen Elternteil zählt die Zulage bei mir.
+    const childId = idsFor('child-', previous.retirement.children || []);
+    const children = parse(values, 'lt-children', []).map((r, i) => {
+      const by = number(r.by); if (!(Number.isInteger(by) && by >= 1900 && by <= 2200)) return null;
+      const c = { id: childId(r, i), name: String(r.name || '').trim() || 'Kind', birthYear: by };
+      const bm = number(r.bm); if (Number.isInteger(bm) && bm >= 1 && bm <= 12) c.birthMonth = bm;
+      if (number(r.until) === 25) c.childBenefitUntilAge = 25;
+      if (r.parent && r.parent !== primary.id && personIds.includes(r.parent)) c.allowanceParentId = r.parent;
+      return c;
+    }).filter(Boolean);
+    if (children.length) { doc.retirement.children = children; doc.retirement.pensionDepots.forEach(d => delete d.childBirthYears); }
+    else moveDepotChildren(doc);
     // A removed depot leaves its budget item as an ordinary saving item.
     const depotIds = new Set(doc.retirement.pensionDepots.map(d => d.id));
     if (doc.budget) for (const item of doc.budget.items) if (own(item, 'depotId') && !depotIds.has(item.depotId)) delete item.depotId;
+    // A removed person leaves its incomes as household incomes.
+    if (doc.budget) for (const item of doc.budget.items) if (own(item, 'personId') && !personIds.includes(item.personId)) delete item.personId;
     const incomeId = idsFor('income-', previous.retirement.incomes);
-    doc.retirement.incomes = parse(values, 'lt-pensions', []).map((r, i) => ({ id: incomeId(r, i), name: r.name || '', monthlyAmount: number(r.amount) ?? 0, fromAge: number(r.from) ?? 0 }));
+    doc.retirement.incomes = parse(values, 'lt-pensions', []).map((r, i) => {
+      const item = { id: incomeId(r, i), name: r.name || '', monthlyAmount: number(r.amount) ?? 0, fromAge: number(r.from) ?? 0 };
+      // Version 14: eine Einkunft einer weiteren Person; Alter dann in deren Alter. Ohne (gültige) Person gehört sie mir.
+      if (r.person && r.person !== primary.id && personIds.includes(r.person)) item.personId = r.person;
+      // Version 13: optionales Ende einer Einkunft (z. B. Teilzeitjob oder Vermietung bis zu einem Alter).
+      // Ein Ende vor dem Beginn (z. B. während der Eingabe) wird nicht gespeichert; der Import lehnt es ab.
+      const until = number(r.until);
+      if (until !== undefined && until > 0 && until > item.fromAge) item.untilAge = until;
+      return item;
+    });
     for (const [key, field] of Object.entries(SETTINGS)) {
       const n = number(values[key]);
       if (n !== undefined) doc.forecast.settings[field] = n;
@@ -356,7 +398,7 @@
       bd.accounts = Object.fromEntries(doc.accounts.map(a => [a.name, a.iban]));
       const endpoint = v => v.type === 'account' ? doc.accounts.find(a => a.id === v.accountId).name : v.name;
       bd.standingOrders = doc.budget.standingOrders.map(o => ({ id: o.id, from: endpoint(o.from), to: endpoint(o.to), amount: o.amount }));
-      for (const r of doc.budget.items) bd[r.category].push({ id: r.id, name: r.name, subcat: r.subcategory, kind: r.kind, targetGroupId: r.targetGroupId, targetGroup: r.targetGroupId ? groupName(r.targetGroupId) : null, ...(r.loanId ? { loanId: r.loanId } : {}), ...(r.depotId ? { depotId: r.depotId } : {}), ...(r.retirementIncome ? { retirement: true } : {}), values: copy(r.monthlyAmounts) });
+      for (const r of doc.budget.items) bd[r.category].push({ id: r.id, name: r.name, subcat: r.subcategory, kind: r.kind, targetGroupId: r.targetGroupId, targetGroup: r.targetGroupId ? groupName(r.targetGroupId) : null, ...(r.loanId ? { loanId: r.loanId } : {}), ...(r.depotId ? { depotId: r.depotId } : {}), ...(r.retirementIncome ? { retirement: true } : {}), ...(r.personId ? { person: r.personId } : {}), values: copy(r.monthlyAmounts) });
       bd.oneTime = copy(doc.budget.oneTime || []);
       put('budgetData', bd);
     }
@@ -374,13 +416,16 @@
     if (own(primary, 'birthMonth')) values['lt-birth-month'] = String(primary.birthMonth);
     put('lt-drv', unmapped(primary.statutoryPension, DRV));
     if (own(primary, 'civilServicePension')) put('lt-beamte', unmapped(primary.civilServicePension, CIVIL));
-    put('lt-drv-extra', doc.retirement.people.map(p => ({ id: p.id, name: p.name, by: p.birthYear ?? '', until: p.workUntilAge ?? '', ...unmapped(p.statutoryPension, DRV) })));
+    put('lt-drv-extra', doc.retirement.people.map(p => ({ id: p.id, name: p.name, by: p.birthYear ?? '', until: p.workUntilAge ?? '',
+      ...unmapped(p, PERSON_PHASES), ...unmapped(p.statutoryPension, DRV) })));
+    put('lt-children', (doc.retirement.children || []).map(c => ({ id: c.id, name: c.name, by: c.birthYear, ...(c.birthMonth ? { bm: c.birthMonth } : {}),
+      ...(c.childBenefitUntilAge ? { until: c.childBenefitUntilAge } : {}), ...(c.allowanceParentId ? { parent: c.allowanceParentId } : {}) })));
     put('lt-av-depots', (doc.retirement.pensionDepots || []).map(d => ({
       id: d.id, name: d.name, person: d.personId === primary.id ? '' : d.personId,
       ...unmapped(d, AV_DEPOT), ...(d.childBirthYears ? { kids: d.childBirthYears.join(', ') } : {}),
       ...(d.positionId ? { pos: d.positionId } : {})
     })));
-    put('lt-pensions', doc.retirement.incomes.map(p => ({ id: p.id, name: p.name, amount: p.monthlyAmount, from: p.fromAge })));
+    put('lt-pensions', doc.retirement.incomes.map(p => ({ id: p.id, name: p.name, amount: p.monthlyAmount, from: p.fromAge, ...(p.untilAge !== undefined ? { until: p.untilAge } : {}), ...(p.personId ? { person: p.personId } : {}) })));
     for (const [key, field] of Object.entries(SETTINGS)) if (own(doc.forecast.settings, field)) values[key] = String(doc.forecast.settings[field]);
     const endpoint = ref => ref.type === 'external' ? '' : ref.type === 'liquid' ? '*' : groupName(ref.groupId);
     put('lt-events', doc.forecast.events.map(e => ({ id: e.id, name: e.name, year: e.year, amount: e.amount, from: endpoint(e.from), to: endpoint(e.to) })));
@@ -424,7 +469,7 @@
     safeKeys(doc);
     object(doc, 'Datei', ['format', 'schemaVersion', 'currency', 'exportedAt', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences'], ['format', 'schemaVersion', 'currency', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences']);
     if (doc.format !== FORMAT) fail('format', 'keine Assets-Sicherung');
-    if (![1,2,3,4,5,6,7,8,9,10,11,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
+    if (![1,2,3,4,5,6,7,8,9,10,11,12,13,14,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
     if (doc.currency !== 'EUR') fail('currency', 'nur EUR wird unterstützt');
     if (own(doc, 'exportedAt') && (typeof doc.exportedAt !== 'string' || !Number.isFinite(Date.parse(doc.exportedAt)))) fail('exportedAt', 'ungültiges Datum');
     const groups = unique(doc.groups, 'groups');
@@ -502,8 +547,12 @@
         }
       }
       for (const b of doc.budget.items) {
-        object(b, 'Budgetposten', ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts', 'loanId', 'depotId', 'retirementIncome'], ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts']);
+        object(b, 'Budgetposten', ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts', 'loanId', 'depotId', 'retirementIncome', 'personId'], ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts']);
         if (own(b, 'retirementIncome') && (b.retirementIncome !== true || b.kind !== 'income')) fail('Budgetposten.Ruhestand', 'nur für Einnahmen');
+        if (own(b, 'personId')) {
+          ref(b.personId, 'Budgetposten.Person', new Set(doc.retirement ? [doc.retirement.primary.id, ...doc.retirement.people.map(p => p.id)] : []));
+          if (b.kind !== 'income') fail('Budgetposten.Person', 'nur für Einnahmen');
+        }
         if (own(b, 'depotId')) {
           ref(b.depotId, 'Budgetposten.Altersvorsorgedepot', new Set((doc.retirement && doc.retirement.pensionDepots || []).map(d => d.id)));
           if (b.kind !== 'saving') fail('Budgetposten.Altersvorsorgedepot', 'nur für Sparposten');
@@ -542,22 +591,52 @@
         }
       }
     }
-    object(doc.retirement, 'Altersvorsorge', ['primary', 'people', 'incomes', 'pensionDepots'], ['primary', 'people', 'incomes']);
+    object(doc.retirement, 'Altersvorsorge', ['primary', 'people', 'children', 'incomes', 'pensionDepots'], ['primary', 'people', 'incomes']);
     const person = (p, primary) => {
-      object(p, 'Person', ['id', 'name', 'birthYear', ...(primary ? ['birthMonth', 'civilServicePension'] : ['workUntilAge']), 'statutoryPension'], ['id', 'name', 'statutoryPension']);
+      // monthlyNetIncome gab es nur in Schema 13; migrate() ordnet es einem Budgetposten zu.
+      // partTimeFromAge/partTimePercent gab es nur in Schema 14; migrate() verteilt sie auf die Lebensphasen.
+      object(p, 'Person', ['id', 'name', 'birthYear', ...(primary ? ['birthMonth', 'civilServicePension'] : ['workUntilAge',
+        ...(doc.schemaVersion === 14 ? ['partTimeFromAge', 'partTimePercent'] : []), ...(doc.schemaVersion >= 15 ? Object.values(PERSON_PHASES) : []),
+        ...(doc.schemaVersion === 13 ? ['monthlyNetIncome'] : [])]), 'statutoryPension'], ['id', 'name', 'statutoryPension']);
+      for (const k of Object.values(PERSON_PHASES)) if (own(p, k)) {
+        num(p[k], k, 0);
+        if (p[k] > (k.endsWith('WorkPercent') ? 100 : 200)) fail(k, k.endsWith('WorkPercent') ? 'höchstens 100 % erwartet' : 'höchstens 200 % erwartet');
+      }
+      if (own(p, 'partTimeFromAge') !== own(p, 'partTimePercent')) fail('Teilzeit', 'ab Alter und Arbeitszeit gehören zusammen');
+      if (own(p, 'partTimeFromAge')) {
+        num(p.partTimeFromAge, 'Teilzeit ab', 0); num(p.partTimePercent, 'Arbeitszeit', 0);
+        if (p.partTimePercent >= 100) fail('Arbeitszeit', 'unter 100 % erwartet');
+        if (own(p, 'workUntilAge') && p.partTimeFromAge >= p.workUntilAge) fail('Teilzeit ab', 'muss vor dem Arbeitsende liegen');
+      }
       text(p.name, 'Personenname');
       for (const k of ['birthYear', 'birthMonth', 'workUntilAge']) if (own(p, k)) num(p[k], k);
+      if (own(p, 'birthMonth') && !(Number.isInteger(p.birthMonth) && p.birthMonth >= 1 && p.birthMonth <= 12)) fail('birthMonth', '1 bis 12 erwartet');
+      if (own(p, 'monthlyNetIncome')) num(p.monthlyNetIncome, 'Nettogehalt', 0);
       numericObject(p.statutoryPension, 'Gesetzliche Rente', Object.values(DRV));
       if (own(p, 'civilServicePension')) numericObject(p.civilServicePension, 'Beamtenversorgung', Object.values(CIVIL));
       if (!primary && DRV_PRIMARY.some(k => own(p.statutoryPension, k))) fail('Gesetzliche Rente', 'Gemeinsame Rentenwerte gehören zur eigenen Person');
       if (own(p.statutoryPension, 'disabilityType') && ![1, 2].includes(p.statutoryPension.disabilityType)) fail('Erwerbsminderungsrente', 'teilweise (1) oder voll (2) erwartet');
     };
     unique([doc.retirement.primary, ...doc.retirement.people], 'Personen'); person(doc.retirement.primary, true); doc.retirement.people.forEach(p => person(p, false));
+    if (own(doc.retirement, 'children')) {
+      // Kinder (Version 14): IDs eindeutig über alle Personen; Kinderzulage bei einem Erwachsenen
+      unique([doc.retirement.primary, ...doc.retirement.people, ...doc.retirement.children], 'Personen');
+      const adults = new Set([doc.retirement.primary.id, ...doc.retirement.people.map(p => p.id)]);
+      for (const c of doc.retirement.children) {
+        object(c, 'Kind', ['id', 'name', 'birthYear', 'birthMonth', 'childBenefitUntilAge', 'allowanceParentId'], ['id', 'name', 'birthYear']);
+        text(c.name, 'Name des Kindes');
+        if (!(Number.isInteger(c.birthYear) && c.birthYear >= 1900 && c.birthYear <= 2200)) fail('Kind.birthYear', 'Geburtsjahr erwartet');
+        if (own(c, 'birthMonth') && !(Number.isInteger(c.birthMonth) && c.birthMonth >= 1 && c.birthMonth <= 12)) fail('Kind.birthMonth', '1 bis 12 erwartet');
+        if (own(c, 'childBenefitUntilAge') && c.childBenefitUntilAge !== 25) fail('Kind.childBenefitUntilAge', '25 erwartet (ohne Angabe 18)');
+        if (own(c, 'allowanceParentId')) ref(c.allowanceParentId, 'Kind.allowanceParentId', adults);
+      }
+    }
     if (own(doc.retirement, 'pensionDepots')) {
       unique(doc.retirement.pensionDepots, 'Altersvorsorgedepots');
       const personIds = new Set([doc.retirement.primary.id, ...doc.retirement.people.map(p => p.id)]);
       for (const d of doc.retirement.pensionDepots) {
-        object(d, 'Altersvorsorgedepot', ['id', 'name', 'personId', 'childBirthYears', 'positionId', ...Object.values(AV_DEPOT)], ['id', 'name', 'personId', 'monthlyContribution']);
+        // Kinder-Jahrgänge am Depot gab es bis Version 13; migrate() macht daraus Kinder (Personen)
+        object(d, 'Altersvorsorgedepot', ['id', 'name', 'personId', ...(doc.schemaVersion < 14 ? ['childBirthYears'] : []), 'positionId', ...Object.values(AV_DEPOT)], ['id', 'name', 'personId', 'monthlyContribution']);
         if (own(d, 'positionId')) { const pos = doc.positions.find(p => p.id === d.positionId); if (!pos || pos.category === 'liab') fail('Altersvorsorgedepot.positionId', 'unbekannte Position ' + d.positionId); }
         text(d.name, 'Depotname');
         ref(d.personId, 'Altersvorsorgedepot.personId', personIds);
@@ -567,7 +646,10 @@
       }
     }
     unique(doc.retirement.incomes, 'Weitere Renten');
-    for (const p of doc.retirement.incomes) { object(p, 'Weitere Rente', ['id', 'name', 'monthlyAmount', 'fromAge']); text(p.name, 'Rentenname'); num(p.monthlyAmount, 'Rentenbetrag'); num(p.fromAge, 'Rentenbeginn'); }
+    const otherPeople = new Set(doc.retirement.people.map(p => p.id));
+    for (const p of doc.retirement.incomes) { object(p, 'Weitere Rente', ['id', 'name', 'monthlyAmount', 'fromAge', 'untilAge', 'personId'], ['id', 'name', 'monthlyAmount', 'fromAge']);
+      if (own(p, 'personId')) ref(p.personId, 'Weitere Rente.Person', otherPeople); text(p.name, 'Rentenname'); num(p.monthlyAmount, 'Rentenbetrag'); num(p.fromAge, 'Rentenbeginn');
+      if (own(p, 'untilAge')) { num(p.untilAge, 'Rentenende'); if (p.untilAge <= p.fromAge) fail('Rentenende', 'muss nach dem Beginn liegen'); } }
     object(doc.forecast, 'Prognose', ['settings', 'events']); numericObject(doc.forecast.settings, 'Prognose-Annahmen', Object.values(SETTINGS));
     unique(doc.forecast.events, 'Ereignisse');
     const eventRef = (e, source) => {
@@ -586,17 +668,101 @@
     Object.entries(expanded).forEach(([k, v]) => { text(k, 'Bereich'); bool(v, 'Aufgeklappt'); });
     return doc;
   }
-  function createStore(storage) {
+  // Ältere Schemas auf den aktuellen Stand bringen (Version bleibt; load/importBackup setzen sie danach).
+  function migrate(doc, now = new Date()) {
+    if (doc.schemaVersion < 14 && doc.retirement) moveDepotChildren(doc);
+    if (doc.schemaVersion === 13) moveNetIncome(doc);
+    if (doc.schemaVersion === 14 && doc.retirement) movePartTime(doc, now);
+    return doc;
+  }
+  // Version 14 → 15: Teilzeit einer weiteren Person ab einem Alter (partTimeFromAge, partTimePercent) wird zur Arbeitszeit
+  // je Lebensphase. Die Arbeitszeit gilt ab der ersten Phase, die mindestens zur Hälfte in der Teilzeit liegt (Phasen in
+  // deinem Alter ab heute; ohne Rentenbeginn 67); danach gilt sie weiter, weil leere Phasen den Wert davor übernehmen.
+  function movePartTime(doc, now) {
+    const r = doc.retirement, st = (doc.forecast && doc.forecast.settings) || {};
+    const myBy = r.primary.birthYear ?? 1990, bm = r.primary.birthMonth ?? 1;
+    const cur = now.getFullYear() - myBy + (now.getMonth() - (bm - 1)) / 12;
+    const ret = st.retirementAge ?? 60, a2 = Math.min(st.saveUntilAge ?? 60, ret);
+    const a4 = Math.max(ret, st.pensionStartAge ?? (r.primary.statutoryPension.retirementAge || 67));
+    const bounds = [cur, a2, ret, a4, Math.max(a4, st.planningHorizonAge ?? 95)];
+    for (const p of r.people) {
+      if (!own(p, 'partTimeFromAge')) continue;
+      const from = p.partTimeFromAge + (p.birthYear ?? myBy) - myBy, pct = p.partTimePercent;
+      delete p.partTimeFromAge; delete p.partTimePercent;
+      for (let i = 0; i < 4; i++) {
+        const a = Math.max(bounds[0], bounds[i]), b = Math.max(bounds[0], bounds[i + 1]);
+        if (b - a > 1e-9 && (b - Math.max(a, from)) / (b - a) >= 0.5) { p['phase' + (i + 1) + 'WorkPercent'] = pct; break; }
+      }
+    }
+    return doc;
+  }
+  // Version 13 → 14: Das Nettogehalt einer weiteren Person (monthlyNetIncome) wird zu ihrem Budgetposten. Ein eindeutig
+  // passender, noch nicht zugeordneter Einnahmeposten (Name enthält den Namen der Person) wird ihr zugeordnet, sonst
+  // entsteht „Nettogehalt <Name>“ mit dem Betrag in allen zwölf Monaten.
+  function moveNetIncome(doc) {
+    for (const p of doc.retirement.people) {
+      if (!own(p, 'monthlyNetIncome')) continue;
+      const net = p.monthlyNetIncome; delete p.monthlyNetIncome;
+      if (!(net > 0)) continue;
+      if (doc.budget === null) doc.budget = { items: [], standingOrders: [] };
+      const name = String(p.name || '').replace(/\(.*?\)/g, '').trim().toLowerCase();
+      const free = doc.budget.items.filter(i => i.kind === 'income' && !i.retirementIncome && !own(i, 'personId'));
+      const hits = name ? free.filter(i => i.name.toLowerCase().includes(name)) : [];
+      if (hits.length === 1) { hits[0].personId = p.id; continue; }
+      let id = 'budget-net-' + p.id; while (doc.budget.items.some(i => i.id === id)) id += '-1';
+      doc.budget.items.push({ id, name: 'Nettogehalt ' + (String(p.name || '').trim() || 'Person'), category: 'einkommen', subcategory: '', kind: 'income', targetGroupId: null, monthlyAmounts: Array(12).fill(net), personId: p.id });
+    }
+    return doc;
+  }
+  // Version 14: Kinder-Jahrgänge an Altersvorsorgedepots werden Kinder (Personen). Wie bisher zählt jedes Kind bei der
+  // zuerst genannten Person (ich, dann weitere Personen) und ein Jahrgang so oft, wie er in einem Depot dieser Person steht;
+  // die Kinderzulage rechnet damit gleich. Kindergeld bis zum Jahr des 18. Geburtstags (ohne Angabe).
+  function moveDepotChildren(doc) {
+    const r = doc.retirement, depots = r.pensionDepots || [];
+    if (!depots.some(d => own(d, 'childBirthYears'))) return doc;
+    const order = [r.primary.id, ...r.people.map(p => p.id)], claimed = {}, children = (r.children || []).slice();
+    const used = new Set([...order, ...children.map(c => c.id)]);
+    for (const pid of order) {
+      const cnt = {};
+      depots.filter(d => d.personId === pid && own(d, 'childBirthYears')).forEach(d => {
+        const c = {}; d.childBirthYears.forEach(y => { c[y] = (c[y] || 0) + 1; });
+        Object.entries(c).forEach(([y, n]) => { cnt[y] = Math.max(cnt[y] || 0, n); });
+      });
+      Object.keys(cnt).sort().forEach(y => {
+        for (let k = claimed[y] || 0; k < cnt[y]; k++) {
+          let n = children.length + 1, id; do id = 'child-' + n++; while (used.has(id)); used.add(id);
+          const c = { id, name: 'Kind (' + y + ')' + (k ? ' ' + (k + 1) : ''), birthYear: +y };
+          if (pid !== r.primary.id) c.allowanceParentId = pid;
+          children.push(c);
+        }
+        claimed[y] = Math.max(claimed[y] || 0, cnt[y]);
+      });
+    }
+    depots.forEach(d => delete d.childBirthYears);
+    if (children.length) r.children = children;
+    return doc;
+  }
+  function createStore(storage, options = {}) {
     let current, draft = null, cachedLegacy = null;
-    const persisted = storage.getItem(KEY);
-    if (persisted !== null) {
-      current = validate(JSON.parse(persisted));
+    // lastRaw: the stored text this window last read or wrote. Another window of the same origin shares the
+    // storage; if the stored text differs before a write, that window saved in between (P1).
+    let lastRaw = null;
+    const load = raw => {
+      const doc = migrate(validate(JSON.parse(raw)));
       // Version 2 adds asset metadata and categories, version 3 optional depreciation.
       // Older versions keep their semantics through the adapter defaults.
-      current.schemaVersion=VERSION;
-      delete current.exportedAt;
+      doc.schemaVersion=VERSION;
+      delete doc.exportedAt;
       // Profile identity is independent of a group's editable display name.
-      for (const g of current.groups) if (g.defaultProfile === undefined) g.defaultProfile = profileFor(g.name);
+      for (const g of doc.groups) if (g.defaultProfile === undefined) g.defaultProfile = profileFor(g.name);
+      return validate(doc);
+    };
+    // Take over another window's state; a running import draft is discarded with it.
+    const adopt = raw => { const doc = load(raw); current = doc; lastRaw = raw; cachedLegacy = null; draft = null; };
+    const persisted = storage.getItem(KEY);
+    if (persisted !== null) {
+      current = load(persisted);
+      lastRaw = persisted;
     } else {
       const values = record();
       for (let i = 0; i < storage.length; i++) {
@@ -605,12 +771,27 @@
       }
       current = fromLegacy(values);
       // Persist first: quota/parse failures leave every legacy key untouched.
-      storage.setItem(KEY, JSON.stringify(current));
+      lastRaw = JSON.stringify(current);
+      storage.setItem(KEY, lastRaw);
       for (const k of Object.keys(values)) storage.removeItem(k);
     }
     const commit = doc => {
       validate(doc);
-      storage.setItem(KEY, JSON.stringify(doc));
+      const raw = JSON.stringify(doc);
+      // Nothing changed (e.g. removing an absent legacy key): no write, so no conflict with another window either.
+      if (raw === lastRaw) { current = doc; cachedLegacy = null; return; }
+      const stored = storage.getItem(KEY);
+      if (stored !== null && stored !== lastRaw) {
+        // Never overwrite another window's save: adopt it (an unreadable one, e.g. from a newer app version,
+        // throws and stays untouched) and reject this change.
+        adopt(stored);
+        const error = new Error('Die Daten wurden in einem anderen Fenster geändert. Der neue Stand ist geladen, deine letzte Änderung wurde nicht gespeichert.');
+        error.code = 'CONFLICT';
+        if (options.onConflict) options.onConflict(error);
+        throw error;
+      }
+      storage.setItem(KEY, raw);
+      lastRaw = raw;
       current = doc;
       cachedLegacy = null;
     };
@@ -633,11 +814,18 @@
         const doc = fromLegacy(draft, current);
         commit(doc); draft = null;
       },
+      // Another window saved (storage event): take over its state without writing. Returns whether it changed.
+      reload() {
+        const raw = storage.getItem(KEY);
+        if (raw === null || raw === lastRaw) return false;
+        adopt(raw);
+        return true;
+      },
       rollbackTransaction() { draft = null; },
       document() { return copy(current); },
       exportBackup(date = new Date()) { return { ...copy(current), exportedAt: date.toISOString() }; },
       importBackup(value) {
-        const doc = copy(validate(value)); doc.schemaVersion=VERSION; delete doc.exportedAt;
+        const doc = migrate(copy(validate(value))); doc.schemaVersion=VERSION; delete doc.exportedAt; validate(doc);
         for (const g of doc.groups) if (g.defaultProfile === undefined) g.defaultProfile = profileFor(g.name);
         commit(doc);
       },
@@ -650,7 +838,7 @@
       renamePosition(id, name) { const doc = copy(current); const p = doc.positions.find(p => p.id === id); if (!p) throw new Error('Unbekannte Position'); p.name = name; commit(doc); }
     };
   }
-  const api = { KEY, FORMAT, VERSION, empty, validate, fromLegacy, toLegacy, createStore };
+  const api = { KEY, FORMAT, VERSION, empty, validate, migrate, fromLegacy, toLegacy, createStore };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.AssetsData = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
