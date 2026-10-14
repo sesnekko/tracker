@@ -56,6 +56,11 @@ Kreditverträgen und aus Abschreibungen.
 - **Verbindlichkeit → Gruppe** (`_liabTargetGroup`): zuerst die Gruppe des verknüpften
   Vermögenswerts (`loanParams[id].assetId`), sonst die eigene Gruppe, falls darin Vermögen
   liegt, sonst die größte illiquide Gruppe (`_orphanLiabTarget`, gemerkt).
+  Ist ein Kredit ausdrücklich mit keinem Vermögenswert verknüpft (`assetId: null`, z. B. Ratenkredit oder Kreditkarte
+  aus der Einrichtung) und liegt in seiner Gruppe kein Vermögen, steht er in der Asset-Liste der Startseite seit
+  14.10.2026 als eigene Zeile „Kredit · keinem Vermögenswert zugeordnet“ (`buildNetGroups`, Persona-Befund C2), statt
+  die größte Sachwert-Gruppe (oft das Auto) zu mindern. Die Liste ergibt weiter das Nettovermögen; „Illiquides Vermögen“
+  zieht wie bisher alle Verbindlichkeiten ab.
 - Ausgeschaltete Bereiche (`v2-modules.assets`/`.liab`) fallen über `_vf()` aus allen
   Berechnungen heraus.
 

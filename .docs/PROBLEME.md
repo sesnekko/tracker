@@ -196,6 +196,58 @@ sondern mit dem asynchronen Testbrowser geprüft (Simulation). *Nicht geprüft:*
 `file://` in dieser Runde, eine echte neuere App-Version auf demselben Gerät. Port 8123 und produktive `file://`-Tabs nicht
 benutzt.
 
+**Persona-Simulation vom 14.10.2026** (`.docs/Onboarding Persona/Ergebnis_Simulation_2026-10-14.md`, 14 Personas,
+Befunde A1–A13, B1–B6, C1–C14). Umgesetzt in dieser Runde, kein Schemawechsel (weiter Version 17); Versionen
+`data-store.js?v=29`, `i18n-en.js?v=13`, Cache `verm-v127`. Nicht Teil dieser Runde: Folge-Review 3
+(REVIEW_2026-10_FOLGE3.md, P69–P72) sowie P66–P68, P56–P62 und P39–P53.
+
+| Befund | Status | Änderung |
+| --- | --- | --- |
+| A1 Rente nur für die eigene Person, nur gesetzlich | Umgesetzt | Rentenschritt „Wie bist du/seid ihr fürs Alter abgesichert?“ je erwachsener Person: gesetzlich, Beamtenpension, Versorgungswerk, schon laufende Rente, weiß nicht (EINRICHTUNG.md 4.1). Vorschlag „Rente für <Person> ergänzen“, wenn eine weitere Person gar keine Altersvorsorge hat |
+| A2 Einnahmen nur als eine Haushaltszeile | Umgesetzt | Budget-Schritt: Nettogehalt je Person (`personId`), „Mieteinnahmen & Co.“ mit `retirementIncome`; Zukunft-Schritt: Ruhestand der Partnerin/des Partners (`workUntilAge`) |
+| A3 Gebundene Werte als frei verfügbares „Sonstiges“ | Umgesetzt | Chips „Altersvorsorge“ (`bav`, ab 62) und „Beteiligung“ (`illiquid`); Kategorie Altersvorsorge auf der Daten-Seite wieder wählbar; Hinweise gegen Vertrag **und** Rente (Einrichtung, Altersvorsorge) |
+| A4 Pension „ab 60“ still auf 62 angehoben | Umgesetzt (erklärt) | `calcBeamtePension` liefert den gewünschten Beginn (`want`); Ergebniszeile und Erklärung nennen die Anhebung. Einrichtung: Altersgrenze optional, Beginn = eigener Ruhestand. Rechenregel unverändert (Bundesrecht) |
+| A5 EM-Rente plus Teilzeitgehalt doppelt | Teilweise (Hinweis) | Ergeben die Punkte schon die EM-Rente (≥ 95 %), fragt die Ergebniszeile nach der Zurechnungszeit. Die Rechnung selbst setzt weiter Punkte **ohne** Zurechnungszeit voraus (Info-Text `drv-points`) |
+| A6 Stille Standardrenditen | Umgesetzt (sichtbar) | Abschluss nennt das angenommene Wachstum der gewählten Anlagen. **Werte unverändert** (Bitcoin 15 %, Konto 0 %) – Entscheidung offen, Abschnitt 5 |
+| A7 „Alle Daten löschen“ unvollständig | Umgesetzt | `clear({discardBackup:true})` entfernt auch `vermoegen-data-v1-before-update` und legt keine neue Kopie an; dazu die Gerätemerker (letzte Sicherung, Monat erledigt, Erinnerung, Kreditverläufe, Tipps, Chart-Ansicht) |
+| A8 Ruhestand in der Vergangenheit ohne Rückfrage | Umgesetzt | Rückfrage „Schon im Ruhestand?“; bei Ja ist die eigene Rente als „Bekomme schon Rente“ vorgewählt |
+| A9 Neues Ereignis zählt nicht | Umgesetzt | Standard „Liquide (anteilig) → Extern (Ausgabe)“; bei „Extern → Extern“ ein Hinweis in der Zeile |
+| A10 Keine Wartezeitprüfung | Teilweise (Hinweis) | Unter 5 Punkten ohne weitere Beiträge: Hinweis auf fünf Beitragsjahre. Der Betrag wird weiter gerechnet (die Wartezeit lässt sich aus Punkten nicht sicher ableiten) |
+| A11 Teilzeitwechsel zu einem Datum | Offen | Braucht ein neues Feld im Datenmodell (Schema 18) – Entscheidung offen, Abschnitt 5 |
+| A12 Zinsbindung nur mit Darlehensvertrag | Umgesetzt | „Zinsbindung bis“ (Jahr) steht immer und gilt ohne Vertrag; „in Jahren“ nur, wenn schon erfasst. Die Meldung nennt die fehlenden Felder; Schuldenfrei-Datum ohne Vertrag „ca.“ |
+| A13 Weitere Renten brutto oder netto | Umgesetzt | Spalte „Netto €/Monat“, Info mit Abzügen für Betriebsrente und Versorgungswerk; Einrichtung fragt netto |
+| B1 Wertpapiere starten mit Stückzahl | Umgesetzt | Alle Anlagen starten in Euro |
+| B2 Nur „bisher erreichte Anwartschaft“ | Umgesetzt | Wahl „Bisher erreicht“ / „Künftige Rente“ (Näherung, ohne Gehalt) |
+| B3 Sparrate in genau eine Position | Umgesetzt | „Sparrate auf mehrere Anlagen aufteilen“; mehrere Sparpläne aus dem Verlauf-Schritt vorbelegt |
+| B4 Kein Vermögensziel | Offen | Neues Feld nötig (Schema 18) – Entscheidung offen |
+| B5 Unpassende Vorschläge | Umgesetzt | Rente je Person; Zinsbindung nur beim Immobilienkredit, sonst „Rate und Zins für …“; prognoserelevante Vorschläge zuerst |
+| B6 Fortschrittsbalken wächst | Umgesetzt | Feste Kapitel |
+| C1 Erster Monat grauer Block | Umgesetzt | „Dein Verlauf beginnt jetzt.“ statt einer gleichförmigen Fläche, Zeitraumleiste ausgeblendet |
+| C2 Kredit ohne Verknüpfung dem Auto zugerechnet | Umgesetzt | Eigene Zeile „Kredit · keinem Vermögenswert zugeordnet“; das Auto behält seinen Wert. Ältere Kredite ohne Angabe zur Verknüpfung unverändert (P8) |
+| C3 „Vermögen mit 65“ doppeldeutig | Umgesetzt | „Verfügbar mit 65“ (entnehmbar); die Lebensphasen zeigen weiter das Gesamtvermögen |
+| C4 Entfallene Phasen als Zeile | Umgesetzt | Kurze Notiz unter der Liste |
+| C5 Phasentext ohne Rente in der Phase | Umgesetzt | Vorruhestand nennt „ab 62: … Rente, …“ |
+| C6 „Claudia 0 € mit 67“ | Umgesetzt | Zwischensumme ab dem ersten Einkommen der Person („1.422 € ab 69“) |
+| C7 Partner-Story bei Alleinstehenden | Umgesetzt | Nur mit weiterer erwachsener Person |
+| C8 Minuszeichen uneinheitlich | Umgesetzt | `fmt`/`fmtCompact` mit „−“, nie „−0 €“ |
+| C9 Abgeschnittene Texte | Umgesetzt | Positionsnamen und Abschnitts-Unterzeilen zweizeilig, Einkommenszeilen mit Zeitraum darunter, Pfeil am letzten Wort, breitere Auswahl „Fließt in“, kürzerer Text „Ausgeschaltet · unter Einstellungen“ |
+| C10 Budget-Chip unerklärt | Umgesetzt | „je Monat zwischen … und …“ bzw. „jeden Monat gleich“ |
+| C11 Platzhalter, Jahresauswahl | Umgesetzt | Inflation „2“, Lebenserwartung „85“; Jahresseiten ab dem frühesten Jahr (2026–2037) |
+| C12 Altersvorsorge im Lesemodus | Umgesetzt | Leere eigene Karte und leere Überschriften erst beim Bearbeiten; Rentenwert, Ø-Entgelt, BBG eingeklappt unter „Rechengrößen“ |
+| C13 „Dein nächster Schritt“ verdeckt die Zahl | Umgesetzt | Erscheint verzögert, verschwindet nach 11 s |
+| C14 Text beim Löschen | Umgesetzt | „Tipp: vorher „Sicherung exportieren“ verwenden.“ |
+
+**Danach kompaktere Daten- und Prognose-Seite** (auf deinen Wunsch, gleiche Runde): Altersvorsorge und Haushalt ohne
+Bearbeiten als Zusammenfassung, Vorschläge einzeilig, „Prognose & Annahmen“ auf die Prognose-Seite verlegt, Statusblock
+mit Kennzahlen, Lebensphasen und Einkommen aufklappbar, einheitliche Einheiten (DATEN.md 3.y, PROGNOSE.md 2). Keine
+Änderung an Speicherwegen.
+
+**Nachweise dieser Runde.** `node --test .tests/` **338/338** (davon 3 Tests zur kompakten Darstellung) (neu `persona-fixes.test.cjs`, 16 Tests; geändert
+`data-sheets.test.cjs` „pension contracts can be chosen …“, weil A3 genau das Ausblenden der Kategorie beanstandet).
+Audit 22 Prüfungen, 0 Abweichungen. Browser (Port 8124, iPhone-Größe dunkel, Desktop 1440 hell): P10 Wagner komplett
+durch die neue Einrichtung (Pension ab 62 mit Hinweis, Claudia bis 65, Sparrate auf drei Anlagen, Kredit als eigene
+Zeile, erster Monat mit Leerzustand), Jahresauswahl, neues Ereignis. *Nicht geprüft:* Safari/iPhone-PWA, `file://`.
+
 **Schema 16** (`data-store.js`, `VERSION = 16`, liest 1–16): siehe DATA_MODEL.md „Daten aus früheren Versionen
 erhalten (Version 16)“. Die Demo-Datei bleibt in dieser Runde auf Schema 15 (keine Demo-Änderungen); die App lädt
 sie verlustfrei in Version 16 (`data-model.test.cjs`, Erwartung im Test begründet). Geänderte ältere Tests mit
@@ -464,6 +516,12 @@ Fragen 1, 4, 6, 7 und 8 hast du entschieden.
 8. **Kursprünge in der Demo (DEMO-5)**: Historie an die gespeicherten Kurse anpassen oder die
    Aktien und Ethereum in der Demo manuell bewerten? **Entschieden:** Kurse werden historisch
    angewendet, mit Rückfrage vor dem Überschreiben (P30).
+9. **Standardrenditen (A6, Persona 14.10.2026)**: Bitcoin und Krypto 15 % als Median-Wachstum bei 50–55 % Schwankung,
+   Konto 0 %. Sie sind jetzt sichtbar, aber unverändert. Senken (z. B. Bitcoin 8 %, Konto 1,5 %)? Das ändert die Prognose
+   bestehender Nutzer, die keinen eigenen Wert eingetragen haben.
+10. **Teilzeitwechsel zu einem Datum (A11) und Vermögensziel (B4)**: beide brauchen neue Felder (Schema 18). Umsetzen?
+11. **Planhorizont mehrerer Personen**: „Planen bis“ gilt im Alter der Hauptperson; jüngere Personen enden früher.
+    Horizont auf die jüngste Person beziehen (Modelländerung) oder so lassen?
 
 ---
 
@@ -495,7 +553,7 @@ wären als feste Tests: P1, P2, P8, P10, P13 und der Monotonie-/Volatilitätstes
 
 | Bereich | Vorgehen | Ergebnis |
 | --- | --- | --- |
-| Testsuite | `node --test .tests/` | 218/218; nach P10, P30, P31 und DEMO-5/6: 231/231; nach Personen, Kindern und P32: 246/246; nach Teilzeit: 253/253; Lebensphasen gesammelt: 256/256; Arbeitszeit je Phase und Person: 260/260; Review P34–P38: 283/283; Anmerkungen aus dem Test: 288/288; Folge-Review P54, P55, P63: 309/309; Folge-Review 2 P64, P65: 322/322 |
+| Testsuite | `node --test .tests/` | 218/218; nach P10, P30, P31 und DEMO-5/6: 231/231; nach Personen, Kindern und P32: 246/246; nach Teilzeit: 253/253; Lebensphasen gesammelt: 256/256; Arbeitszeit je Phase und Person: 260/260; Review P34–P38: 283/283; Anmerkungen aus dem Test: 288/288; Folge-Review P54, P55, P63: 309/309; Folge-Review 2 P64, P65: 322/322; Persona-Befunde 14.10. und kompakte Darstellung: 338/338 |
 | Audit | `node .scripts/audit-forecast.cjs` | 22 Prüfungen, 0 Abweichungen (vorher 19). Demo: Start 2026-10, Erfolgschance 100 %, sicher ab 52 (ohne Annas Gehalt 95,8 % und 58) |
 | Neue Tests | `forecast-cashflow.test.cjs` (21: Geldfluss-Erhaltung, Zeitgrenzen, Depot-Auszahlungen, Suchkandidaten, Haushaltsdefizit), `pension-rules.test.cjs` (14: Renten, Pension, Zulagen, Partnergehalt, Einkommenskarte, Schema 13), `flows.test.cjs` (5), `concurrency.test.cjs` (6), `setup.test.cjs` P4 | alle grün |
 | Gegenprobe | dieselben Tests gegen `7504901` (`APP_HTML=…` bzw. Kopie der alten Dateien) | alle Fehlertests scheitern am alten Stand; nur Kontrollfälle bestehen |

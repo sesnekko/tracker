@@ -1107,7 +1107,15 @@
       getItem(key) { const values = legacy(); return own(values, key) ? values[key] : null; },
       setItem(key, value) { change(key, value, false); },
       removeItem(key) { change(key, null, true); },
-      clear() { if (draft) draft = record(); else commit(empty()); },
+      // discardBackup („Alle Daten löschen“): auch die Kopie vor dem letzten Update entfernen und keine neue anlegen.
+      // Scheitert das Speichern (nur ansehen, veraltet), bleibt beides unverändert.
+      clear(options = {}) {
+        if (draft) { draft = record(); return; }
+        if (!options.discardBackup) { commit(empty()); return; }
+        const keep = before; before = null;
+        try { commit(empty()); } catch (e) { before = keep; throw e; }
+        storage.removeItem(BACKUP_KEY);
+      },
       beginTransaction() { if (draft) throw new Error('Import läuft bereits'); draft = copy(legacy()); draftRev = rev; },
       commitTransaction() {
         if (!draft) throw new Error('Kein Import aktiv');
