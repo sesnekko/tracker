@@ -3,7 +3,7 @@
    Erwartungen aus diesen Regeln, nicht aus der Implementierung. Harness-Datum 08.10.2026. */
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { fixture, context, simulate, near } = require('./forecast-fixture.cjs');
+const { fixture, context, simulate, near, Data, MemoryStorage } = require('./forecast-fixture.cjs');
 
 const set = (a, key, value) => { a.context.fxValue = JSON.stringify(value); a.run(`appStorage.setItem(${JSON.stringify(key)},fxValue);`); };
 const budget = einkommen => ({ einkommen, fixe: [], variable: [], sparen: [], accounts: {}, standingOrders: [] });
@@ -134,7 +134,9 @@ test('Arbeitszeit je Phase: Einkommenskarte zeigt das Gehalt je Abschnitt; die P
   set(a, 'budgetData', { ...budget([income('b1', 'Gehalt', 1000), { ...income('b2', 'Gehalt Kim', 600), person: 'p1' }]),
     fixe: [{ id: 'b3', name: 'Miete', subcat: '', kind: 'expense', targetGroupId: null, values: Array(12).fill(1100) }] });
   const rows = a.json("_incomeCard(buildPlan()).rows.filter(r=>r.work).map(r=>[r.n,r.v,r.from,r.until])");
-  assert.deepEqual(rows, [['Gehalt Kim', 600, 0, 43], ['Gehalt Kim (50 %)', 300, 43, 50]]);
+  // „Einkommen im Ruhestand“ zeigt seit 14.10.2026 nur Abschnitte, die nach deinem Arbeitsende (44) noch laufen;
+  // das volle Gehalt bis 43 steckt im Budget
+  assert.deepEqual(rows, [['Gehalt Kim (50 %)', 300, 43, 50]]);
   const note = a.run('_v2LtNotes(buildPlan())');
   assert.match(note.replace(/ /g, ' '), /Ab 43 ist das Haushaltseinkommen 300 €\/Monat niedriger als heute, während du noch arbeitest\. Was dann für die Sparraten fehlt \(300 €\/Monat\)/);
 });
@@ -151,14 +153,15 @@ test('Altersvorsorge je Phase und Person: leer = solange die Person arbeitet, so
 });
 
 /* ── Lebensphasen gesammelt im Phasen-Sheet der Prognose (Entscheidung 14.10.2026) ── */
-test('Lebensphasen-Sheet: Arbeitszeit und Altersvorsorge je Person sowie Arbeitsende und Rentenbeginn werden dort gesetzt', () => {
+test('Lebensphasen-Sheet: Arbeitszeit, Altersvorsorge und Arbeitsende je Person werden dort gesetzt; der Rentenbeginn bleibt bei der Rente', () => {
   const a = context(fixture(undefined, { saveUntilAge: 50, retirementAge: 60, pensionStartAge: 67, planningHorizonAge: 90, monthlySpending: 3000 }));
-  set(a, 'lt-drv-extra', [{ id: 'p1', name: 'Kim', by: 1987, until: 67, points: 12, deduct: 20 }]);
+  // Rentenbeginn weiterer Personen steht seit 14.10.2026 bei ihrer gesetzlichen Rente (Daten → Altersvorsorge)
+  set(a, 'lt-drv-extra', [{ id: 'p1', name: 'Kim', by: 1987, until: 67, points: 12, deduct: 20, age: 64 }]);
   a.run('renderLifetimePageCalcs=()=>{}');
   a.run('openPhasesSheet()');
   const fill = v => { for (const [k, x] of Object.entries(v)) a.el(k).value = x; };
   fill({ 'lp-a2': '50', 'lp-a3': '60', 'lp-a4': '', 'lp-need3': '3.000', 'lp-need4': '', 'lpw-me-2': '80', 'lpv-me-3': '25',
-    'lpw-p1-1': '50', 'lpw-p1-2': '100', 'lpv-p1-3': '0', 'lpp-p1-until': '65', 'lpp-p1-age': '64' });
+    'lpw-p1-1': '50', 'lpw-p1-2': '100', 'lpv-p1-3': '0', 'lpp-p1-until': '65' });
   a.run('_savePhasesSheet()');
   const doc = a.json('appStorage.document()'), p = doc.retirement.people[0];
   assert.deepEqual([p.workUntilAge, p.phase1WorkPercent, p.phase2WorkPercent, p.phase3WorkPercent, p.phase3PensionPercent, p.statutoryPension.retirementAge, p.statutoryPension.points],
@@ -185,7 +188,9 @@ test('Lebensphasen-Sheet: Abschnitte sind zugeklappt, der gewählte ist offen; d
   const secs = () => [...a.json('__body').matchAll(/<details class="lp-sec" id="([^"]+)"( open)?/g)].map(m => [m[1], !!m[2]]);
   const open = () => secs().filter(x => x[1]).map(x => x[0]);
   a.run('openPhasesSheet()');
-  assert.deepEqual(secs().map(x => x[0]), ['lp-sec-1', 'lp-sec-2', 'lp-sec-3', 'lp-sec-4', 'lp-sec-p-p1'], 'vier Phasen und Kim');
+  assert.deepEqual(secs().map(x => x[0]), ['lp-sec-1', 'lp-sec-2', 'lp-sec-3', 'lp-sec-4'], 'vier Phasen, kein eigener Abschnitt je Person (14.10.2026)');
+  assert.match(a.json('__body'), /id="lpp-p1-until"/, 'Arbeitsende von Kim in der Zeile „Arbeiten bis Alter“ (Phase 2)');
+  assert.doesNotMatch(a.json('__body'), /lpp-p1-age/, 'Rentenbeginn nicht mehr im Sheet');
   assert.deepEqual(open(), []);
   // je Phase ein Feld je Person: du bis zum Weiterarbeiten, Kim in allen Phasen
   const ids = [...a.json('__body').matchAll(/id="(lp[wv]-[^"]+-\d)"/g)].map(m => m[1]);
@@ -194,13 +199,89 @@ test('Lebensphasen-Sheet: Abschnitte sind zugeklappt, der gewählte ist offen; d
   for (const [k, v] of Object.entries({ 'lp-a2': '50', 'lp-a3': '60', 'lp-need3': '3.000', 'lpp-p1-until': '67', 'lpw-p1-2': '50' })) a.el(k).value = v;
   a.run('_phasesPreview()');
   // Kim ist 2 Jahre jünger: Phase 2 beginnt mit ihren 48
-  assert.equal(a.el('lp-s-p-p1').textContent, 'Vollzeit bis 48 · Teilzeit 50 % bis 67 · Rente ab 67');
+  assert.match(a.el('lpp-p1-tl').innerHTML, /Vollzeit bis 48 · Teilzeit 50 % bis 67 · Rente ab 67/, 'Zeitstrahl von Kim oben im Sheet');
   assert.match(a.el('lp-s-1').textContent, /^bis 50 · /);
   assert.equal(a.el('lp-s-2').textContent, 'bis 60 · Ich Vollzeit · Kim 50 % · Sparen 0 %');
   assert.equal(a.el('lp-s-3').textContent, 'bis 67 · Bedarf 3.000 € · Kim 50 %');
   assert.equal(a.el('lpw-p1-3').placeholder, '50', 'leer = wie in der Phase davor');
   a.run("openPhasesSheet('p-p1')");
-  assert.deepEqual(open(), ['lp-sec-p-p1']);
+  assert.deepEqual(open(), ['lp-sec-2'], 'Klick auf eine Person öffnet das Weiterarbeiten mit ihren Werten');
   a.run('openPhasesSheet(3)');
   assert.deepEqual(open(), ['lp-sec-3']);
+});
+
+/* ── Altersvorsorge je Person (14.10.2026): Haushalt nur Person, Rente und Beamtenversorgung unter Altersvorsorge ── */
+test('Personen speichern: Haushalt und Altersvorsorge-Karten werden zusammengeführt, Phasen und Altwerte bleiben', () => {
+  const a = context(fixture());
+  set(a, 'lt-drv-extra', [{ id: 'p1', name: 'Kim', by: 1987, until: 65, w2: 50, points: 12, salary: 30000, age: 64, deduct: 20 }]);
+  // Haushalt: Name geändert; Altersvorsorge: Punkte 13, Rentenbeginn leer (= Regelaltersgrenze), Beamtenversorgung neu
+  const rows = a.json(`_mergePersonRows([{id:'p1',name:'Kim B.',by:1987},{name:'Neu',by:1990}],
+    {p1:{points:13,salary:30000,age:'',deduct:20,emType:'0',em:'',emUntil:'',emLimit:''}},
+    {p1:{bvPay:4000,bvYears:10,bvAge:'',bvFrom:'',bvDeduct:''}})`);
+  assert.deepEqual(rows[0], { id: 'p1', name: 'Kim B.', by: 1987, until: 65, w2: 50, points: 13, salary: 30000, deduct: 20, bv: { pay: 4000, years: 10 } });
+  assert.deepEqual(rows[1], { name: 'Neu', by: 1990 });
+  // ohne Altersvorsorge-Bereich (ausgeschaltet) bleibt die gespeicherte Rente unverändert
+  const kept = a.json("_mergePersonRows([{id:'p1',name:'Kim',by:1987}],null,null)")[0];
+  assert.deepEqual([kept.points, kept.age, kept.salary], [12, 64, 30000]);
+});
+test('Beamtenversorgung einer weiteren Person: Dienstjahre nach ihrer Arbeitszeit, Pension in ihrem Alter', () => {
+  // Kim (Januar 1985, gleich alt) heute 41,75, Vollzeit bis 60, danach bis 67 halb (Phase 2 ab 60)
+  const a = context(fixture(undefined, { saveUntilAge: 60, retirementAge: 67, pensionStartAge: 67, planningHorizonAge: 90 }));
+  set(a, 'lt-drv-extra', [{ id: 'p1', name: 'Kim', by: 1985, until: 67, w2: 50, bv: { pay: 4000, years: 10 } }]);
+  const r = a.json("calcBeamteExtra(getLifetimeSettings(),getDrvExtra()[0])");
+  // 10 + 18,25 (41,75 → 60 voll) + 3,5 (60 → 67 halb) = 31,75 Jahre × 1,79375 % = 56,95 %; Bezüge 4.000 €, 25 % Abzug
+  near(assert, r.total, 31.75, 1e-9);
+  near(assert, r.netto, 4000 * 31.75 * 1.79375 / 100 * 0.75, 1e-6);
+  assert.equal(r.age, 67);
+  const plan = a.json("buildPlan().pensions.filter(p=>p.kind==='bv')");
+  assert.deepEqual(plan.map(p => [p.from, p.person, Math.round(p.amount * 100) / 100]), [[67, 'Kim', Math.round(r.netto * 100) / 100]]);
+  assert.match(a.json("_incomeCard(buildPlan()).rows.map(x=>x.n).join('|')"), /Beamtenpension Kim/);
+  assert.match(a.json("_personContextHTML('p1')"), /Pension/);
+  // gespeichert als people[].civilServicePension (Schema 17), Export/Import unverändert
+  const doc = a.json('appStorage.document()');
+  assert.deepEqual(doc.retirement.people[0].civilServicePension, { pensionableSalary: 4000, serviceYears: 10 });
+  const b = context(doc);
+  assert.deepEqual(b.json('getDrvExtra()[0].bv'), { pay: 4000, years: 10 });
+});
+test('Arbeitszeit am Gehalt: Teilzeit im Budget ist die Arbeitszeit von heute und wirkt in der Prognose', () => {
+  // wie „Mehreinkommen wird angelegt“: du in Phase 2 50 %, Kim von heute 50 % (jetzt beim Gehalt) auf Vollzeit → +100 €
+  const d = fixture([{ id: 'cash', group: 'Cash', cat: 'cash', value: 10000 }], { saveUntilAge: 43, retirementAge: 44, phase2SavingPercent: 100, phase2WorkPercent: 50 });
+  d.groups[0].assumptions.monthlySaving = 500;
+  const a = context(d);
+  set(a, 'lt-drv-extra', [{ id: 'p1', name: 'Kim', by: 1985, until: 60, w2: 100 }]);
+  set(a, 'budgetData', { ...budget([{ ...income('b1', 'Gehalt', 1000), person: a.json('_ownPersonId()') }, { ...income('b2', 'Gehalt Kim', 600), person: 'p1', workPct: 50 }]),
+    fixe: [{ id: 'b3', name: 'Miete', subcat: '', kind: 'expense', targetGroupId: null, values: Array(12).fill(1100) }] });
+  assert.equal(a.json("_budgetWorkShare('p1')"), 0.5);
+  near(assert, simulate(a).total[2], 10000 + 15 * 500 + 12 * 600, 1e-6, '500 € Sparen + 100 € Mehreinkommen');
+  // im Sheet steht Kims Arbeitszeit heute nur zur Ansicht (Eingabe beim Gehalt), Phase 2 bleibt einstellbar
+  a.run('requestAnimationFrame=()=>0;_openSheet=(t,body)=>{globalThis.__body=body;return true;};openPhasesSheet()');
+  const body = a.json('__body');
+  assert.doesNotMatch(body, /id="lpw-p1-1"/);
+  assert.match(body, /lp-ro"><small>Kim<\/small><b>50 %<\/b>/);
+  assert.match(body, /id="lpw-p1-2"/);
+  // gespeichert als budget.items[].workPercent (Schema 17)
+  const doc = a.json('appStorage.document()');
+  assert.equal(doc.budget.items.find(i => i.name === 'Gehalt Kim').workPercent, 50);
+});
+test('Arbeitszeit am Gehalt: nur beim Gehalt einer Person, mehr als 0 und höchstens 100 %; fällt mit der Person weg', () => {
+  const s = Data.createStore(new MemoryStorage({ 'lt-drv-extra': JSON.stringify([{ id: 'p1', name: 'Kim', by: 1987 }]),
+    budgetData: JSON.stringify(budget([{ ...income('b1', 'Gehalt Kim', 600), person: 'p1', workPct: 50 }])) }));
+  assert.equal(s.document().budget.items[0].workPercent, 50);
+  for (const mutate of [d => { delete d.budget.items[0].personId; }, d => { d.budget.items[0].workPercent = 0; }, d => { d.budget.items[0].workPercent = 120; }, d => { d.budget.items[0].retirementIncome = true; }]) {
+    const bad = s.exportBackup(); mutate(bad);
+    assert.throws(() => s.importBackup(bad));
+  }
+  s.setItem('lt-drv-extra', '[]');
+  assert.deepEqual([s.document().budget.items[0].personId, s.document().budget.items[0].workPercent], [undefined, undefined], 'Person gelöscht: Gehalt wird Haushalt, ohne Arbeitszeit');
+});
+test('Einkommen im Ruhestand: jede Zeile gehört zu einer Person oder zum Haushalt', () => {
+  const a = context(fixture(undefined, { saveUntilAge: 60, retirementAge: 60, pensionStartAge: 67, planningHorizonAge: 90 }));
+  set(a, 'lt-drv', { points: 30 });
+  set(a, 'lt-drv-extra', [{ id: 'p1', name: 'Kim', by: 1987, until: 67, points: 20, bv: { pay: 3000, years: 10 } }]);
+  set(a, 'lt-pensions', [{ id: 'i1', name: 'Betriebsrente', amount: 200, from: 67 }, { id: 'i2', name: 'Betriebsrente', amount: 100, from: 65, person: 'p1' }]);
+  set(a, 'budgetData', budget([{ ...income('b1', 'Miete Garage', 125), retirement: true }]));
+  const rows = a.json("_incomeCard(buildPlan()).rows.map(r=>[r.n,r.who])");
+  assert.deepEqual(rows.filter(r => r[1] === '').map(r => r[0]), ['Gesetzliche Rente', 'Betriebsrente']);
+  assert.deepEqual(rows.filter(r => r[1] === 'p1').map(r => r[0]).sort(), ['Beamtenpension Kim', 'Betriebsrente Kim', 'Rente Kim']);
+  assert.deepEqual(rows.filter(r => r[1] === 'hh').map(r => r[0]), ['Miete Garage']);
 });

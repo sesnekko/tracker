@@ -3,8 +3,10 @@
 (function (root) {
   'use strict';
   const KEY = 'vermoegen-data-v1';
+  // Stand vor dem letzten Update (Rohtext), geschrieben direkt vor dem ersten Speichern eines migrierten Dokuments (P37).
+  const BACKUP_KEY = 'vermoegen-data-v1-before-update';
   const FORMAT = 'vermoegen-backup';
-  const VERSION = 15;
+  const VERSION = 17;
   const CATEGORIES = ['cash', 'etf', 'stock', 'bitcoin', 'crypto', 'metal', 'realEstate', 'vehicle', 'other', 'bav', 'illiquid', 'liab'];
   const BUDGET_CATEGORIES = ['einkommen', 'fixe', 'variable', 'sparen'];
   const MODULES = ['assets', 'liab', 'pension', 'budget', 'forecast'];
@@ -267,6 +269,9 @@
         if (row.retirement && kind === 'income') item.retirementIncome = true;
         // Version 14: an income belongs to a person (salary until that person's end of work); checked below.
         if (row.person && kind === 'income') item.personId = String(row.person);
+        // Version 17: Arbeitszeit zum Gehalt (Vollzeit 100, Teilzeit x %); gilt als heutige Arbeitszeit der Person
+        const wp = number(row.workPct);
+        if (wp !== undefined && item.personId && !item.retirementIncome) item.workPercent = wp;
         doc.budget.items.push(item);
       }
       const orderId = idsFor('order-', previous.budget ? previous.budget.standingOrders : []);
@@ -300,6 +305,16 @@
       if (by !== undefined) p.birthYear = by;
       if (until !== undefined) p.workUntilAge = until;
       Object.assign(p, mapped(r, PERSON_PHASES));
+      // Version 16 (P36): Teilzeit ab einem Alter der Person aus Schema 14 bleibt genau erhalten, bis sie bewusst auf
+      // Lebensphasen umgestellt wird. Unvollständiges wird nicht still verworfen, die Prüfung lehnt es ab.
+      const ptFrom = number(r.ptFrom), ptPct = number(r.ptPct);
+      if (ptFrom !== undefined) p.partTimeFromAge = ptFrom;
+      if (ptPct !== undefined) p.partTimePercent = ptPct;
+      // Version 16 (P35): Nettogehalt aus Schema 13, das noch keinem Budgetposten zugeordnet ist.
+      const net = number(r.net);
+      if (net !== undefined) p.monthlyNetIncome = net;
+      // Version 17: Beamtenversorgung auch für weitere Personen (jede Altersvorsorge gehört zu einer Person)
+      if (r.bv && typeof r.bv === 'object') { const c = mapped(r.bv, CIVIL); if (Object.keys(c).length) p.civilServicePension = c; }
       // Version 14: das Gehalt einer Person kommt aus ihren Budget-Einnahmen (budget.items[].personId), nicht mehr aus „net“.
       return p;
     });
@@ -311,6 +326,8 @@
       if (d.monthlyContribution === undefined) d.monthlyContribution = 0;
       const kids = birthYears(r.kids);
       if (kids.length) d.childBirthYears = kids;
+      // Version 16 (P37): frühere Kinder-Jahrgänge, die kein gültiges Geburtsjahr sind, warten auf Klärung
+      if (Array.isArray(r.kidsOpen) && r.kidsOpen.length) d.unresolvedChildBirthYears = r.kidsOpen.map(y => number(y));
       // Version 11: the depot's value can come from an asset position (with quotes) in the overview.
       if (r.pos && doc.positions.some(p => p.id === r.pos && p.category !== 'liab')) d.positionId = r.pos;
       return d;
@@ -332,7 +349,7 @@
     const depotIds = new Set(doc.retirement.pensionDepots.map(d => d.id));
     if (doc.budget) for (const item of doc.budget.items) if (own(item, 'depotId') && !depotIds.has(item.depotId)) delete item.depotId;
     // A removed person leaves its incomes as household incomes.
-    if (doc.budget) for (const item of doc.budget.items) if (own(item, 'personId') && !personIds.includes(item.personId)) delete item.personId;
+    if (doc.budget) for (const item of doc.budget.items) if (own(item, 'personId') && !personIds.includes(item.personId)) { delete item.personId; delete item.workPercent; }
     const incomeId = idsFor('income-', previous.retirement.incomes);
     doc.retirement.incomes = parse(values, 'lt-pensions', []).map((r, i) => {
       const item = { id: incomeId(r, i), name: r.name || '', monthlyAmount: number(r.amount) ?? 0, fromAge: number(r.from) ?? 0 };
@@ -398,7 +415,7 @@
       bd.accounts = Object.fromEntries(doc.accounts.map(a => [a.name, a.iban]));
       const endpoint = v => v.type === 'account' ? doc.accounts.find(a => a.id === v.accountId).name : v.name;
       bd.standingOrders = doc.budget.standingOrders.map(o => ({ id: o.id, from: endpoint(o.from), to: endpoint(o.to), amount: o.amount }));
-      for (const r of doc.budget.items) bd[r.category].push({ id: r.id, name: r.name, subcat: r.subcategory, kind: r.kind, targetGroupId: r.targetGroupId, targetGroup: r.targetGroupId ? groupName(r.targetGroupId) : null, ...(r.loanId ? { loanId: r.loanId } : {}), ...(r.depotId ? { depotId: r.depotId } : {}), ...(r.retirementIncome ? { retirement: true } : {}), ...(r.personId ? { person: r.personId } : {}), values: copy(r.monthlyAmounts) });
+      for (const r of doc.budget.items) bd[r.category].push({ id: r.id, name: r.name, subcat: r.subcategory, kind: r.kind, targetGroupId: r.targetGroupId, targetGroup: r.targetGroupId ? groupName(r.targetGroupId) : null, ...(r.loanId ? { loanId: r.loanId } : {}), ...(r.depotId ? { depotId: r.depotId } : {}), ...(r.retirementIncome ? { retirement: true } : {}), ...(r.personId ? { person: r.personId } : {}), ...(own(r, 'workPercent') ? { workPct: r.workPercent } : {}), values: copy(r.monthlyAmounts) });
       bd.oneTime = copy(doc.budget.oneTime || []);
       put('budgetData', bd);
     }
@@ -417,12 +434,16 @@
     put('lt-drv', unmapped(primary.statutoryPension, DRV));
     if (own(primary, 'civilServicePension')) put('lt-beamte', unmapped(primary.civilServicePension, CIVIL));
     put('lt-drv-extra', doc.retirement.people.map(p => ({ id: p.id, name: p.name, by: p.birthYear ?? '', until: p.workUntilAge ?? '',
-      ...unmapped(p, PERSON_PHASES), ...unmapped(p.statutoryPension, DRV) })));
+      ...unmapped(p, PERSON_PHASES), ...(own(p, 'partTimeFromAge') ? { ptFrom: p.partTimeFromAge } : {}),
+      ...(own(p, 'partTimePercent') ? { ptPct: p.partTimePercent } : {}), ...(own(p, 'monthlyNetIncome') ? { net: p.monthlyNetIncome } : {}),
+      ...(own(p, 'civilServicePension') ? { bv: unmapped(p.civilServicePension, CIVIL) } : {}),
+      ...unmapped(p.statutoryPension, DRV) })));
     put('lt-children', (doc.retirement.children || []).map(c => ({ id: c.id, name: c.name, by: c.birthYear, ...(c.birthMonth ? { bm: c.birthMonth } : {}),
       ...(c.childBenefitUntilAge ? { until: c.childBenefitUntilAge } : {}), ...(c.allowanceParentId ? { parent: c.allowanceParentId } : {}) })));
     put('lt-av-depots', (doc.retirement.pensionDepots || []).map(d => ({
       id: d.id, name: d.name, person: d.personId === primary.id ? '' : d.personId,
       ...unmapped(d, AV_DEPOT), ...(d.childBirthYears ? { kids: d.childBirthYears.join(', ') } : {}),
+      ...(d.unresolvedChildBirthYears ? { kidsOpen: d.unresolvedChildBirthYears.slice() } : {}),
       ...(d.positionId ? { pos: d.positionId } : {})
     })));
     put('lt-pensions', doc.retirement.incomes.map(p => ({ id: p.id, name: p.name, amount: p.monthlyAmount, from: p.fromAge, ...(p.untilAge !== undefined ? { until: p.untilAge } : {}), ...(p.personId ? { person: p.personId } : {}) })));
@@ -469,7 +490,7 @@
     safeKeys(doc);
     object(doc, 'Datei', ['format', 'schemaVersion', 'currency', 'exportedAt', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences'], ['format', 'schemaVersion', 'currency', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences']);
     if (doc.format !== FORMAT) fail('format', 'keine Assets-Sicherung');
-    if (![1,2,3,4,5,6,7,8,9,10,11,12,13,14,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
+    if (![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
     if (doc.currency !== 'EUR') fail('currency', 'nur EUR wird unterstützt');
     if (own(doc, 'exportedAt') && (typeof doc.exportedAt !== 'string' || !Number.isFinite(Date.parse(doc.exportedAt)))) fail('exportedAt', 'ungültiges Datum');
     const groups = unique(doc.groups, 'groups');
@@ -547,7 +568,12 @@
         }
       }
       for (const b of doc.budget.items) {
-        object(b, 'Budgetposten', ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts', 'loanId', 'depotId', 'retirementIncome', 'personId'], ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts']);
+        object(b, 'Budgetposten', ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts', 'loanId', 'depotId', 'retirementIncome', 'personId', ...(doc.schemaVersion >= 17 ? ['workPercent'] : [])], ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts']);
+        if (own(b, 'workPercent')) {
+          num(b.workPercent, 'Arbeitszeit', 0);
+          if (!(b.workPercent > 0 && b.workPercent <= 100)) fail('Budgetposten.Arbeitszeit', 'mehr als 0 und höchstens 100 % erwartet');
+          if (!own(b, 'personId') || own(b, 'retirementIncome')) fail('Budgetposten.Arbeitszeit', 'nur für das Gehalt einer Person');
+        }
         if (own(b, 'retirementIncome') && (b.retirementIncome !== true || b.kind !== 'income')) fail('Budgetposten.Ruhestand', 'nur für Einnahmen');
         if (own(b, 'personId')) {
           ref(b.personId, 'Budgetposten.Person', new Set(doc.retirement ? [doc.retirement.primary.id, ...doc.retirement.people.map(p => p.id)] : []));
@@ -595,9 +621,14 @@
     const person = (p, primary) => {
       // monthlyNetIncome gab es nur in Schema 13; migrate() ordnet es einem Budgetposten zu.
       // partTimeFromAge/partTimePercent gab es nur in Schema 14; migrate() verteilt sie auf die Lebensphasen.
+      // Seit Version 16 wieder erlaubt: Teilzeit ab Alter (P36, bis zur bewussten Umstellung) und ein noch nicht
+      // zugeordnetes Nettogehalt aus Schema 13 (P35).
+      const v = doc.schemaVersion;
       object(p, 'Person', ['id', 'name', 'birthYear', ...(primary ? ['birthMonth', 'civilServicePension'] : ['workUntilAge',
-        ...(doc.schemaVersion === 14 ? ['partTimeFromAge', 'partTimePercent'] : []), ...(doc.schemaVersion >= 15 ? Object.values(PERSON_PHASES) : []),
-        ...(doc.schemaVersion === 13 ? ['monthlyNetIncome'] : [])]), 'statutoryPension'], ['id', 'name', 'statutoryPension']);
+        ...(v === 14 || v >= 16 ? ['partTimeFromAge', 'partTimePercent'] : []), ...(v >= 15 ? Object.values(PERSON_PHASES) : []),
+        ...(v === 13 || v >= 16 ? ['monthlyNetIncome'] : []), ...(v >= 17 ? ['civilServicePension'] : [])]), 'statutoryPension'], ['id', 'name', 'statutoryPension']);
+      if (own(p, 'partTimeFromAge') && Object.keys(PERSON_PHASES).some(k => k[0] === 'w' && own(p, PERSON_PHASES[k])))
+        fail('Teilzeit', 'Teilzeit ab Alter und Arbeitszeit je Phase schließen sich aus');
       for (const k of Object.values(PERSON_PHASES)) if (own(p, k)) {
         num(p[k], k, 0);
         if (p[k] > (k.endsWith('WorkPercent') ? 100 : 200)) fail(k, k.endsWith('WorkPercent') ? 'höchstens 100 % erwartet' : 'höchstens 200 % erwartet');
@@ -605,6 +636,7 @@
       if (own(p, 'partTimeFromAge') !== own(p, 'partTimePercent')) fail('Teilzeit', 'ab Alter und Arbeitszeit gehören zusammen');
       if (own(p, 'partTimeFromAge')) {
         num(p.partTimeFromAge, 'Teilzeit ab', 0); num(p.partTimePercent, 'Arbeitszeit', 0);
+        if (!(p.partTimeFromAge > 0)) fail('Teilzeit ab', 'Alter erwartet');
         if (p.partTimePercent >= 100) fail('Arbeitszeit', 'unter 100 % erwartet');
         if (own(p, 'workUntilAge') && p.partTimeFromAge >= p.workUntilAge) fail('Teilzeit ab', 'muss vor dem Arbeitsende liegen');
       }
@@ -636,7 +668,12 @@
       const personIds = new Set([doc.retirement.primary.id, ...doc.retirement.people.map(p => p.id)]);
       for (const d of doc.retirement.pensionDepots) {
         // Kinder-Jahrgänge am Depot gab es bis Version 13; migrate() macht daraus Kinder (Personen)
-        object(d, 'Altersvorsorgedepot', ['id', 'name', 'personId', ...(doc.schemaVersion < 14 ? ['childBirthYears'] : []), 'positionId', ...Object.values(AV_DEPOT)], ['id', 'name', 'personId', 'monthlyContribution']);
+        object(d, 'Altersvorsorgedepot', ['id', 'name', 'personId', ...(doc.schemaVersion < 14 ? ['childBirthYears'] : []), ...(doc.schemaVersion >= 16 ? ['unresolvedChildBirthYears'] : []), 'positionId', ...Object.values(AV_DEPOT)], ['id', 'name', 'personId', 'monthlyContribution']);
+        if (own(d, 'unresolvedChildBirthYears')) {
+          array(d.unresolvedChildBirthYears, 'Ungeklärte Kinder-Jahrgänge');
+          if (!d.unresolvedChildBirthYears.length) fail('Ungeklärte Kinder-Jahrgänge', 'leer – Feld weglassen');
+          d.unresolvedChildBirthYears.forEach(y => num(y, 'Ungeklärter Kinder-Jahrgang'));
+        }
         if (own(d, 'positionId')) { const pos = doc.positions.find(p => p.id === d.positionId); if (!pos || pos.category === 'liab') fail('Altersvorsorgedepot.positionId', 'unbekannte Position ' + d.positionId); }
         text(d.name, 'Depotname');
         ref(d.personId, 'Altersvorsorgedepot.personId', personIds);
@@ -668,49 +705,29 @@
     Object.entries(expanded).forEach(([k, v]) => { text(k, 'Bereich'); bool(v, 'Aufgeklappt'); });
     return doc;
   }
-  // Ältere Schemas auf den aktuellen Stand bringen (Version bleibt; load/importBackup setzen sie danach).
-  function migrate(doc, now = new Date()) {
+  // Ältere Schemas auf den aktuellen Stand bringen (Version bleibt; load/importBackup setzen sie danach). Jeder Schritt
+  // ist wiederholbar und verändert nichts fachlich: Was sich nicht eindeutig übertragen lässt, bleibt als Originalwert
+  // stehen und wird in der App geklärt (Review 14.10.2026, P35–P37). Teilzeit aus Schema 14 bleibt unverändert (P36).
+  function migrate(doc) {
     if (doc.schemaVersion < 14 && doc.retirement) moveDepotChildren(doc);
-    if (doc.schemaVersion === 13) moveNetIncome(doc);
-    if (doc.schemaVersion === 14 && doc.retirement) movePartTime(doc, now);
+    if (doc.schemaVersion === 13 && doc.retirement) moveNetIncome(doc);
     return doc;
   }
-  // Version 14 → 15: Teilzeit einer weiteren Person ab einem Alter (partTimeFromAge, partTimePercent) wird zur Arbeitszeit
-  // je Lebensphase. Die Arbeitszeit gilt ab der ersten Phase, die mindestens zur Hälfte in der Teilzeit liegt (Phasen in
-  // deinem Alter ab heute; ohne Rentenbeginn 67); danach gilt sie weiter, weil leere Phasen den Wert davor übernehmen.
-  function movePartTime(doc, now) {
-    const r = doc.retirement, st = (doc.forecast && doc.forecast.settings) || {};
-    const myBy = r.primary.birthYear ?? 1990, bm = r.primary.birthMonth ?? 1;
-    const cur = now.getFullYear() - myBy + (now.getMonth() - (bm - 1)) / 12;
-    const ret = st.retirementAge ?? 60, a2 = Math.min(st.saveUntilAge ?? 60, ret);
-    const a4 = Math.max(ret, st.pensionStartAge ?? (r.primary.statutoryPension.retirementAge || 67));
-    const bounds = [cur, a2, ret, a4, Math.max(a4, st.planningHorizonAge ?? 95)];
-    for (const p of r.people) {
-      if (!own(p, 'partTimeFromAge')) continue;
-      const from = p.partTimeFromAge + (p.birthYear ?? myBy) - myBy, pct = p.partTimePercent;
-      delete p.partTimeFromAge; delete p.partTimePercent;
-      for (let i = 0; i < 4; i++) {
-        const a = Math.max(bounds[0], bounds[i]), b = Math.max(bounds[0], bounds[i + 1]);
-        if (b - a > 1e-9 && (b - Math.max(a, from)) / (b - a) >= 0.5) { p['phase' + (i + 1) + 'WorkPercent'] = pct; break; }
-      }
-    }
-    return doc;
-  }
-  // Version 13 → 14: Das Nettogehalt einer weiteren Person (monthlyNetIncome) wird zu ihrem Budgetposten. Ein eindeutig
-  // passender, noch nicht zugeordneter Einnahmeposten (Name enthält den Namen der Person) wird ihr zugeordnet, sonst
-  // entsteht „Nettogehalt <Name>“ mit dem Betrag in allen zwölf Monaten.
+  // Version 13 → 16 (P35): Das Nettogehalt einer weiteren Person (monthlyNetIncome) zählte in Schema 13 nur in der
+  // Prognose; Budgetposten liefen unabhängig davon. Zugeordnet wird nur, was eindeutig dasselbe Gehalt ist: genau ein noch
+  // freier Einnahmeposten, dessen Name den Namen der Person enthält und dessen Monatsbetrag gleich ist. Sonst bleibt der
+  // Betrag stehen (er zählt weiter als ihr Gehalt) und die App fragt nach. Es entsteht nie ein zusätzlicher Posten.
   function moveNetIncome(doc) {
     for (const p of doc.retirement.people) {
       if (!own(p, 'monthlyNetIncome')) continue;
-      const net = p.monthlyNetIncome; delete p.monthlyNetIncome;
-      if (!(net > 0)) continue;
-      if (doc.budget === null) doc.budget = { items: [], standingOrders: [] };
+      const net = p.monthlyNetIncome;
+      if (!(net > 0)) { delete p.monthlyNetIncome; continue; }
       const name = String(p.name || '').replace(/\(.*?\)/g, '').trim().toLowerCase();
-      const free = doc.budget.items.filter(i => i.kind === 'income' && !i.retirementIncome && !own(i, 'personId'));
-      const hits = name ? free.filter(i => i.name.toLowerCase().includes(name)) : [];
-      if (hits.length === 1) { hits[0].personId = p.id; continue; }
-      let id = 'budget-net-' + p.id; while (doc.budget.items.some(i => i.id === id)) id += '-1';
-      doc.budget.items.push({ id, name: 'Nettogehalt ' + (String(p.name || '').trim() || 'Person'), category: 'einkommen', subcategory: '', kind: 'income', targetGroupId: null, monthlyAmounts: Array(12).fill(net), personId: p.id });
+      const items = doc.budget ? doc.budget.items : [];
+      const avg = i => (i.monthlyAmounts || []).reduce((a, v) => a + (+v || 0), 0) / 12;
+      const free = items.filter(i => i.kind === 'income' && !i.retirementIncome && !own(i, 'personId'));
+      const hits = name ? free.filter(i => i.name.toLowerCase().includes(name) && Math.abs(avg(i) - net) < 0.5) : [];
+      if (hits.length === 1) { hits[0].personId = p.id; delete p.monthlyNetIncome; }
     }
     return doc;
   }
@@ -720,6 +737,14 @@
   function moveDepotChildren(doc) {
     const r = doc.retirement, depots = r.pensionDepots || [];
     if (!depots.some(d => own(d, 'childBirthYears'))) return doc;
+    // P37: Früher war jede Zahl ab 1900 erlaubt (z. B. 2019.5). Nur ganze Jahre 1900–2200 werden Kinder; die übrigen
+    // Werte bleiben unverändert am Depot (unresolvedChildBirthYears) und werden in der App geklärt, nie gerundet.
+    const valid = y => Number.isInteger(y) && y >= 1900 && y <= 2200;
+    for (const d of depots) if (own(d, 'childBirthYears')) {
+      const open = d.childBirthYears.filter(y => !valid(y));
+      if (open.length) d.unresolvedChildBirthYears = [...(d.unresolvedChildBirthYears || []), ...open];
+      d.childBirthYears = d.childBirthYears.filter(valid);
+    }
     const order = [r.primary.id, ...r.people.map(p => p.id)], claimed = {}, children = (r.children || []).slice();
     const used = new Set([...order, ...children.map(c => c.id)]);
     for (const pid of order) {
@@ -742,13 +767,200 @@
     if (children.length) r.children = children;
     return doc;
   }
+  /* Schreibrecht zwischen Fenstern (P34, überarbeitet nach P55/P63, Reviews vom 14.10.2026).
+     Zwischen Fenstern sind Lesen und Schreiben von localStorage keine gemeinsame Operation. Deshalb schreibt immer nur EIN
+     Fenster: das, das die exklusive Web Lock „vermoegen-writer“ hält (Chrome, Safari, Firefox, auch als PWA und – geprüft –
+     Chrome mit file://). Zustände (Übergänge: .docs/DATA_MODEL.md, „Schreibrecht zwischen Fenstern“):
+       pending      Start oder Rückkehr: die Antwort auf die Sperranfrage steht aus – höchstens timing.start, dann reader
+       writer       hält die Sperre und hat den neuesten Stand geladen; nur hier wird gespeichert
+       reader       ein anderes Fenster schreibt; dieses wartet im Hintergrund auf die Sperre
+       failed       Sperre erhalten, die Übernahme scheiterte aber (z. B. Speicher voll): Sperre wieder frei, nichts
+                    verändert, nicht eingereiht; request() versucht es erneut
+       suspended    Seite verlassen (pagehide, freeze, auch bfcache): Sperre wirklich freigegeben, nicht eingereiht;
+                    resume() erwirbt sie neu und lädt dabei den aktuellen Stand
+       unsupported  keine nutzbaren Web Locks (fehlen oder abgelehnt): geschützter Lesemodus; schreiben erst nach
+                    ausdrücklicher Entscheidung (allowSingle) – nie automatisch
+       single       ohne Sperren vorgesehen (Tests, Werkzeuge) oder nach allowSingle: nur die Konflikterkennung P1/P54
+     „Hier bearbeiten“ bittet das schreibende Fenster über vermoegen-writer-request um Abgabe; es gibt ab, wenn dort gerade
+     nichts bearbeitet wird, und schreibt vorher die Abgabe-Marke vermoegen-writer. Weil Daten und Marke denselben Weg
+     nehmen, sieht das übernehmende Fenster mit der Marke auch die letzten Daten. Jedes Verlassen beginnt eine neue Epoche:
+     Rückrufe einer früheren Epoche geben eine verspätet erteilte Sperre sofort zurück und ändern den Zustand nicht. Kein
+     Pfad endet mit einer unbehandelten Ablehnung; ready() und request() enden immer innerhalb ihrer Frist. */
+  const WRITER_LOCK = 'vermoegen-writer', WRITER_KEY = 'vermoegen-writer', REQUEST_KEY = 'vermoegen-writer-request';
+  function createWriterGate(storage, options = {}) {
+    const locks = options.locks || null;
+    const t = Object.assign({ poll: 25, handover: 600, request: 2500, start: 2500 }, options.timing || {});
+    const id = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    let state = locks ? 'pending' : options.requireLocks ? 'unsupported' : 'single';
+    let hold = null, queued = null, epoch = 0, failure = null, wakers = [], readyPromise = null;
+    const listeners = [];
+    const emit = () => listeners.forEach(f => { try { f(state); } catch (e) { /* Anzeige darf das Speichern nicht stören */ } });
+    const wake = () => { const w = wakers; wakers = []; w.forEach(f => f()); };
+    const set = next => { if (state === next) return; state = next; emit(); wake(); };
+    const read = k => { try { return JSON.parse(storage.getItem(k)); } catch (e) { return null; } };
+    // Die Marke ist nur ein Hinweis für die Übergabe, die Sperre selbst schützt: ein Schreibfehler bleibt ohne Folgen.
+    const mark = (st, extra) => {
+      try { storage.setItem(WRITER_KEY, JSON.stringify(Object.assign({ id, state: st, at: Date.now() }, extra || {}))); }
+      catch (e) { /* ohne Marke wartet ein übernehmendes Fenster höchstens timing.handover */ }
+    };
+    // Warten, bis ok() gilt oder die Frist abläuft; Speicher-Ereignisse und Zustandswechsel wecken sofort auf.
+    const until = (ok, ms) => new Promise(done => {
+      const end = Date.now() + Math.max(0, ms);
+      let over = false, timer = null, listed = false;
+      const step = () => {
+        if (over) return;
+        if (ok() || Date.now() >= end) { over = true; clearTimeout(timer); done(ok()); return; }
+        if (!listed) { listed = true; wakers.push(() => { listed = false; step(); }); }
+        clearTimeout(timer); timer = setTimeout(step, Math.max(0, Math.min(t.poll, end - Date.now())));
+      };
+      step();
+    });
+    // Synchrone Ausnahmen der Lock-API wie Ablehnungen behandeln
+    const call = f => { try { return Promise.resolve(f()); } catch (e) { return Promise.reject(e); } };
+    // Sperre erhalten (Rückruf des Browsers). Das Ergebnis hält die Sperre, bis free() es auflöst; es lehnt nie ab.
+    const take = my => new Promise(resolve => {
+      let done = false;
+      const free = () => { if (done) return; done = true; if (hold === free) hold = null; resolve(); };
+      if (my !== epoch || state === 'suspended') { free(); return; }
+      hold = free;
+      const promote = () => {
+        if (my !== epoch || hold !== free) { free(); return; }
+        // Übernahme: neuesten Stand laden, beim ersten Start alte Schlüssel übernehmen. Scheitert das, bleibt alles, wie es ist.
+        try { if (options.onPromote) options.onPromote(); }
+        catch (e) { failure = e; free(); set('failed'); return; }
+        failure = null; mark('active'); set('writer');
+      };
+      // Übergabe: zuerst die Abgabe-Marke des vorherigen Fensters abwarten, damit dessen letzte Daten sichtbar sind
+      const prev = read(WRITER_KEY);
+      if (prev && prev.id !== id && prev.state === 'active') {
+        until(() => { const m = read(WRITER_KEY); return !m || m.id !== prev.id || m.state !== 'active'; }, t.handover).then(promote);
+      } else promote();
+    });
+    // Im Hintergrund auf die Sperre warten. Abgelehnte oder abgebrochene Anfragen enden ohne Ausnahme; request() stellt neu an.
+    const queue = () => {
+      if (queued || !locks || state === 'suspended') return;
+      const my = epoch, ctl = typeof AbortController === 'function' ? new AbortController() : null, q = { ctl };
+      queued = q;
+      call(() => locks.request(WRITER_LOCK, ctl ? { signal: ctl.signal } : {}, () => { if (queued === q) queued = null; return take(my); }))
+        .catch(e => { if (queued === q) queued = null; if (my !== epoch) return; failure = e; emit(); wake(); });
+    };
+    // Erste Anfrage beim Start und nach der Rückkehr: sofort schreiben, wenn frei, sonst lesen und anstellen.
+    const acquire = () => {
+      const my = ++epoch;
+      set('pending');
+      call(() => locks.request(WRITER_LOCK, { ifAvailable: true }, lock => {
+        if (my !== epoch) return null;
+        if (!lock) { if (state === 'pending') set('reader'); queue(); return null; }
+        return take(my);
+      })).catch(e => {
+        if (my !== epoch) return;
+        // Der Browser verweigert Web Locks (z. B. Sicherheitsregel): geschützter Lesemodus statt ungesichertem Schreiben
+        failure = e;
+        if (state === 'pending' || state === 'reader') set('unsupported');
+      });
+      return until(() => state !== 'pending', t.start).then(() => {
+        // keine Antwort: zum Ansehen weiter; wird die Sperre später doch erteilt, übernimmt das Fenster dann
+        if (my === epoch && state === 'pending') set('reader');
+        return state;
+      });
+    };
+    const gate = {
+      id,
+      state: () => state,
+      canWrite: () => state === 'single' || state === 'writer',
+      failure: () => failure,
+      onChange(f) { listeners.push(f); },
+      start() {
+        if (!readyPromise) readyPromise = locks && state === 'pending' ? acquire() : Promise.resolve(state);
+        return readyPromise;
+      },
+      // Ein anderes Fenster hat Marke oder Bitte geschrieben (storage-Ereignis)
+      onStorage(key) {
+        if (key === REQUEST_KEY && state === 'writer') {
+          const req = read(REQUEST_KEY);
+          if (req && req.id !== id) {
+            let busy = true;
+            try { busy = !!(options.isBusy && options.isBusy()); } catch (e) { /* im Zweifel nicht abgeben */ }
+            if (busy) mark('active', { busyFor: req.id, req: req.at });
+            else gate.release();
+          }
+        }
+        wake();
+      },
+      // Abgeben auf Bitte: Marke zuerst, dann die Sperre; danach wieder im Hintergrund anstellen
+      release() {
+        if (state !== 'writer' || !hold) return;
+        mark('released');
+        const free = hold;
+        set('reader'); free(); queue();
+      },
+      // Seite verlassen (pagehide, freeze): Schreibrecht und Sperre wirklich abgeben, nicht wieder anstellen
+      suspend() {
+        if (!locks || state === 'suspended' || state === 'unsupported' || state === 'single') return;
+        epoch++;
+        if (state === 'writer') mark('released');
+        const q = queued; queued = null;
+        if (q && q.ctl) { try { q.ctl.abort(); } catch (e) { /* älterer Browser: der späte Rückruf gibt die Sperre zurück */ } }
+        const free = hold;
+        set('suspended');
+        if (free) free();
+      },
+      // Rückkehr (pageshow aus dem bfcache, resume): neu erwerben; bei Erhalt wird der aktuelle Stand geladen
+      resume() {
+        if (state !== 'suspended') return Promise.resolve(state);
+        return acquire();
+      },
+      // Lesemodus ohne Web Locks: dieses Fenster schreibt erst nach ausdrücklicher Entscheidung allein
+      allowSingle() {
+        if (state !== 'unsupported') return state;
+        try { if (options.onPromote) options.onPromote(); } catch (e) { failure = e; emit(); return state; }
+        failure = null; set('single');
+        return state;
+      },
+      // „Hier bearbeiten“: Antwort 'writer', 'busy' (dort wird bearbeitet), 'timeout' (keine Antwort), 'failed' (Übernahme
+      // gescheitert), 'denied' (Sperranfrage abgelehnt), 'unsupported' oder 'suspended' – immer innerhalb von
+      // timing.request, auch wenn die erste Sperranfrage noch unbeantwortet ist
+      async request() {
+        const end = Date.now() + t.request;
+        if (gate.canWrite()) return 'writer';
+        if (state === 'unsupported' || state === 'suspended') return state;
+        if (state === 'pending') await until(() => state !== 'pending', end - Date.now());
+        if (gate.canWrite()) return 'writer';
+        if (state === 'pending') return 'timeout';
+        if (state === 'unsupported') return state;
+        if (state === 'failed') set('reader');
+        failure = null;
+        queue();
+        const at = Date.now() + Math.random();
+        try { storage.setItem(REQUEST_KEY, JSON.stringify({ id, at })); } catch (e) { /* ohne Bitte bleibt das Warten auf eine freie Sperre */ }
+        let busy = false;
+        const denied = () => !queued && !!failure && state === 'reader';
+        await until(() => {
+          if (gate.canWrite() || state === 'failed' || state === 'suspended' || denied()) return true;
+          const m = read(WRITER_KEY); busy = !!(m && m.busyFor === id && m.req === at); return busy;
+        }, end - Date.now());
+        return gate.canWrite() ? 'writer' : state === 'failed' || state === 'suspended' ? state : denied() ? 'denied' : busy ? 'busy' : 'timeout';
+      }
+    };
+    return gate;
+  }
   function createStore(storage, options = {}) {
-    let current, draft = null, cachedLegacy = null;
+    let current, draft = null, draftRev = 0, cachedLegacy = null;
     // lastRaw: the stored text this window last read or wrote. Another window of the same origin shares the
     // storage; if the stored text differs before a write, that window saved in between (P1).
     let lastRaw = null;
+    /* P54: rev zählt die Stände, die dieses Fenster von außen übernommen hat (anderes Fenster, Übernahme des
+       Schreibrechts, Rückkehr, Konflikt). Eine Bearbeitung beruht auf der Revision, mit der ihre Eingaben angezeigt
+       wurden (withBase). Ist der Stand inzwischen ein anderer, wird nichts gespeichert (Fehlercode STALE) – auch nicht
+       nach einer Übernahme des Schreibrechts, die den Stand still neu lädt. Ohne eigene Basis gilt mit trackView die
+       Revision, die die Seite zuletzt angezeigt hat (markShown); ohne trackView (Tests, Werkzeuge) keine. */
+    let rev = 0, shown = 0, base = null;
+    // P37: Rohtext eines älteren Schemas, der vor dem ersten Speichern des migrierten Stands gesichert wird
+    let before = null;
     const load = raw => {
-      const doc = migrate(validate(JSON.parse(raw)));
+      const parsed = JSON.parse(raw);
+      before = parsed && parsed.schemaVersion < VERSION ? raw : null;
+      const doc = migrate(validate(parsed));
       // Version 2 adds asset metadata and categories, version 3 optional depreciation.
       // Older versions keep their semantics through the adapter defaults.
       doc.schemaVersion=VERSION;
@@ -757,9 +969,43 @@
       for (const g of doc.groups) if (g.defaultProfile === undefined) g.defaultProfile = profileFor(g.name);
       return validate(doc);
     };
-    // Take over another window's state; a running import draft is discarded with it.
-    const adopt = raw => { const doc = load(raw); current = doc; lastRaw = raw; cachedLegacy = null; draft = null; };
+    // Take over another window's state. A running transaction keeps its draft; its commit is rejected (STALE).
+    const adopt = raw => {
+      const doc = load(raw); current = doc; lastRaw = raw; cachedLegacy = null; rev++;
+      if (options.onExternal) { try { options.onExternal(rev); } catch (e) { /* Anzeige darf das Laden nicht stören */ } }
+    };
+    let legacyKeys = null;
+    const gate = createWriterGate(storage, {
+      locks: options.locks, requireLocks: options.requireLocks, isBusy: options.isBusy, timing: options.timing,
+      // Schreibrecht erhalten: den neuesten Stand übernehmen (eine Übergabe kann gerade gespeichert haben). Offene
+      // Bearbeitungen behalten ihre Basis (P54). Jeder Fehler wirft und führt zu „failed“ mit freier Sperre (P55, P65).
+      onPromote() {
+        const raw = storage.getItem(KEY);
+        if (raw !== null) {
+          // P65: Ein unlesbarer fremder Stand (z. B. einer neueren App-Version) bleibt unangetastet; kein Schreibrecht.
+          if (raw !== lastRaw) {
+            try { adopt(raw); } catch (e) {
+              const error = new Error('Die gespeicherten Daten konnten nicht gelesen werden und bleiben unverändert (' + e.message + ').');
+              error.code = 'UNREADABLE';
+              throw error;
+            }
+          }
+          // P65: Ein inzwischen vorhandenes Hauptdokument ersetzt die beim Start vorgemerkte Erstübernahme. Es wird nur
+          // übernommen; ein älteres Schema wird erst beim nächsten regulären Speichern geschrieben, nach der
+          // Originalsicherung (P37). Die alten Schlüssel bleiben unberührt.
+          legacyKeys = null;
+        } else if (legacyKeys) writeLegacy();
+      }
+    });
     const persisted = storage.getItem(KEY);
+    // First start with the old keys: persist first, so quota/parse failures leave every legacy key untouched.
+    const writeLegacy = () => {
+      const raw = JSON.stringify(current);
+      storage.setItem(KEY, raw);
+      lastRaw = raw;
+      for (const k of legacyKeys) storage.removeItem(k);
+      legacyKeys = null;
+    };
     if (persisted !== null) {
       current = load(persisted);
       lastRaw = persisted;
@@ -770,16 +1016,37 @@
         if (LEGACY_KEYS.includes(k) || k.startsWith('ui-open-')) values[k] = storage.getItem(k);
       }
       current = fromLegacy(values);
-      // Persist first: quota/parse failures leave every legacy key untouched.
-      lastRaw = JSON.stringify(current);
-      storage.setItem(KEY, lastRaw);
-      for (const k of Object.keys(values)) storage.removeItem(k);
+      legacyKeys = Object.keys(values);
+      // Mit Web Locks schreibt erst das Fenster, das die Sperre erhält (onPromote)
+      if (gate.canWrite()) writeLegacy();
     }
+    const readOnly = () => {
+      // der Grund richtet sich nach dem Zustand des Schreibrechts (P55)
+      const st = gate.state(), f = gate.failure();
+      const error = new Error(st === 'unsupported' ? 'Nur ansehen: Dieser Browser kann nicht sicherstellen, dass nur ein Fenster speichert. Diese Änderung wurde nicht gespeichert.'
+        : st === 'failed' && f && f.code === 'UNREADABLE' ? 'Nur ansehen: Die gespeicherten Daten konnten nicht gelesen werden und bleiben unverändert. Diese Änderung wurde nicht gespeichert.'
+        : st === 'failed' ? 'Nur ansehen: Die Daten konnten in diesem Fenster nicht übernommen werden (z. B. Speicher voll). Diese Änderung wurde nicht gespeichert.'
+        : st === 'suspended' ? 'Nur ansehen: Diese Seite ist gerade nicht aktiv. Diese Änderung wurde nicht gespeichert.'
+        : 'Nur ansehen: Die Daten sind in einem anderen Fenster zum Bearbeiten geöffnet. Diese Änderung wurde nicht gespeichert.');
+      error.code = 'READ_ONLY';
+      if (options.onReadOnly) options.onReadOnly(error);
+      return error;
+    };
+    const stale = () => {
+      const error = new Error('Nicht gespeichert: Die Daten wurden inzwischen in einem anderen Fenster geändert. Deine Eingaben sind noch da.');
+      error.code = 'STALE';
+      return error;
+    };
     const commit = doc => {
       validate(doc);
       const raw = JSON.stringify(doc);
       // Nothing changed (e.g. removing an absent legacy key): no write, so no conflict with another window either.
       if (raw === lastRaw) { current = doc; cachedLegacy = null; return; }
+      // P34: nur das Fenster mit Schreibrecht speichert
+      if (!gate.canWrite()) throw readOnly();
+      // P54: Eingaben, die auf einem älteren Stand beruhen, überschreiben den neueren nie
+      const need = base !== null ? base : options.trackView ? shown : null;
+      if (need !== null && need !== rev) throw stale();
       const stored = storage.getItem(KEY);
       if (stored !== null && stored !== lastRaw) {
         // Never overwrite another window's save: adopt it (an unreadable one, e.g. from a newer app version,
@@ -790,7 +1057,10 @@
         if (options.onConflict) options.onConflict(error);
         throw error;
       }
+      // P37: vor dem ersten Speichern eines migrierten Stands das unveränderte Original sichern
+      if (before !== null && stored === before) storage.setItem(BACKUP_KEY, before);
       storage.setItem(KEY, raw);
+      before = null;
       lastRaw = raw;
       current = doc;
       cachedLegacy = null;
@@ -804,15 +1074,48 @@
       else commit(fromLegacy(values, current));
     };
     return {
+      // P34: Schreibrecht zwischen Fenstern
+      ready() { return gate.start(); },
+      canWrite() { return gate.canWrite(); },
+      writerState() { return gate.state(); },
+      writerFailure() { return gate.failure(); },
+      onWriterChange(f) { gate.onChange(f); },
+      requestWrite() { return gate.request(); },
+      releaseWrite() { gate.release(); },
+      allowSingle() { return gate.allowSingle(); },
+      // P63: Seite verlassen und zurückkehren (pagehide/pageshow, freeze/resume)
+      suspend() { gate.suspend(); },
+      resume() { return gate.resume(); },
+      leave() { gate.suspend(); },
+      onStorage(key) { gate.onStorage(key); },
+      // P54: Revisionen (siehe oben)
+      revision() { return rev; },
+      shownRevision() { return shown; },
+      markShown() { shown = rev; return rev; },
+      withBase(value, fn) {
+        if (!Number.isInteger(value)) throw new Error('Ungültige Basis');
+        const prev = base; base = value;
+        try { return fn(); } finally { base = prev; }
+      },
+      // P37: Stand vor dem letzten Update (Rohtext und Version), solange er gesichert ist
+      backupBeforeUpdate() {
+        const raw = storage.getItem(BACKUP_KEY);
+        if (raw === null) return before !== null ? { raw: before, version: JSON.parse(before).schemaVersion, pending: true } : null;
+        let version = null; try { version = JSON.parse(raw).schemaVersion; } catch (e) { /* Rohtext bleibt trotzdem exportierbar */ }
+        return { raw, version, pending: false };
+      },
       getItem(key) { const values = legacy(); return own(values, key) ? values[key] : null; },
       setItem(key, value) { change(key, value, false); },
       removeItem(key) { change(key, null, true); },
       clear() { if (draft) draft = record(); else commit(empty()); },
-      beginTransaction() { if (draft) throw new Error('Import läuft bereits'); draft = copy(legacy()); },
+      beginTransaction() { if (draft) throw new Error('Import läuft bereits'); draft = copy(legacy()); draftRev = rev; },
       commitTransaction() {
         if (!draft) throw new Error('Kein Import aktiv');
-        const doc = fromLegacy(draft, current);
-        commit(doc); draft = null;
+        // auch ein abgelehnter Abschluss (Konflikt, nur ansehen, veraltet, ungültig) beendet die Transaktion
+        try {
+          if (draftRev !== rev) throw stale();
+          commit(fromLegacy(draft, current));
+        } finally { draft = null; }
       },
       // Another window saved (storage event): take over its state without writing. Returns whether it changed.
       reload() {
@@ -829,6 +1132,7 @@
         for (const g of doc.groups) if (g.defaultProfile === undefined) g.defaultProfile = profileFor(g.name);
         commit(doc);
       },
+      primaryId() { return current.retirement.primary.id; },
       groupName(id) { const g = current.groups.find(g => g.id === id); return g ? g.name : null; },
       defaultGroupName(name) {
         const g = current.groups.find(g => g.name === name);
@@ -838,7 +1142,7 @@
       renamePosition(id, name) { const doc = copy(current); const p = doc.positions.find(p => p.id === id); if (!p) throw new Error('Unbekannte Position'); p.name = name; commit(doc); }
     };
   }
-  const api = { KEY, FORMAT, VERSION, empty, validate, migrate, fromLegacy, toLegacy, createStore };
+  const api = { KEY, BACKUP_KEY, FORMAT, VERSION, empty, validate, migrate, fromLegacy, toLegacy, createStore, createWriterGate };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.AssetsData = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

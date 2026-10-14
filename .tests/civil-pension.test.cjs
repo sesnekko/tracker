@@ -33,8 +33,14 @@ test('version 6 files stay readable; invalid Beamtenversorgung is rejected', () 
   assert.throws(() => Data.validate(unknown), /unbekanntes Feld/);
   const text = Data.empty(); text.retirement.primary.civilServicePension = { pensionableSalary: '4000' };
   assert.throws(() => Data.validate(text), /ungültige Zahl/);
+  // Seit Schema 17 (Entscheidung 14.10.2026: jede Altersvorsorge gehört zu einer Person) dürfen auch weitere Personen eine
+  // Beamtenversorgung haben; in älteren Versionen bleibt das Feld unbekannt, falsche Inhalte werden weiter abgelehnt.
   const partner = Data.empty();
-  partner.retirement.people.push({ id: 'person-1', name: 'Partner', statutoryPension: {}, civilServicePension: {} });
+  partner.retirement.people.push({ id: 'person-1', name: 'Partner', statutoryPension: {}, civilServicePension: { pensionableSalary: 3000 } });
+  assert.doesNotThrow(() => Data.validate(partner));
+  const older = JSON.parse(JSON.stringify(partner)); older.schemaVersion = 16;
+  assert.throws(() => Data.validate(older), /unbekanntes Feld/);
+  partner.retirement.people[0].civilServicePension = { salary: 1 };
   assert.throws(() => Data.validate(partner), /unbekanntes Feld/);
 });
 

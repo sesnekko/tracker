@@ -29,13 +29,14 @@ Sie gliedert sich in Abschnitte, die über Bereichsschalter ein- und ausgeschalt
 | Abschnitt | Inhalt | Bearbeitung |
 | --- | --- | --- |
 | **Aktueller Stand** (`_monthCardHTML`) | Monat, Summe, Hinweis, ob er berechnet oder unbestätigt ist; Knopf „Aktualisieren“ | Monats-Sheet `openMonthSheet()` |
+| **Nach dem Update** (`_migrationCardHTML`, Schema 16) | nur wenn eine Migration etwas nicht eindeutig übernehmen konnte (Review P35–P37): Gehalt einer Person zuordnen, Kinder-Jahrgang klären, Teilzeit ab Alter optional umstellen; dazu „Stand vor dem Update sichern“. Bis zur Klärung rechnet die App wie die frühere Version | je Punkt ein Sheet mit Vorher/Nachher: `openNetIncomeSheet`, `openChildYearSheet`, `openPartTimeSheet` |
 | **Nach und nach ergänzen** (`_nextStepsHTML`) | bis zu 3 Vorschläge, ausblendbar | Vorschlag startet ein Sheet oder eine Mini-Einrichtung (siehe EINRICHTUNG.md) |
-| **Haushalt** (`data-sec=household`, seit Schema 14, immer sichtbar) | Jede Person als eigene Karte mit Kopf (Initiale, Name, Rolle, Jahrgang) und Kontext (was ihr zugeordnet ist: Gehalt aus dem Budget, Rente, Pension, Depots, weitere Einkünfte, Kinderzulage; bei Kindern Kindergeld mit Enddatum). Unter dem Kopf jeder erwachsenen Person ein Zeitstrahl mit „In den Lebensphasen ändern“ (öffnet das Lebensphasen-Sheet bei dieser Person): bei „Ich“ die vier Phasen, bei weiteren Personen „Vollzeit → Teilzeit → ohne Arbeit → Rente“ in ihrem Alter. Arbeitszeit und Altersvorsorge je Phase, Arbeitsende und Rentenbeginn stehen nur im Lebensphasen-Sheet (Entscheidung 14.10.2026). Im Kontext steht das Gehalt je Abschnitt („3.200 €/Monat bis 50, dann 1.600 € (50 %) bis 60“). „Ich“ zeigt Geburtsjahr und -monat (zu ändern unter „Prognose & Annahmen“). Weitere Personen: Name, Geburtsjahr, gesetzliche Rente (Punkte, Brutto, Abzüge, Erwerbsminderung). Kinder: Name, Geburtsjahr, Geburtsmonat, Kindergeld bis 18/25, Kinderzulage bei. Die Zeile „Name“ erscheint nur im Bearbeiten-Modus. Unterzeile des Abschnitts: Personen, Kinder, Kindergeld | **Bearbeiten-Modus** → `saveEntry()` (`lt-drv-extra` mit den Phasenwerten aus dem gespeicherten Stand über `_withPersonPhases`, `lt-children`); ein Kind ohne Geburtsjahr wird mit Hinweis abgelehnt |
+| **Haushalt** (`data-sec=household`, seit Schema 14, immer sichtbar) | Jede Person als eigene Karte mit Kopf (Initiale, Name, Rolle, Jahrgang) und Kontext (was ihr zugeordnet ist: Gehalt aus dem Budget, Rente, Pension, Depots, weitere Einkünfte, Kinderzulage; bei Kindern Kindergeld mit Enddatum). Unter dem Kopf jeder erwachsenen Person ein Zeitstrahl mit „In den Lebensphasen ändern“ (öffnet das Lebensphasen-Sheet bei dieser Person): bei „Ich“ die vier Phasen, bei weiteren Personen „Vollzeit → Teilzeit → ohne Arbeit → Rente“ in ihrem Alter. Arbeitszeit und Altersvorsorge je Phase, Arbeitsende und Rentenbeginn stehen nur im Lebensphasen-Sheet (Entscheidung 14.10.2026). Im Kontext steht das Gehalt je Abschnitt („3.200 €/Monat bis 50, dann 1.600 € (50 %) bis 60“). „Ich“: Geburtsjahr und -monat, im Bearbeiten-Modus änderbar (seit 14.10.2026 nur hier, nicht mehr unter „Prognose & Annahmen“; unverändert wird nichts geschrieben). Weitere Personen: Name und Geburtsjahr; ihre gesetzliche Rente und Beamtenversorgung stehen unter Altersvorsorge, im Kontext als Ergebnis („Gesetzliche Rente 960 € netto ab 67“). Kinder: Name, Geburtsjahr, Geburtsmonat, Kindergeld bis 18/25, Kinderzulage bei. Die Zeile „Name“ erscheint nur im Bearbeiten-Modus. Unterzeile des Abschnitts: Personen, Kinder, Kindergeld | **Bearbeiten-Modus** → `saveEntry()` (`lt-drv-extra` mit den Phasenwerten aus dem gespeicherten Stand über `_withPersonPhases`, `lt-children`); ein Kind ohne Geburtsjahr wird mit Hinweis abgelehnt |
 | **Vermögenswerte** (`data-mod=assets`) | Liste der Positionen (`_assetListHTML`) | Sheet je Position `openAssetSheet(id)`, neu `openAddAssetSheet()` |
 | **Verbindlichkeiten** (`data-mod=liab`) | Liste der Kredite (`_liabListHTML`) | `openLoanSheet(id)`, neu `openAddLiabSheet()` |
-| **Altersvorsorge** (`data-mod=pension`) | gesetzliche Rente (+EM), Beamtenversorgung, Altersvorsorgedepots („Für“ eine Person; das Feld „Kinder (Jahrgang)“ entfällt, die Kinderzulage kommt aus den Kindern), weitere Renten & Einkünfte („Für“ eine Person, Alter in deren Alter); Ergebnis live | **Bearbeiten-Modus** → `saveEntry()` |
+| **Altersvorsorge** (`data-mod=pension`) | Jede Altersvorsorge gehört zu einer Person (Entscheidung 14.10.2026). **Gesetzliche Rente** je Person als Karte mit Kopf: deine mit Rentenwert, Ø-Entgelt und BBG (gelten für alle), weitere Personen mit Rentenpunkten, Brutto, Rentenbeginn (ihr Alter), Abzügen und Erwerbsminderung (`_pvDrvRowsHTML`); leere Karten nur im Bearbeiten-Modus. **Beamtenversorgung** je Person (`dpBv` für dich, `_pvBvRowsHTML` für weitere Personen, Schema 17), im Bearbeiten-Modus „+ Beamtenversorgung · Name“. Altersvorsorgedepots und weitere Renten & Einkünfte mit „Für“ eine Person; Ergebnis je Karte live (`_pvResults`) | **Bearbeiten-Modus** → `saveEntry()`; Personen werden aus Haushalt und Altersvorsorge zusammengeführt (`_mergePersonRows`): fehlt ein Bereich, bleibt sein gespeicherter Stand |
 | **Einnahmen & Ausgaben** (`data-mod=budget`) | automatische Kreditraten, Depots und Kindergeld, Posten (Einnahmen mit Person), einmalige Zahlungen, Konten, Daueraufträge | Sheets (siehe BUDGET.md) |
-| **Prognose & Annahmen** (`#v2-forecast-sec`, statisches HTML) | Vorschau Erfolgschance; Geburtsjahr, Lebenserwartung, Horizont, Inflation, Sicherheit; Lebensphasen (eine Zeile mit Zeitstrahl, öffnet das Lebensphasen-Sheet); Ereignisse; Rendite und Sparrate je Anlage | **sofort gespeichert** (`lt-set`-Felder, `_planListEditor`, `buildAssetParamsTable`) |
+| **Prognose & Annahmen** (`#v2-forecast-sec`, statisches HTML) | Vorschau Erfolgschance; Lebenserwartung, Horizont, Inflation, Sicherheit (Geburtsdaten seit 14.10.2026 im Haushalt); Lebensphasen (eine Zeile mit Zeitstrahl, öffnet das Lebensphasen-Sheet); Ereignisse; Rendite und Sparrate je Anlage | **sofort gespeichert** (`lt-set`-Felder, `_planListEditor`, `buildAssetParamsTable`). Einzelne Felder gelten auf dem aktuellen Stand; die Ereignisliste beruht auf dem Stand beim Zeichnen. Nach einer fremden Änderung speichert sie nichts, zeigt den aktuellen Stand und nennt die eigenen Eingaben; übertragen wird nur auf dieselbe Zeile (gespeicherte ID) und erst mit „Meine Eingaben übernehmen“ (P54, P64) |
 | Kacheln Einstellungen, Sicherung, Hilfe | `openInfoSheet('settings'\|'data'\|'help')` aus `<template id="tpl-…">` | siehe Abschnitt 5 |
 
 Jeder Abschnitt ist ein `<details>`. Der Untertitel kommt aus `_v2SubText`, z. B.
@@ -109,6 +110,20 @@ Gemeinsame Regeln:
 | Schreiben | Kopie der Legacy-Werte → Schlüssel ändern → `fromLegacy(values, current)` → `validate()` → ganzes Dokument schreiben | ≈1,8 ms (Node), ≈5 ms (Browser); bei 2,4 MB ≈73 ms |
 | Transaktion | `beginTransaction()` sammelt mehrere Schreibvorgänge im Entwurf; `commitTransaction()` prüft und schreibt einmal; `rollbackTransaction()` verwirft | – |
 
+- **Ein schreibendes Fenster (Review P34, P55, P63):** Nur das Fenster mit der Web Lock `vermoegen-writer` speichert;
+  weitere Fenster zeigen oben „Nur ansehen – die Daten sind in einem anderen Fenster zum Bearbeiten geöffnet“ mit „Hier
+  bearbeiten“. Ein Speicherversuch dort wird abgelehnt; nichts wird geschrieben. Scheitert die Übernahme (z. B. Speicher
+  voll), steht dort „Speichern war nicht möglich …“ mit „Erneut versuchen“; ohne nutzbare Web Locks „dieser Browser kann
+  nicht sicherstellen, dass nur ein Fenster speichert“ mit „Nur hier bearbeiten …“ (erst nach Bestätigung). Wer die Seite
+  verlässt (Navigation, Schließen, bfcache), gibt das Schreibrecht sofort ab und erwirbt es bei der Rückkehr neu; ein
+  nur verdeckter Tab behält es. Die App startet erst, wenn feststeht, ob das Fenster schreibt (spätestens nach 3 s zum
+  Ansehen); Wartung beim Start (Live-Monat, Gruppierung) holt ein Fenster nach, sobald es übernimmt. Zustände und
+  Übergänge in DATA_MODEL.md „Schreibrecht zwischen Fenstern“.
+- **Bearbeitungen mit Basis (Review P54):** Jede Bearbeitung (Sheet, Daten-Bearbeiten, Einrichtung, Import, Ereignisliste)
+  merkt sich den Stand, mit dem sie begann. Wurde inzwischen anderswo gespeichert – auch wenn dieses Fenster gerade das
+  Schreibrecht übernommen hat –, wird nichts gespeichert: Das Sheet bzw. die Daten-Seite zeigt den aktuellen Stand, trägt
+  die hier geänderten Felder markiert wieder ein (mit „Inzwischen gespeichert: …“, wenn das andere Fenster dasselbe Feld
+  geändert hat) und speichert erst beim erneuten Speichern.
 - Unbekannte Schlüssel lösen einen Fehler aus („Unbekannter Datenschlüssel“).
 - Schlägt `validate()` oder das Speicherkontingent fehl, bleibt der gespeicherte Stand
   unverändert (Tests: `data-model.test.cjs` „quota failures are atomic …“).
@@ -120,8 +135,8 @@ Gemeinsame Regeln:
 - **Mehrere Fenster** (seit 14.10.2026, P1/D9 behoben): Jedes Fenster hält eine eigene Kopie
   (`current`) und merkt sich den zuletzt gelesenen Stand (`lastRaw`). Vor jedem Schreiben prüft
   `commit`, ob ein anderes Fenster inzwischen gespeichert hat. Dann übernimmt der Speicher dessen
-  Stand und lehnt die eigene Änderung mit `code: 'CONFLICT'` ab; ein offenes Sheet zeigt die Meldung
-  „Die Daten wurden in einem anderen Fenster geändert …“. Einen unlesbaren fremden Stand (neuere
+  Stand und lehnt die eigene Änderung mit `code: 'CONFLICT'` ab; ein offenes Sheet wird wie oben (P54) mit dem
+  aktuellen Stand neu geöffnet. Einen unlesbaren fremden Stand (neuere
   App-Version) überschreibt er nie. Das `storage`-Ereignis ruft `appStorage.reload()` auf und
   zeichnet die Seite neu, sobald kein Sheet offen ist und kein Feld den Fokus hat; ein verdecktes
   Fenster übernimmt beim Wiedererscheinen. Übernehmen schreibt nichts, Schreiben ohne inhaltliche
@@ -166,6 +181,9 @@ Ereignisse, Konten und Budgetposten behalten beim Umbenennen ihre ID.
   - Auf Touch-Geräten über das Teilen-Menü, nur die Datei (sonst legt iOS eine zusätzliche
     Textdatei ab); sonst als Download.
   - Merkt sich den Zeitpunkt (`_backupDone`).
+- **Stand vor dem Update sichern** (`_downloadBeforeUpdate`, nur sichtbar, wenn vorhanden): unveränderter Rohtext der
+  Daten vor der letzten Umstellung auf ein neues Schema (`vermoegen-data-v1-before-update`, Review P37), Datei
+  `vermoegen_vor-update_vN.json`.
 - **Wiederherstellen** (`handleDataUpload`):
   - JSON: prüfen (`AssetsData.validate`), Rückfrage mit Stand, Anzahl Monate und Positionen,
     dann **vollständig ersetzen** (`importBackup`) und neu laden.
@@ -208,6 +226,9 @@ App kennenlernen (Rundgang), Demo-Daten laden (ersetzt alles nach Rückfrage), V
   Erfassung je Positionsart.
 - `concurrency.test.cjs` (seit 14.10.2026): zwei Fenster, Transaktion mit Konflikt, `reload()`,
   unlesbarer fremder Stand, Schreiben ohne Änderung.
+- `writer-lifecycle.test.cjs` (Folge-Review P54, P55, P63): Entwürfe mit Basis (Kontrollfall 3.200/4.000, Kredit-,
+  Budget- und Kinder-Sheet, Daten-Bearbeiten, Import), Fehlerpfade beim Erwerb, Verlassen und Rückkehr, späte Rückrufe,
+  gleichzeitige Übernahme, gesperrte Schreibwege; Testbrowser mit asynchronen Ereignissen und bfcache-Modell.
 - `pension-rules.test.cjs` „Schema 13“: neue Felder, Migration aus Schema 12, abgelehnte Importe,
   unvollständige Eingaben in der App.
 - Nicht abgedeckt: `resetApp` mit Gerätewerten (siehe D2), Bereichsschalter-Wechsel mit offenen Sheets.

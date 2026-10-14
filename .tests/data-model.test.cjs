@@ -25,7 +25,7 @@ const PHASE_FIELDS = "['pensionAge','pensionSpending','p1Work','p2Saving','p2Wor
 // (1) die Eingaben des Modells mit dem alten Stand und (2) die Ergebnisse zwischen Migration und frischem Import im
 // aktuellen Code. So bleibt belegt, dass die Migration nichts verliert, ohne einen fachlich falschen Sollwert festzuhalten.
 const GROUP_FIELDS = "['key','cat','gross','debt','legacyDebt','ret','vol','retDyn','volDyn','saving','avail','tax','hasLoanModel']";
-const DRV_NEW = "['inp','rag','zf','zfMonths','workEndMain','workUntil','by','net','prof']";
+const DRV_NEW = "['inp','rag','zf','zfMonths','workEndMain','workUntil','by','net','netInBudget','personId','prof']";
 function forecastInputs(a) {
   return a.json('(()=>{const p=buildPlan();const strip=d=>{d=Object.assign({},d);'+DRV_NEW+'.forEach(k=>delete d[k]);return d;};return {settings:Object.fromEntries(Object.entries(p.s).filter(([k])=>!'+PHASE_FIELDS+'.includes(k))),drv:strip(p.drv),extra:p.drvExtra.map(strip),groups:p.groups.map(g=>{const x={};'+GROUP_FIELDS+'.forEach(k=>x[k]=g[k]);x.loans=g.loans.map(l=>({bal:l.bal,rate:l.rate,pay:l.pay,extra:l.extra,follow:l.follow,fixedAge:l.fixedAge}));return x;})};})()');
 }
@@ -224,7 +224,10 @@ test('bundled JSON demo restores a complete household without double counting lo
   Data.validate(doc);
   const a = app(html); a.context.demo = doc;
   a.run("appStorage.importBackup(demo);_fc=loadFieldConfig();selectedMonth='2026-10';ensureNextMonth();");
-  assert.equal(doc.schemaVersion, Data.VERSION);
+  // Die Demo-Datei bleibt in dieser Runde unverändert (Schema 15, Review-Runde P34–P38 ändert keine Demo-Dateien);
+  // ältere Schemas lädt die App verlustfrei und speichert sie in der aktuellen Version.
+  assert.ok(doc.schemaVersion >= 15 && doc.schemaVersion <= Data.VERSION);
+  assert.equal(a.json('appStorage.document().schemaVersion'), Data.VERSION);
   assert.equal(doc.exportedAt, undefined);
   assert.equal(doc.snapshots.length, 34);
   assert.equal(doc.snapshots.at(-1).month, '2026-10', 'kein Live-Monat in der Demo; die App legt ihn beim Öffnen an');

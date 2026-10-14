@@ -4,7 +4,7 @@
    der in diesem Monatsstand erfassten Stückzahl. Vorher fragt die App nach; ohne Bestätigung ändert sich nichts. */
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { context, Data } = require('./forecast-fixture.cjs');
+const { context, fixture, Data } = require('./forecast-fixture.cjs');
 
 function doc() {
   const d = Data.empty();
@@ -109,4 +109,76 @@ test('Rückfrage wird angeboten, wenn eine Position mit früheren Stückzahlen n
   assert.equal(offered(a.json("_quoteState(_fc.fields.find(f=>f.id==='etf'))")), 0, 'unveränderte Kursquelle: keine Rückfrage');
   a.run('__timers.length=0'); a.run("_offerQuoteHistory('konto',null)");
   assert.equal(a.json('__timers.length'), 0, 'manuelle Position: keine Rückfrage');
+});
+
+/* ── P38 (Review 14.10.2026): Kurse gehören zu Instrument und Datenstand, die bestätigt wurden ── */
+function fund() {
+  const d = fixture([{ id: 'fund', group: 'ETF', cat: 'etf', value: 20 }]);
+  Object.assign(d.positions[0], { valuation: 'market', ticker: 'A.DE', unit: { name: 'Stück', key: 'fund' },
+    instrument: { provider: 'yahoo', symbol: 'A.DE', exchange: '', currency: 'EUR', name: 'A' } });
+  d.snapshots[0].positions[0].quantity = 1;
+  const a = context(d);
+  a.run(`globalThis.calls=[];globalThis.pend={};globalThis.asked=[];
+    fetchMonthlyPricesEUR=s=>{calls.push(s);return new Promise((res,rej)=>pend[s]={res,rej});};
+    _afterDataChange=()=>{};_toast=()=>{};_ask=async o=>{asked.push(o.text);return true;};`);
+  return a;
+}
+const tick = () => new Promise(r => setTimeout(r, 0));
+const switchToB = a => a.run("_fc.fields[0].ticker='B.DE';_fc.fields[0].instrument.symbol='B.DE';saveFieldConfig(_fc);const rd=loadStoredData();rd['2026-10']._units.fund=10;saveData(rd);");
+test('P38: Instrumentwechsel während eines verzögerten Abrufs – die Kurse des alten Instruments überschreiben nichts', async () => {
+  const a = fund();
+  const flow = a.run("quoteHistoryFlow('fund')");
+  switchToB(a);
+  a.run("pend['A.DE'].res({'2026-09':100})");
+  await tick();
+  assert.deepEqual(a.json('calls'), ['A.DE', 'B.DE'], 'die alte Antwort wird verworfen, das neue Instrument abgerufen');
+  a.run("pend['B.DE'].res({'2026-09':50})");
+  assert.equal(await flow, true);
+  const pos = a.json('appStorage.document().snapshots[0].positions[0]');
+  assert.deepEqual([pos.quantity, pos.value], [10, 500], '10 Stück × 50 € (B.DE), nicht 10 × 100 € (A.DE)');
+  assert.equal(a.json('asked.length'), 1, 'gefragt wird nur mit dem neuen Instrument');
+});
+test('P38: ist der Kurs des neuen Instruments nicht abrufbar, bleibt alles, wie der Nutzer es gespeichert hat', async () => {
+  const a = fund();
+  const flow = a.run("quoteHistoryFlow('fund')");
+  switchToB(a);
+  a.run("pend['A.DE'].res({'2026-09':100})");
+  await tick();
+  a.run("pend['B.DE'].rej(new Error('offline'))");
+  assert.equal(await flow, false);
+  const pos = a.json('appStorage.document().snapshots[0].positions[0]');
+  assert.deepEqual([pos.quantity, pos.value], [10, 20]);
+  assert.equal(a.json('asked.length'), 0);
+});
+test('P38: ändern sich betroffene Daten während der offenen Rückfrage, wird neu berechnet und erneut gefragt', async () => {
+  const a = app(true);
+  // während die Rückfrage offen ist, wird die Stückzahl für September von 12 auf 20 geändert
+  a.run("globalThis.n=0;_ask=async o=>{mock.asked.push(o);n++;if(n===1){const d=loadStoredData();d['2026-09']._units.etf=20;saveData(d);}return true;};");
+  assert.equal(await a.run("quoteHistoryFlow('etf')"), true);
+  assert.equal(a.json('mock.asked.length'), 2, 'zweite Rückfrage mit den neuen Werten');
+  assert.match(a.json('mock.asked[1].text'), /geändert/);
+  const v = values(a);
+  assert.deepEqual(v['2026-09'], [20 * 95, 1200], '20 Stück × 95 € statt der ursprünglich angezeigten 12 × 95 €');
+  assert.deepEqual(v['2026-10'], [12 * 102, 1300]);
+});
+test('P38: wird die erneute Rückfrage abgelehnt, bleibt die Änderung des Nutzers und sonst nichts', async () => {
+  const a = app(true), before = values(a);
+  a.run("globalThis.n=0;_ask=async o=>{mock.asked.push(o);n++;if(n===1){const d=loadStoredData();d['2026-09']._units.etf=20;saveData(d);return true;}return false;};");
+  assert.equal(await a.run("quoteHistoryFlow('etf')"), false);
+  assert.deepEqual(values(a), before, 'kein Wert überschrieben');
+  assert.equal(a.json("loadStoredData()['2026-09']._units.etf"), 20, 'die eigene Änderung bleibt');
+});
+test('P38: Instrumentwechsel während der offenen Rückfrage – nichts mit den alten Kursen, neu abrufen', async () => {
+  const a = app(true);
+  a.run("globalThis.n=0;_ask=async o=>{mock.asked.push(o);n++;if(n===1){_fc.fields.find(f=>f.id==='etf').instrument.symbol='Y.DE';saveFieldConfig(_fc);return true;}return false;};");
+  assert.equal(await a.run("quoteHistoryFlow('etf')"), false);
+  assert.equal(a.json('mock.asked.length'), 2, 'nach dem Wechsel wird mit dem neuen Instrument neu gefragt');
+  const v = values(a);
+  assert.deepEqual(v['2026-09'], [1300, 1200], 'mit dem alten Instrument wurde nichts übernommen');
+});
+test('P38: scheitert das Speichern mittendrin, bleibt der ganze Verlauf unverändert', async () => {
+  const a = app(true), before = a.storage.getItem(Data.KEY);
+  a.run("saveData=()=>{throw new Error('Speicher voll');};");
+  await assert.rejects(a.run("quoteHistoryFlow('etf')"), /Speicher voll/);
+  assert.equal(a.storage.getItem(Data.KEY), before);
 });
