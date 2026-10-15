@@ -995,24 +995,24 @@ body.v2-noliab #page-home .kpi-item[data-kpi="assets"],body.v2-noliab #page-home
 /* Zusammensetzung: Symbol, Name mit Anteil und Art, Wert mit Veränderung */
 .structure-section{padding:0}
 .v2-sec-split{display:flex;justify-content:space-between;gap:12px}
-#legendAssets,#legendAssets-ipad{background:var(--card);border-radius:16px;gap:0;overflow:hidden}
-#legendAssets .legend-row,#legendAssets-ipad .legend-row{gap:12px;padding:10px 14px 10px 12px;min-height:64px;border-bottom:none;position:relative;justify-content:space-between;transition:background .2s}
-#legendAssets .legend-row+.legend-row::before,#legendAssets-ipad .legend-row+.legend-row::before{content:'';position:absolute;top:0;left:62px;right:0;border-top:.5px solid var(--sep)}
+#legendAssets,#legendAssets-ipad,#ltLegend{background:var(--card);border-radius:16px;gap:0;overflow:hidden}
+#legendAssets .legend-row,#legendAssets-ipad .legend-row,#ltLegend .legend-row{gap:12px;padding:10px 14px 10px 12px;min-height:64px;border-bottom:none;position:relative;justify-content:space-between;transition:background .2s}
+#legendAssets .legend-row+.legend-row::before,#legendAssets-ipad .legend-row+.legend-row::before,#ltLegend .legend-row+.legend-row::before{content:'';position:absolute;top:0;left:62px;right:0;border-top:.5px solid var(--sep)}
 #legendAssets .legend-row:hover,#legendAssets-ipad .legend-row:hover{border-radius:0}
 #legendAssets .legend-row:active,#legendAssets-ipad .legend-row:active{background:var(--fill)}
 .v2-ico{width:38px;height:38px;border-radius:11px;background:var(--fill);color:var(--ink-soft);display:grid;place-items:center;flex-shrink:0;transition:background .2s,color .2s}
 .v2-ico svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .v2-row-l{flex:1;min-width:0;display:flex;flex-direction:column}
 .v2-row-r{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
-#legendAssets .legend-name,#legendAssets-ipad .legend-name{color:var(--ink);font-size:15.5px;line-height:1.3}
+#legendAssets .legend-name,#legendAssets-ipad .legend-name,#ltLegend .legend-name{color:var(--ink);font-size:15.5px;line-height:1.3}
 .v2-sub{display:flex;align-items:center;gap:6px;min-height:18px;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden}
 .v2-kind::before{content:'·';margin-right:6px}.legend-pct:empty{display:none}.legend-pct:empty+.v2-kind::before{content:none}
 /* Mit eingeblendetem „Details“ wird die Zeile schmaler: Prozent bleibt ganz, nur der Text wird gekürzt */
 .v2-sub .legend-pct{flex-shrink:0;white-space:nowrap}
 .v2-sub .v2-kind{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .legend-row.iso-active .v2-row-r,.legend-row.iso-active .legend-val{white-space:nowrap}
-#legendAssets .legend-pct,#legendAssets-ipad .legend-pct{font-size:13px;color:var(--muted);text-align:left;min-width:0}
-#legendAssets .legend-val,#legendAssets-ipad .legend-val{font-size:15.5px;line-height:1.3}
+#legendAssets .legend-pct,#legendAssets-ipad .legend-pct,#ltLegend .legend-pct{font-size:13px;color:var(--muted);text-align:left;min-width:0}
+#legendAssets .legend-val,#legendAssets-ipad .legend-val,#ltLegend .legend-val{font-size:15.5px;line-height:1.3}
 .legend-delta{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;margin-top:2px;line-height:18px}
 .legend-delta.up,.legend-delta.down{padding:0 7px;border-radius:999px}
 .legend-delta.up{color:var(--green);background:color-mix(in srgb,var(--green) 13%,transparent)}
@@ -1672,6 +1672,19 @@ button.v2-inc-row:active{opacity:.7}
 .v2-ret-stats .k{font-size:13px;color:var(--muted)}
 .v2-ret-stats .n{font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:2px;line-height:1.25}
 .v2-ret-stats .s{font-size:12.5px;color:var(--muted);margin-top:3px}
+/* Zeitverlauf (15.10.2026): Zeile unter den Kennzahlen im Stil von „So wird gerechnet“, öffnet die Liste je Anlage */
+.v2-lt-link.v2-tl-row{margin-top:14px;padding:12px 0 0;min-height:0;box-shadow:inset 0 .5px 0 var(--sep)}
+.v2-lt-link.v2-tl-row:active{background:none;opacity:.7}
+/* Zeitverlauf-Ansicht: ersetzt Ergebnis, Phasen und Annahmen unter dem Chart bzw. in der rechten Spalte */
+.lt-tl{display:none;margin-top:18px}
+#page-lifetime.lt-tl-on .lt-tl{display:block}
+#page-lifetime.lt-tl-on .desk-rail>:not(.lt-tl),#page-lifetime.lt-tl-on .lt-assume{display:none!important}
+.lt-tl .v2-lp-head{margin:0 2px 10px}
+.lt-tl-age{display:block;font-size:13px;font-weight:400;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:1px}
+.lt-tl-exit{display:inline-flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap}
+.lt-tl-exit svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+#ltLegend .legend-row{cursor:default}
+.lt-tl-note{font-size:12.5px;line-height:1.45;color:var(--muted);margin:10px 2px 0}
 .v2-mini{display:block;height:4px;border-radius:2px;background:var(--fill);margin:7px 0 5px;overflow:hidden;max-width:150px}
 .v2-mini i{display:block;height:100%;border-radius:2px;background:var(--green)}
 #v2-lt-open{margin-top:12px}
@@ -2552,6 +2565,7 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
 
 <!-- Ergebnis, Annahmen und Kennzahlen: auf dem Mac die rechte Spalte -->
 <div class="desk-rail">
+<div class="lt-tl" id="lt-timeline"></div>
 <div class="v2-ret" id="v2-lt-summary"></div>
 <div class="v2-lp" id="v2-lt-phases"></div>
 <button class="btn btn-ghost v2-wide" id="v2-lt-open"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Annahmen bearbeiten</button>
@@ -3196,14 +3210,19 @@ function buildNetGroups(details,includeNegative=false){
    – identische Logik wie die Asset-Linien im Netto-Chart (add minus liab). */
 function assetGroupValue(details,groupKey,allowNeg){
   if(!details)return 0;
+  const{add,sub}=_groupParts(details,groupKey);
+  return allowNeg?add-sub:Math.max(0,add-sub);
+}
+/* Vermögenswert (add) und Restschuld (sub) einer Gruppe in einem Monat */
+function _groupParts(details,groupKey){
   let add=0,sub=0;
-  _vf().forEach(f=>{
+  if(details)_vf().forEach(f=>{
     const grp=f.category==='liab'?_liabTargetGroup(f):(f.displayGroup||f.category);
     if(grp!==groupKey)return;
     if(f.category==='liab')sub+=(details[f.id]||0);
     else add+=(details[f.id]||0);
   });
-  return allowNeg?add-sub:Math.max(0,add-sub);
+  return{add,sub};
 }
 function cd(){return{responsive:true,maintainAspectRatio:false,events:[],plugins:{legend:{display:false},datalabels:{display:false},tooltip:{enabled:false}},interaction:{mode:'nearest',intersect:false}};}
 
@@ -3677,11 +3696,12 @@ function _v2Icon(key){
   else if(cats.includes('other'))n='chart';
   return `<svg viewBox="0 0 24 24">${V2_ICONS[n]}</svg>`;
 }
-function _v2GroupKind(key){
+/* gross: Vermögenswert ohne Abzug des Kredits (Zeitverlauf der Prognose zeigt die Restschuld als eigene Zeile) */
+function _v2GroupKind(key,gross){
   const fs=_v2GroupFields(key),has=c=>fs.some(f=>f.category===c);
   if(fs.length&&fs.every(f=>f.category==='liab'))return L('Kredit ohne Zuordnung','Loan without asset');
   let t=fs.some(f=>f.category!=='liab'&&AssetModel.liquidity(f)==='liquid')?'liquide':has('bav')?'Vorsorge':'illiquide';
-  if(has('liab'))t+=' · nach Kredit';
+  if(has('liab')&&!gross)t+=' · nach Kredit';
   return t;
 }
 /* Details des Vormonats (relativ zu ym), für die Veränderung in der Asset-Liste */
@@ -10767,6 +10787,8 @@ function simulatePlan(plan,retireAge,opt={}){
   for(let b=0;b<B;b++){bg[b]=buckets[b].g;tax[b]=buckets[b].tax;avA[b]=buckets[b].avail;if(buckets[b].withdrawable)wd.push(b);}
   const total=new Float64Array(nSteps),avail=new Float64Array(nSteps);
   const per=record?groups.map(()=>new Float64Array(nSteps)):null;
+  /* Wert und Restschuld je Gruppe getrennt (Liste „Vermögenswerte & Verbindlichkeiten“ im Prognose-Chart) */
+  const perGross=record?groups.map(()=>new Float64Array(nSteps)):null,perDebt=record?groups.map(()=>new Float64Array(nSteps)):null;
   const loanOutArr=record?new Float64Array(nSteps):null;
   const gf=new Float64Array(G),sr=Math.sqrt(0.3),sr1=Math.sqrt(0.7);
   const dep=plan.depositBucket;
@@ -10787,7 +10809,7 @@ function simulatePlan(plan,retireAge,opt={}){
     let tot=0,av=0;const age=plan.firstAge+y,kk=Math.max(0,Math.round((age-currentAge)*12)-1);
     const net=per?per.map(()=>0):null;
     for(let b=0;b<B;b++){tot+=V[b];if(net)net[bg[b]]+=V[b];if(buckets[b].withdrawable&&age>=avA[b]-1e-9)av+=V[b];}
-    for(let j=0;j<G;j++){const d=sc.debt[j][Math.min(kk,n-1)]||0;tot-=d;if(net)per[j][y]=net[j]-d;}
+    for(let j=0;j<G;j++){const d=sc.debt[j][Math.min(kk,n-1)]||0;tot-=d;if(net){per[j][y]=net[j]-d;perGross[j][y]=net[j];perDebt[j][y]=d;}}
     total[y]=tot;avail[y]=av;
   };
   if(sc.recK[0]>=0)rec(sc.recK[0]);
@@ -10851,7 +10873,7 @@ function simulatePlan(plan,retireAge,opt={}){
       }
     }));
   }
-  return{total,avail,per,loanOut:loanOutArr,shortfallAge};
+  return{total,avail,per,perGross,perDebt,loanOut:loanOutArr,shortfallAge};
 }
 
 /* Seeded Standardnormal-Zahlen (gleiche Zufallszahlen für alle Szenarien -> ruhige, vergleichbare Ergebnisse) */
@@ -11978,6 +12000,7 @@ function renderLifetimePageCalcs(){
     const ml=document.getElementById('lt-more-list');if(ml)ml.innerHTML='';
     const ph=document.getElementById('v2-lt-phases');if(ph)ph.innerHTML='';
     const psBtn=document.getElementById('psOpen');if(psBtn)psBtn.hidden=true;
+    _ltState=null;_ltTimelineRender();
   };
   if(!hasData&&!hasSettings){clearKpis();return;}
 
@@ -12073,7 +12096,7 @@ function renderLifetimePageCalcs(){
   const ink=getComputedStyle(document.body).getPropertyValue('--ink').trim();
   const grn=getComputedStyle(document.body).getPropertyValue('--green').trim();
   /* Historie: je Lebensjahr der letzte Monatsstand, ggf. in heutige Kaufkraft umgerechnet */
-  const histMap=new Map(),histAssetMaps=plan.groups.map(()=>new Map());
+  const histMap=new Map(),histAssetMaps=plan.groups.map(()=>new Map()),histGrossMaps=plan.groups.map(()=>new Map()),histDebtMaps=plan.groups.map(()=>new Map());
   sorted.forEach(ym=>{
     const[y,m]=ym.split('-').map(Number);
     const age=_ageAt(s,y,m-1);
@@ -12081,7 +12104,7 @@ function renderLifetimePageCalcs(){
     const f=real?Math.pow(1+infl,currentAge-age):1;
     histMap.set(ia,calc(data[ym]).net*f);
     const det2=data[ym]._details||{};
-    plan.groups.forEach((g,j)=>{histAssetMaps[j].set(ia,assetGroupValue(det2,g.key,true)*f);});
+    plan.groups.forEach((g,j)=>{const q=_groupParts(det2,g.key);histAssetMaps[j].set(ia,(q.add-q.sub)*f);histGrossMaps[j].set(ia,q.add*f);histDebtMaps[j].set(ia,q.sub*f);});
   });
   const histAges=[...histMap.keys()];
   const projAges=Array.from({length:plan.nSteps},(_,y)=>plan.firstAge+y);
@@ -12183,7 +12206,8 @@ function renderLifetimePageCalcs(){
   document.getElementById('ltLogToggleBtn').classList.toggle('active',ltUseLog);
   document.querySelectorAll('[data-lt-range]').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.ltRange)===ltRange));
 
-  _ltState={plan,det,mc,tc,real,infl,currentAge,allAges,histLine,projLine,projHi,projLo,histAssetMaps,availAtR,coverage,R,retireAge};
+  _ltState={plan,det,mc,tc,real,infl,currentAge,allAges,histLine,projLine,projHi,projLo,histAssetMaps,histGrossMaps,histDebtMaps,xMax:ltXMaxIdx,todayIdx:bridgeIdx,availAtR,coverage,R,retireAge};
+  _ltTimelineRender();
   _v2LtSummary({s,plan,mc,tc,retireAge,availAtR,coverage,R,currentAge});
   _v2LtPhases({s,plan,mc,currentAge,infl});
   /* C7: die Partner-Story („Euer Plan“) nur mit Partner/in bzw. weiterer erwachsener Person */
@@ -12227,7 +12251,8 @@ function _v2LtSummary(o){
     `<div class="v2-ret-stats">`+
       `<div data-info="v2-at-retire"><span class="k">${L('Verfügbar mit ','Available at ')}${_ageTxt(R)}</span><span class="n">${fmtCompact(Math.round(availAtR))}</span><span class="v2-mini"><i style="width:${cov.toFixed(1)}%"></i></span><span class="s">nötig: ${fmt(Math.round(tc.target/100)*100)}</span></div>`+
       `<div data-info="v2-retire-age"><span class="k">Sicher möglich ab</span><span class="n">${retTxt}</span><span class="s">${retSub}</span></div>`+
-    `</div>`;
+    `</div>`+
+    `<button type="button" class="v2-lt-link v2-tl-row" onclick="ltTimeline(true)"><span class="ps-open-i v2-lt-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${V2_ICONS.chart}</svg></span><span class="t">${L('Zeitverlauf','Timeline')}<small>${L('Anlagen und Kredite über die Jahre','Assets and loans over the years')}</small></span><span class="v2-chev" aria-hidden="true"></span></button>`;
   const pv=document.getElementById('v2-prev-pct');
   if(pv){pv.textContent=pct+' %';pv.style.color=ok?'var(--green)':'var(--red)';}
   const pt=document.getElementById('v2-prev-txt');
@@ -12912,6 +12937,83 @@ function _v2InitModules(){
 }
 /* Scrubben im Prognose-Chart: Hero, Bänder, Ziel-Balken und Asset-Werte für das gewählte Alter */
 let _ltCleanup=null;
+/* ── Zeitverlauf (15.10.2026): „Zeitverlauf“ in der Ergebnis-Karte (zwischen „Verfügbar mit …“ und „Sicher möglich ab“)
+   wechselt in eine eigene Ansicht. Unter dem Chart (Mac: rechte Spalte) steht dann statt Ergebnis, Phasen und Annahmen
+   die Liste der Vermögen-Seite; „Zurück zur Prognose“ beendet die Ansicht. Je Gruppe eine Zeile für den Vermögenswert
+   und, falls vorhanden, eine für die Restschuld. Beim Fahren über den Chart zeigt jede Zeile den Wert im gewählten Alter,
+   den Anteil und die Veränderung gegenüber heute. Historie aus den Monatsständen, Prognose aus dem Erwartungspfad (ohne
+   Schwankungen), beides in heutiger Kaufkraft wie der Chart. Verbindlichkeiten zählen negativ. ── */
+let ltTimelineOn=false,_ltTl=null;
+function _ltGroupRows(S){
+  if(!S||!S.plan||!S.det||!S.det.perGross)return[];
+  const{plan,det,allAges,currentAge,infl}=S,cur=Math.floor(currentAge);
+  const series=(maps,arr,j)=>allAges.map(a=>{
+    if(a<=cur&&maps&&maps[j]&&maps[j].has(a))return maps[j].get(a);
+    const yi=a-plan.firstAge;
+    return yi>=0&&yi<plan.nSteps?arr[j][yi]/Math.pow(1+infl,a-currentAge):null;
+  });
+  const assets=[],liabs=[];
+  plan.groups.forEach((g,j)=>{
+    const gv=series(S.histGrossMaps,det.perGross,j),dv=series(S.histDebtMaps,det.perDebt,j),name=_groupDisplayName(g.key);
+    if(g.gross>0.5||gv.some(v=>v>0.5))assets.push({key:g.key,liab:false,name,kind:_v2GroupKind(g.key,true),icon:_v2Icon(g.key),now:g.gross,vals:gv});
+    if(g.debt>0.5||dv.some(v=>v>0.5)){
+      const fs=_vf().filter(f=>f.category==='liab'&&_liabTargetGroup(f)===g.key);
+      const lname=fs.length===1?fs[0].label:g.gross>0.5?L('Kredite · ','Loans · ')+name:name;
+      liabs.push({key:g.key,liab:true,name:lname,kind:L('Restschuld','Outstanding balance'),icon:`<svg viewBox="0 0 24 24">${V2_ICONS.bank}</svg>`,now:-g.debt,vals:dv.map(v=>v==null?null:-v)});
+    }
+  });
+  const big=(x,y)=>Math.abs(y.now)-Math.abs(x.now);
+  return assets.sort(big).concat(liabs.sort(big));
+}
+/* Anzeige je Zeile an einer Stelle des Charts (at = Index in allAges, null = heute): Wert, Anteil an den Vermögenswerten,
+   Veränderung zu heute */
+function _ltTlView(rows,at){
+  const val=r=>at==null?r.now:r.vals[at];
+  const total=rows.reduce((a,r)=>{const v=val(r);return a+(!r.liab&&v>0?v:0);},0);
+  return rows.map(r=>{
+    const v=val(r);
+    return{v,pct:r.liab||v==null||!(total>0)?'':Math.round(Math.max(0,v)/total*100)+' %',delta:at==null||v==null?null:v-r.now};
+  });
+}
+function _ltTimelineHTML(rows){
+  const head=`<div class="v2-lp-head"><span class="v2-ret-title">${L('Zeitverlauf','Timeline')}<small class="lt-tl-age" id="lt-tl-age">${L('heute','today')}</small></span><button type="button" class="v2-lp-btn lt-tl-exit" onclick="ltTimeline(false)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>${L('Zurück zur Prognose','Back to forecast')}</button></div>`;
+  if(!rows.length)return head+`<div class="v2-empty">${L('Keine Vermögenswerte vorhanden','No assets yet')}</div>`;
+  const view=_ltTlView(rows,null);
+  const li=rows.map((r,i)=>`<li class="legend-row${r.liab?' lt-tl-liab':''}" data-tl="${i}"><span class="v2-ico">${r.icon}</span><div class="v2-row-l"><span class="legend-name">${escHTML(r.name)}</span><span class="v2-sub"><span class="legend-pct">${view[i].pct}</span><span class="v2-kind">${escHTML(r.kind)}</span></span></div><div class="v2-row-r"><span class="legend-val${view[i].v<-0.5?' neg':''}">${fmt(Math.round(view[i].v))}</span><span class="legend-delta"></span></div></li>`).join('');
+  return head+`<ul class="legend-list" id="ltLegend">${li}</ul><p class="lt-tl-note">${L('Fahr über den Chart: Werte im gewählten Alter und Veränderung gegenüber heute. Erwarteter Verlauf ohne Kursschwankungen, in heutiger Kaufkraft.','Move along the chart: values at the chosen age and change from today. Expected path without market swings, in today\'s money.')}</p>`;
+}
+function _ltTimelineRender(){
+  const on=ltTimelineOn&&!!_ltState,pg=document.getElementById('page-lifetime'),box=document.getElementById('lt-timeline');
+  if(pg)pg.classList.toggle('lt-tl-on',on);
+  if(!box)return;
+  _ltTl=on?{rows:_ltGroupRows(_ltState)}:null;
+  box.innerHTML=on?_ltTimelineHTML(_ltTl.rows):'';
+}
+/* idx = Index im Chart (allAges); null = heute */
+function _ltTimelineAt(idx){
+  const M=_ltTl,S=_ltState,box=document.getElementById('lt-timeline');
+  if(!M||!S||!box)return;
+  const age=idx==null?null:S.allAges[idx],view=_ltTlView(M.rows,age==null?null:idx);
+  const ageEl=document.getElementById('lt-tl-age');
+  if(ageEl)ageEl.textContent=age==null?L('heute','today'):L('mit ','at ')+age+' ('+Math.round(S.plan.s.birthYear+age)+')';
+  box.querySelectorAll('#ltLegend .legend-row').forEach(li=>{
+    const x=view[+li.dataset.tl];if(!x)return;
+    const vEl=li.querySelector('.legend-val'),pEl=li.querySelector('.legend-pct');
+    if(vEl){vEl.textContent=x.v==null?'—':fmt(Math.round(x.v));vEl.classList.toggle('neg',x.v!=null&&x.v<-0.5);}
+    if(pEl)pEl.textContent=x.pct;
+    _setLegendDelta(li.querySelector('.legend-delta'),x.delta);
+  });
+}
+/* Ansicht wechseln; auf dem iPhone danach Chart und Liste zusammen bzw. wieder die Ergebnis-Karte zeigen */
+function ltTimeline(on){
+  ltTimelineOn=!!on;haptic('light');
+  _ltTimelineRender();
+  const rail=document.querySelector('#page-lifetime .desk-rail');if(rail)rail.scrollTop=0;
+  const tgt=document.querySelector(on?'#page-lifetime .chart-section':'#v2-lt-summary');
+  if(!tgt||!tgt.getBoundingClientRect)return;
+  const top=tgt.getBoundingClientRect().top;
+  if(on?top<0:top<0||top>window.innerHeight*0.6)window.scrollTo({top:Math.max(0,top+window.scrollY-(on?64:110)),behavior:'smooth'});
+}
 function setupLifetimeInteraction(){
   if(_ltCleanup)_ltCleanup();
   const canvas=document.getElementById('chartLifetime');
@@ -12987,6 +13089,7 @@ function setupLifetimeInteraction(){
         if(vI){vI.value=_numStr(S.plan.vol[j*n+yi]*100);vI.classList.add('scrub');}
       }
     });
+    _ltTimelineAt(idx);
     showCross(idx);
   }
   function restore(){
@@ -13013,6 +13116,7 @@ function setupLifetimeInteraction(){
         if(vI){vI.value=_numStr(P('vol'))||'0';vI.classList.remove('scrub');}
       }
     });
+    _ltTimelineAt(null);
   }
   let active=false;
   const onTS=e=>{e.preventDefault();active=true;chartInteractionActive=true;showAtIdx(getIdx(e.touches[0].clientX));};

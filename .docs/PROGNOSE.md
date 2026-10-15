@@ -450,7 +450,35 @@ Weitere Darstellungsregeln:
 Beim Fahren oder Tippen über den Chart zeigt der Hero den Wert im gewählten Alter. Das Label
 lautet „Mit X Jahren (Jahr) · Phase“, die Pille „80 % zwischen p10 und p90“ bzw.
 „Historischer Stand“. Außerdem aktualisiert der Crosshair den (unsichtbaren) Lebens- und
-Ziel-Balken.
+Ziel-Balken und, wenn geöffnet, die Liste im Zeitverlauf (8.2a).
+
+### 8.2a Zeitverlauf (`ltTimeline`, `_ltGroupRows`, `_ltTimelineAt`)
+
+Seit 15.10.2026 steht in der Ergebnis-Karte unter den Kennzahlen „Verfügbar mit …“ und „Sicher möglich ab“ die
+Zeile „Zeitverlauf · Anlagen und Kredite über die Jahre ›“ (Stil wie „So wird gerechnet“). Ein erster Entwurf als
+Kachel zwischen den beiden Kennzahlen passte optisch nicht und wurde verworfen. Die Zeile wechselt in eine eigene Ansicht
+(`#page-lifetime.lt-tl-on`): Unter dem Chart (Mac: rechte Spalte) stehen dann statt Ergebnis, Phasen,
+Kennzahlen und Annahmen nur die Liste und oben „Zurück zur Prognose“, das die normale Ansicht wiederherstellt.
+Auf dem iPhone rollt die Seite beim Öffnen zum Chart und beim Schließen zurück zur Ergebnis-Karte. Der Zustand
+gilt für die Sitzung (nicht gespeichert).
+
+- **Liste wie auf der Vermögen-Seite** (`#ltLegend`, gleiche Zeilen und Stile wie `#legendAssets`): Symbol,
+  Name, Anteil · Art, Wert, Veränderung. Ein Tipp auf eine Zeile tut nichts.
+- **Zeilen:** je Gruppe der **Vermögenswert brutto** (Art ohne „nach Kredit“) und, wenn die Gruppe einen Kredit
+  hat oder bekommt, die **Restschuld als eigene Zeile** (Bank-Symbol, Art „Restschuld“, negativ, rot). Name der
+  Schuld: der Name des Kredits, bei mehreren „Kredite · Gruppe“. Anders als auf der Vermögen-Seite, die eine
+  Gruppe netto „nach Kredit“ zeigt, sieht man so die Tilgung. Erst alle Vermögenswerte, dann alle
+  Verbindlichkeiten, je Block nach heutigem Betrag sortiert; die Reihenfolge bleibt beim Fahren gleich.
+- **Werte:** ohne Berührung der heutige Stand (`g.gross`, `−g.debt`). Beim Fahren der Wert im gewählten Alter:
+  bis heute aus den Monatsständen (`histGrossMaps`/`histDebtMaps`, wie die Historie des Charts), danach aus dem
+  **Erwartungspfad** `det.perGross`/`det.perDebt`, beides in heutiger Kaufkraft. Anteil = Anteil an der Summe der
+  Vermögenswerte im gewählten Alter (Restschulden ohne Anteil). Die Pille zeigt die Veränderung gegenüber heute;
+  bei Krediten heißt eine sinkende Restschuld „+“ (Beitrag zum Vermögen steigt). Der Kopf zeigt „heute“ bzw.
+  „mit X (Jahr)“.
+- `simulatePlan(…,{record:true})` liefert dafür zusätzlich `perGross` (Summe der Töpfe je Gruppe) und `perDebt`
+  (Restschuld je Gruppe); es gilt `per = perGross − perDebt`. Ohne `record` (Monte-Carlo) bleiben beide `null`.
+- Die Summe der Zeilen ist der Erwartungspfad und kann vom Median (Hero) abweichen; der Hinweis unter der Liste
+  sagt „Erwarteter Verlauf ohne Kursschwankungen, in heutiger Kaufkraft“.
 
 ### 8.3 Einkommen im Ruhestand
 
@@ -595,6 +623,9 @@ Abgedeckt (`node --test .tests/`):
   Ereignis im laufenden Jahr (P13), künftiger Snapshot (P28), Geburtsmonat (P17), kein Ruhestand am
   Horizont (P23), Suchkandidaten mit eigenen Renten (P9), nicht monotone Suche, Fehlbetrag statt
   Liquiditätsschwelle (P27), Budgetmonat (P7).
+- **Zeitverlauf** (`lt-timeline.test.cjs`): `per = perGross − perDebt`, Zeilen und Reihenfolge, Werte je
+  Alter (Prognose und Historie), Anteil und Veränderung, Liste wie auf der Vermögen-Seite, Knopf in der
+  Ergebnis-Karte (Zeile unter den Kennzahlen), Ansicht wechseln, Markup.
 - **Rentenregeln** (`pension-rules.test.cjs`): Zugangsfaktor und Beginn ab 63 (P3), Pension (P29),
   Zulagen je Person und Kind (P25), Partnergehalt in Simulation und Texten (P5), Einkommenskarte
   (P11/P12), Schema 13.
