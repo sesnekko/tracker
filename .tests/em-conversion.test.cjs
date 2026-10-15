@@ -1,7 +1,8 @@
-/* 15.10.2026: Erwerbsminderungsrente mit getrennt erfasster Zurechnungszeit, Zugangsfaktor und Besitzschutz bei der
-   Umwandlung in die Altersrente, individuelle Hinzuverdienstgrenze (Schema 18); Altersvorsorgedepot im Vorruhestand;
-   Phasenbalken je Person und Infobox der Prognose. Erwartungen aus SGB VI (§ 77 Abs. 3, § 88, § 96a) und einfacher
-   Arithmetik mit Rentenwert 42,52 € und 20 % Abzügen. */
+/* 15.10.2026: Besitzschutz-Frist und individuelle Hinzuverdienstgrenze der Erwerbsminderungsrente (§ 88, § 96a SGB VI);
+   Altersvorsorgedepot im Vorruhestand; Phasenbalken je Person und Infobox der Prognose. Erwartungen aus dem SGB VI und
+   einfacher Arithmetik mit Rentenwert 42,52 € und 20 % Abzügen. Die Tests zur Zurechnungszeit, zum Zugangsfaktor und zum
+   Übergang in die Altersrente stehen seit Schema 19 in em-old-age.test.cjs (Entgeltpunkte laut Bescheid statt
+   getrennter Zurechnungszeit zusätzlich zu den Rentenpunkten). */
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -19,38 +20,6 @@ function ctx(settings = {}) {
   return a;
 }
 const calc = (a, d) => a.json(`calcDrvPension(getLifetimeSettings(),Object.assign(getDrv(),${JSON.stringify(d)}))`);
-
-test('EM aus tatsächlichen Punkten und Zurechnungszeit; Altersrente mindestens deren persönliche Entgeltpunkte', () => {
-  const a = ctx();
-  const r = calc(a, { points: 20, emZz: 15, emType: 2, emZf: 0.9 });
-  near(r.em.gross, 35 * 0.9 * 1 * RW * NET);
-  assert.equal(r.em.derived, true, 'ohne Zahlbetrag aus Punkten berechnet');
-  near(r.calcNetto, 20 * 0.9 * RW * NET, 1e-6);
-  near(r.em.full, r.em.gross);
-  near(r.netto, r.em.gross);
-  assert.equal(r.besitz, true);
-});
-
-test('Beschäftigung neben der EM-Rente: neue Punkte zählen mit Faktor 1, die Zurechnungszeit nicht noch einmal', () => {
-  const a = ctx();
-  const r = calc(a, { points: 20, emZz: 15, emType: 2, emZf: 0.9, em: 1100, salary: 51944, emLimit: 60000 });
-  near(r.epNew, 67 - 46.75);
-  near(r.calcNetto, (20 * 0.9 + (67 - 46.75)) * RW * NET);
-  assert.ok(r.calcNetto > r.em.full, 'eigene Punkte bringen mehr als der Besitzschutz');
-  near(r.netto, r.calcNetto);
-  // Zurechnungszeit getrennt: die eigene Rechnung enthält die 15 Punkte nicht
-  assert.ok(r.calcNetto < (35 * 0.9 + (67 - 46.75)) * RW * NET - 1);
-  assert.equal(r.em.cut, 0, 'Hinzuverdienst unter der Grenze laut Bescheid');
-});
-
-test('teilweise EM: Rentenartfaktor 0,5; die Altersrente bekommt Faktor 1,0, also mindestens das Doppelte', () => {
-  const a = ctx();
-  const r = calc(a, { points: 20, emZz: 15, emType: 1 });
-  near(r.em.gross, 35 * 0.892 * 0.5 * RW * NET);
-  near(r.em.full, 2 * r.em.gross);
-  near(r.netto, 2 * r.em.gross);
-  assert.equal(r.em.zf, 0.892, 'ohne Angabe der höchste Abschlag');
-});
 
 test('Besitzschutz nur, wenn die Altersrente höchstens 24 Monate nach dem Ende der EM-Rente beginnt', () => {
   const a = ctx();
@@ -71,32 +40,6 @@ test('individuelle Hinzuverdienstgrenze bei beiden Arten; ohne Angabe die gesetz
   const part = calc(a, { points: 20, emType: 1, em: 500, salary: 30000, emLimit: 20000 });
   assert.equal(part.em.limit, 20000, 'Bescheid-Grenze gilt auch unter dem Mindestwert');
   assert.equal(a.run("_emLimitPh(2)"), '20.764');
-});
-
-test('Abgleich: Punkte und Zurechnungszeit passen nicht zum Bescheid → Hinweis; Zugangsfaktor auch als Prozent', () => {
-  const a = ctx();
-  const html1 = a.run(`(()=>{const d=Object.assign(getDrv(),{points:20,emZz:15,emType:2,em:500});return _drvResultHTML(d,calcDrvPension(getLifetimeSettings(),d),67);})()`);
-  assert.match(html1, /Punkte und Zurechnungszeit ergeben/);
-  const html2 = a.run(`(()=>{const d=Object.assign(getDrv(),{points:20,emZz:15,emType:2,em:${(35 * 0.892 * RW * NET).toFixed(2)}});return _drvResultHTML(d,calcDrvPension(getLifetimeSettings(),d),67);})()`);
-  assert.doesNotMatch(html2, /Punkte und Zurechnungszeit ergeben|Zurechnungszeit\? Dann/);
-  assert.equal(a.json("_drvEmClean({emType:2,em:900,emZf:89.2,emZz:''}).emZf"), 0.892);
-  assert.equal(a.json("'emZz' in _drvEmClean({emType:2,em:900,emZz:0})"), false);
-});
-
-test('Schema 18: Zurechnungszeit und Zugangsfaktor werden gespeichert, exportiert und geprüft', () => {
-  const a = ctx();
-  a.run("appStorage.setItem('lt-drv',JSON.stringify(Object.assign(getDrv(),{points:20,emType:2,em:900,emZz:12.5,emZf:0.9})))");
-  const sp = a.json('appStorage.document().retirement.primary.statutoryPension');
-  assert.equal(sp.disabilityCreditedPoints, 12.5); assert.equal(sp.disabilityAccessFactor, 0.9);
-  assert.equal(a.json('getDrv().emZz'), 12.5);
-  const doc = a.json('appStorage.exportBackup()');
-  assert.equal(doc.schemaVersion, 18);
-  const b = Data.createStore(new MemoryStorage()); b.importBackup(JSON.parse(JSON.stringify(doc)));
-  assert.equal(b.document().retirement.primary.statutoryPension.disabilityCreditedPoints, 12.5);
-  const v17 = JSON.parse(JSON.stringify(doc)); v17.schemaVersion = 17;
-  assert.throws(() => Data.validate(v17), /disabilityCreditedPoints|Gesetzliche Rente/);
-  const bad = JSON.parse(JSON.stringify(doc)); bad.retirement.primary.statutoryPension.disabilityAccessFactor = 1.2;
-  assert.throws(() => Data.validate(bad), /Zugangsfaktor/);
 });
 
 test('Altersvorsorgedepot: im Vorruhestand weder Beiträge noch Zulagen, das Kapital verzinst sich bis zur Auszahlung weiter', () => {

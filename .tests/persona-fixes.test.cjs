@@ -175,8 +175,11 @@ test('A10/A5: Hinweise bei sehr wenigen Punkten und bei Punkten, die schon die E
   const line=d=>a.run(`(()=>{const d=Object.assign({},DRV_DEFAULTS,${JSON.stringify(d)});return _drvResultHTML(d,calcDrvPension(getLifetimeSettings(),d),67);})()`);
   assert.match(line({points:2.1}),/fünf Beitragsjahren/);
   assert.doesNotMatch(line({points:2.1,salary:30000}),/fünf Beitragsjahren/,'mit weiteren Beiträgen kein Hinweis');
-  assert.match(line({points:36.3,emType:2,em:1200,salary:18000}),/Zurechnungszeit/);
-  assert.doesNotMatch(line({points:20,emType:2,em:1200}),/Zurechnungszeit/);
+  // Schema 19: Rentenpunkte bei einer EM-Rente (ohne Entgeltpunkte laut Bescheid) stammen aus einer früheren Version und
+  // werden immer zur Klärung angeboten; „vermutlich mit Zurechnungszeit“ nur, wenn sie schon etwa die EM-Rente ergeben (A5).
+  assert.match(line({points:36.3,emType:2,em:1200,salary:18000}),/enthalten vermutlich die Zurechnungszeit/);
+  assert.doesNotMatch(line({points:20,emType:2,em:1200}),/vermutlich/);
+  assert.match(line({points:20,emType:2,em:1200}),/früheren Version/);
 });
 
 test('C2/C8: Kredit ohne Vermögenswert als eigene Zeile, typografisches Minus',()=>{

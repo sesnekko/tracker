@@ -180,7 +180,9 @@ test('old-age pension after a partial EM pension: the higher of the protected mi
   near(working.epTotal, 20 + (67 - 46.75));
   // § 77 Abs. 3 SGB VI (seit 15.10.2026 abgebildet): die 20 Punkte, die schon Grundlage der EM-Rente waren, behalten deren
   // Zugangsfaktor (ohne Angabe 0,892); die neuen Punkte aus der Teilzeit zählen mit dem Faktor der Altersrente (1,0).
-  near(working.calcNetto, (20 * 0.892 + (67 - 46.75)) * 42.52 * 0.8);
+  // Sollwert korrigiert (Schema 19): bei teilweiser Erwerbsminderung gilt der alte Faktor nur für die Hälfte der Punkte
+  // (§ 77 Abs. 3 Satz 2 SGB VI), die andere Hälfte bekommt 1,0. Vorher: 20 × 0,892.
+  near(working.calcNetto, (20 * (0.5 * 0.892 + 0.5 * 1) + (67 - 46.75)) * 42.52 * 0.8);
   assert.ok(working.calcNetto > 1000);
   near(working.netto, working.calcNetto);
   // Without further points the protected minimum (twice the partial EM pension) applies.

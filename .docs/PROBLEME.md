@@ -260,6 +260,27 @@ Dazu Darstellung auf dem iPhone (Rückmeldung mit Bildschirmfotos):
 
 `node --test .tests/` **351/351**, Audit **22/0**.
 
+**EM-Rente und spätere Altersrente (15.10.2026, Schema 19)**, Anlass: Prüfung mit dem Testfall 61,2256 Entgeltpunkte,
+davon 39,8909 aus beitragsfreien Zeiten, Zugangsfaktor 0,892, teilweise EM seit 2026, Teilzeit bis zur Regelaltersgrenze.
+`data-store.js?v=32`, `i18n-en.js?v=17`, Cache `verm-v133`.
+
+| Befund | Änderung | Nachweis |
+| --- | --- | --- |
+| F1 § 77 Abs. 3 Satz 2 fehlte | Bei teilweiser EM behält nur die Hälfte der alten Punkte den Zugangsfaktor der EM-Rente, die andere bekommt den der Altersrente (z. B. 0,946 statt 0,892) | `em-old-age.test.cjs`; Sollwert korrigiert in `disability-pension.test.cjs` und `retirement-income.test.cjs` (vorher 20 × 0,892) |
+| F2 Besitzschutz als doppelter Netto-Zahlbetrag | Untergrenze in persönlichen Entgeltpunkten (gesamt × Zugangsfaktor) × 1,0 × Rentenwert mit denselben Abzügen wie die Altersrente. Testfall mit Bescheid-Zahlbetrag 1.033,42 € (nur KV/PV): 1.857,72 € statt 2.066,84 €. Ohne Bescheidwert aus dem Zahlbetrag zurückgerechnet (Ergebnis wie bisher) | Test „Besitzschutz in persönlichen Entgeltpunkten …“ |
+| F3 stille Doppelzählung | Datenmodell: Entgeltpunkte laut Bescheid (gesamt) und davon Zurechnungszeit (`disabilityTotalPoints`, `disabilityCreditedPoints`); tatsächlich erworben = gesamt − Zurechnungszeit; Rentenpunkte entfallen. Zurechnungszeit ohne oder über dem Gesamtwert wird beim Speichern abgelehnt (App und Speicher) | Tests „keine doppelte Zurechnungszeit“, „… wird abgelehnt“ |
+| F4 Infotexte | Rentenpunkte, Entgeltpunkte laut Bescheid, davon Zurechnungszeit (nur die Zurechnungszeit, andere beitragsfreie Zeiten bleiben in den tatsächlichen Punkten), Zugangsfaktor (Hälfte-Regel), Läuft bis Jahr (rechnerische Untergrenze); deutsch und englisch | Test „Englischer Modus …“ |
+| Untergrenze und Schätzung getrennt, Modellrechnung gekennzeichnet | Ergebniszeile „Altersrente ab 67 (vereinfachte Modellrechnung): geschätzt … ; rechnerische Untergrenze nach heutigem Rentenrecht ≈ …“ mit Hinweis, dass die tatsächliche Bewertung von Zurechnungszeit und späteren Beitragszeiten abweichen kann und die Untergrenze sich auf persönliche Entgeltpunkte bezieht (kein garantierter Nettobetrag). Erklärung mit „Rechnerische Untergrenze nach heutigem Rentenrecht“, „Geschätzte Altersrente“ und „Vereinfachte Modellrechnung“; Zeile im Einkommen und in der Altersvorsorge-Übersicht „Modellrechnung, Untergrenze ≈ …“. Zuerst als „gesicherte Mindestleistung“ umgesetzt, auf Rückmeldung vor dem Commit umbenannt | Test „Anzeige …“; Browser (iPhone-Größe) |
+| F5 (Anrechnungszeit der EM-Bezugszeit) | Nicht berechnet, wie entschieden; in Ergebniszeile und Erklärung benannt (§ 58 Abs. 1 Satz 1 Nr. 5, § 71 Abs. 2) | Test „Anzeige …“ |
+| Migration 18 → 19 | Getrennte Zurechnungszeit → Gesamtwert (Summe), tatsächliche Punkte unverändert. Rentenpunkte ohne Zurechnungszeit: unverändert, rechnen wie bisher, Klärung über „Nach dem Update“ mit Vorher/Nachher (Wahl: Gesamtwert mit oder tatsächlich ohne Zurechnungszeit). Stand vor dem Update gesichert | Tests „Migration 18 → 19 …“, „Altdaten …“; Browser: Karte, Sheet, Übernehmen, Verwerfen |
+| Nebenbefund: Rentenpunkte auf 2 Stellen gerundet | Das Formular zeigte Punkte mit 2 Nachkommastellen und speicherte sie beim nächsten Speichern so (21,3347 → 21,33). Rentenpunkte, Entgeltpunkte und Zurechnungszeit jetzt mit 4 Stellen (`_epStr`, `prec:4`) | Browser: 61,2256 / 39,8909 / 21,3347 bleiben erhalten |
+
+Testfall in der App (Rentenwert 42,52 €, 20 % Abzüge): EM-Rente 928,86 € netto aus Entgeltpunkten; rechnerische
+Untergrenze 54,6132 persönliche Entgeltpunkte ≈ 1.857,72 € netto; aus Punkten (21,3347 × 0,946 + neue Punkte) – bei
+25.000 € Teilzeit weniger, also geschätzt = Untergrenze. Nicht geprüft: Safari/iPhone, `file://`.
+
+`node --test .tests/` **359/359**, Audit **22/0**.
+
 **Persona-Simulation vom 14.10.2026** (`.docs/Onboarding Persona/Ergebnis_Simulation_2026-10-14.md`, 14 Personas,
 Befunde A1–A13, B1–B6, C1–C14). Umgesetzt in dieser Runde, kein Schemawechsel (weiter Version 17); Versionen
 `data-store.js?v=29`, `i18n-en.js?v=13`, Cache `verm-v127`. Nicht Teil dieser Runde: Folge-Review 3
