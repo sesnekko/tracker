@@ -73,8 +73,10 @@
   };
   const LEGACY_KEYS = ['fieldConfig', 'finData', 'budgetData', 'loanParams',
     'lt-drv', 'lt-drv-extra', 'lt-children', 'lt-av-depots', 'lt-beamte', 'lt-pensions', 'lt-events', 'lt-asset-params',
-    'lt-birth-year', 'lt-birth-month', 'v2-modules', 'darkMode', 'appLang', 'customFields',
+    'lt-own-name', 'lt-birth-year', 'lt-birth-month', 'v2-modules', 'darkMode', 'appLang', 'customFields',
     ...Object.keys(SETTINGS)];
+  // Name der eigenen Person ohne eigene Angabe (die App zeigt dann „Ich“)
+  const OWN_NAME = 'Eigene Person';
   const copy = value => JSON.parse(JSON.stringify(value));
   const record = () => Object.create(null);
   const own = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
@@ -103,7 +105,7 @@
       format: FORMAT, schemaVersion: VERSION, currency: 'EUR',
       groups: [], positions: [], snapshots: [], accounts: [],
       budget: null, loans: [],
-      retirement: { primary: { id: 'person-main', name: 'Eigene Person', statutoryPension: {} }, people: [], incomes: [] },
+      retirement: { primary: { id: 'person-main', name: OWN_NAME, statutoryPension: {} }, people: [], incomes: [] },
       forecast: { settings: {}, events: [] },
       preferences: { theme: null, modules: Object.fromEntries(MODULES.map(k => [k, true])), expandedSections: {}, onboardingCompleted: false }
     };
@@ -290,6 +292,8 @@
     const primary = doc.retirement.primary;
     primary.id = previous.retirement.primary.id;
     primary.name = previous.retirement.primary.name;
+    // Eigener Name (15.10.2026, kein Schemawechsel): leer = Standardname; fehlt der Schlüssel, bleibt der bisherige Name
+    if (values['lt-own-name'] != null) primary.name = String(values['lt-own-name']).trim().slice(0, 40) || OWN_NAME;
     for (const [key, field] of [['lt-birth-year', 'birthYear'], ['lt-birth-month', 'birthMonth']]) {
       const n = number(values[key]);
       // Ein ungültiger Geburtsmonat aus der App überschreibt den gespeicherten Wert nicht (der Import prüft streng).
@@ -433,6 +437,7 @@
     }
     put('loanParams', lp);
     const primary = doc.retirement.primary;
+    if (primary.name && primary.name !== OWN_NAME) values['lt-own-name'] = primary.name;
     if (own(primary, 'birthYear')) values['lt-birth-year'] = String(primary.birthYear);
     if (own(primary, 'birthMonth')) values['lt-birth-month'] = String(primary.birthMonth);
     put('lt-drv', unmapped(primary.statutoryPension, DRV));

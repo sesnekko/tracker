@@ -543,6 +543,7 @@
     'flow-market': ['Price development', '<p>Change in value of positions with a quantity at the same quantity – pure price gains or losses. Calculated per month: price change × last month\'s quantity.</p><p>The p.a. value is the annualised return on the average invested capital.</p>'],
     'flow-other': ['Revaluation & other', '<p>Changes that cannot be split reliably: new market values of tangible assets (e.g. property) and positions without a quantity.</p><p>Tip: for an exact split of securities, keep the quantity up to date.</p>'],
     'lt-birth-year': ['Year of birth', '<p>Determines your current age and the statutory retirement age.</p>'],
+    'lt-own-name': ['Name', '<p>Your name as it appears next to the other people: in the household, the life phases, retirement income and when assigning income and depots.</p><p>Leave empty = “Me”.</p>'],
     'lt-birth-month': ['Birth month', '<p>Together with the year of birth it determines your exact age. Phase changes, pension start and payouts are calculated to the month.</p><p>Other people are assumed to have the same birth month.</p>'],
     'lt-life-expect': ['Life expectancy', '<p>Only for orientation in the life bar. The forecast calculates until "Plan until age", because about half of all people live longer than the average life expectancy.</p>'],
     'lt-plan-horizon': ['Plan until age', '<p>Your wealth has to last until this age. Default 95 – a buffer for a long life.</p>'],

@@ -756,7 +756,7 @@ Kindergeld und Kinderzulage leitet die App aus den Kindern ab.
 
 | Feld | Inhalt |
 | --- | --- |
-| `retirement.primary` | „Ich“ (ID bleibt, z. B. `person-main`) |
+| `retirement.primary` | „Ich“ (ID bleibt, z. B. `person-main`). `name` ist seit 15.10.2026 änderbar (Daten → Haushalt → Ich, höchstens 40 Zeichen; App-Schlüssel `lt-own-name`, kein Schemawechsel). Leer = Standardname „Eigene Person“, den die App nie anzeigt (dort „Ich“); ein eigener Name steht überall, wo du neben anderen Personen genannt wirst |
 | `retirement.people[]` | weitere Erwachsene: `id`, `name`, `birthYear`, `workUntilAge`, `statutoryPension`; seit Version 15 optional je Lebensphase `phase1WorkPercent` … `phase4WorkPercent` und `phase2PensionPercent` … `phase4PensionPercent` (siehe oben). Arbeitszeit, Altersvorsorge, `workUntilAge` und `statutoryPension.retirementAge` werden im Lebensphasen-Sheet gepflegt, die übrigen Felder auf der Haushaltskarte |
 | `retirement.children[]` | Kinder: `id` (`child-…`), `name`, `birthYear`; optional `birthMonth` (1–12, fehlt = Januar), `childBenefitUntilAge: 25` (Ausbildung; fehlt = 18), `allowanceParentId` (Erwachsener, bei dem die Kinderzulage zählt; fehlt = ich). Das Feld fehlt ohne Kinder. Legacy-Schlüssel `lt-children` (`by`, `bm`, `until`, `parent`) |
 | `budget.items[].personId` | nur bei Einnahmen: wessen Einkommen (fehlt = Haushalt, z. B. Miete). Das Gehalt einer weiteren Person ist der Ø ihrer zugeordneten Einnahmen ohne „Auch im Ruhestand“. Legacy `person` |
