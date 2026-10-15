@@ -46,8 +46,12 @@ Von oben nach unten:
 | „So wird gerechnet“, Partner-Story | `.v2-lt-links`: `[data-info=lt-method]` (`INFO['lt-method']`), `#psOpen` → `openPartnerStory()` | zwei Zeilen in einer Karte | Partner-Story nur mit weiterer erwachsener Person |
 | Annahmen | `#ltAssume` > `#v2-forecast-sec` (Lebensplanung, Lebensphasen, Ereignisse, Rendite & Sparrate je Asset) | `updateLifetimeInputs()`, `renderEventEditor()`, `buildAssetParamsTable()`; speichert sofort (`v2-live`). Seit 14.10.2026 hier statt auf der Daten-Seite; die Optik kommt aus denselben Regeln (`:is(#page-import,#ltAssume)`) | ja, zugeklappt |
 
-Lebensphasen mit weiteren Personen: je Person ein Phasenbalken auf derselben Zeitachse (heute bis zum Planhorizont, Alter
-der Person; `_personBarHTML`: Vollzeit, Teilzeit, ohne Arbeit, Rente in den Farben der Phasen). Die Erklärung der
+Lebensphasen mit weiteren Personen: je Person ein Phasenbalken auf derselben Zeitachse (heute bis zum Planende, Alter der
+Person; `_personBarHTML` seit 15.10.2026 in den Farben der Lebensphasen: Ansparen in Phase 1, danach Weiterarbeiten,
+solange sie arbeitet, ohne Arbeit bis zu ihrer Rente, Rente). **Planalter für alle Personen** (15.10.2026): „Planen bis
+Alter“ gilt für jede Person in ihrem eigenen Alter; die Prognose läuft, bis die jüngste es erreicht hat (`_planEndMain`,
+Beschriftung „bis 97 (Anna 95)“), Renten laufen bis zum Ende. Jeder Balken endet beim Planalter der Person und ist sonst
+auf der Zeitachse kürzer. Die Erklärung der
 Erfolgschance (`openSuccessExplain`) steht in einer Infobox mit begrenzter Höhe; der Text scrollt, Titel und „Schließen“
 bleiben stehen.
 

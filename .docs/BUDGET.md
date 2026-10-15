@@ -264,7 +264,10 @@ existiert. Vor 2027, nach dem letzten Beitragsjahr oder bei Beitrag 0 zählt der
 Legacy `workPct`). Das ist die Arbeitszeit von heute; die Prognose nimmt sie als Arbeitszeit der Phase 1 und rechnet
 spätere Phasen im Verhältnis dazu (50 % Teilzeit mit 1.800 € → Vollzeit 3.600 €). Mehrere Gehälter einer Person zählen
 zusammen, höchstens 100 %. Ohne Auswahl gilt der Wert aus den Lebensphasen (sonst Vollzeit). Im Lebensphasen-Sheet steht
-die Arbeitszeit heute dann nur zur Ansicht.
+die Arbeitszeit heute dann nur zur Ansicht. Eine Einnahme, die dem Namen nach eine **Erwerbsminderungsrente** ist („EM-Rente“,
+„EM Rente“, „Erwerbsminderungsrente“, „EMR“; `_isEmName`), ist kein Gehalt (15.10.2026): keine Arbeitszeit (im Sheet ein
+Hinweis statt der Auswahl), unverändert in allen Lebensphasen, nicht im Gehalt der Person; ab dem Arbeitsende rechnet die
+Prognose mit der EM-Rente unter Altersvorsorge.
 
 **Personen im Budget** (Schema 14, Entscheidung 14.10.2026): Im Budget-Eintrag wählst du bei Einnahmen die Person
 (Haushalt, Ich, weitere Personen). Das Gehalt einer weiteren Person ist der Ø ihrer zugeordneten Einnahmen ohne „Auch
