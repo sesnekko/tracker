@@ -617,7 +617,8 @@ Die Prognose rechnet in vier Phasen. Ihre Grenzen und Annahmen stehen in
   Arbeitszeit von heute, Dienstzeit als Anteil einer Vollzeitstelle).
   Altersvorsorge (Sparraten der Gruppen mit Kategorie `bav` und Beiträge eigener
   Altersvorsorgedepots) läuft in Phase 1 voll, in Phase 2 und 3 mit dem jeweiligen Prozentsatz,
-  danach nicht mehr; die Depot-Hochrechnung rechnet das Jahr für Jahr (Alter zur Jahresmitte).
+  danach nicht mehr; die Depot-Hochrechnung rechnet das Monat für Monat (seit 15.10.2026; vorher Jahr für Jahr mit dem
+  Alter zur Jahresmitte).
   Weitere Personen haben seit Version 15 eigene Werte je Phase (Abschnitt „Arbeitszeit und
   Altersvorsorge je Lebensphase“).
   Private Vermögensbildung (übrige Sparraten) entsprechend mit den Spar-Prozentsätzen.

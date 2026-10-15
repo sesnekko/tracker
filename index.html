@@ -1121,7 +1121,7 @@ button.v2-ret-main{display:flex;align-items:flex-end;gap:10px;background:none;bo
 .lp-sec>summary::-webkit-details-marker{display:none}
 .lp-sec>summary::after{content:'';flex:0 0 7px;height:7px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:rotate(45deg);transition:transform .2s;margin:0 2px 3px 4px}
 .lp-sec[open]>summary::after{transform:rotate(225deg);margin-bottom:-3px}
-.lp-sum-t{display:flex;align-items:center;gap:10px;min-width:0}.lp-sum-t>span{display:flex;flex-direction:column;min-width:0}
+.lp-sum-t{flex:1 1 auto;display:flex;align-items:center;gap:10px;min-width:0}.lp-sum-t>span{flex:1 1 auto;display:block;min-width:0}.lp-sum-t>span>*{display:block}
 .lp-sum-t b{font-weight:500;color:var(--ink);font-size:15px}.lp-sum-t small{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.35}
 .lp-sum-t i{flex:0 0 10px;height:10px;border-radius:3px}
 .lp-sec .lp-range{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;margin-left:auto}
@@ -1332,6 +1332,8 @@ body:not(.v2-editing) :is(#page-import,#ltAssume) .v2-form-head{display:none}
 .ds-sec-actions>.v2-textbtn{pointer-events:auto;background:color-mix(in srgb,var(--ink) 10%,var(--card));box-shadow:0 2px 10px rgba(0,0,0,.18)}
 body.dark .ds-sec-actions>.v2-textbtn{box-shadow:0 2px 12px rgba(0,0,0,.45)}
 body.v2-editing .ds-sec-actions{display:none}
+/* Installierte iPhone-App: mitlaufende Leisten unterhalb des Unschärfe-Verlaufs unter der Statusleiste (wie die Kopfzeile) */
+@media (display-mode: standalone) and (max-width:767px){.ds-sec-actions,.v2-form-head{top:calc(env(safe-area-inset-top) + 18px)}}
 
 /* Bottom-Sheet (Mobil) bzw. Dialog (ab Tablet) */
 .ds-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.38);opacity:0;pointer-events:none;transition:opacity .25s}
@@ -1506,7 +1508,10 @@ body.dark{--lp1:#7aaa82;--lp2:#a9c3ad;--lp3:#c07058;--lp4:#8d887c}
 .lp-edit{display:block;width:100%;background:var(--fill);border:none;border-radius:12px;padding:12px 12px 6px;font:inherit;color:inherit;text-align:left;cursor:pointer;margin-bottom:6px}
 .lp-edit-t{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:15px;line-height:1.4;color:var(--ink)}
 .lp-edit-t small{font-size:13px;color:var(--muted);white-space:nowrap}
-.lp-head{position:sticky;top:-6px;z-index:2;background:var(--bg2);margin:0 -16px;padding:6px 16px 4px}
+.lp-head{position:sticky;top:0;z-index:2;background:var(--bg2);margin:0 -16px;padding:6px 16px 4px}
+/* bündig unter dem Sheet-Kopf und ohne Sprung beim Anhaften: ein Sticky-Element bleibt im Inhaltsbereich seines Elternteils,
+   daher entfällt hier das obere Padding von .ds-body */
+.ds-body:has(>.lp-head){padding-top:0}
 .lp-head .lp-card{background:var(--card);border-radius:14px;padding:2px 14px 6px;margin-top:6px}
 .lp-pv{display:flex;align-items:baseline;gap:10px;padding:10px 0 2px}
 .lp-pv b{font-size:28px;font-weight:300;line-height:1.1;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
@@ -9853,15 +9858,22 @@ function _avdParams(s,d){
   const start=Math.max(AVD_START,_avdNum(d.start,0)>0?Math.round(+d.start):AVD_START);
   /* Beiträge folgen den Lebensphasen: Altersvorsorge in % je Phase, leer = solange die Person arbeitet (Schema 15) */
   const phased=!!prof;
-  return{by,from,workUntil,own,kids,kidsBad:false,start,
+  /* Alter der Person zu Beginn eines Monats (Geburtsmonat wie bei dir); m = 0 … 11 */
+  const bm=Math.min(12,Math.max(1,Math.round(+s.birthMonth||1))),monthAge=(y,m)=>y-by+(m-(bm-1))/12;
+  /* Anteil des Monatsbeitrags je Monat eines Kalenderjahres (15.10.2026, vorher ein Faktor je Jahr nach dem Alter zur
+     Jahresmitte): Beiträge und damit Zulagen nur, solange die Person arbeitet – im Vorruhestand und danach nichts mehr,
+     auch mit einem Vorsorge-Anteil für die Phase – und nur bis zum Auszahlungsbeginn */
+  const months=y=>{const f=[];for(let m=0;m<12;m++){const a=monthAge(y,m);let v=0;
+    if(a<from-1e-9){if(!phased)v=a<workUntil-1e-9?1:0;else{const am=a+prof.shift;v=am<prof.workEndMain-1e-9?_pensionFactor(prof,am):0;}}
+    f.push(v);}return f;};
+  return{by,bm,from,workUntil,own,kids,kidsBad:false,start,months,
     /* Kinder mit Kindergeld in mindestens einem Monat des Jahres (Kinderzulage § 85 EStG) */
     kidsIn:y=>kids.filter(c=>y>=+c.by&&y<=+c.by+_childUntil(c)).length,
     payYear:by+from,/* Jahr, in dem die Auszahlung beginnt */
-    lastYear:(phased?by+from:Math.min(by+workUntil,by+from))-1,/* letztes mögliches Beitragsjahr */
-    /* Anteil des Beitrags in einem Kalenderjahr (Alter zur Jahresmitte). Beiträge und damit Zulagen nur, solange die
-       Person arbeitet (15.10.2026): im Vorruhestand und danach fließt nichts mehr ein, auch wenn für die Phase ein
-       Vorsorge-Anteil eingetragen ist; das angesparte Kapital verzinst sich bis zum Auszahlungsbeginn weiter. */
-    factor:y=>{if(!phased)return 1;const a=y-by+0.5+prof.shift;return a<prof.workEndMain-1e-9?_pensionFactor(prof,a):0;}};
+    /* letztes Beitragsjahr: das Jahr des letzten Monats vor dem Ende (Auszahlung bzw. ohne Phasen Arbeitsende) */
+    lastYear:Math.ceil((phased?from:Math.min(workUntil,from))+by+(bm-1)/12-1e-9)-1,
+    /* Anteil des Jahresbeitrags in einem Kalenderjahr = Summe der Monatsanteile ÷ 12 */
+    factor:y=>months(y).reduce((x,v)=>x+v,0)/12};
 }
 /* ══ Klärung nach dem Update (Review 14.10.2026, P35–P37) ══
    Was eine Migration nicht eindeutig übertragen kann, bleibt als Originalwert erhalten und rechnet wie in der früheren
@@ -10023,7 +10035,9 @@ function _openChildKids(person){
    berechnen, jedes Kind genau einmal (bei dem Elternteil, dem es zugeordnet ist), Berufseinsteigerbonus einmal je Person;
    Verteilung auf die Depots im Verhältnis der Eigenbeiträge. Rückgabe je Depot oder null. */
 function _avdYearAll(s,y,list){
-  const rows=list.map(d=>{const q=_avdParams(s,d);const own=q.own>0&&y>=q.start&&y<=q.lastYear?q.own*q.factor(y):0;return{d,q,own:own>0?own:0};});
+  const rows=list.map(d=>{const q=_avdParams(s,d),on=q.own>0&&y>=q.start&&y<=q.lastYear,mf=on?q.months(y):null,fs=mf?mf.reduce((x,v)=>x+v,0):0,own=on?q.own*fs/12:0;
+    /* mw: Anteil jedes Monats am Jahresbeitrag (Beitrag und Zulage fließen in den Monaten mit Beitrag) */
+    return{d,q,own:own>0?own:0,mw:fs>0?mf.map(v=>v/fs):null};});
   const order=['',...getDrvExtra().map(p=>p.id)],rank=k=>{const i=order.indexOf(k);return i<0?order.length:i;};
   const persons=new Map();
   rows.forEach(r=>{const k=r.d.person||'';if(!persons.has(k))persons.set(k,[]);persons.get(k).push(r);});
@@ -10042,7 +10056,7 @@ function _avdYearAll(s,y,list){
       for(let Y=minStart;Y<=y&&first===null;Y++){const o=rs.reduce((x,r)=>x+(r.q.own>0&&Y>=r.q.start&&Y<=r.q.lastYear?r.q.own*r.q.factor(Y):0),0);if(o>=AVD_MIN_OWN-1e-9)first=Y;}
       if(first===y)bonus=200;
     }
-    rs.forEach(r=>{if(!(r.own>0))return;const sh=r.own/own;res[rows.indexOf(r)]={own:r.own,kids,base:sub.base*sh,child:sub.child*sh,bonus:bonus*sh,total:(sub.total+bonus)*sh};});
+    rs.forEach(r=>{if(!(r.own>0))return;const sh=r.own/own;res[rows.indexOf(r)]={own:r.own,kids,base:sub.base*sh,child:sub.child*sh,bonus:bonus*sh,total:(sub.total+bonus)*sh,mw:r.mw};});
   });
   return res;
 }
@@ -10054,7 +10068,7 @@ function avdYear(s,d,y,q,all){
   return _avdYearAll(s,y,list)[i];
 }
 function calcAvDepot(s,d,all){
-  const q=_avdParams(s,d),{by,from,own,payYear,lastYear}=q;
+  const q=_avdParams(s,d),{by,bm,from,own,payYear,lastYear}=q;
   const shift=by-s.birthYear;/* Alter dieser Person -> eigenes Alter */
   const now=new Date(),year=now.getFullYear();
   const ageNow=_ageAt(Object.assign({},s,{birthYear:by}),year,now.getMonth());
@@ -10062,25 +10076,32 @@ function calcAvDepot(s,d,all){
   const deduct=Math.min(90,Math.max(0,_avdNum(d.deduct,AVD_DEFAULTS.deduct)))/100;
   const lumpPct=Math.min(30,Math.max(0,_avdNum(d.lump,0)))/100;
   const first=Math.max(q.start,year),kidsBad=q.kidsBad;
-  const tPay=Math.max(0,from-ageNow);
-  /* Beiträge und Zulagen am Jahresende eingezahlt, danach mit der Rendite bis zum Auszahlungsbeginn verzinst */
-  let cap=Math.max(0,_avdNum(d.balance,0))*Math.pow(1+ret,tPay),ownSum=0,subSum=0,bonus=0,firstSub=null;
-  for(let y=first;y<=lastYear;y++){
-    const z=avdYear(s,d,y,q,all);if(!z||!(z.total>0||z.own>0))continue;
-    bonus+=z.bonus;
-    if(!firstSub)firstSub={base:z.base,child:z.child,total:z.base+z.child,kids:z.kids};
-    cap+=(z.own+z.total)*Math.pow(1+ret,Math.max(0,payYear-(y+1)));
-    ownSum+=z.own;subSum+=z.total;
+  /* Monatlich bis zum Auszahlungsmonat (Alter „from“ erreicht, 15.10.2026; vorher Jahresbeiträge am Jahresende und
+     verzinst nur bis zum Jahresanfang der Auszahlung): Guthaben verzinst sich jeden Monat, Beitrag und Zulage fließen am
+     Ende jedes Beitragsmonats ein (Zulage eines Jahres anteilig auf seine Beitragsmonate verteilt). Im laufenden Jahr nur
+     die Monate ab heute; was davor eingezahlt wurde, steckt im heutigen Guthaben. */
+  const mNow=year*12+now.getMonth(),mPay=(by+from)*12+(bm-1),months=Math.max(0,mPay-mNow);
+  const rm=Math.pow(1+ret,1/12)-1,rows={};
+  let cap=Math.max(0,_avdNum(d.balance,0)),ownSum=0,subSum=0,bonus=0,firstSub=null;
+  for(let k=mNow;k<mPay;k++){
+    cap*=1+rm;
+    const y=Math.floor(k/12),mo=k-y*12;if(y<first||y>lastYear)continue;
+    const z=y in rows?rows[y]:(rows[y]=avdYear(s,d,y,q,all));if(!z||!(z.own>0))continue;
+    const w=z.mw?z.mw[mo]:1/12;if(!(w>0))continue;
+    if(!firstSub&&z.total>0)firstSub={base:z.base,child:z.child,total:z.base+z.child,kids:z.kids};
+    cap+=(z.own+z.total)*w;ownSum+=z.own*w;subSum+=z.total*w;bonus+=(z.bonus||0)*w;
   }
+  const r2=v=>Math.round(v*100)/100;ownSum=r2(ownSum);subSum=r2(subSum);bonus=r2(bonus);
   const started=ageNow>=from;
-  /* Läuft die Auszahlung schon, wird das heutige Guthaben bis 85 verrentet (keine Teilauszahlung mehr) */
-  const capReal=started?Math.max(0,_avdNum(d.balance,0)):cap/Math.pow(1+infl,tPay);
+  /* nominal zum Auszahlungsbeginn und in heutiger Kaufkraft (Inflation über dieselben Monate). Läuft die Auszahlung
+     schon, wird das heutige Guthaben bis 85 verrentet (keine Teilauszahlung mehr) */
+  const capNom=started?Math.max(0,_avdNum(d.balance,0)):cap,capReal=started?capNom:cap/Math.pow(1+infl,months/12);
   const lumpNet=started?0:capReal*lumpPct*(1-deduct);
   /* Auszahlplan bis 85: gleichbleibende Rate in heutiger Kaufkraft, Restguthaben verzinst sich weiter */
   const n=Math.max(1,Math.round((AVD_UNTIL-(started?ageNow:from))*12)),rr=Math.pow((1+ret)/(1+infl),1/12)-1,R=capReal*(started?1:1-lumpPct);
   const pmt=Math.abs(rr)<1e-9?R/n:R*rr/(1-Math.pow(1+rr,-n));
   return{name:(d.name||'').trim()||'Altersvorsorgedepot',person:d.person||'',by,from,until:AVD_UNTIL,fromMain:from+shift,untilMain:AVD_UNTIL+shift,ret,deduct,lumpPct:started?0:lumpPct,balance:Math.max(0,_avdNum(d.balance,0)),
-    own,firstSub,ownSum,subSum,bonus,capReal,lumpNet,netto:pmt*(1-deduct),started,first,lastYear,kidsBad};
+    own,firstSub,ownSum,subSum,bonus,capNom,capReal,infl,lumpNet,netto:pmt*(1-deduct),started,first,lastYear,kidsBad};
 }
 /* Ergebniszeile unter einer Depot-Karte, höchstens ein Tipp */
 function _avdResultHTML(r){
@@ -10092,7 +10113,7 @@ function _avdResultHTML(r){
     const quote=Math.round(z.total/(r.own+z.total)*100);
     h+=L(`≈ <strong>${fmt(z.total)}</strong> Zulagen/Jahr <span style="color:var(--muted)">(${z.child>0?fmt(z.base)+' + '+fmt(z.child)+' Kinder, ':''}Förderquote ${quote} %${r.bonus?', einmalig +200 € Bonus':''})</span><br>`,`≈ <strong>${fmt(z.total)}</strong> subsidies/year <span style="color:var(--muted)">(${z.child>0?fmt(z.base)+' + '+fmt(z.child)+' children, ':''}subsidy rate ${quote} %${r.bonus?', once +200 € bonus':''})</span><br>`);
   }
-  h+=L(`→ mit ${fmtAge(r.from)} ≈ `,`→ at ${fmtAge(r.from)} ≈ `)+`<strong>${fmt(Math.round(r.capReal/100)*100)}</strong> → `;
+  h+=L(`→ mit ${fmtAge(r.from)} ≈ `,`→ at ${fmtAge(r.from)} ≈ `)+`<strong>${fmt(Math.round(r.capNom/100)*100)}</strong>`+L(` (heute ${fmt(Math.round(r.capReal/100)*100)})`,` (today ${fmt(Math.round(r.capReal/100)*100)})`)+` → `;
   h+=(r.lumpNet>0?L(`<strong>${fmt(Math.round(r.lumpNet/100)*100)}</strong> sofort, dann `,`<strong>${fmt(Math.round(r.lumpNet/100)*100)}</strong> at once, then `):'')+L(`<strong>${fmt(r.netto)}</strong> netto/Monat bis ${r.until}`,`<strong>${fmt(r.netto)}</strong> net/month until ${r.until}`);
   let tip='';
   if(z&&r.own>0&&r.own<1800)tip=L(`Volle Grundzulage (540 €) ab 150 €/Monat${r.own<360?' – schon 30 €/Monat bringen 180 €':''}.`,`Full basic subsidy (540 €) from 150 €/month${r.own<360?' – even 30 €/month bring 180 €':''}.`);
@@ -10492,8 +10513,9 @@ function _planSchedule(plan,R){
         const dyn=plan.dynDepots.find(d=>d.i===i);
         for(let mo=0;mo<12;mo++){
           const k=Y*12+mo-m0;if(k<0||k>=n)continue;
-          if(dyn)addC(dyn.bucket,k,(z.own+z.total)/12);
-          if(k>=kR)out[k]+=z.own/12;
+          const w=z.mw?z.mw[mo]:1/12;if(!(w>0))continue;
+          if(dyn)addC(dyn.bucket,k,(z.own+z.total)*w);
+          if(k>=kR)out[k]+=z.own*w;
         }
       });
     }
@@ -10899,7 +10921,9 @@ function _explainBv(r){
 }
 function _explainAvd(r){
   let h=L(`<p><strong>Beiträge</strong>: ${fmt(r.own/12)}/Monat eigener Beitrag${r.firstSub?' + '+fmt(r.firstSub.total)+' Zulagen im Jahr':''}. Bis zur Auszahlung ${fmt(r.ownSum)} eigene Beiträge und ${fmt(r.subSum)} Zulagen${r.bonus?' (inkl. 200 € Berufseinsteigerbonus)':''}. Die Beiträge folgen deinen Lebensphasen.</p>`,`<p><strong>Contributions</strong>: ${fmt(r.own/12)}/month own contribution${r.firstSub?' + '+fmt(r.firstSub.total)+' subsidies a year':''}. Until payout ${fmt(r.ownSum)} own contributions and ${fmt(r.subSum)} subsidies${r.bonus?' (incl. 200 € career-starter bonus)':''}. Contributions follow your life phases.</p>`);
-  h+=L(`<p><strong>Kapital</strong> mit ${fmtAge(r.from)}: ${fmt(Math.round(r.capReal))} in heutiger Kaufkraft (${_pts(r.ret*100)} % Rendite p. a.${r.balance>0?', inkl. heutigem Guthaben von '+fmt(r.balance):''}).</p>`,`<p><strong>Capital</strong> at ${fmtAge(r.from)}: ${fmt(Math.round(r.capReal))} in today's money (${_pts(r.ret*100)} % return p.a.${r.balance>0?', incl. today\'s balance of '+fmt(r.balance):''}).</p>`);
+  /* nominal und in heutiger Kaufkraft nebeneinander (15.10.2026), damit der Betrag mit einer eigenen Zinsrechnung vergleichbar ist */
+  h+=r.started?L(`<p><strong>Kapital</strong>: heutiges Guthaben ${fmt(Math.round(r.capReal))}.</p>`,`<p><strong>Capital</strong>: today's balance ${fmt(Math.round(r.capReal))}.</p>`)
+    :L(`<p><strong>Kapital</strong> mit ${fmtAge(r.from)}: <strong>${fmt(Math.round(r.capNom))}</strong> (${_pts(r.ret*100)} % Rendite p. a., monatlich verzinst${r.balance>0?', inkl. heutigem Guthaben von '+fmt(r.balance):''}). In heutiger Kaufkraft sind das ${fmt(Math.round(r.capReal))} (${_pts(r.infl*100)} % Inflation p. a.); damit rechnet die Prognose.</p>`,`<p><strong>Capital</strong> at ${fmtAge(r.from)}: <strong>${fmt(Math.round(r.capNom))}</strong> (${_pts(r.ret*100)} % return p.a., compounded monthly${r.balance>0?', incl. today\'s balance of '+fmt(r.balance):''}). In today's money that is ${fmt(Math.round(r.capReal))} (${_pts(r.infl*100)} % inflation p.a.); the forecast uses this value.</p>`);
   if(r.lumpNet>0)h+=L(`<p><strong>Teilauszahlung</strong> zu Beginn: ${fmt(Math.round(r.lumpNet))} netto, fließt ins liquide Vermögen.</p>`,`<p><strong>Partial lump sum</strong> at the start: ${fmt(Math.round(r.lumpNet))} net, goes to liquid assets.</p>`);
   h+=L(`<p><strong>Auszahlplan</strong> bis ${r.until}: <strong>${fmt(r.netto)} netto/Monat</strong> nach ${_pts(r.deduct*100)} % Abzügen.</p>`,`<p><strong>Payout plan</strong> until ${r.until}: <strong>${fmt(r.netto)} net/month</strong> after ${_pts(r.deduct*100)} % deductions.</p>`);
   return h;
@@ -12133,7 +12157,8 @@ function _phasesPreview(){
   const setT=(id,t)=>{const el=document.getElementById(id);if(el)el.textContent=t;};
   const setPh=(id,t)=>{const el=document.getElementById(id);if(el)el.placeholder=t;};
   const save=_phaseSaving(plan),pc=v=>_numStr(Math.round(v*1000)/10)+' %',ppl=(d.people||[]).filter(p=>p.id&&(ctx.people||[]).includes(p.id));
-  const join=(...a)=>a.filter(Boolean).join(' · ');
+  /* Zahl und Einheit bleiben zusammen („5.000 €“, „50 %“, „p. a.“), damit kein Zeichen allein in eine Zeile rutscht */
+  const join=(...a)=>a.filter(Boolean).join(' · ').replace(/(\d) (€|%)/g,'$1\u00a0$2').replace(/p\. a\./g,'p.\u00a0a.');
   const w1=_phaseWorkTxt(d.s,ppl,1);
   setT('lp-s-1',join(b[1]>b[0]+0.01?L('bis ','until ')+_ageTxt(b[1]):'',save>0?fmt(Math.round(save))+L('/Monat sparen','/month saved'):L('Sparraten wie unter Annahmen','savings as under assumptions'),d.growth?'+'+_numStr(d.growth)+' % p. a.':'',w1===L('Vollzeit','full-time')?'':w1));
   setT('lp-s-2',b[2]>b[1]+0.01?join(L('bis ','until ')+_ageTxt(b[2]),_phaseWorkTxt(d.s,ppl,2),L('Sparen ','saving ')+pc(d.sav/100),d.draw>0?L('Entnahme ','withdrawal ')+fmt(d.draw):''):L('entfällt','skipped'));

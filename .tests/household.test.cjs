@@ -202,8 +202,9 @@ test('Lebensphasen-Sheet: Abschnitte sind zugeklappt, der gewählte ist offen; d
   // Kim ist 2 Jahre jünger: Phase 2 beginnt mit ihren 48
   assert.match(a.el('lpp-p1-tl').innerHTML, /Vollzeit bis 48 · Teilzeit 50 % bis 67 · Rente ab 67/, 'Zeitstrahl von Kim oben im Sheet');
   assert.match(a.el('lp-s-1').textContent, /^bis 50 · /);
-  assert.equal(a.el('lp-s-2').textContent, 'bis 60 · Ich Vollzeit · Kim 50 % · Sparen 0 %');
-  assert.equal(a.el('lp-s-3').textContent, 'bis 67 · Bedarf 3.000 € · Kim 50 %');
+  // 15.10.2026: Zahl und Einheit mit geschütztem Leerzeichen (vorher brach „€“ auf dem iPhone allein um)
+  assert.equal(a.el('lp-s-2').textContent, 'bis 60 · Ich Vollzeit · Kim 50\u00a0% · Sparen 0\u00a0%');
+  assert.equal(a.el('lp-s-3').textContent, 'bis 67 · Bedarf 3.000\u00a0€ · Kim 50\u00a0%');
   assert.equal(a.el('lpw-p1-3').placeholder, '50', 'leer = wie in der Phase davor');
   a.run("openPhasesSheet('p-p1')");
   assert.deepEqual(open(), ['lp-sec-2'], 'Klick auf eine Person öffnet das Weiterarbeiten mit ihren Werten');

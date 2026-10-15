@@ -206,3 +206,42 @@ test('a saving item named like a depot is suggested for linking', () => {
   a.run("appStorage.setItem('lt-av-depots',JSON.stringify([{id:'depot-1',name:'Mein Depot',contrib:150}]));");
   assert.equal(a.run("_guessDepot('Altersvorsorgedepot')"), 'depot-1', 'the only depot');
 });
+
+/* 15.10.2026: Kapital monatlich statt Jahresbeiträge am Jahresende. Nachrechnung mit unabhängiger Monatsformel:
+   geboren Juli 1992 (Harness Oktober 2026), Arbeitsende mit 50 → Beiträge Jan 2027 – Jun 2042 (186 Monate),
+   Auszahlung ab 67 (Juli 2059), 150 €/Monat + 540 € Zulage im Jahr (2042: 900 € eigene Beiträge → 315 € Zulage), 5 %. */
+test('depot capital: monthly contributions until the month work ends, compounded monthly until the payout month', () => {
+  const a = app(html);
+  a.run("['lt-birth-year:1992','lt-birth-month:7','lt-save-until:40','lt-withdraw-from:50','lt-pension-age:67','lt-p2-work:50','lt-inflation:2'].forEach(x=>{const [k,v]=x.split(':');appStorage.setItem(k,v);})");
+  const r = a.json("calcAvDepot(getLifetimeSettings(),{contrib:150,ret:5,deduct:20})");
+  const i = Math.pow(1.05, 1 / 12) - 1; let cap = 0;
+  for (let k = 0; k < 393; k++) { // Okt 2026 bis Jun 2059
+    cap *= 1 + i; const y = 2026 + Math.floor((9 + k) / 12), m = (9 + k) % 12;
+    if (y >= 2027 && (y < 2042 || (y === 2042 && m < 6))) cap += y < 2042 ? 150 + 45 : 150 + 315 / 6;
+  }
+  assert.equal(r.ownSum, 186 * 150, '186 Beitragsmonate, keiner im Vorruhestand');
+  assert.equal(r.subSum, 15 * 540 + 315);
+  assert.ok(Math.abs(r.capNom - cap) < 0.01, r.capNom + ' ≠ ' + cap);
+  assert.ok(Math.abs(r.capReal - cap / Math.pow(1.02, 393 / 12)) < 0.01, 'heutige Kaufkraft über dieselben Monate');
+  assert.match(a.run("_explainAvd(calcAvDepot(getLifetimeSettings(),{contrib:150,ret:5,deduct:20}))"), /Kapital<\/strong> mit 67: <strong>124\.098 €<\/strong>.*In heutiger Kaufkraft sind das 64\.880 €/);
+});
+
+/* REVIEW_2026-10 P42: Arbeitsende mitten im Jahr. Früher wurde das ganze Kalenderjahr am Alter zur Jahresmitte
+   bewertet; bei einem Wechsel im Juli entfielen alle Beiträge und Zulagen des Jahres. Erwartung: Monate bis zum
+   Arbeitsende zählen, die Jahreszulage folgt aus deren Summe (360 × 50 % + Rest × 25 %). */
+test('depot contributions survive a midyear work stop', () => {
+  const year = (bm, until) => {
+    const a = app(html); a.csv(demoCSV);
+    a.run(`appStorage.setItem('lt-birth-year','1985');appStorage.setItem('lt-birth-month','${bm}');appStorage.setItem('lt-save-until','${until}');appStorage.setItem('lt-withdraw-from','${until}');appStorage.setItem('lt-pension-age','67');appStorage.setItem('lt-av-depots',JSON.stringify([{id:'d1',name:'Own',contrib:150,from:65,ret:0,deduct:0}]))`);
+    return a.json("(()=>{const s=getLifetimeSettings(),d=getAvDepots()[0],z=avdYear(s,d,2027),r=calcAvDepot(s,d),pl=buildPlan().avdAll[0];return {own:z.own,base:z.base,mw:z.mw,sum:r.ownSum,sub:r.subSum,plan:pl.ownSum,later:avdYear(s,d,2028)};})()");
+  };
+  const jul = year(1, 42.5); // Januar 1985, Arbeitsende Juli 2027
+  assert.equal(jul.own, 900); assert.equal(jul.base, 315);
+  assert.deepEqual(jul.mw.map(w => w > 0), [true, true, true, true, true, true, false, false, false, false, false, false], 'Juli–Dezember ohne Eigenbeitrag');
+  assert.equal(jul.sum, 900); assert.equal(jul.sub, 315); assert.equal(jul.plan, 900, 'Planrechnung zählt dieselben Monate');
+  assert.equal(jul.later, null, 'danach keine Beiträge mehr');
+  const apr = year(1, 42.25), oct = year(1, 42.75), bornApr = year(4, 42.5);
+  assert.equal(apr.own, 450); assert.equal(apr.base, 202.5);
+  assert.equal(oct.own, 1350); assert.equal(oct.base, 427.5);
+  assert.equal(bornApr.own, 1350, 'geboren April: Arbeitsende Oktober, neun Beitragsmonate');
+});
