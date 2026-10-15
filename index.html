@@ -1509,7 +1509,6 @@ body.dark{--lp1:#7aaa82;--lp2:#a9c3ad;--lp3:#c07058;--lp4:#8d887c}
 .lp-bar i{display:block;height:100%;border-radius:3px;min-width:4px}
 .lp-ticks{position:relative;height:18px;margin-top:6px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .lp-ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
-.lp-ticks span.first{transform:none}
 .lp-ticks span.last{transform:translateX(-100%)}
 .v2-lp{background:var(--card);border-radius:16px;padding:16px 16px 6px;margin-top:12px}
 .v2-lp:empty{display:none}
@@ -9758,20 +9757,21 @@ function _personPhaseText(s,p){
   return parts.join(' · ');
 }
 /* Zeitstrahl aus Abschnitten [{to, cls}] ab start (heute); gleiche Farbe wird zusammengefasst */
-/* Altersmarken unter einem Balken: „heute“, die Grenzen mit genug Abstand (9 %) und das Ende. Der Rentenbeginn (key) wird
-   immer beschriftet; ist er zu nah an einer anderen Marke, entfällt diese (15.10.2026, z. B. 65 und 67 dicht beieinander). */
+/* Altersmarken unter einem Balken: die Grenzen mit genug Abstand (9 %) und das Ende. Der Rentenbeginn (key) wird
+   immer beschriftet; ist er zu nah an einer anderen Marke, entfällt diese (15.10.2026, z. B. 65 und 67 dicht beieinander).
+   Ohne „heute“ am Anfang (Wunsch 15.10.2026): Die erste Marke braucht dort nur 4 % Abstand, damit sie nicht über den
+   Rand hinausragt. */
 function _ticksHTML(cands,endLabel,startPct=0){
-  const shown=[];
+  const shown=[],gapOk=t=>shown.length?t.pct-shown[shown.length-1].pct>=9:t.pct-startPct>=4;
   cands.forEach(t=>{
     if(t.pct<=startPct+0.01||t.pct>=99.99)return;
-    const lastPct=shown.length?shown[shown.length-1].pct:startPct;
-    if(t.pct-lastPct>=9&&100-t.pct>=9){shown.push(t);return;}
-    if(!t.key||t.pct-startPct<9)return;
+    if(gapOk(t)&&100-t.pct>=9){shown.push(t);return;}
+    if(!t.key||t.pct-startPct<4)return;
     while(shown.length&&t.pct-shown[shown.length-1].pct<9&&!shown[shown.length-1].key)shown.pop();
     shown.push(t);
   });
   const dropEnd=shown.length&&100-shown[shown.length-1].pct<9;
-  return `<span class="first" style="left:${startPct>0?startPct.toFixed(2):0}%">heute</span>`+shown.map(t=>`<span style="left:${t.pct.toFixed(2)}%">${t.label}</span>`).join('')+(dropEnd?'':`<span class="last" style="left:100%">${endLabel}</span>`);
+  return shown.map(t=>`<span style="left:${t.pct.toFixed(2)}%">${t.label}</span>`).join('')+(dropEnd?'':`<span class="last" style="left:100%">${endLabel}</span>`);
 }
 function _segBarHTML(start,parts,lead=0){
   const list=[];parts.forEach(p=>{const l=list[list.length-1];if(l&&l.cls===p.cls)l.to=p.to;else if(p.to>(l?l.to:start)+1e-9)list.push(Object.assign({},p));});
@@ -10480,8 +10480,11 @@ function buildPlan(sIn,opt={}){
     const v=+det[f.id]||0;
     if(f.category==='liab'){if(v>0||LoanModel.configured(lp[f.id]))gm[g].liabs.push({id:f.id,val:v});return;}
     const liq=AssetModel.liquidity(f),cls=liq==='liquid'?'liquid':f.category==='bav'?'bav':'illiquid';
-    const di=avdIdx[f.id],bk=di!=null?'avd'+di:cls;
-    const b=gm[g].buckets[bk]||(gm[g].buckets[bk]={cls,depot:di!=null?di:null,value:0});
+    /* Positionen mit Abschreibung (Daten → Vermögenswerte) bekommen einen eigenen Topf, dessen Wert dem Abschreibungsplan
+       folgt statt der Rendite der Gruppe (15.10.2026) */
+    const di=avdIdx[f.id],dep=di==null&&AssetModel.depreciationValid(f.depreciation)?f.depreciation:null;
+    const bk=di!=null?'avd'+di:dep?'dep:'+f.id:cls;
+    const b=gm[g].buckets[bk]||(gm[g].buckets[bk]={cls,depot:di!=null?di:null,value:0,dep});
     b.value+=v;gm[g].gross+=v;gm[g].catVals[f.category]=(gm[g].catVals[f.category]||0)+v+1e-9;
   });
   const ap=s.assetParams;
@@ -10516,17 +10519,19 @@ function buildPlan(sIn,opt={}){
       withdrawable,
       /* nur Depot-Positionen in der Gruppe: frühester Auszahlungsbeginn (Anzeige); umgewandelt wird je Depot */
       convertAt:bks.length&&bks.every(b=>b.depot!=null)?Math.min(...bks.map(b=>avdAll[b.depot].fromMain)):null,
-      _buckets:bks.map(b=>({cls:b.cls,depot:b.depot,value:b.value})),_defLiq:defLiq
+      _buckets:bks.map(b=>({cls:b.cls,depot:b.depot,value:b.value,dep:b.dep||null})),_defLiq:defLiq,
+      /* Anteil des Werts, der einer Abschreibung folgt (1 = Rendite und Schwankung wirken nicht) */
+      depShare:g.gross>0?bks.filter(b=>b.dep).reduce((a,b)=>a+b.value,0)/g.gross:(bks.length&&bks.every(b=>b.dep)?1:0)
     });
   });
   groups.sort((x,y)=>(y.gross-y.debt)-(x.gross-x.debt));
   /* Töpfe der Simulation */
   const buckets=[];
-  const addBucket=(j,cls,depot,value)=>{const g=groups[j];const w=depot==null&&cls!=='illiquid';buckets.push({g:j,cls,depot,value,withdrawable:w,avail:w?(g.avail>=999?0:g.avail):Infinity,tax:w?g.tax:0});return buckets.length-1;};
-  groups.forEach((g,j)=>{g._b=g._buckets.map(b=>addBucket(j,b.cls,b.depot,b.value));});
+  const addBucket=(j,cls,depot,value,dep)=>{const g=groups[j];const w=depot==null&&cls!=='illiquid';buckets.push({g:j,cls,depot,value,withdrawable:w,avail:w?(g.avail>=999?0:g.avail):Infinity,tax:w?g.tax:0,dep:dep||null});return buckets.length-1;};
+  groups.forEach((g,j)=>{g._b=g._buckets.map(b=>addBucket(j,b.cls,b.depot,b.value,b.dep));});
   /* Ziel für Sparraten und Zuflüsse einer Gruppe: freier Topf, sonst Vorsorge, sonst gebunden, sonst Depot */
   const targetOf=j=>{
-    const g=groups[j],rank=b=>{const x=buckets[b];return x.depot!=null?3:x.cls==='liquid'?0:x.cls==='bav'?1:2;};
+    const g=groups[j],rank=b=>{const x=buckets[b];return x.depot!=null?3:x.cls==='liquid'?0:x.cls==='bav'?1:x.dep?2.5:2;};
     const list=[...g._b].sort((a,b)=>rank(a)-rank(b));
     if(list.length)return list[0];
     const b=addBucket(j,g._defLiq==='liquid'?'liquid':'illiquid',null,0);g._b.push(b);return b;
@@ -10624,8 +10629,17 @@ function buildPlan(sIn,opt={}){
   retInc.forEach(r=>{if(!r.duplicate)pensions.push({amount:r.amount,from:0,until:r.until,budget:true,kind:'budget'});});
   /* eigenes Nettogehalt (Budget-Einnahmen, die dir zugeordnet sind): ändert sich mit deiner Arbeitszeit je Phase */
   const ownNet=_personSalary(_ownPersonId()),ownWork=_ownWork(s);
+  /* Abschreibung je Topf: Faktor je Simulationsmonat k (Kalendermonat ym0 + k) = Wert im Folgemonat ÷ Wert im Monat laut
+     Plan; vor dem Kaufmonat 1, ab Wert 0 bleibt es 0. Nominal wie die Simulation; Schwankung wirkt hier nicht. */
+  const depF=buckets.map(b=>{
+    if(!b.dep)return null;
+    const v=k=>AssetModel.depreciatedValue(b.dep,LoanModel.addMonths(ym0,k)),f=new Float64Array(nMonths);
+    let cur=v(0);
+    for(let k=0;k<nMonths;k++){const nx=v(k+1);f[k]=cur==null||nx==null?1:cur>0?nx/cur:0;cur=nx;}
+    return f;
+  });
   const plan={drv,bv,drvExtra,bvExtra,ownNet,ownWork,avd,avdAll,retInc,s,data,sorted,latestKey,ym0,latestNet:calc(data[latestKey]).net,currentAge,firstAge,horizonAge,nSteps,nMonths,
-    groups,buckets,lnr,vol,events,pensions,dynDepots,depositIdx,depositBucket,opt:{drv:opt.drv,bv:opt.bv,people:opt.people}};
+    groups,buckets,lnr,vol,events,pensions,dynDepots,depositIdx,depositBucket,depF,opt:{drv:opt.drv,bv:opt.bv,people:opt.people}};
   /* wer das Planende bestimmt, wenn eine jüngere Person es über dein Planalter hinausschiebt (Beschriftungen) */
   plan.horizonWho=planEnd.who&&Math.round(planEnd.end)>Math.round(s.planHorizon)?{name:(planEnd.who.name||'').trim()||L('Weitere Person','Other person'),age:s.planHorizon}:null;
   plan.funding=opt.funding||_planFunding(plan);
@@ -10798,7 +10812,7 @@ function _planSchedule(plan,R){
    Bedarf − Raten − nicht aus Arbeit bezahlte Beiträge) → Wertentwicklung. */
 function simulatePlan(plan,retireAge,opt={}){
   const sc=_planSchedule(plan,retireAge);
-  const{groups,buckets,nSteps,lnr,vol,currentAge}=plan;
+  const{groups,buckets,nSteps,lnr,vol,currentAge}=plan,dF=plan.depF||[];
   const rnd=opt.rnd||null,run=opt.run||0,record=!!opt.record,stop=!!opt.stopAtShortfall;
   const n=sc.n,B=buckets.length,G=groups.length;
   const V=new Float64Array(B);for(let b=0;b<B;b++)V[b]=buckets[b].value;
@@ -10876,7 +10890,7 @@ function simulatePlan(plan,retireAge,opt={}){
     if(net<0){if(withdraw(-net,age)>1){fail(age);if(stop)break;}}
     else if(net>0&&dep>=0)V[dep]+=net;
     /* 4) Wertentwicklung */
-    for(let b=0;b<B;b++)if(V[b]>0)V[b]*=gf[bg[b]];
+    for(let b=0;b<B;b++)if(V[b]>0)V[b]*=dF[b]?dF[b][k]:gf[bg[b]];
     /* 5) Aufzeichnen zu Beginn des nächsten Monats */
     if(sc.recK[k+1]>=0)rec(sc.recK[k+1]);
   }
@@ -11960,17 +11974,24 @@ function buildAssetParamsTable(force){
     const P=f=>getAssetParam(ap,g.key,f,g.cat);
     const parts=[];
     if(!g.hasLoanModel&&P('saving')>0)parts.push(fmt(Math.round(P('saving')))+'/Monat');
-    parts.push(pc(P('ret'))+' % Rendite');
+    /* Positionen mit Abschreibung folgen ihrem Plan (15.10.2026); ganz abgeschrieben: keine Rendite, keine Schwankung */
+    const depAll=g.depShare>=0.999,depSome=!depAll&&g.depShare>0.001;
+    parts.push(depAll?L('Wert laut Abschreibung','value per depreciation'):pc(P('ret'))+' % Rendite');
     const open=g.key===openKey;
     html+=`<div class="v2-ap${open?' open':''}" data-asset-key="${esc(g.key)}">`;
     html+=`<button class="v2-ap-head" type="button"><span class="v2-t"><span class="v2-t1">${esc(g.key)}</span><span class="v2-t2">${parts.join(' · ')}</span></span><span class="v2-v ap-val">${fmtCompact(g.gross-g.debt)}</span><span class="v2-chev"></span></button>`;
     html+=`<div class="v2-ap-body">`;
     if(g.hasLoanModel)html+=`<div class="v2-ap-note">Tilgung ergibt sich aus den Kreditdaten (Daten → Verbindlichkeiten).</div>`;
     else html+=field(g,'saving','Sparrate',Math.round(P('saving')),'€/M');
-    html+=field(g,'ret','Rendite',pc(P('ret')),'% p.a.');
-    html+=field(g,'retDyn','Rendite-Trend',pc(P('retDyn')),'% p.a.');
-    html+=field(g,'vol','Schwankung',pc(P('vol')),'% p.a.');
-    html+=field(g,'volDyn','Schwankungs-Trend',pc(P('volDyn')),'% p.a.');
+    if(depAll||depSome)html+=`<div class="v2-ap-note">${depAll
+      ?L('Der Wert folgt der Abschreibung (Daten → Vermögenswerte → Position). Rendite und Schwankung wirken hier nicht.','The value follows the depreciation (Data → Assets → position). Return and volatility do not apply here.')
+      :L('Positionen mit Abschreibung folgen ihrem Abschreibungsplan (Daten → Vermögenswerte). Rendite und Schwankung gelten für den Rest der Gruppe.','Positions with depreciation follow their schedule (Data → Assets). Return and volatility apply to the rest of the group.')}</div>`;
+    if(!depAll){
+      html+=field(g,'ret','Rendite',pc(P('ret')),'% p.a.');
+      html+=field(g,'retDyn','Rendite-Trend',pc(P('retDyn')),'% p.a.');
+      html+=field(g,'vol','Schwankung',pc(P('vol')),'% p.a.');
+      html+=field(g,'volDyn','Schwankungs-Trend',pc(P('volDyn')),'% p.a.');
+    }
     if(g.withdrawable){
       html+=field(g,'avail','Verfügbar ab',pc(P('avail')),'Jahre');
       html+=field(g,'tax','Abzug bei Entnahme',pc(P('tax')),'%');
@@ -12378,7 +12399,7 @@ function openSuccessExplain(){
   const pc=v=>_numStr(Math.round(v*1000)/10)+' %',early=s.phase4From>s.workEnd+0.01;
   const fail=mc.failAge50!=null&&isFinite(mc.failAge50)?Math.floor(mc.failAge50+1e-9):null;
   const groups=plan.groups.filter(g=>g.gross>0||g.saving>0);
-  const rows=groups.map(g=>`<tr><td>${escHTML(g.key)}</td><td>${pc(g.ret)}</td><td>${pc(g.vol)}</td><td>${g.saving>0?fmt(Math.round(g.saving)):'–'}</td><td>${g.avail>=120?L('nicht (gebunden)','no (tied up)'):g.avail>0?L('ab ','from ')+_ageTxt(g.avail):L('sofort','now')}</td></tr>`).join('');
+  const rows=groups.map(g=>`<tr><td>${escHTML(g.key)}</td>${g.depShare>=0.999?`<td colspan="2">${L('laut Abschreibung','per depreciation')}</td>`:`<td>${pc(g.ret)}</td><td>${pc(g.vol)}</td>`}<td>${g.saving>0?fmt(Math.round(g.saving)):'–'}</td><td>${g.avail>=120?L('nicht (gebunden)','no (tied up)'):g.avail>0?L('ab ','from ')+_ageTxt(g.avail):L('sofort','now')}</td></tr>`).join('');
   const need3=fmt(Math.round(s.monthlyWithdraw)),need4=fmt(Math.round(s.pensionSpending));
   const h=L(
 `<p><strong>${pct} %</strong> heißt: In <strong>${ok} von ${runs}</strong> simulierten Zukünften reicht dein Geld bis zum Alter ${escHTML(_horizonTxt(plan))}${plan.horizonWho?' – so lange, bis auch die jüngste Person das Planalter erreicht hat':''}. „Reicht“ bedeutet: In jedem Monat bis dahin decken Einkommen und entnehmbares Vermögen deinen Bedarf. Dein Ziel liegt bei ${safety} % (Sicherheit, einstellbar unter Prognose → Annahmen)${mc.success>=s.safety/100?' – das ist erreicht.':' – das ist noch nicht erreicht.'}</p>

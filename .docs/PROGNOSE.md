@@ -52,7 +52,8 @@ solange sie arbeitet, ohne Arbeit bis zu ihrer Rente, Rente). **Planalter für a
 Alter“ gilt für jede Person in ihrem eigenen Alter; die Prognose läuft, bis die jüngste es erreicht hat (`_planEndMain`,
 Beschriftung „bis 97 (Anna 95)“), Renten laufen bis zum Ende. Alle Balken sind gleich lang und enden rechts beim
 Planalter der Person; wer älter ist als die jüngste Person, beginnt mit einem ausgegrauten Stück so lang wie der
-Altersabstand (`lp-past`, `_youngestNow`), „heute“ steht danach. Die Erklärung der
+Altersabstand (`lp-past`, `_youngestNow`). Unter den Balken stehen nur die Phasengrenzen und das Ende; die Marke
+„heute“ ist seit 15.10.2026 entfernt (`_ticksHTML`, erste Grenze ab 4 % vom Anfang). Die Erklärung der
 Erfolgschance (`openSuccessExplain`) steht in einer Infobox mit begrenzter Höhe; der Text scrollt, Titel und „Schließen“
 bleiben stehen.
 
@@ -183,6 +184,14 @@ Positionen werden zu Gruppen zusammengefasst (Gruppe = `displayGroup`, sonst Kat
   liquide und `bav`-Töpfe ab „Verfügbar ab“; illiquide Töpfe (Immobilie, Auto, gebundene ETFs)
   werden **nie verkauft**. Ein gebundener ETF sperrt damit nicht mehr den liquiden Teil derselben
   Gruppe.
+- **Abschreibung** (seit 15.10.2026): Jede Position mit gültiger Abschreibung (Daten → Vermögenswerte → Position,
+  `AssetModel.depreciatedValue`) bekommt einen eigenen Topf (`dep`). `plan.depF` enthält dafür je Simulationsmonat `k`
+  (Kalendermonat `ym0 + k`) den Faktor Wert im Folgemonat ÷ Wert im Monat laut Plan; vor dem Kaufmonat 1, ab Wert 0
+  bleibt es 0. Der Topf folgt damit genau dem Abschreibungsplan statt der Rendite der Gruppe (vorher z. B. pauschal
+  −5 % für Fahrzeuge); Schwankung wirkt dort nicht. Ein Verkauf per Ereignis senkt den Topf anteilig, danach läuft
+  der Plan weiter. `g.depShare` = Anteil des Gruppenwerts mit Abschreibung (1 = Rendite und Schwankung der Gruppe
+  wirken nicht). Sparraten gehen bevorzugt in einen Topf ohne Abschreibung. Die Abschreibung kennt keinen Restwert:
+  Prozentual sinkt der Wert gegen 0, ein fester Betrag erreicht 0.
 - Gruppen ohne Wert, Schuld und Sparrate fallen weg, außer ein Ereignis nutzt sie
   (z. B. späterer Immobilienkauf).
 - Verknüpfte Altersvorsorgedepots (`plan.dynDepots`): Der Topf wächst mit Beiträgen und Zulagen
@@ -350,7 +359,8 @@ nominal (× Inflation bzw. × Sparraten-Steigerung bis zum Monat):
    finanzierte Teil geht ans Ziel (P22).
 3. **Haushaltssaldo** `inc − out` (+ Depot-Raten): negativ → Entnahme, positiv → Einzahlung in die
    Einzahlungsgruppe (Cash, sonst erste entnehmbare Gruppe ohne Schuld).
-4. **Wertentwicklung** je Topf mit der Monatsrendite der Gruppe. Im Monte-Carlo-Lauf je
+4. **Wertentwicklung** je Topf mit der Monatsrendite der Gruppe, Töpfe mit Abschreibung mit ihrem Faktor
+   `depF[b][k]` (ohne Zufall). Im Monte-Carlo-Lauf je
    Lebensjahr ein Zufallswert je Gruppe, gleichmäßig auf die Monate des Jahres verteilt:
    `exp(lnr/12 + vol·√(m/12)·(√0,3·F + √0,7·ε_j)/m)` mit gemeinsamem Marktfaktor `F`
    (paarweise Korrelation 0,3).
@@ -588,6 +598,9 @@ Beim Speichern (`_savePhasesSheet`, in einer Transaktion):
 Steht auf der Daten-Seite unter „Prognose & Annahmen“.
 - Je Gruppe gibt es eine aufklappbare Karte mit Sparrate, Rendite, Trend, Schwankung und
   Schwankungs-Trend, bei entnehmbaren Gruppen zusätzlich „Verfügbar ab“ und „Abzug“.
+- Gruppen mit Abschreibung (seit 15.10.2026): ganz abgeschrieben (`depShare` ≥ 99,9 %) zeigt die Karte „Wert laut
+  Abschreibung“ und einen Hinweis statt Rendite, Trend und Schwankung; teilweise ein Hinweis, dass Rendite und
+  Schwankung nur für den Rest gelten. Die Erklärung der Erfolgschance zeigt in der Tabelle „laut Abschreibung“.
 - Jede Eingabe wird sofort in `lt-asset-params` gespeichert; ein leeres Feld setzt den Standardwert. Gespeichert wird nur
   dieses eine Feld auf dem aktuellen Stand (Review P54); eine gleichzeitige fremde Änderung anderer Felder bleibt erhalten.
 - „Sparraten aus Budget übernehmen“ (`deriveSavingsFromBudget`) ordnet Budget-Sparposten den
@@ -661,6 +674,9 @@ Abgedeckt (`node --test .tests/`):
 - **Etappenziel** (`lt-milestone.test.cjs`): Alter je Phase, Puffer und Fehlbetrag mit Grenzprüfung (Puffer besteht,
   Puffer + Toleranz nicht), nicht erreichbar, Ereignis im Etappenalter ohne Änderung des Plans, Kachel,
   Hintergrundrechnung mit Verwerfen veralteter Ergebnisse, Info-Text Deutsch/Englisch.
+- **Abschreibung** (`forecast-depreciation.test.cjs`): Familienauto der Demo folgt dem Plan, gemischte Gruppe (Garagen),
+  fester Betrag bis 0, ohne Abschreibung wie bisher, kein Zufall im Monte-Carlo, Sparraten in den Topf ohne
+  Abschreibung, Hinweise in Annahmen und Erklärung.
 - **Zeitverlauf** (`lt-timeline.test.cjs`): `per = perGross − perDebt`, Zeilen und Reihenfolge, Werte je
   Alter (Prognose und Historie, nominal und Kaufkraft), Umschalter, Sortierung beim Fahren, Anteil und Veränderung, Liste wie auf der Vermögen-Seite, Knopf in der
   Ergebnis-Karte (Zeile unter den Kennzahlen), Ansicht wechseln, Markup.

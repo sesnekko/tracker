@@ -44,7 +44,7 @@ test('1. Balken: gleich lang, alle enden beim Planalter; die ältere Person begi
   assert.equal(flexes(me)[0][0] === 'lp-past', false, 'du bist die jüngste Person');
   assert.ok(Math.abs(total(mia) - total(me)) < 0.01, total(mia) + ' ≠ ' + total(me));
   assert.match(mia, /<span class="last" style="left:100%">95<\/span>/); assert.match(me, /<span class="last" style="left:100%">95<\/span>/);
-  assert.match(mia, /<span class="first" style="left:10\.36%">heute<\/span>/, '„heute“ nach dem ausgegrauten Stück');
+  assert.doesNotMatch(mia + me, />heute</, 'ohne „heute“ (15.10.2026)');
   assert.doesNotMatch(mia + me, /lp-part/);
   // jüngere Person: die Prognose läuft länger, dein Balken beginnt ausgegraut und endet bei deinen 95
   const young = ctx([{ id: 'p1', name: 'Kim', by: 1985, points: 10 }]);
@@ -76,4 +76,13 @@ test('3. Phasenbalken einer weiteren Person: Ansparen in Phase 1 auch bei Teilze
   const cls = [...bar.matchAll(/<i class="(lp-p\d)"/g)].map(m => m[1]);
   assert.deepEqual(cls, ['lp-p1', 'lp-p2', 'lp-p3', 'lp-p4'], 'vorher: lp-p2 ab heute (Teilzeit 90 %)');
   assert.match(bar, />60</, 'Arbeitsende'); assert.match(bar, />67</, 'Rentenbeginn'); // 50 liegt zu nah an „heute“ und entfällt
+});
+
+test('Altersmarken ohne „heute“: erste Grenze schon ab 4 % vom Anfang, danach 9 % Abstand, Rentenbeginn immer', () => {
+  const a = ctx([]);
+  const h = a.run(`_ticksHTML([{pct:5,label:'45'},{pct:10,label:'48'},{pct:30,label:'60'},{pct:33,label:'67',key:true}],'95',0)`);
+  assert.equal(h, '<span style="left:5.00%">45</span><span style="left:33.00%">67</span><span class="last" style="left:100%">95</span>');
+  assert.doesNotMatch(h, /heute/);
+  assert.equal(a.run(`_ticksHTML([{pct:3,label:'44'}],'95',0)`), '<span class="last" style="left:100%">95</span>', 'zu nah am Rand');
+  assert.equal(a.run(`_ticksHTML([{pct:13,label:'50'}],'95',10)`), '<span class="last" style="left:100%">95</span>', 'nach dem grauen Stück ebenso 4 %');
 });

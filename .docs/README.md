@@ -5,7 +5,7 @@ in Commit `1b57aa8` (Schema 15). Danach Review-Runde P34–P38, Anmerkungen aus 
 Folge-Review 2 P64, P65 (Commit `b9f80d4`), die Persona-Befunde und die kompaktere Daten- und Prognose-Seite (Commit `50300cc`),
 danach EM-Rente mit Zurechnungszeit und Besitzschutz, das Altersvorsorgedepot Monat für Monat und die EM-Rente mit
 Entgeltpunkten laut Bescheid (15.10.2026): Schema 19, danach der Zeitverlauf je Anlage und das Etappenziel
-auf der Prognose-Seite, Service-Worker-Cache `verm-v141`,
+auf der Prognose-Seite, Service-Worker-Cache `verm-v142`,
 `data-store.js?v=32`, `i18n-en.js?v=19`. Unabhängige Prüfberichte:
 [REVIEW_2026-10.md](REVIEW_2026-10.md), [REVIEW_2026-10_FOLGE.md](REVIEW_2026-10_FOLGE.md),
 [REVIEW_2026-10_FOLGE2.md](REVIEW_2026-10_FOLGE2.md), [REVIEW_2026-10_FOLGE3.md](REVIEW_2026-10_FOLGE3.md).
@@ -141,7 +141,8 @@ die alte Fassung, der zweite die neue.
 
 ### Tests
 
-- Aufruf: `node --test .tests/` – 38 Testdateien, 401 Tests, alle grün (15.10.2026 nach dem Etappenziel,
+- Aufruf: `node --test .tests/` – 39 Testdateien, 408 Tests, alle grün (15.10.2026 nach der Abschreibung in der Prognose,
+  `forecast-depreciation.test.cjs`, dem Etappenziel,
   `lt-milestone.test.cjs`, dem Zeitverlauf je Anlage auf der Prognose-Seite, `lt-timeline.test.cjs`, der Transparenz der Altersrente
   nach EM-Rente, `em-transparency.test.cjs`, der einheitlichen Daten-Seite,
   `data-page-lists.test.cjs`, Schema 19, EM-Rente mit
