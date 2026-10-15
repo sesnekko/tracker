@@ -326,6 +326,22 @@ Fensters. Im normalen Browser greift dieser Zweig nicht, deshalb fiel es bei der
 Test „Infobox: Wischen im langen Text …“ (`em-conversion.test.cjs`); Browser: Sperre manuell angehängt, Wischen im Text nicht
 blockiert, auf Hintergrund und Titel blockiert. Nicht geprüft: echtes iPhone. `node --test .tests/` **379/379**.
 
+**Anmerkungen aus dem Test mit zwei Personen (15.10.2026)**
+- **Planalter für alle Personen** (offene Entscheidung 11): „Planen bis Alter“ gilt für jede Person in ihrem eigenen Alter.
+  Die Prognose läuft, bis die jüngste Person es erreicht hat (`_planEndMain`, `plan.horizonAge`, `plan.horizonWho`); Renten
+  laufen bis zum Ende (entschieden, keine Kürzung beim Planalter einer älteren Person). Beschriftung „bis 97 (Anna 95)“. Jeder
+  Phasenbalken endet beim Planalter der Person; endet er vor dem Planende, ist er auf der gemeinsamen Zeitachse kürzer
+  (`_barPart`, `_ownBarHTML`). Folge für die Demo: Anna ist zwei Jahre jünger, die Prognose läuft bis 97 statt 95.
+- **EM-Rente im Budget**: Eine Einnahme einer Person, die dem Namen nach eine EM-Rente ist (`_isEmName`, jetzt auch „EM
+  Rente“), zählte als Gehalt: Arbeitszeit 45 % Gehalt + 45 % EM-Rente = 90 %, in späteren Phasen mit der Arbeitszeit gekürzt.
+  Jetzt kein Gehalt (`_personSalaryItems`): keine Arbeitszeit, unverändert in allen Phasen; im Budget-Sheet statt
+  „Arbeitszeit“ ein Hinweis. Kein Schemawechsel.
+- **Phasenbalken weiterer Personen**: gefärbt nach Lebensphase (Ansparen in Phase 1, danach Weiterarbeiten, solange sie
+  arbeitet, ohne Arbeit, Rente; `_personBarParts`), nicht mehr nach Arbeitszeit. Vorher begann der Balken bei Teilzeit mit
+  „Weiterarbeiten“, „Ansparen“ fehlte. Die Arbeitszeit steht im Text darunter.
+- Tests: `household-phases.test.cjs` (4). Browser (iPhone-Breite): Prognose-Karte und Lebensphasen-Sheet mit jüngerer und
+  älterer Person, Budget-Sheet „EM-Rente Anna“. `node --test .tests/` **383/383**, Audit **22/0**.
+
 **Persona-Simulation vom 14.10.2026** (`.docs/Onboarding Persona/Ergebnis_Simulation_2026-10-14.md`, 14 Personas,
 Befunde A1–A13, B1–B6, C1–C14). Umgesetzt in dieser Runde, kein Schemawechsel (weiter Version 17); Versionen
 `data-store.js?v=29`, `i18n-en.js?v=13`, Cache `verm-v127`. Nicht Teil dieser Runde: Folge-Review 3
@@ -651,7 +667,8 @@ Fragen 1, 4, 6, 7 und 8 hast du entschieden.
    bestehender Nutzer, die keinen eigenen Wert eingetragen haben.
 10. **Teilzeitwechsel zu einem Datum (A11) und Vermögensziel (B4)**: beide brauchen neue Felder (Schema 18). Umsetzen?
 11. **Planhorizont mehrerer Personen**: „Planen bis“ gilt im Alter der Hauptperson; jüngere Personen enden früher.
-    Horizont auf die jüngste Person beziehen (Modelländerung) oder so lassen?
+    Horizont auf die jüngste Person beziehen (Modelländerung) oder so lassen? **Entschieden (15.10.2026):** gilt für jede
+    Person in ihrem Alter; die Prognose läuft, bis die jüngste es erreicht hat, Renten laufen bis zum Ende.
 
 ---
 

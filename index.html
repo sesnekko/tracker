@@ -2725,7 +2725,7 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="i18n-en.js?v=17"></script>
+<script src="i18n-en.js?v=18"></script>
 <script src="data-store.js?v=32"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
@@ -3018,7 +3018,7 @@ const INFO={
   'flow-other':['Neubewertung & Sonstiges','<p>Änderungen, die sich nicht sicher aufteilen lassen: neue Marktwerte von Sachwerten (z. B. Immobilie) und Positionen ohne Stückzahl.</p><p>Tipp: Für eine genaue Aufteilung bei Wertpapieren die Stückzahl mitpflegen.</p>'],
   'lt-birth-year':['Geburtsjahr','<p>Bestimmt dein aktuelles Alter und die Regelaltersgrenze der gesetzlichen Rente.</p>'],
   'lt-life-expect':['Lebenserwartung','<p>Nur zur Orientierung im Lebensbalken. Die Prognose rechnet bis „Planen bis Alter“, weil etwa die Hälfte der Menschen älter wird als die durchschnittliche Lebenserwartung.</p>'],
-  'lt-plan-horizon':['Planen bis Alter','<p>Bis zu diesem Alter muss das Vermögen reichen. Standard 95 – ein Puffer für ein langes Leben.</p>'],
+  'lt-plan-horizon':['Planen bis Alter','<p>Bis zu diesem Alter muss das Vermögen reichen. Standard 95 – ein Puffer für ein langes Leben.</p><p>Gilt für jede Person in ihrem eigenen Alter. Die Prognose läuft, bis auch die jüngste Person dieses Alter erreicht hat; Renten laufen bis zum Ende.</p>'],
   'lt-inflation':['Inflation','<p>Jährliche Preissteigerung. Alle Beträge in den Einstellungen sind in heutiger Kaufkraft; Bedarf, Renten und Ereignisse steigen mit der Inflation. Alle Ergebnisse werden in heutiger Kaufkraft angezeigt.</p>'],
   'lt-phases':['Lebensphasen','<p>Die Prognose rechnet in vier Phasen:</p><p><strong>1 Ansparen</strong>: Du arbeitest und sparst wie heute (Sparraten je Anlage).</p><p><strong>2 Weiterarbeiten</strong>: Du arbeitest weiter, ggf. in Teilzeit, und stellst das private Sparen ein oder reduzierst es. Optional entnimmst du zusätzlich etwas aus dem Vermögen.</p><p>Arbeitszeit und Altersvorsorge stellst du je Phase für jede erwachsene Person ein (z. B. du in Teilzeit, deine Partnerin in Vollzeit). Das Gehalt aus dem Budget gilt für die Arbeitszeit von heute; Gehalt, Rentenpunkte und Dienstzeit folgen der Arbeitszeit. Solange du arbeitest, gleicht die Prognose ein niedrigeres Haushaltseinkommen aus dem Vermögen aus und legt ein höheres zusätzlich an. Weitere Personen arbeiten bis zu ihrem eigenen Arbeitsende.</p><p><strong>3 Vorruhestand</strong>: Kein Arbeitseinkommen. Private Vermögensbildung und Altersvorsorge laufen nur mit dem Anteil, den du festlegst (Standard: keine). Der Bedarf kommt aus dem liquiden Vermögen, abzüglich Renten, die schon laufen.</p><p><strong>4 Rente</strong>: Ab dem Rentenbeginn decken Renten und Pensionen einen Teil des Bedarfs, den Rest trägt das Vermögen. Beginnt die gesetzliche Rente oder Pension vor der Altersgrenze, sinkt sie um den Abschlag (Rente 0,3 % je Monat, höchstens 14,4 %; frühestens mit 63).</p><p>Die Sparraten der Phase 1 müssen aus dem Budget bezahlt werden. Reicht der Überschuss im Budget nicht, nimmt die Prognose die Lücke jeden Monat aus dem Vermögen, statt Geld aus dem Nichts zu sparen.</p><p>Eine Phase entfällt, wenn sie dasselbe Alter hat wie die vorige.</p>'],
   'lt-save-until':['Ansparen bis Alter','<p>Bis zu diesem Alter fließen die Sparraten aus den Asset-Parametern voll. Danach beginnt das Weiterarbeiten (Phase 2).</p>'],
@@ -8780,6 +8780,7 @@ function openBudgetSheet(opts={}){
     <label class="ds-row" id="b-personRow"><span class="ds-l" data-info="b-person">Person</span><select class="ds-in ds-wide" id="b-person">${[['','Haushalt'],[_ownPersonId(),_meName()],..._personOptions('').slice(1)].map(([v,l])=>`<option value="${escHTML(v)}"${v===person?' selected':''}>${escHTML(l)}</option>`).join('')}</select></label>
     <div class="ds-row" id="b-workRow"><span class="ds-l" data-info="b-work">${L('Arbeitszeit','Working time')}<small>${L('für die Prognose: Gehalt bei Vollzeit oder Teilzeit','for the forecast: salary at full-time or part-time')}</small></span>${_seg('b-work',[['full',L('Vollzeit','Full-time')],['part',L('Teilzeit','Part-time')]],workPct==null?'':workPct>=100?'full':'part')}</div>
     <label class="ds-row" id="b-workPctRow"><span class="ds-l">${L('Teilzeit %','Part-time %')}<small>${L('Anteil einer Vollzeitstelle','share of a full-time position')}</small></span><input class="ds-in" type="text" inputmode="decimal" id="b-workPct" value="${workPct!=null&&workPct<100?_numStr(workPct):''}" placeholder="50"></label>
+    <div class="ds-row" id="b-emRow" hidden><span class="ds-l">${L('Erwerbsminderungsrente','Disability pension')}<small>${L('Kein Gehalt: zählt nicht zur Arbeitszeit und bleibt in allen Lebensphasen gleich. Ab dem Arbeitsende rechnet die Prognose mit der EM-Rente unter Altersvorsorge.','Not a salary: does not count as working time and stays the same in all life phases. From the end of work the forecast uses the disability pension under Pensions.')}</small></span></div>
     <div class="ds-row" id="b-retRow" data-b-ret style="cursor:pointer"><span class="ds-l">Auch im Ruhestand<small id="b-retHint"></small></span><span class="v2-switch" role="switch" tabindex="0" id="b-retOn" aria-checked="${retire}" aria-label="Auch im Ruhestand"><i></i></span></div>
     ${liabs.length?`<label class="ds-row" id="b-loanRow"><span class="ds-l">Kreditrate für<small id="b-loanHint">${escHTML(_loanLinkHint(loanId))}</small></span><select class="ds-in ds-wide" id="b-loan"><option value="">Kein Kredit</option>${loanId==='*'?'<option value="*" selected>Mehrere Kredite (anteilig)</option>':''}${liabs.map(f=>`<option value="${escHTML(f.id)}"${f.id===loanId?' selected':''}>${escHTML(f.label)}</option>`).join('')}</select></label>`:''}
     ${depots.length?`<label class="ds-row" id="b-depotRow"><span class="ds-l">Beitrag für<small id="b-depotHint">${escHTML(_depotLinkHint(depotId))}</small></span><select class="ds-in ds-wide" id="b-depot"><option value="">Kein Altersvorsorgedepot</option>${depots.map(d=>`<option value="${escHTML(d.id)}"${d.id===depotId?' selected':''}>${escHTML((d.name||'').trim()||'Altersvorsorgedepot')}</option>`).join('')}</select></label>`:''}
@@ -8832,9 +8833,10 @@ function _budgetSheetUpdate(){
   const custom=mode==='recurring'&&_switchOn('b-customOn');
   show('b-recurring',mode==='recurring');show('b-once',mode==='once');show('b-customWrap',mode==='recurring');
   show('b-costRow',type==='expense');show('b-retRow',type==='income'&&mode==='recurring');show('b-personRow',type==='income'&&mode==='recurring');
-  /* Arbeitszeit nur beim Gehalt einer Person (nicht „Auch im Ruhestand“) */
-  const sal=type==='income'&&mode==='recurring'&&!!v('b-person')&&!_switchOn('b-retOn');
-  show('b-workRow',sal);show('b-workPctRow',sal&&v('b-work')==='part');
+  /* Arbeitszeit nur beim Gehalt einer Person (nicht „Auch im Ruhestand“, nicht bei einer EM-Rente) */
+  const emInc=type==='income'&&mode==='recurring'&&!!v('b-person')&&!_switchOn('b-retOn')&&_isEmName(v('b-name'));
+  const sal=type==='income'&&mode==='recurring'&&!!v('b-person')&&!_switchOn('b-retOn')&&!emInc;
+  show('b-workRow',sal);show('b-workPctRow',sal&&v('b-work')==='part');show('b-emRow',emInc);
   const retHint=document.getElementById('b-retHint');
   if(retHint){
     const dup=_switchOn('b-retOn')?_retIncomeDuplicate(v('b-name')):null;
@@ -9654,10 +9656,14 @@ function _personOptions(own){return [['',_ownName()||own],...getDrvExtra().filte
 function _personShift(s,id){const p=id?getDrvExtra().find(r=>r.id===id):null;return p&&+p.by>1900?+p.by-s.birthYear:0;}
 /* Nettogehalt einer Person: Ø ihrer wiederkehrenden Budget-Einnahmen (ohne „Auch im Ruhestand“). Solange ein Nettogehalt
    aus Schema 13 noch keinem Budgetposten zugeordnet ist (P35), zählt wie damals dieser Betrag – nur in der Prognose. */
+/* Gehalt einer Person = ihre wiederkehrenden Budget-Einnahmen ohne „Auch im Ruhestand“. Eine Einnahme, die dem Namen nach
+   eine Erwerbsminderungsrente ist (_isEmName, wie bei Renteneinnahmen), ist kein Gehalt (15.10.2026): Sie zählt nicht zur
+   Arbeitszeit, ändert sich nicht mit den Lebensphasen und endet nicht mit dem Arbeitsende – ab dann rechnet die Prognose
+   mit der EM-Rente unter Altersvorsorge. */
 function _personSalaryItems(id){
   if(!id||!_mod('budget'))return [];
   const bd=loadBudgetData();if(!bd)return [];
-  return (bd.einkommen||[]).filter(r=>r.person===id&&!r.retirement&&(r.kind||'income')==='income'&&!_childBenefitReplaced(r));
+  return (bd.einkommen||[]).filter(r=>r.person===id&&!r.retirement&&(r.kind||'income')==='income'&&!_childBenefitReplaced(r)&&!_isEmName(r.name));
 }
 function _pendingNet(id){const p=id?getDrvExtra().find(r=>r.id===id):null;return p&&+p.net>0?+p.net:0;}
 function _personSalary(id){
@@ -9736,25 +9742,50 @@ function _segBarHTML(start,parts){
   });
   return `<div class="lp-bar">${bar}</div><div class="lp-ticks">${_ticksHTML(cands,_ageTxt(end))}</div>`;
 }
-/* Zeitstrahl einer weiteren Person in ihrem Alter: Vollzeit · Teilzeit · ohne Arbeit · Rente */
-function _personTimelineHTML(s,p){
-  const r=calcDrvExtra(s,p),curMain=_curAgeOf(s),segs=_workSegs(r.prof,curMain);
-  if(!segs.length)return `<div class="hh-tl">${L('Arbeitet nicht mehr','No longer working')} · ${L('Rente ab ','Pension from ')}${_ageTxt(r.age)}</div>`;
-  const until=r.workUntil,pen=Math.max(r.age,until),end=Math.max(pen+1,s.planHorizon-r.prof.shift);
-  const parts=segs.map(g=>({to:g.to,cls:g.w>=1-1e-9?'lp-p1':g.w>0?'lp-p2':'lp-p3'}));
-  if(pen>until+0.01)parts.push({to:pen,cls:'lp-p3'});
-  parts.push({to:end,cls:'lp-p4'});
-  return _segBarHTML(curMain-r.prof.shift,parts).replace('class="lp-bar"','class="lp-bar hh-bar"')+`<div class="hh-tl">${_personPhaseText(s,p)}</div>`;
+/* Planalter für alle Personen (15.10.2026): „Planen bis Alter“ gilt für jede erwachsene Person in ihrem eigenen Alter. Die
+   Prognose läuft, bis die jüngste Person es erreicht hat (in deinem Alter: Planalter + Altersabstand); Renten laufen bis zum
+   Ende. Rückgabe: Ende in deinem Alter und die Person, die es bestimmt (null = du). */
+function _planEndMain(s,people){
+  let end=s.planHorizon,who=null;
+  (people||[]).forEach(p=>{const by=+p.by;if(by>1900&&s.planHorizon+(by-s.birthYear)>end+1e-9){end=s.planHorizon+(by-s.birthYear);who=p;}});
+  return{end,who};
 }
-/* Phasenbalken einer weiteren Person in ihrem Alter, auf denselben Zeitraum wie deiner (heute bis zum Planhorizont):
-   Vollzeit · Teilzeit · ohne Arbeit · Rente, in den Farben der Lebensphasen */
+/* Beschriftung des Planendes: „102 (Anna 100)“, wenn eine jüngere Person es bestimmt */
+const _horizonTxt=plan=>plan.horizonWho?`${plan.horizonAge} (${plan.horizonWho.name} ${_ageTxt(plan.horizonWho.age)})`:String(plan.horizonAge);
+/* Ein Balken, der vor dem Ende der gemeinsamen Zeitachse (heute bis Planende) aufhört, ist entsprechend kürzer */
+const _barPart=(html,frac)=>frac>=0.995?html:`<div class="lp-part" style="width:${(Math.max(0.05,frac)*100).toFixed(2)}%">${html}</div>`;
+/* Dein Balken endet mit deinem Planalter; läuft die Prognose wegen einer jüngeren Person länger, ist er kürzer */
+function _ownBarHTML(b,s){
+  if(!(b[4]>s.planHorizon+0.01))return _phaseBarHTML(b);
+  const h=Math.max(b[0]+0.01,s.planHorizon),c=b.map(x=>Math.min(x,h));
+  return _barPart(_phaseBarHTML(c),(h-b[0])/(b[4]-b[0]));
+}
+/* Abschnitte einer weiteren Person in ihrem Alter, in den Farben der Lebensphasen (15.10.2026): solange sie arbeitet in der
+   Farbe der Phase (Ansparen, ab Phase 2 Weiterarbeiten), danach ohne Arbeit bis zur Rente, dann Rente; die Arbeitszeit steht
+   im Text darunter. Vorher färbte die Arbeitszeit (Teilzeit = Weiterarbeiten), sodass „Ansparen“ bei Teilzeit fehlte.
+   Endet mit dem Planalter in ihrem Alter (endMain in deinem Alter). */
+function _personBarParts(s,p,endMain){
+  const r=calcDrvExtra(s,p),prof=r.prof,curMain=_curAgeOf(s),sh=prof.shift,start=curMain-sh,stop=endMain-sh;
+  const bd=[curMain,...(prof.wb||prof.b),Infinity],parts=[];
+  for(let i=0;i<4;i++){
+    const a=Math.max(bd[i],curMain),e=Math.min(bd[i+1],prof.workEndMain,endMain);if(e-a<=1e-9)continue;
+    parts.push({to:e-sh,cls:prof.w[i]>0?(i===0?'lp-p1':'lp-p2'):'lp-p3'});
+  }
+  const until=parts.length?parts[parts.length-1].to:start,pen=Math.min(stop,Math.max(r.age,until,start));
+  if(pen>until+0.01)parts.push({to:pen,cls:'lp-p3'});
+  if(stop>pen+0.01)parts.push({to:stop,cls:'lp-p4'});
+  return{start,parts};
+}
+/* Zeitstrahl einer weiteren Person (Lebensphasen-Sheet): Balken wie unten, darunter Arbeitszeit, Arbeitsende und Rente */
+function _personTimelineHTML(s,p,horizonMain){
+  const hm=horizonMain??Math.max(_planEndMain(s,getDrvExtra()).end,_curAgeOf(s)+1);
+  return _personBarHTML(s,p,hm).replace('class="lp-bar"','class="lp-bar hh-bar"')+`<div class="hh-tl">${_personPhaseText(s,p)}</div>`;
+}
+/* Phasenbalken einer weiteren Person in ihrem Alter auf derselben Zeitachse wie deiner (heute bis zum Planende) */
 function _personBarHTML(s,p,horizonMain){
-  const r=calcDrvExtra(s,p),curMain=_curAgeOf(s),sh=r.prof.shift,start=curMain-sh,end=Math.max(start+1,horizonMain-sh);
-  const segs=_workSegs(r.prof,curMain),until=segs.length?segs[segs.length-1].to:start,pen=Math.max(r.age,until,start);
-  const parts=segs.map(g=>({to:Math.min(g.to,end),cls:g.w>=1-1e-9?'lp-p1':g.w>0?'lp-p2':'lp-p3'}));
-  if(pen>until+0.01)parts.push({to:Math.min(pen,end),cls:'lp-p3'});
-  if(end>pen+0.01)parts.push({to:end,cls:'lp-p4'});
-  return _segBarHTML(start,parts);
+  const curMain=_curAgeOf(s),sh=calcDrvExtra(s,p).prof.shift,endMain=Math.max(curMain+0.5,Math.min(horizonMain,s.planHorizon+sh));
+  const x=_personBarParts(s,p,endMain);
+  return _barPart(_segBarHTML(x.start,x.parts),(endMain-curMain)/Math.max(1e-9,horizonMain-curMain));
 }
 /* Gehalt je Abschnitt: „3.200 €/Monat bis 50, dann 1.600 € (50 %) bis 60“ */
 function _salarySegsTxt(net,segs){
@@ -9794,7 +9825,7 @@ function _personContextHTML(id){
 /* Karte „Ich“: Geburtsdaten aus „Prognose & Annahmen“, Kontext wie bei den anderen Personen */
 function _meCardHTML(){
   const s=getLifetimeSettings(),now=new Date(),cur=_ageAt(s,now.getFullYear(),now.getMonth());
-  const b=_phaseBounds(s,cur,Math.max(Math.round(s.planHorizon),Math.ceil(cur)+1));
+  const b=_phaseBounds(s,cur,Math.max(Math.round(_planEndMain(s,getDrvExtra()).end),Math.ceil(cur)+1));
   /* Geburtsdaten der eigenen Person: hier bearbeitbar wie bei allen Personen (Bearbeiten-Modus, 14.10.2026) */
   const by=appStorage.getItem('lt-birth-year'),bm=appStorage.getItem('lt-birth-month');
   return `<div class="hh-card hh-me"><div class="hh-head">${_hhHeadHTML(_meName(),by?L('Jahrgang ','Born ')+s.birthYear:L('Geburtsjahr fehlt','Year of birth missing'))}</div>`
@@ -10360,7 +10391,7 @@ function _retIncomeDuplicate(name){
   if(person)return 'Rente '+person.name.trim();
   return null;
 }
-const _isEmName=name=>/erwerbsminder|\bem-?rente\b|\bemr\b/i.test(String(name||''));
+const _isEmName=name=>/erwerbsminder|\bem[- ]?rente\b|\bemr\b/i.test(String(name||''));
 function _retirementIncomes(s){
   if(!_mod('budget'))return[];
   const bd=loadBudgetData();if(!bd)return[];
@@ -10455,7 +10486,9 @@ function buildPlan(sIn,opt={}){
   };
   groups.forEach((g,j)=>{g.target=targetOf(j);});
   const firstAge=Math.floor(currentAge+1e-9)+1;
-  const horizonAge=Math.max(Math.round(s.planHorizon),firstAge+1,Math.ceil(s.withdrawFrom)+1);
+  /* Planalter für alle Personen: bis die jüngste es erreicht hat (_planEndMain) */
+  const planEnd=_planEndMain(s,opt.people||getDrvExtra());
+  const horizonAge=Math.max(Math.round(planEnd.end),firstAge+1,Math.ceil(s.withdrawFrom)+1);
   const nSteps=horizonAge-firstAge+1;
   const nMonths=Math.round((horizonAge-currentAge)*12);
   groups.forEach(g=>g.loans.forEach(l=>{
@@ -10546,6 +10579,8 @@ function buildPlan(sIn,opt={}){
   const ownNet=_personSalary(_ownPersonId()),ownWork=_ownWork(s);
   const plan={drv,bv,drvExtra,bvExtra,ownNet,ownWork,avd,avdAll,retInc,s,data,sorted,latestKey,ym0,latestNet:calc(data[latestKey]).net,currentAge,firstAge,horizonAge,nSteps,nMonths,
     groups,buckets,lnr,vol,events,pensions,dynDepots,depositIdx,depositBucket,opt:{drv:opt.drv,bv:opt.bv,people:opt.people}};
+  /* wer das Planende bestimmt, wenn eine jüngere Person es über dein Planalter hinausschiebt (Beschriftungen) */
+  plan.horizonWho=planEnd.who&&Math.round(planEnd.end)>Math.round(s.planHorizon)?{name:(planEnd.who.name||'').trim()||L('Weitere Person','Other person'),age:s.planHorizon}:null;
   plan.funding=opt.funding||_planFunding(plan);
   return plan;
 }
@@ -11289,7 +11324,7 @@ async function _pvRemove(title,text,fn){
 /* ── Haushalt ── */
 function _householdListHTML(){
   const s=getLifetimeSettings(),now=new Date(),cur=_ageAt(s,now.getFullYear(),now.getMonth());
-  const b=_phaseBounds(s,cur,Math.max(Math.round(s.planHorizon),Math.ceil(cur)+1));
+  const b=_phaseBounds(s,cur,Math.max(Math.round(_planEndMain(s,getDrvExtra()).end),Math.ceil(cur)+1));
   const sal=id=>{const v=_personSalary(id);return v>0?[fmt(v),L('Gehalt/Monat','salary/month')]:['',''];};
   const by=appStorage.getItem('lt-birth-year');
   let h=`<div class="ds-list-t">${L('Personen','People')}</div><div class="ds-list pv-list">`;
@@ -11319,7 +11354,7 @@ function openPersonSheet(id){
   if(!isNew){
     const s=getLifetimeSettings(),now=new Date(),cur=_ageAt(s,now.getFullYear(),now.getMonth());
     /* kurz: Arbeitsende und Rentenbeginn (im Alter der Person); die Phasen selbst im Lebensphasen-Sheet */
-    const pb=me?_phaseBounds(s,cur,Math.max(Math.round(s.planHorizon),Math.ceil(cur)+1)):null,pr=me?null:calcDrvExtra(s,p);
+    const pb=me?_phaseBounds(s,cur,Math.max(Math.round(_planEndMain(s,getDrvExtra()).end),Math.ceil(cur)+1)):null,pr=me?null:calcDrvExtra(s,p);
     const phase=L('Arbeit bis ','work until ')+_ageTxt(me?s.workEnd:pr.workUntil)+L(' · Rente ab ',' · pension from ')+_ageTxt(me?pb[3]:pr.age)+' ›';
     body+=`<button type="button" class="ds-linkrow" data-pv-phases="${me?'':'2'}"><span>${L('Lebensphasen','Life phases')}</span><small>${escHTML(phase)}</small></button>`;
     body+=`<div class="ds-list-t">${L('Zugeordnet','Assigned')}</div><div class="ds-note pv-ctx">${_personContextHTML(me?'':id)}</div>`;
@@ -12179,7 +12214,7 @@ function _v2LtSummary(o){
     `<div class="v2-ret-head"><span class="v2-ret-title">${s.phase4From>s.workEnd+0.01?'Vorruhestand':'Ruhestand'} mit ${_ageTxt(R)}</span><span class="v2-chip ${ok?'up':'down'}">${ok?'Abgesichert':'Noch nicht abgesichert'}</span></div>`+
     /* kompakt (14.10.2026): eine Kopfzeile mit Ziel, ein Satz, zwei Kacheln, darunter die Kennzahlen; die Skala entfällt */
     `<button type="button" class="v2-ret-main" onclick="openSuccessExplain()" aria-label="${L('Erfolgschance erklären','Explain the probability of success')}"><span class="v2-ret-big">${pct}<small>%</small></span><span class="v2-ret-lbl">${L('Erfolgschance','Probability of success')} · ${L('Ziel ','target ')}${safety} %<span class="v2-ret-more">${L('Was bedeutet das? ›','What does this mean? ›')}</span></span></button>`+
-    `<p class="v2-ret-text">In ${pct} von 100 simulierten Marktverläufen reicht dein Geld bis ${plan.horizonAge}.</p>`+
+    `<p class="v2-ret-text">In ${pct} von 100 simulierten Marktverläufen reicht dein Geld bis ${escHTML(_horizonTxt(plan))}.</p>`+
     _v2LtNotes(plan)+
     `<div class="v2-ret-stats">`+
       `<div data-info="v2-at-retire"><span class="k">${L('Verfügbar mit ','Available at ')}${_ageTxt(R)}</span><span class="n">${fmtCompact(Math.round(availAtR))}</span><span class="v2-mini"><i style="width:${cov.toFixed(1)}%"></i></span><span class="s">nötig: ${fmt(Math.round(tc.target/100)*100)}</span></div>`+
@@ -12188,7 +12223,7 @@ function _v2LtSummary(o){
   const pv=document.getElementById('v2-prev-pct');
   if(pv){pv.textContent=pct+' %';pv.style.color=ok?'var(--green)':'var(--red)';}
   const pt=document.getElementById('v2-prev-txt');
-  if(pt)pt.textContent='Erfolgschance bis '+plan.horizonAge+' · Ziel '+safety+'\u00a0%';
+  if(pt)pt.textContent='Erfolgschance bis '+_horizonTxt(plan)+' · Ziel '+safety+'\u00a0%';
   _v2SyncSwitches();
 }
 /* Ausführliche Erklärung der Erfolgschance mit den aktuellen Zahlen (14.10.2026): was die Zahl bedeutet, wie simuliert
@@ -12202,7 +12237,7 @@ function openSuccessExplain(){
   const rows=groups.map(g=>`<tr><td>${escHTML(g.key)}</td><td>${pc(g.ret)}</td><td>${pc(g.vol)}</td><td>${g.saving>0?fmt(Math.round(g.saving)):'–'}</td><td>${g.avail>=120?L('nicht (gebunden)','no (tied up)'):g.avail>0?L('ab ','from ')+_ageTxt(g.avail):L('sofort','now')}</td></tr>`).join('');
   const need3=fmt(Math.round(s.monthlyWithdraw)),need4=fmt(Math.round(s.pensionSpending));
   const h=L(
-`<p><strong>${pct} %</strong> heißt: In <strong>${ok} von ${runs}</strong> simulierten Zukünften reicht dein Geld bis zum Alter ${plan.horizonAge}. „Reicht“ bedeutet: In jedem Monat bis dahin decken Einkommen und entnehmbares Vermögen deinen Bedarf. Dein Ziel liegt bei ${safety} % (Sicherheit, einstellbar unter Prognose → Annahmen)${mc.success>=s.safety/100?' – das ist erreicht.':' – das ist noch nicht erreicht.'}</p>
+`<p><strong>${pct} %</strong> heißt: In <strong>${ok} von ${runs}</strong> simulierten Zukünften reicht dein Geld bis zum Alter ${escHTML(_horizonTxt(plan))}${plan.horizonWho?' – so lange, bis auch die jüngste Person das Planalter erreicht hat':''}. „Reicht“ bedeutet: In jedem Monat bis dahin decken Einkommen und entnehmbares Vermögen deinen Bedarf. Dein Ziel liegt bei ${safety} % (Sicherheit, einstellbar unter Prognose → Annahmen)${mc.success>=s.safety/100?' – das ist erreicht.':' – das ist noch nicht erreicht.'}</p>
 <p>Gerechnet ist mit ${early?'dem Vorruhestand ab '+_ageTxt(R)+' und der Rente ab '+_ageTxt(s.phase4From):'dem Ruhestand ab '+_ageTxt(R)}, so wie unter Lebensphasen eingestellt.</p>
 <h3>Wie simuliert wird</h3>
 <p>Die Prognose ist eine Monte-Carlo-Simulation: ${runs} Durchläufe, jeder Monat für Monat von heute bis ${plan.horizonAge}. In jedem Durchlauf bekommt jede Anlagegruppe je Lebensjahr eine zufällige Rendite aus ihrer erwarteten Rendite und Schwankung (Tabelle unten). Die Gruppen hängen zu 30 % an einem gemeinsamen Markt (Korrelation 0,3): Ein schlechtes Börsenjahr trifft meist mehrere Anlagen. Die Jahresrendite verteilt sich gleichmäßig auf die zwölf Monate. Die Zufallszahlen sind fest, damit sich zwei Einstellungen fair vergleichen lassen.</p>
@@ -12220,7 +12255,7 @@ function openSuccessExplain(){
 <p>${retireAge==null?'Bis '+plan.horizonAge+' gibt es kein Alter mit mindestens '+safety+' % Erfolgschance.':'Das früheste ganze Alter, ab dem mindestens '+safety+' % der Durchläufe reichen: <strong>'+(retireAge<=Math.ceil(plan.currentAge)?'sofort':retireAge)+'</strong>.'} Für jedes geprüfte Alter rechnet die App einen eigenen Plan: Rentenpunkte, Dienstjahre, Depotbeiträge und Phasen passen dann zu diesem Arbeitsende.</p>
 <h3>Was das Modell nicht abbildet</h3>
 <p>Steuern und Sozialabgaben nur pauschal, kein Umschichten zwischen Anlagen, keine Pflege- oder Krankheitskosten, keine Änderungen von Gesetzen. Die Prognose ist eine Modellrechnung und keine Anlageberatung.</p>`,
-`<p><strong>${pct} %</strong> means: in <strong>${ok} of ${runs}</strong> simulated futures your money lasts until age ${plan.horizonAge}. "Lasts" means: in every month until then income and withdrawable wealth cover your need. Your target is ${safety} % (safety, adjustable under Forecast → Assumptions)${mc.success>=s.safety/100?' – it is reached.':' – it is not reached yet.'}</p>
+`<p><strong>${pct} %</strong> means: in <strong>${ok} of ${runs}</strong> simulated futures your money lasts until age ${escHTML(_horizonTxt(plan))}${plan.horizonWho?' – until the youngest person has also reached the planning age':''}. "Lasts" means: in every month until then income and withdrawable wealth cover your need. Your target is ${safety} % (safety, adjustable under Forecast → Assumptions)${mc.success>=s.safety/100?' – it is reached.':' – it is not reached yet.'}</p>
 <p>Calculated with ${early?'early retirement from '+_ageTxt(R)+' and the pension from '+_ageTxt(s.phase4From):'retirement from '+_ageTxt(R)}, as set under life phases.</p>
 <h3>How it is simulated</h3>
 <p>The forecast is a Monte Carlo simulation: ${runs} runs, each month by month from today until ${plan.horizonAge}. In each run every asset group gets a random return per year of life from its expected return and volatility (table below). The groups depend 30 % on a common market (correlation 0.3): a bad stock market year usually hits several assets. The annual return is spread evenly over the twelve months. The random numbers are fixed so that two settings can be compared fairly.</p>
@@ -12513,15 +12548,15 @@ function _v2LtPhases(o){
      ihre Rente steht unter „Einkommen im Ruhestand“, „Bearbeiten“ öffnet dasselbe Sheet */
   /* mit weiteren Personen: je Person ein Balken auf derselben Zeitachse (heute bis zum Planhorizont), Alter je Person */
   const ppl=getDrvExtra().filter(p=>p.id);
-  const bars=ppl.length?`<div class="v2-lp-bars"><div class="v2-lp-who"><b>${escHTML(_meName())}</b>${_phaseBarHTML(b)}</div>${ppl.map(p=>`<div class="v2-lp-who"><b>${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</b>${_personBarHTML(s,p,b[4])}</div>`).join('')}</div>`:_phaseBarHTML(b);
+  const bars=ppl.length?`<div class="v2-lp-bars"><div class="v2-lp-who"><b>${escHTML(_meName())}</b>${_ownBarHTML(b,s)}</div>${ppl.map(p=>`<div class="v2-lp-who"><b>${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</b>${_personBarHTML(s,p,b[4])}</div>`).join('')}</div>`:_phaseBarHTML(b);
   el.innerHTML=`<div class="v2-lp-head"><span class="v2-ret-title" data-info="lt-phases">Lebensphasen</span><button type="button" class="v2-lp-btn" onclick="openPhasesSheet()">Bearbeiten</button></div>${bars}<div class="v2-lp-rows">${rows}${skippedHTML}</div>`;
 }
 /* Daten-Seite: Lebensphasen als eine Zeile mit Zeitstrahl, öffnet das Sheet */
 function _renderPhaseSummary(){
   const el=document.getElementById('ltPhasesEdit');if(!el)return;
   const s=getLifetimeSettings(),now=new Date(),cur=_ageAt(s,now.getFullYear(),now.getMonth());
-  const b=_phaseBounds(s,cur,Math.max(Math.round(s.planHorizon),Math.ceil(cur)+1));
-  el.innerHTML=`<span class="lp-edit-t"><span>${escHTML(_ownPhaseText(b))}</span><small>Bearbeiten ›</small></span>${_phaseBarHTML(b)}`;
+  const b=_phaseBounds(s,cur,Math.max(Math.round(_planEndMain(s,getDrvExtra()).end),Math.ceil(cur)+1));
+  el.innerHTML=`<span class="lp-edit-t"><span>${escHTML(_ownPhaseText(b))}</span><small>Bearbeiten ›</small></span>${_ownBarHTML(b,s)}`;
 }
 function _ownPhaseText(b){
   const parts=[];
@@ -12540,7 +12575,7 @@ function openPhasesSheet(focus){
   if(String(focus||'').startsWith('p-'))focus=2;
   const s=getLifetimeSettings(),cur=_curAgeOf(s);
   const plan=_mod('assets')?buildPlan():null,drv=getDrv(),rag=regelaltersgrenze(s.birthYear),auto=drv.age>0?drv.age:rag;
-  const end=plan?plan.horizonAge:Math.max(Math.round(s.planHorizon),Math.ceil(cur)+1);
+  const end=plan?plan.horizonAge:Math.max(Math.round(_planEndMain(s,getDrvExtra()).end),Math.ceil(cur)+1);
   const b=_phaseBounds(s,cur,end),save=_phaseSaving(plan),sv=_phaseSavingSplit(plan,s);
   const pct=(v,def)=>Math.abs(v-def)<1e-9?'':_numStr(Math.round(v*1000)/10);
   const storedA4=appStorage.getItem('lt-pension-age')!==null,storedN4=appStorage.getItem('lt-pension-spending')!==null;
@@ -12573,7 +12608,7 @@ function openPhasesSheet(focus){
   /* Zeitstrahl je weiterer Person oben im Kopf (ihr Alter) */
   const ptl=people.map(p=>`<div class="lp-ptl"><b>${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</b><div id="lpp-${p.id}-tl"></div></div>`).join('');
   const body=
-    `<div class="lp-head"><div class="lp-card">${people.length?`<div class="lp-ptl"><b>${escHTML(_meName())}</b><div id="lpTime">${_phaseBarHTML(b)}</div></div>`:`<div id="lpTime">${_phaseBarHTML(b)}</div>`}${ptl}<div class="lp-pv"><b id="lpPct">—</b><span id="lpPctT">Erfolgschance wird berechnet …</span></div></div></div>`+
+    `<div class="lp-head"><div class="lp-card">${people.length?`<div class="lp-ptl"><b>${escHTML(_meName())}</b><div id="lpTime">${_ownBarHTML(b,s)}</div></div>`:`<div id="lpTime">${_ownBarHTML(b,s)}</div>`}${ptl}<div class="lp-pv"><b id="lpPct">—</b><span id="lpPctT">Erfolgschance wird berechnet …</span></div></div></div>`+
     `<p class="ds-note">Jede Phase beginnt, wo die vorige endet. Gleiches Alter wie bei der Phase davor: Die Phase entfällt.</p>`+
     (people.length?`<p class="ds-note">${L('Die Phasen richten sich nach deinem Alter. Arbeitszeit, Altersvorsorge und Arbeitsende stellst du je Person ein; den Rentenbeginn weiterer Personen bei ihrer gesetzlichen Rente unter Daten → Altersvorsorge.','The phases follow your age. Working time, pension savings and end of work are set per person; the pension start of other people with their state pension under Data → Pensions.')}</p>`:'')+
     sec(1,`1 · ${LT_PHASE_NAMES[0]}`,'<i class="lp-p1"></i>',
@@ -12705,8 +12740,8 @@ function _phasesPreview(){
   const s0=getLifetimeSettings(),cur=_curAgeOf(s0);
   if(!d){pctEl.textContent='—';pctEl.className='';txt.textContent='Bitte gültige Werte eintragen – die Phasen folgen aufeinander.';return;}
   const plan=_mod('assets')?buildPlan(d.s,{drv:d.drv,bv:d.bv,people:d.people}):null;
-  const b=_phaseBounds(d.s,cur,plan?plan.horizonAge:Math.max(Math.round(d.s.planHorizon),Math.ceil(cur)+1));
-  document.getElementById('lpTime').innerHTML=_phaseBarHTML(b);
+  const b=_phaseBounds(d.s,cur,plan?plan.horizonAge:Math.max(Math.round(_planEndMain(d.s,d.people).end),Math.ceil(cur)+1));
+  document.getElementById('lpTime').innerHTML=_ownBarHTML(b,d.s);
   const yrs=(x,y)=>{const n=Math.round((y-x)*10)/10;return n<=0.01?'entfällt':(n===1?'1 Jahr':_numStr(n)+' Jahre');};
   [['lp-r-1',0],['lp-r-2',1],['lp-r-3',2]].forEach(([id,i])=>{const el=document.getElementById(id);if(el)el.textContent=yrs(b[i],b[i+1]);});
   const r4=document.getElementById('lp-r-4');if(r4)r4.textContent='ab '+_ageTxt(b[3]);
@@ -12732,7 +12767,7 @@ function _phasesPreview(){
     for(let i=1;i<=4;i++)setPh(`lpw-${p.id}-${i}`,i===1?'100':_numStr(Math.round(pr.w[i-2]*1000)/10));
     for(let i=2;i<=4;i++)setPh(`lpv-${p.id}-${i}`,starts[i-1]<pr.workEndMain-1e-9?'100':'0');
     const tl=document.getElementById('lpp-'+p.id+'-tl');
-    if(tl)tl.innerHTML=_personTimelineHTML(d.s,p);
+    if(tl)tl.innerHTML=_personTimelineHTML(d.s,p,b[4]);
     setPh('lpp-'+p.id+'-until',_ageTxt(d.s.workEnd));
   });
   const h4=document.getElementById('lp-need4-h');
@@ -12745,7 +12780,7 @@ function _phasesPreview(){
   const pct=Math.round(mc.success*100),ok=mc.success>=s0.safety/100;
   pctEl.textContent=pct+' %';pctEl.className=ok?'up':'down';
   const diff=ctx.base==null?0:pct-Math.round(ctx.base*100);
-  txt.textContent='Erfolgschance bis '+plan.horizonAge+(ctx.base==null||!diff?'':' · bisher '+Math.round(ctx.base*100)+' %');
+  txt.textContent='Erfolgschance bis '+_horizonTxt(plan)+(ctx.base==null||!diff?'':' · bisher '+Math.round(ctx.base*100)+' %');
 }
 function _savePhasesSheet(){
   const d=_phasesDraft(true);if(!d)throw new Error('Bitte die Eingaben prüfen.');
