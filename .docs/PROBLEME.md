@@ -1085,6 +1085,11 @@ Folgende Punkte sind keine neuen P-Nummern, aber für die Eignung der Ergebnisse
   dynamische Portfolioentwicklung; es ist kein zweiter unabhängiger Beleg für
   die Monte-Carlo-Erfolgschance. Ergebnis-Karte, Ziel und Liquiditätsfehler dürfen
   nicht gegeneinander als vermeintliche Bestätigung verwendet werden.
+  Seit 15.10.2026 zeigt die Ergebnis-Karte statt „Verfügbar mit X / nötig“ das
+  **Etappenziel** (liquides Vermögen zu Beginn von „Weiterarbeiten“ bzw. des Ruhestands).
+  Es wird mit derselben Monte-Carlo-Simulation und demselben Sicherheitsniveau gesucht wie
+  die Erfolgschance und ist darum mit ihr konsistent, aber ebenfalls kein unabhängiger
+  Beleg. Das Zielkapital (B8) steht nur noch in den ausgeblendeten Kacheln.
 
 ### 8.3 Empfohlene fachliche Freigabekriterien
 
