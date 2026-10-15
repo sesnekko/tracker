@@ -1108,7 +1108,7 @@ body:not(.v2-editing) :is(#page-import,#ltAssume) .pv-row.pv-empty,body:not(.v2-
 .pv-card{margin-bottom:8px}.pv-add{display:flex;flex-wrap:wrap;gap:6px}
 .mig-card .ns-head span{display:block}
 .v2-inc-g{display:flex;align-items:baseline;gap:8px;padding:14px 0 4px;font-size:13px;color:var(--muted)}.v2-inc-g span{flex:1;font-weight:500;color:var(--ink)}.v2-inc-g b{font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}.v2-inc-g small{font-size:11.5px}
-button.v2-ret-main{display:flex;align-items:baseline;gap:10px;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer}
+button.v2-ret-main{display:flex;align-items:flex-end;gap:10px;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer}
 .v2-ret-more{font-size:12px;color:var(--muted);white-space:nowrap}
 .se-t{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}.se-t th,.se-t td{padding:4px 6px;text-align:right;border-bottom:.5px solid var(--sep)}.se-t th:first-child,.se-t td:first-child{text-align:left}
 .mig-opt{cursor:pointer}.mig-opt input{flex:0 0 auto;width:18px;height:18px;accent-color:var(--green)}
@@ -1221,7 +1221,7 @@ body.dark .v2-form-head{box-shadow:0 4px 18px rgba(0,0,0,.4)}
 /* Im Bearbeiten-Modus: Hinweis statt Monat */
 body.v2-editing .v2-form-head>span:first-child{color:var(--ink)}
 :is(#page-import,#ltAssume) .save-msg{font-size:13px;color:var(--green)}
-:is(#page-import,#ltAssume) details.input-collapsible{background:var(--card);border-radius:16px;margin-bottom:10px;overflow:hidden}
+:is(#page-import,#ltAssume) details.input-collapsible{background:var(--card);border-radius:16px;margin-bottom:10px;overflow:hidden;overflow:clip}/* clip statt hidden: so kann „Bearbeiten“ darin mitlaufen (sticky) */
 :is(#page-import,#ltAssume) .input-collapsible-summary{padding:12px 16px;min-height:62px;gap:12px}
 :is(#page-import,#ltAssume) .input-collapsible-summary::before{display:none}
 :is(#page-import,#ltAssume) .input-collapsible-summary::after{content:'';flex-shrink:0;width:8px;height:8px;margin-left:4px;border-right:1.8px solid var(--muted);border-bottom:1.8px solid var(--muted);transform:rotate(-45deg);opacity:.6;transition:transform .2s,opacity .2s}
@@ -1327,6 +1327,10 @@ body:not(.v2-editing) :is(#page-import,#ltAssume) .v2-form-head{display:none}
 .ds-add:active{background:var(--fill)}
 .ds-empty{font-size:13.5px;color:var(--muted);line-height:1.5;margin:14px 2px 0}
 .ds-sec-actions{display:flex;justify-content:flex-end;padding:12px 0 0;margin-bottom:12px}/* Abstand zum Inhalt darunter (auch ohne eigenen Rand) */
+/* „Bearbeiten“ läuft beim Scrollen im eigenen Bereich oben mit (15.10.2026); nur der Knopf fängt Tipps ab */
+.ds-sec-actions{position:sticky;top:max(10px,env(safe-area-inset-top));z-index:20;pointer-events:none}
+.ds-sec-actions>.v2-textbtn{pointer-events:auto;background:color-mix(in srgb,var(--ink) 10%,var(--card));box-shadow:0 2px 10px rgba(0,0,0,.18)}
+body.dark .ds-sec-actions>.v2-textbtn{box-shadow:0 2px 12px rgba(0,0,0,.45)}
 body.v2-editing .ds-sec-actions{display:none}
 
 /* Bottom-Sheet (Mobil) bzw. Dialog (ab Tablet) */
@@ -1582,7 +1586,7 @@ body.dark{--lp1:#7aaa82;--lp2:#a9c3ad;--lp3:#c07058;--lp4:#8d887c}
 #page-lifetime #lt-progress-collapse{display:none!important}
 #page-lifetime .kpi-grid{display:none}
 /* Weitere Kennzahlen: Einkommen im Ruhestand (Karte) + drei Eckdaten */
-.v2-kzw{margin-top:22px}
+.v2-kzw{margin-top:12px}/* einheitlich 12 px zwischen den Kästen der Prognose */
 .v2-inc{background:var(--card);border-radius:16px;padding:16px}
 .v2-inc-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
 .v2-inc-t{font-size:15.5px;font-weight:500;color:var(--ink)}
@@ -1618,7 +1622,10 @@ button.v2-inc-row:active{opacity:.7}
 .v2-chip{font-size:12.5px;font-weight:500;padding:3px 10px;border-radius:999px;white-space:nowrap}
 .v2-chip.up{color:var(--green);background:color-mix(in srgb,var(--green) 14%,transparent)}
 .v2-chip.down{color:var(--red);background:color-mix(in srgb,var(--red) 14%,transparent)}
-.v2-ret-main{display:flex;align-items:baseline;gap:10px;margin-top:14px;cursor:pointer}
+.v2-ret-main{display:flex;align-items:flex-end;gap:10px;margin-top:14px;cursor:pointer}
+/* grauer Text unten bündig mit der großen Zahl: letzte Zeile auf der Grundlinie der Zahl (sonst Näherung über den Abstand) */
+.v2-ret-main .v2-ret-lbl{padding-bottom:3px}
+@supports (align-items:last baseline){button.v2-ret-main,.v2-ret-main{align-items:last baseline}.v2-ret-main .v2-ret-lbl{padding-bottom:0}}
 .v2-ret-big{font-size:46px;font-weight:300;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .v2-ret-big small{font-size:22px;color:var(--muted);margin-left:3px;letter-spacing:0}
 .v2-ret-lbl{font-size:14px;color:var(--muted)}
@@ -2081,7 +2088,7 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 .v2-inc-grp{box-shadow:inset 0 .5px 0 var(--sep)}
 button.v2-inc-g{width:100%;border:0;background:none;font:inherit;text-align:left;cursor:pointer;padding:13px 0;align-items:center;color:inherit}
 .v2-inc-items[hidden]{display:none}
-.v2-lt-links{background:var(--card);border-radius:16px;margin:16px 0 4px;overflow:hidden}
+.v2-lt-links{background:var(--card);border-radius:16px;margin:12px 0 0;overflow:hidden}
 .v2-lt-link{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:9px 14px;border:0;background:none;font:inherit;color:var(--ink);text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .v2-lt-link+.v2-lt-link{box-shadow:inset 0 .5px 0 var(--sep)}
 .v2-lt-link[hidden]{display:none}
@@ -2092,7 +2099,7 @@ button.v2-inc-g{width:100%;border:0;background:none;font:inherit;text-align:left
 .v2-lt-link .ps-open-i svg{width:13px;height:13px}
 .v2-lt-link .v2-lt-ico{background:var(--fill)}
 .v2-lt-link .v2-lt-ico svg{width:17px;height:17px;fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;margin:0}
-.lt-assume{margin-top:18px}
+.lt-assume{margin-top:12px}
 /* ── Kompakte Daten-Seite (14.10.2026) ── */
 .ns-short .ns-main{padding:10px 0 10px 16px}
 #page-import .hh-time .lp-bar,#page-import .hh-time .lp-ticks{display:none}
@@ -11574,18 +11581,8 @@ function _v2LtHeroRest(){
 function _v2LtNotes(plan){
   const n=[],f=plan.funding;
   if(f&&f.checked&&f.gap>0.5)n.push(L(`Deine Sparraten liegen ${fmt(Math.round(f.gap))}/Monat über dem, was dein Budget übrig lässt. Die Prognose nimmt diesen Betrag jeden Monat aus dem Vermögen.`,`Your savings are ${fmt(Math.round(f.gap))}/month above what your budget leaves over. The forecast takes this amount from your wealth every month.`));
-  /* ändert sich das Haushaltseinkommen, während du noch arbeitest (Arbeitszeit je Phase, Arbeitsende weiterer Personen):
-     was für die Sparraten fehlt, kommt aus dem Vermögen; Mehreinkommen wird angelegt */
-  if(f&&f.checked){
-    const cur=plan.currentAge,we=plan.s.workEnd,ages=new Set();
-    [plan.s.phase2From,...(plan.drvExtra||[]).map(r=>r.workEndMain)].forEach(a=>{if(a>cur+1e-9&&a<we-1e-9)ages.add(a);});
-    [...ages].sort((x,y)=>x-y).forEach(a=>{
-      const dI=_incomeChange(plan,a);if(Math.abs(dI-_incomeChange(plan,a-1/24))<0.5||Math.abs(dI)<0.5)return;
-      const need=(a<plan.s.phase2From-1e-9?f.savings:f.savings2)-f.capacity-dI+_ownContribDelta(plan,a);
-      if(dI<0&&need>0.5)n.push(L(`Ab ${_ageTxt(a)} ist das Haushaltseinkommen ${fmt(Math.round(-dI))}/Monat niedriger als heute, während du noch arbeitest. Was dann für die Sparraten fehlt (${fmt(Math.round(need))}/Monat), nimmt die Prognose aus dem Vermögen.`,`From ${_ageTxt(a)} household income is ${fmt(Math.round(-dI))}/month lower than today while you still work. What is then missing for the savings (${fmt(Math.round(need))}/month) is taken from your wealth.`));
-      else if(dI>0&&need<-0.5)n.push(L(`Ab ${_ageTxt(a)} ist das Haushaltseinkommen ${fmt(Math.round(dI))}/Monat höher als heute. Die Prognose legt ${fmt(Math.round(Math.min(dI,-need)))}/Monat zusätzlich an.`,`From ${_ageTxt(a)} household income is ${fmt(Math.round(dI))}/month higher than today. The forecast invests an additional ${fmt(Math.round(Math.min(dI,-need)))}/month.`));
-    });
-  }
+  /* Die Hinweise „Ab X ist das Haushaltseinkommen … niedriger/höher als heute“ sind seit 15.10.2026 entfernt (Wunsch);
+     die Rechnung dahinter bleibt: eine Lücke für die Sparraten kommt aus dem Vermögen, Mehreinkommen wird angelegt. */
   if(plan.latestKey<currentYM())n.push(L(`Startwerte vom Stand ${fmtMonth(plan.latestKey)}. Trag den aktuellen Monat ein, damit die Prognose von heute ausgeht.`,`Starting values from ${fmtMonth(plan.latestKey)}. Enter the current month so the forecast starts from today.`));
   return n.map(t=>`<p class="v2-ret-text" style="color:var(--muted)">${t}</p>`).join('');
 }

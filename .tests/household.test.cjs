@@ -109,7 +109,8 @@ test('Arbeitszeit je Phase: arbeitet eine Person mehr als heute, wird das Mehrei
     fixe: [{ id: 'b3', name: 'Miete', subcat: '', kind: 'expense', targetGroupId: null, values: Array(12).fill(1100) }] });
   const r = simulate(a);
   near(assert, r.total[2], 10000 + 15 * 500 + 12 * 600, 1e-6, '500 € Sparen + 100 € Mehreinkommen');
-  assert.match(a.run('_v2LtNotes(buildPlan())').replace(/ /g, ' '), /Ab 43 ist das Haushaltseinkommen 100 €\/Monat höher als heute\. Die Prognose legt 100 €\/Monat zusätzlich an/);
+  // Der Hinweis „Ab 43 ist das Haushaltseinkommen … höher“ ist seit 15.10.2026 entfernt (Wunsch); die Rechnung oben bleibt
+  assert.doesNotMatch(a.run('_v2LtNotes(buildPlan())'), /Haushaltseinkommen/);
 });
 test('Arbeitszeit je Phase: Rentenpunkte wachsen nach der Arbeitszeit der Phase', () => {
   const a = context(fixture(undefined, { saveUntilAge: 60, retirementAge: 67, pensionStartAge: 67, planningHorizonAge: 90 }));
@@ -137,8 +138,8 @@ test('Arbeitszeit je Phase: Einkommenskarte zeigt das Gehalt je Abschnitt; die P
   // „Einkommen im Ruhestand“ zeigt seit 14.10.2026 nur Abschnitte, die nach deinem Arbeitsende (44) noch laufen;
   // das volle Gehalt bis 43 steckt im Budget
   assert.deepEqual(rows, [['Gehalt Kim (50 %)', 300, 43, 50]]);
-  const note = a.run('_v2LtNotes(buildPlan())');
-  assert.match(note.replace(/ /g, ' '), /Ab 43 ist das Haushaltseinkommen 300 €\/Monat niedriger als heute, während du noch arbeitest\. Was dann für die Sparraten fehlt \(300 €\/Monat\)/);
+  // Der Hinweis „Ab 43 ist das Haushaltseinkommen … niedriger … aus dem Vermögen“ ist seit 15.10.2026 entfernt (Wunsch)
+  assert.doesNotMatch(a.run('_v2LtNotes(buildPlan())'), /Haushaltseinkommen/);
 });
 test('Altersvorsorge je Phase und Person: leer = solange die Person arbeitet, sonst der eingetragene Anteil', () => {
   const a = context(fixture(undefined, { saveUntilAge: 50, retirementAge: 60, pensionStartAge: 67, planningHorizonAge: 90 }));
