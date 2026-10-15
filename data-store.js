@@ -6,7 +6,7 @@
   // Stand vor dem letzten Update (Rohtext), geschrieben direkt vor dem ersten Speichern eines migrierten Dokuments (P37).
   const BACKUP_KEY = 'vermoegen-data-v1-before-update';
   const FORMAT = 'vermoegen-backup';
-  const VERSION = 18;
+  const VERSION = 19;
   const CATEGORIES = ['cash', 'etf', 'stock', 'bitcoin', 'crypto', 'metal', 'realEstate', 'vehicle', 'other', 'bav', 'illiquid', 'liab'];
   const BUDGET_CATEGORIES = ['einkommen', 'fixe', 'variable', 'sparen'];
   const MODULES = ['assets', 'liab', 'pension', 'budget', 'forecast'];
@@ -55,9 +55,13 @@
     emType: 'disabilityType', em: 'disabilityPension', emUntil: 'disabilityUntilYear', emLimit: 'earningsLimit',
     // Version 18: Entgeltpunkte aus der Zurechnungszeit getrennt von den tatsächlich erworbenen Punkten und der
     // Zugangsfaktor der Erwerbsminderungsrente (für die spätere Altersrente, § 77 Abs. 3 und § 88 SGB VI).
-    emZz: 'disabilityCreditedPoints', emZf: 'disabilityAccessFactor'
+    emZz: 'disabilityCreditedPoints', emZf: 'disabilityAccessFactor',
+    // Version 19: Entgeltpunkte gesamt laut EM-Bescheid (inklusive Zurechnungszeit). disabilityCreditedPoints ist seit
+    // Version 19 der darin enthaltene Anteil der Zurechnungszeit (vorher zusätzlich zu points); points entfällt dann.
+    emTotal: 'disabilityTotalPoints'
   };
   const DRV_V18 = ['disabilityCreditedPoints', 'disabilityAccessFactor'];
+  const DRV_V19 = ['disabilityTotalPoints'];
   // Gemeinsame Rechengrößen stehen nur bei der eigenen Person und gelten für alle.
   const DRV_PRIMARY = ['pensionPointValue', 'averageSalary', 'contributionCeiling'];
   // Version 8: Altersvorsorgedepots (ab 2027) je Person; fehlende Felder = Standardwerte der App.
@@ -499,7 +503,7 @@
     safeKeys(doc);
     object(doc, 'Datei', ['format', 'schemaVersion', 'currency', 'exportedAt', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences'], ['format', 'schemaVersion', 'currency', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences']);
     if (doc.format !== FORMAT) fail('format', 'keine Assets-Sicherung');
-    if (![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
+    if (![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
     if (doc.currency !== 'EUR') fail('currency', 'nur EUR wird unterstützt');
     if (own(doc, 'exportedAt') && (typeof doc.exportedAt !== 'string' || !Number.isFinite(Date.parse(doc.exportedAt)))) fail('exportedAt', 'ungültiges Datum');
     const groups = unique(doc.groups, 'groups');
@@ -653,7 +657,15 @@
       for (const k of ['birthYear', 'birthMonth', 'workUntilAge']) if (own(p, k)) num(p[k], k);
       if (own(p, 'birthMonth') && !(Number.isInteger(p.birthMonth) && p.birthMonth >= 1 && p.birthMonth <= 12)) fail('birthMonth', '1 bis 12 erwartet');
       if (own(p, 'monthlyNetIncome')) num(p.monthlyNetIncome, 'Nettogehalt', 0);
-      numericObject(p.statutoryPension, 'Gesetzliche Rente', Object.values(DRV).filter(k => v >= 18 || !DRV_V18.includes(k)));
+      numericObject(p.statutoryPension, 'Gesetzliche Rente', Object.values(DRV).filter(k => (v >= 18 || !DRV_V18.includes(k)) && (v >= 19 || !DRV_V19.includes(k))));
+      // Version 19: Bei einer EM-Rente stehen die Entgeltpunkte laut Bescheid gesamt und die Zurechnungszeit als Teil davon.
+      const sp = p.statutoryPension, emOn = sp.disabilityType === 1 || sp.disabilityType === 2;
+      if (own(sp, 'disabilityTotalPoints') && !(sp.disabilityTotalPoints >= 0)) fail('Entgeltpunkte laut Bescheid', 'Entgeltpunkte ab 0 erwartet');
+      if (v >= 19 && emOn && own(sp, 'disabilityCreditedPoints')) {
+        if (!own(sp, 'disabilityTotalPoints')) fail('Zurechnungszeit', 'gehört zu den Entgeltpunkten laut Bescheid (gesamt), die fehlen');
+        if (sp.disabilityCreditedPoints > sp.disabilityTotalPoints + 1e-9) fail('Zurechnungszeit', 'höchstens so viele Entgeltpunkte wie gesamt laut Bescheid');
+      }
+      if (v >= 19 && emOn && own(sp, 'disabilityTotalPoints') && sp.points > 0) fail('Rentenpunkte', 'bei einer EM-Rente mit Entgeltpunkten laut Bescheid nicht zusätzlich');
       if (own(p.statutoryPension, 'disabilityCreditedPoints') && !(p.statutoryPension.disabilityCreditedPoints >= 0)) fail('Zurechnungszeit', 'Entgeltpunkte ab 0 erwartet');
       if (own(p.statutoryPension, 'disabilityAccessFactor') && !(p.statutoryPension.disabilityAccessFactor > 0 && p.statutoryPension.disabilityAccessFactor <= 1)) fail('Zugangsfaktor', 'mehr als 0 und höchstens 1 erwartet');
       if (own(p, 'civilServicePension')) numericObject(p.civilServicePension, 'Beamtenversorgung', Object.values(CIVIL));
@@ -722,6 +734,21 @@
   function migrate(doc) {
     if (doc.schemaVersion < 14 && doc.retirement) moveDepotChildren(doc);
     if (doc.schemaVersion === 13 && doc.retirement) moveNetIncome(doc);
+    if (doc.schemaVersion < 19 && doc.retirement) moveDisabilityPoints(doc);
+    return doc;
+  }
+  // Version 18 → 19: Bei einer EM-Rente waren points die tatsächlich erworbenen Punkte und disabilityCreditedPoints die
+  // Zurechnungszeit zusätzlich dazu. Jetzt stehen die Entgeltpunkte laut Bescheid gesamt (Summe beider) und die
+  // Zurechnungszeit als Teil davon; die tatsächlichen Punkte (gesamt − Zurechnungszeit) bleiben genau dieselben.
+  // Ohne Zurechnungszeit ist offen, ob points sie enthalten: Dann bleibt points unverändert stehen, rechnet wie bisher und
+  // die App fragt nach. Ohne EM-Art hatten die EM-Felder keine Wirkung; sie bleiben unverändert.
+  function moveDisabilityPoints(doc) {
+    for (const p of [doc.retirement.primary, ...doc.retirement.people]) {
+      const sp = p.statutoryPension;
+      if (!sp || !(sp.disabilityType === 1 || sp.disabilityType === 2) || !own(sp, 'disabilityCreditedPoints')) continue;
+      sp.disabilityTotalPoints = Math.round(((sp.points > 0 ? sp.points : 0) + sp.disabilityCreditedPoints) * 1e6) / 1e6;
+      delete sp.points;
+    }
     return doc;
   }
   // Version 13 → 16 (P35): Das Nettogehalt einer weiteren Person (monthlyNetIncome) zählte in Schema 13 nur in der

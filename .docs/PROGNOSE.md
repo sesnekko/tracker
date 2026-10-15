@@ -258,13 +258,21 @@ Rentenformeln im Überblick (Rechtsgrundlagen in 7.1):
   für die heutige Arbeitszeit gilt; danach keine).
   Brutto = Punkte × Rentenwert (42,52 €) × **Zugangsfaktor** (1 − 0,003 je Monat vor der
   Regelaltersgrenze, höchstens −14,4 %; 1 + 0,005 je Monat danach); netto = brutto × (1 − Abzüge %).
-  Beginn frühestens mit 63. Nach einer EM-Rente (seit 15.10.2026, Schema 18): Punkte, die Grundlage der EM-Rente
-  waren, behalten deren Zugangsfaktor (§ 77 Abs. 3), neue Punkte zählen mit dem der Altersrente (nach einer bis zur
-  Regelaltersgrenze laufenden EM-Rente 1); die Zurechnungszeit zählt nicht mit. Besitzschutz (§ 88): beginnt die
-  Altersrente höchstens 24 Monate nach dem Ende der EM-Rente, mindestens deren persönliche Entgeltpunkte mit
-  Rentenartfaktor 1 (teilweise × 2). Angesetzt wird der höhere Wert.
-- **EM-Rente** (`calcEm`): Zahlbetrag laut Bescheid oder aus (Punkte + Zurechnungszeit) × Zugangsfaktor × Rentenartfaktor
-  × Rentenwert. Hinzuverdienstgrenze laut Bescheid bei beiden Arten, sonst gesetzlich 2026 (voll 20.763,75 €, teilweise
+  Beginn frühestens mit 63. Nach einer EM-Rente (Schema 19): erfasst sind die Entgeltpunkte laut Bescheid (gesamt) und
+  davon die Zurechnungszeit; tatsächlich erworben = gesamt − Zurechnungszeit (`_emPoints`). Diese behalten den
+  Zugangsfaktor der EM-Rente (§ 77 Abs. 3), bei teilweiser EM nur zur Hälfte, die andere Hälfte bekommt den der
+  Altersrente (Satz 2); neue Punkte zählen mit dem der Altersrente (nach einer bis zur Regelaltersgrenze laufenden EM-Rente
+  1); die Zurechnungszeit zählt nicht mit. **Rechnerische Untergrenze nach heutigem Rentenrecht** (Besitzschutz, § 88;
+  bezogen auf persönliche Entgeltpunkte, kein garantierter Nettobetrag): beginnt die Altersrente
+  höchstens 24 Monate nach dem Ende der EM-Rente, mindestens deren persönliche Entgeltpunkte (gesamt × Zugangsfaktor)
+  × Rentenartfaktor 1 × Rentenwert, mit denselben Abzügen wie die Altersrente (`r.minimum`; ohne Bescheidwert aus dem
+  Zahlbetrag zurückgerechnet). **Geschätzte Altersrente** = der höhere Wert (`r.netto`, damit rechnet die Prognose).
+  Ergebniszeile, Erklärung und Zeile im Einkommen („Modellrechnung, Untergrenze ≈ …“) zeigen beides und kennzeichnen die
+  Altersrente nach einer EM-Rente als **vereinfachte Modellrechnung**: Die tatsächliche Bewertung der Zurechnungszeit und
+  späterer Beitragszeiten kann abweichen. Nicht berechnet und benannt: die Anrechnungszeit der EM-Bezugszeit in der
+  Altersrente (§ 58 Abs. 1 Satz 1 Nr. 5, § 71 Abs. 2).
+- **EM-Rente** (`calcEm`): Zahlbetrag laut Bescheid oder aus Entgeltpunkten laut Bescheid × Zugangsfaktor ×
+  Rentenartfaktor × Rentenwert. Hinzuverdienstgrenze laut Bescheid bei beiden Arten, sonst gesetzlich 2026 (voll 20.763,75 €, teilweise
   41.527,50 €). 40 % des Überschusses mindern die Bruttorente; netto um die Abzüge verringert.
 - **Beamte**: Anspruch ab fünf Dienstjahren. Ruhegehaltssatz 1,79375 % je Dienstjahr, höchstens
   71,75 %, mindestens 35 %. Antragsruhestand frühestens mit 63; Abschlag 3,6 % je Jahr vor der
@@ -530,8 +538,9 @@ Es werden keine Daten gespeichert. Details in DATA_MODEL.md, Abschnitt „Partne
   69“; C6); Name und Zeitraum stehen untereinander statt abgeschnitten (C9).
 - Pension: Ein gewünschter Beginn vor 63 wird angehoben und erklärt („Gewünscht ab 60: Antragsruhestand frühestens …“,
   `calcBeamtePension().want`; A4).
-- Gesetzliche Rente: Hinweise bei sehr wenigen Punkten ohne weitere Beiträge (Wartezeit, A10) und bei Punkten, die schon
-  die EM-Rente ergeben (Zurechnungszeit, A5). Rentenwert, Ø-Entgelt und BBG eingeklappt unter „Rechengrößen“ (C12).
+- Gesetzliche Rente: Hinweise bei sehr wenigen Punkten ohne weitere Beiträge (Wartezeit, A10) und bei Rentenpunkten einer
+  EM-Rente aus einer früheren Version (Schema 19: bitte Entgeltpunkte laut Bescheid eintragen; „vermutlich mit
+  Zurechnungszeit“, wenn sie schon etwa die EM-Rente ergeben, A5). Rentenwert, Ø-Entgelt und BBG eingeklappt unter „Rechengrößen“ (C12).
 - Neues Ereignis: „Liquide (anteilig) → Extern (Ausgabe)“; „Extern → Extern“ mit Hinweis in der Zeile (A9). Jahresauswahl
   in Seiten ab dem frühesten wählbaren Jahr (C11). Platzhalter Inflation 2 %, Lebenserwartung 85 (C11).
 - Partner-Story nur mit weiterer erwachsener Person (C7).

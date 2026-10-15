@@ -384,6 +384,7 @@ details.input-collapsible[open]>.input-collapsible-summary::before{transform:rot
 .input-collapsible-body{padding-top:12px}
 .input-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-bottom:12px}
 .drv-em:not([hidden]),.drv-em-limit:not([hidden]){display:contents}
+.input-group.drv-pts[hidden]{display:none}
 .input-group{display:flex;flex-direction:column;gap:3px;min-width:0}
 .input-group label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .num-input{
@@ -1113,7 +1114,7 @@ button.v2-ret-main{display:flex;align-items:flex-end;gap:10px;background:none;bo
 .se-t{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}.se-t th,.se-t td{padding:4px 6px;text-align:right;border-bottom:.5px solid var(--sep)}.se-t th:first-child,.se-t td:first-child{text-align:left}
 .mig-opt{cursor:pointer}.mig-opt input{flex:0 0 auto;width:18px;height:18px;accent-color:var(--green)}
 .mig-pv{margin:12px 4px 0;padding:10px 12px;border-radius:12px;background:var(--fill);font-size:13px}
-.mig-pv>div{display:flex;justify-content:space-between;gap:12px;padding:3px 0}.mig-pv span{color:var(--muted)}.mig-pv b{font-weight:500;font-variant-numeric:tabular-nums;text-align:right}
+.mig-pv>div{display:flex;justify-content:space-between;gap:12px;padding:3px 0}.mig-pv span{color:var(--muted)}.mig-pv b{font-weight:500;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 .ro-bar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--card,#222);color:var(--ink);font-size:13px;box-shadow:inset 0 -.5px 0 var(--sep)}
 .ro-bar span{flex:1;min-width:0}.ro-bar button{border:0;border-radius:999px;padding:6px 12px;font:inherit;font-weight:500;background:var(--fill);color:var(--ink);cursor:pointer;white-space:nowrap}
 .lp-sec{margin-top:10px;background:var(--fill);border-radius:12px}
@@ -2702,8 +2703,8 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="i18n-en.js?v=16"></script>
-<script src="data-store.js?v=31"></script>
+<script src="i18n-en.js?v=17"></script>
+<script src="data-store.js?v=32"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
 <script src="asset-model.js?v=4"></script>
@@ -3003,14 +3004,15 @@ const INFO={
   'lt-withdraw-from':['Weiterarbeiten bis Alter','<p>Ende der Erwerbstätigkeit. Ab diesem Alter wird der Bedarf (abzüglich Renten) aus dem verfügbaren Vermögen entnommen. Liegt es vor dem Rentenbeginn, trägt das Vermögen die Lücke (Vorruhestand).</p>'],
   'lt-monthly-withdraw':['Bedarf €/Monat','<p>Monatliche Ausgaben im Vorruhestand, netto und in heutiger Kaufkraft. Ohne eigenen Wert gilt er auch in der Rente. Renten und Einkünfte werden davon abgezogen, nur der Rest wird entnommen.</p>'],
   'lt-safety':['Sicherheitsniveau','<p>In wie viel Prozent der 500 simulierten Marktverläufe das Geld bis „Planen bis Alter“ reichen muss. Bestimmt „Rente möglich ab“. 85–90 % sind ein gängiger Wert.</p>'],
-  'drv-points':['Rentenpunkte heute','<p>Deine bisher gesammelten Entgeltpunkte. Stehen in der jährlichen Renteninformation bzw. Rentenauskunft der Deutschen Rentenversicherung.</p><p>Ein Jahr mit Durchschnittsverdienst ergibt 1 Punkt.</p><p>Mit Erwerbsminderungsrente: nur die <strong>tatsächlich erworbenen</strong> Punkte aus deinem Versicherungsverlauf. Die Punkte aus der Zurechnungszeit gehören in das eigene Feld „Punkte Zurechnungszeit“ – sonst zählen sie neben neuen Punkten aus einer Beschäftigung doppelt.</p>'],
+  'drv-points':['Rentenpunkte heute','<p>Deine bisher gesammelten Entgeltpunkte. Stehen in der jährlichen Renteninformation bzw. Rentenauskunft der Deutschen Rentenversicherung.</p><p>Ein Jahr mit Durchschnittsverdienst ergibt 1 Punkt.</p><p>Mit Erwerbsminderungsrente stattdessen die <strong>Entgeltpunkte laut Bescheid</strong> und davon die Zurechnungszeit eintragen (unter „EM-Rente“); die tatsächlich erworbenen Punkte rechnet die App daraus. Dieses Feld erscheint dann nur noch für Rentenpunkte aus einer früheren Version.</p>'],
   'drv-salary':['Bruttojahresgehalt','<p>Dein aktuelles rentenversicherungspflichtiges Bruttogehalt pro Jahr. Daraus werden die Punkte bis zum Ende der Arbeit hochgerechnet, beim Weiterarbeiten anteilig zur Arbeitszeit (Gehalt ÷ Durchschnittsentgelt, höchstens bis zur Beitragsbemessungsgrenze).</p><p>Mit Erwerbsminderungsrente: dein Hinzuverdienst pro Jahr.</p><p>Annahme: Dein Gehalt wächst wie die Durchschnittslöhne.</p>'],
   'drv-emType':['Erwerbsminderungsrente','<p>Nur ausfüllen, wenn bereits eine Rente wegen Erwerbsminderung bezogen wird – bei dir oder bei einer weiteren Person.</p><p><strong>Teilweise</strong>: Du kannst noch 3 bis unter 6 Stunden am Tag arbeiten, die Rente ist halb so hoch wie die volle. <strong>Voll</strong>: unter 3 Stunden. Bekommst du bei teilweiser Erwerbsminderung die volle Rente, weil du keine Teilzeitstelle findest (Arbeitsmarktrente), wähle „Voll“.</p><p>Ein Hinzuverdienst (z. B. Teilzeit) gehört ins Feld „Brutto/Jahr“: Er bringt weitere Rentenpunkte und wird mit der Hinzuverdienstgrenze verglichen.</p>'],
   'drv-em':['EM-Rente netto','<p>Monatlicher Zahlbetrag laut Rentenbescheid nach Kranken- und Pflegeversicherung, abzüglich geschätzter Einkommensteuer.</p><p>Trag den Betrag ohne Anrechnung eines Hinzuverdiensts ein; die Anrechnung rechnet die App selbst aus „Brutto/Jahr“.</p><p>In der Prognose deckt sie ab dem Ende der Arbeit (Vorruhestand) einen Teil des Bedarfs, dann ohne Anrechnung, weil kein Hinzuverdienst mehr fließt. Vorher wird angenommen, dass sie als Einnahme im Budget steht und in die Sparraten einfließt.</p>'],
-  'drv-emUntil':['Läuft bis Jahr','<p>Leer = bis zur Regelaltersgrenze. Dann wird sie automatisch zur Altersrente, auch wenn deine Rentenphase später beginnt.</p><p><strong>Besitzschutz</strong> (§ 88 SGB VI): Beginnt die Altersrente spätestens 24 Monate nach dem Ende der EM-Rente, bekommt sie mindestens deren persönliche Entgeltpunkte – mit dem Rentenartfaktor 1,0 der Altersrente, bei teilweiser EM-Rente also das Doppelte. Bringen eigene Punkte und Hinzuverdienst mehr, zählt der höhere Betrag.</p><p>Befristete Renten (meist 3 Jahre) werden oft verlängert. Trag ein Jahr nur ein, wenn du davon ausgehst, dass die Rente dann endet.</p>'],
+  'drv-emUntil':['Läuft bis Jahr','<p>Leer = bis zur Regelaltersgrenze. Dann wird sie automatisch zur Altersrente, auch wenn deine Rentenphase später beginnt.</p><p><strong>Besitzschutz</strong> (§ 88 SGB VI): Beginnt die Altersrente spätestens 24 Monate nach dem Ende der EM-Rente, bekommt sie mindestens deren persönliche Entgeltpunkte (Entgeltpunkte laut Bescheid × Zugangsfaktor) – mit dem Rentenartfaktor 1,0 der Altersrente, bei teilweiser EM-Rente also das Doppelte. Das ist die rechnerische Untergrenze nach heutigem Rentenrecht; sie bezieht sich auf persönliche Entgeltpunkte, nicht auf einen garantierten Nettobetrag. Bringen eigene Punkte und Hinzuverdienst mehr, zählt in der Schätzung der höhere Betrag. Die Altersrente nach einer EM-Rente ist eine vereinfachte Modellrechnung.</p><p>Befristete Renten (meist 3 Jahre) werden oft verlängert. Trag ein Jahr nur ein, wenn du davon ausgehst, dass die Rente dann endet.</p>'],
   'drv-emLimit':['Hinzuverdienstgrenze','<p>Steht im Rentenbescheid. Eine individuelle Grenze (bei teilweiser Erwerbsminderung aus dem höchsten Verdienst der letzten 15 Jahre) hier eintragen – bei beiden Arten möglich.</p><p>Leer = gesetzliche Grenze 2026: teilweise mindestens 41.527,50 €, voll 20.763,75 € im Jahr.</p><p>Vom Betrag über der Grenze werden 40 % auf die Bruttorente angerechnet; netto ist der Abzug um Kranken-/Pflegeversicherung und Steuer (Abzüge %) geringer.</p>'],
-  'drv-emZz':['Punkte Zurechnungszeit','<p>Entgeltpunkte, die die Rentenversicherung für die Zeit vom Beginn der Erwerbsminderung bis zum Ende der Zurechnungszeit (rund 67) hinzurechnet. Stehen im Rentenbescheid bei der Berechnung der Entgeltpunkte (Zurechnungszeit, Gesamtleistungsbewertung).</p><p>Getrennt von den tatsächlich erworbenen Rentenpunkten eintragen. Die Zurechnungszeit zählt für die EM-Rente und über den Besitzschutz für die spätere Altersrente, nie zusätzlich zu neuen Punkten aus einer Beschäftigung.</p><p>Ohne Zahlbetrag rechnet die App die EM-Rente aus Rentenpunkten, Zurechnungszeit, Zugangsfaktor, Rentenartfaktor und Rentenwert; mit Zahlbetrag dient sie dem Abgleich.</p>'],
-  'drv-emZf':['Zugangsfaktor EM','<p>Steht im Rentenbescheid. Beginnt die EM-Rente vor 65, mindert er sie um 0,3 % je Monat, höchstens 10,8 % (Faktor 0,892). Leer = 0,892.</p><p>Für die Punkte, die schon Grundlage der EM-Rente waren, gilt dieser Faktor auch in der späteren Altersrente (§ 77 Abs. 3 SGB VI). Neue Punkte aus einer Beschäftigung zählen mit dem Faktor der Altersrente, ab der Regelaltersgrenze 1,0.</p>'],
+  'drv-emZz':['davon Zurechnungszeit','<p>Der Teil der Entgeltpunkte laut Bescheid, den die Rentenversicherung für die Zurechnungszeit hinzurechnet (vom Beginn der Erwerbsminderung bis rund 67). Steht im Rentenbescheid bei den Entgeltpunkten für beitragsfreie Zeiten.</p><p>Nur die Zurechnungszeit gehört hierher. Andere beitragsfreie Zeiten (z. B. Schule, Krankheit, Arbeitslosigkeit) zählen auch in der Altersrente und bleiben in den tatsächlich erworbenen Punkten.</p><p>Die App rechnet: tatsächlich erworben = Entgeltpunkte laut Bescheid − Zurechnungszeit. Die Zurechnungszeit zählt für die EM-Rente und über den Besitzschutz für die spätere Altersrente, nie zusätzlich zu neuen Punkten aus einer Beschäftigung.</p>'],
+  'drv-emTotal':['Entgeltpunkte laut Bescheid','<p>Die Entgeltpunkte, aus denen die Rentenversicherung deine Erwerbsminderungsrente berechnet hat – gesamt, also mit der Zurechnungszeit. Stehen im Rentenbescheid in der Berechnung (Summe der Entgeltpunkte).</p><p>Daraus rechnet die App: die EM-Rente, wenn kein Zahlbetrag eingetragen ist (× Zugangsfaktor × Rentenartfaktor × Rentenwert), die rechnerische Untergrenze der späteren Altersrente (Besitzschutz) und die tatsächlich erworbenen Punkte (ohne Zurechnungszeit).</p><p>Punkte aus einer Beschäftigung zwischen Bescheid und heute sind nicht enthalten; neue Punkte rechnet die App ab heute aus „Brutto/Jahr“.</p>'],
+  'drv-emZf':['Zugangsfaktor EM','<p>Steht im Rentenbescheid. Beginnt die EM-Rente vor 65, mindert er sie um 0,3 % je Monat, höchstens 10,8 % (Faktor 0,892). Leer = 0,892.</p><p>Für die Punkte, die schon Grundlage der EM-Rente waren, gilt dieser Faktor auch in der späteren Altersrente (§ 77 Abs. 3 SGB VI) – bei teilweiser Erwerbsminderung nur für die Hälfte von ihnen, für die andere Hälfte der Faktor der Altersrente. Neue Punkte aus einer Beschäftigung zählen mit dem Faktor der Altersrente, ab der Regelaltersgrenze 1,0.</p>'],
   'drv-age':['Rentenbeginn','<p>Leer = „Rente ab“ aus den Lebensphasen, sonst die Regelaltersgrenze (aus dem Geburtsjahr, ab Jahrgang 1964: 67).</p><p>Beginnt die Rente vor der Regelaltersgrenze, sinkt sie um 0,3 % je Monat (höchstens 14,4 %); frühestens ist das ab 63 möglich und setzt 35 Versicherungsjahre voraus (§§ 36, 77 SGB VI). Ein späterer Beginn erhöht sie um 0,5 % je Monat. Die Rente für besonders langjährig Versicherte (45 Jahre) und für schwerbehinderte Menschen ist nicht abgebildet.</p>'],
   'drv-deduct':['Abzüge %','<p>Pauschaler Abzug von der Bruttorente für Kranken- und Pflegeversicherung (ca. 11–13 %) und Einkommensteuer. 15–25 % sind ein üblicher Richtwert.</p>'],
   'drv-rw':['Aktueller Rentenwert','<p>Monatsrente pro Entgeltpunkt. Ab 1. Juli 2026: 42,52 €. Wird jährlich zum 1. Juli angepasst; die Prognose nimmt an, dass er mit der Inflation steigt.</p>'],
@@ -7073,7 +7075,9 @@ function _saveEntryNow(onStale){
   });
   appStorage.setItem('loanParams',JSON.stringify(lp));
   saveFieldConfig(_fc);
-  if(document.getElementById('dp-drv-points'))appStorage.setItem('lt-drv',JSON.stringify(_drvFromInputs('dp')));
+  if(document.getElementById('dp-drv-points')){const md=_drvFromInputs('dp');_drvEmCheck(md,_meName());appStorage.setItem('lt-drv',JSON.stringify(md));
+    /* entfallene Rentenpunkte (ersetzt durch Entgeltpunkte laut Bescheid) auch im Formular leeren */
+    if(!(md.points>0)){const pi=document.getElementById('dp-drv-points');if(pi)pi.value='';}}
   /* eigene Geburtsdaten (Ich-Karte); unverändert nichts schreiben, ohne Angabe gilt Januar */
   const hby=document.getElementById('hh-birth-year'),hbm=document.getElementById('hh-birth-month');
   if(hby&&hby.value&&hby.value!==appStorage.getItem('lt-birth-year')){const y=+hby.value;if(!(Number.isInteger(y)&&y>=1920&&y<=2015))throw new Error(L('Bitte ein Geburtsjahr wählen.','Please choose a year of birth.'));appStorage.setItem('lt-birth-year',String(y));}
@@ -7090,7 +7094,10 @@ function _saveEntryNow(onStale){
     const pv=document.getElementById('dpDrvPeople'),pb=document.getElementById('dpBvPeople');
     const drv=pv?Object.fromEntries([...pv.querySelectorAll('.plan-row')].map(r=>[r.dataset.rowId,_rowValues(r,PERSON_DRV_COLS)])):null;
     const bvs=pb?Object.fromEntries([...pb.querySelectorAll('.plan-row')].map(r=>[r.dataset.rowId,r.hidden?null:_rowValues(r,PERSON_BV_COLS)])):null;
-    appStorage.setItem('lt-drv-extra',JSON.stringify(_mergePersonRows(_collectPlanRows(dxWrapS,DRV_CARD_COLS),drv,bvs)));
+    const merged=_mergePersonRows(_collectPlanRows(dxWrapS,DRV_CARD_COLS),drv,bvs);
+    merged.forEach(p=>_drvEmCheck(p,(p.name||'').trim()||L('Weitere Person','Other person')));
+    appStorage.setItem('lt-drv-extra',JSON.stringify(merged));
+    merged.forEach(p=>{if(p.id&&!(+p.points>0)&&pv){const row=pv.querySelector(`.plan-row[data-row-id="${CSS.escape(p.id)}"] [data-k="points"]`);if(row)row.value='';}});
   }
   const chWrapS=document.getElementById('dpChildren');
   if(chWrapS){const kids=_collectChildren(chWrapS);if(kids.some(c=>!(+c.by>1900)))throw new Error(L('Kinder: Bitte für jedes Kind das Geburtsjahr wählen.','Children: please choose the year of birth for each child.'));appStorage.setItem('lt-children',JSON.stringify(kids));}
@@ -8945,7 +8952,7 @@ function buildDynamicForm(){
      Rentenwert, Durchschnittsentgelt und BBG stehen bei dir und gelten für alle. */
   const ppl=getDrvExtra().filter(p=>p.id);
   /* Lesemodus kompakt: eine leere eigene Karte (z. B. bei Beamtenpension) erscheint erst beim Bearbeiten */
-  const myDrv=getDrv(),myEmpty=!(+myDrv.points>0||+myDrv.salary>0||+myDrv.em>0),pplDrv=ppl.some(p=>+p.points>0||+p.salary>0||+p.em>0);
+  const myDrv=getDrv(),myEmpty=!(+myDrv.points>0||+myDrv.salary>0||+myDrv.em>0||+myDrv.emTotal>0),pplDrv=ppl.some(p=>+p.points>0||+p.salary>0||+p.em>0||+p.emTotal>0);
   html+=`<div class="lt-block-label${myEmpty&&!pplDrv?' edit-only':''}">Gesetzliche Rente</div><div class="hh-card pv-card${myEmpty?' pv-empty':''}" id="pvMeDrv"><div class="hh-head">${_hhHeadHTML(_meName(),L('Gesetzliche Rente','State pension'))}</div>`+_drvFieldsHTML(myDrv,'dp','form')+`</div>`;
   html+=`<div id="dpDrvPeople">${_pvDrvRowsHTML(ppl)}</div>`;
   if(ppl.length)html+=`<p class="ds-help edit-only">${L('Rentenwert, Ø-Entgelt und BBG trägst du bei dir ein; sie gelten für alle.','Pension value, average salary and contribution ceiling are entered with yours; they apply to everyone.')}</p>`;
@@ -8976,7 +8983,10 @@ function buildDynamicForm(){
   /* Altersvorsorge: Ergebnis live, Zeilen hinzufügen/entfernen (gespeichert wird mit "Speichern") */
   container.querySelectorAll('input[id^="dp-drv-"]').forEach(inp=>inp.addEventListener('input',_updateDrvResult));
   const emSel=document.getElementById('dp-drv-emType');
-  if(emSel)emSel.addEventListener('change',()=>{_syncDrvEm('dp');_updateDrvResult();});
+  if(emSel)emSel.addEventListener('change',()=>{
+    const el=k=>document.getElementById('dp-drv-'+k),num=k=>{const n=el(k)?_parseDec(el(k).value):NaN;return isFinite(n)?n:0;};
+    _drvEmOffPoints(num,(k,v)=>{if(el(k))el(k).value=v;},+emSel.value||0);
+    _syncDrvEm('dp');_updateDrvResult();});
   _updateDrvResult();
   container.querySelectorAll('input[id^="dp-bv-"]').forEach(inp=>inp.addEventListener('input',_updateBvResult));
   _updateBvResult();
@@ -8986,7 +8996,11 @@ function buildDynamicForm(){
   const pvDrv=document.getElementById('dpDrvPeople'),pvBv=document.getElementById('dpBvPeople');
   if(pvDrv){
     pvDrv.querySelectorAll('[data-k="salary"],[data-k="emLimit"]').forEach(i=>{const n=_parseDec(i.value);if(isFinite(n)&&n>0)i.value=Math.round(n).toLocaleString('de-DE');});
-    pvDrv.querySelectorAll('input,select').forEach(inp=>inp.addEventListener(inp.tagName==='SELECT'?'change':'input',()=>_pvResults()));
+    pvDrv.querySelectorAll('input,select').forEach(inp=>inp.addEventListener(inp.tagName==='SELECT'?'change':'input',()=>{
+      /* EM-Rente abgewählt: Rentenpunkte aus den Entgeltpunkten laut Bescheid ableiten, wenn leer */
+      if(inp.dataset.k==='emType'){const row=inp.closest('.plan-row'),q=k=>row.querySelector(`[data-k="${k}"]`),num=k=>{const n=q(k)?_parseDec(q(k).value):NaN;return isFinite(n)?n:0;};
+        _drvEmOffPoints(num,(k,v)=>{if(q(k))q(k).value=v;},+inp.value||0);}
+      _pvResults();}));
   }
   if(pvBv)pvBv.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>_pvResults()));
   container.querySelectorAll('[data-bv-add]').forEach(b=>b.addEventListener('click',()=>{const r=pvBv&&pvBv.querySelector(`.plan-row[data-row-id="${CSS.escape(b.dataset.bvAdd)}"]`);if(r){r.hidden=false;const i=r.querySelector('[data-k="bvPay"]');if(i)i.focus();}b.remove();}));
@@ -9119,7 +9133,7 @@ function _v2DrvExtraRowsHTML(rows){
 function _mergePersonRows(base,drv,bvs){
   return _withPersonPhases(base).map(r=>{
     const x=Object.assign({},r,drv&&r.id&&drv[r.id]?drv[r.id]:{});delete x.id;if(r.id)x.id=r.id;
-    ['points','salary','deduct','em','emZz','emZf','emUntil','emLimit'].forEach(k=>{if(x[k]==='')delete x[k];});if(x.age===''||x.age===0)delete x.age;
+    ['points','salary','deduct','em','emTotal','emZz','emZf','emUntil','emLimit'].forEach(k=>{if(x[k]==='')delete x[k];});if(x.age===''||x.age===0)delete x.age;
     if(bvs&&r.id&&r.id in bvs){const b=bvs[r.id];delete x.bv;if(b&&+b.bvPay>0)x.bv={pay:+b.bvPay,...(+b.bvYears>0?{years:+b.bvYears}:{}),...(+b.bvAge>0?{age:+b.bvAge}:{}),...(+b.bvFrom>0?{from:+b.bvFrom}:{}),...(b.bvDeduct!==''&&b.bvDeduct!=null&&isFinite(+b.bvDeduct)?{deduct:+b.bvDeduct}:{})};}
     ['bvPay','bvYears','bvAge','bvFrom','bvDeduct'].forEach(k=>delete x[k]);
     return _drvEmClean(x);
@@ -9149,7 +9163,7 @@ function _v2DrvExtraResults(wrap){
    Erwerbsminderung, Beamtenversorgung. Kopf mit Name, Ergebnis live; leere Felder bleiben leer (= Standardwert). */
 function _pvDrvRowsHTML(ppl){
   const v=x=>+x||'';
-  return _planRowsHTML(ppl.map(p=>({id:p.id,points:v(p.points),salary:v(p.salary),age:v(p.age),deduct:p.deduct===''||p.deduct==null?'':+p.deduct,emType:String(+p.emType||0),em:v(p.em),emZz:v(p.emZz),emZf:v(p.emZf),emUntil:v(p.emUntil),emLimit:v(p.emLimit)})),PERSON_DRV_COLS,'form','drvx pv-row');
+  return _planRowsHTML(ppl.map(p=>({id:p.id,points:v(p.points),salary:v(p.salary),age:v(p.age),deduct:p.deduct===''||p.deduct==null?'':+p.deduct,emType:String(+p.emType||0),em:v(p.em),emTotal:v(p.emTotal),emZz:v(p.emZz),emZf:v(p.emZf),emUntil:v(p.emUntil),emLimit:v(p.emLimit)})),PERSON_DRV_COLS,'form','drvx pv-row');
 }
 function _pvBvRowsHTML(ppl){
   return ppl.map(p=>{const b=p.bv||{},v=x=>+x||'';
@@ -9163,11 +9177,12 @@ function _pvResults(){
   document.querySelectorAll('#dpDrvPeople .plan-row').forEach(row=>{
     const o=st[row.dataset.rowId]||{},p=_drvEmClean(Object.assign({},o,_rowValues(row,PERSON_DRV_COLS)));
     const t=+p.emType||0,show=(k,on)=>{const g=row.querySelector('.pc-'+k);if(g)g.hidden=!on;};
-    show('em',t);show('emZz',t);show('emZf',t);show('emUntil',t);show('emLimit',t);
+    show('em',t);show('emTotal',t);show('emZz',t);show('emZf',t);show('emUntil',t);show('emLimit',t);
+    {const rv=_rowValues(row,PERSON_DRV_COLS);show('points',_drvPtsShown(t,+rv.points||0,+rv.emTotal||0));}
     const lim=row.querySelector('[data-k="emLimit"]');if(lim)lim.placeholder=_emLimitPh(t);
     head(row,o.name,L('Gesetzliche Rente','State pension'));
     res(row).innerHTML=_drvResultHTML(p,calcDrvExtra(s,p),+p.until>0?+p.until:s.workEnd);
-    row.classList.toggle('pv-empty',!(+p.points>0||+p.salary>0||+p.em>0));
+    row.classList.toggle('pv-empty',!(+p.points>0||+p.salary>0||+p.em>0||+p.emTotal>0));
   });
   document.querySelectorAll('#dpBvPeople .plan-row').forEach(row=>{
     const o=st[row.dataset.rowId]||{},v=_rowValues(row,PERSON_BV_COLS);
@@ -9505,10 +9520,12 @@ function getDrv(){
 }
 /* Erwerbsminderungsrente (laufend, eigene und weitere Personen): emType 1 = teilweise, 2 = voll; em = Zahlbetrag netto/Monat;
    emUntil = letztes Jahr (leer = bis Regelalter); emLimit = Hinzuverdienstgrenze laut Bescheid (leer = gesetzliche Grenze);
-   seit Schema 18: emZz = Entgeltpunkte aus der Zurechnungszeit (getrennt von den tatsächlich erworbenen Punkten „points“),
    emZf = Zugangsfaktor der EM-Rente laut Bescheid (leer = 0,892, der höchste Abschlag von 10,8 %).
+   Seit Schema 19: emTotal = Entgeltpunkte gesamt laut Bescheid (inklusive Zurechnungszeit), emZz = der darin enthaltene
+   Anteil der Zurechnungszeit; die tatsächlich erworbenen Punkte leitet die App ab (gesamt − Zurechnungszeit), „points“
+   entfällt dann. Ohne emTotal (Stand vor Schema 19 ohne getrennte Zurechnungszeit) gelten „points“ wie bisher.
    Hinzuverdienstgrenzen 2026: voll 3/8 × 14 × Bezugsgröße (3.955 €), teilweise mindestens 6/8 × 14 × Bezugsgröße. */
-const DRV_EM_KEYS=['emType','em','emUntil','emLimit','emZz','emZf'];
+const DRV_EM_KEYS=['emType','em','emUntil','emLimit','emTotal','emZz','emZf'];
 const EM_LIMITS={1:41527.5,2:20763.75},EM_ZF=0.892;
 /* EM-Werte nur behalten, wenn eine Erwerbsminderungsrente ausgewählt ist */
 function _drvEmClean(d){
@@ -9518,6 +9535,8 @@ function _drvEmClean(d){
   d.em=+d.em>0?+d.em:0;
   if(+d.emLimit>0)d.emLimit=+d.emLimit;else delete d.emLimit;
   if(+d.emUntil>0)d.emUntil=+d.emUntil;else delete d.emUntil;
+  /* Schema 19: Entgeltpunkte laut Bescheid ersetzen die Rentenpunkte; die Zurechnungszeit ist ein Teil davon */
+  if(+d.emTotal>0){d.emTotal=+d.emTotal;delete d.points;}else delete d.emTotal;
   if(+d.emZz>0)d.emZz=+d.emZz;else delete d.emZz;
   /* Zugangsfaktor als 0,892 oder als Prozent (89,2) eingetragen */
   let zf=+d.emZf;if(zf>1&&zf<=100)zf/=100;
@@ -9529,10 +9548,30 @@ const _emAccess=drv=>drv.emZf>0?Math.min(1,Math.max(EM_ZF,drv.emZf)):EM_ZF;
 const _emRaf=drv=>drv.emType===1?0.5:1;
 const _zfStr=v=>String(Math.round(v*10000)/10000).replace('.',',');
 const _emLimitPh=t=>Math.round(EM_LIMITS[t===2?2:1]).toLocaleString('de-DE');
-/* EM aus Punkten: (tatsächliche Punkte + Zurechnungszeit) × Zugangsfaktor × Rentenartfaktor × Rentenwert, netto */
+const _drvNetF=drv=>1-Math.min(90,Math.max(0,drv.deduct||0))/100;
+/* Entgeltpunkte einer Person (Schema 19). Mit EM-Rente und Entgeltpunkten laut Bescheid: tatsächlich erworben = gesamt −
+   Zurechnungszeit; nur diese zählen in der Altersrente aus Punkten, die Zurechnungszeit nie zusätzlich. Ohne Bescheidwert
+   gelten die Rentenpunkte; legacy = EM-Rente mit Rentenpunkten aus einer früheren Version, bei denen offen ist, ob sie die
+   Zurechnungszeit enthalten (die App rechnet wie bisher und fragt nach). */
+function _emPoints(drv){
+  const em=drv.emType===1||drv.emType===2;
+  if(em&&drv.emTotal>0){const zz=Math.min(drv.emTotal,Math.max(0,drv.emZz||0));return{known:true,total:drv.emTotal,zz,actual:drv.emTotal-zz,legacy:false};}
+  const pts=Math.max(0,drv.points||0);
+  return{known:false,total:0,zz:0,actual:pts,legacy:em&&pts>0};
+}
+/* EM aus Entgeltpunkten laut Bescheid: gesamt × Zugangsfaktor × Rentenartfaktor × Rentenwert, netto */
 function _emFromPoints(drv){
-  if(!(drv.emZz>0))return 0;
-  return (Math.max(0,drv.points||0)+drv.emZz)*_emAccess(drv)*_emRaf(drv)*(drv.rw||DRV_DEFAULTS.rw)*(1-Math.min(90,Math.max(0,drv.deduct||0))/100);
+  const p=_emPoints(drv);if(!p.known)return 0;
+  return p.total*_emAccess(drv)*_emRaf(drv)*(drv.rw||DRV_DEFAULTS.rw)*_drvNetF(drv);
+}
+/* Persönliche Entgeltpunkte der EM-Rente (Grundlage des Besitzschutzes, § 88 SGB VI): Entgeltpunkte laut Bescheid ×
+   Zugangsfaktor. Ohne Bescheidwert aus dem Zahlbetrag zurückgerechnet (mit den eingetragenen Abzügen; ungenau, wenn der
+   Bescheid andere Abzüge hat). */
+function _emPep(drv){
+  const p=_emPoints(drv);
+  if(p.known)return{pep:p.total*_emAccess(drv),fromPay:false};
+  if(drv.em>0)return{pep:drv.em/(_emRaf(drv)*(drv.rw||DRV_DEFAULTS.rw)*_drvNetF(drv)),fromPay:true};
+  return{pep:0,fromPay:false};
 }
 /* Zahlbetrag der EM-Rente: laut Bescheid, sonst aus Punkten und Zurechnungszeit */
 function _emPay(drv){
@@ -9547,13 +9586,16 @@ function calcEm(s,drv,age){
   const over=Math.max(0,(drv.salary||0)-limit);
   /* 40 % des Überschusses mindern die Bruttorente; der Zahlbetrag sinkt um diesen Betrag abzüglich der
      pauschalen Abzüge (Kranken-/Pflegeversicherung, Steuer), mit denen auch die Altersrente gerechnet wird */
-  const cut=Math.min(pay,0.4*over/12*(1-Math.min(90,Math.max(0,drv.deduct||0))/100));
+  const cut=Math.min(pay,0.4*over/12*_drvNetF(drv));
   /* Besitzschutz (§ 88 Abs. 1 Satz 2 SGB VI): Beginnt die Altersrente spätestens 24 Monate nach dem Ende der EM-Rente,
      liegen ihr mindestens deren persönliche Entgeltpunkte zugrunde – mit dem Rentenartfaktor der Altersrente (1,0 statt
-     0,5 bei teilweiser Erwerbsminderung). Gerechnet mit dem Zahlbetrag ohne Anrechnung eines Hinzuverdiensts. */
-  const full=until>=age-2-1e-9?pay/_emRaf(drv):0;
-  return{type:drv.emType,gross:pay,amount:pay-cut,cut,limit,over,until,full,zf:_emAccess(drv),raf:_emRaf(drv),zz:drv.emZz>0?drv.emZz:0,
-    derived:!(drv.em>0),fromPoints:_emFromPoints(drv)};
+     0,5 bei teilweiser Erwerbsminderung). Gerechnet in persönlichen Entgeltpunkten mit Rentenwert und denselben Abzügen
+     wie die Altersrente (seit 15.10.2026; vorher der doppelte Zahlbetrag mit dessen eigenen Abzügen). */
+  const pp=_emPep(drv),on=until>=age-2-1e-9,rw=drv.rw||DRV_DEFAULTS.rw;
+  const full=on?pp.pep*rw*_drvNetF(drv):0;
+  const pts=_emPoints(drv);
+  return{type:drv.emType,gross:pay,amount:pay-cut,cut,limit,over,until,full,fullGross:on?pp.pep*rw:0,pep:pp.pep,pepFromPay:pp.fromPay,
+    zf:_emAccess(drv),raf:_emRaf(drv),total:pts.total,zz:pts.zz,known:pts.known,derived:!(drv.em>0),fromPoints:_emFromPoints(drv)};
 }
 /* Weitere gesetzliche Renten (z. B. Partner/in): eigene Person mit Geburtsjahr und "Arbeiten bis Alter",
    wie die eigene Rente optional mit laufender Erwerbsminderungsrente.
@@ -9562,13 +9604,14 @@ const DRV_EXTRA_COLS=[
   {key:'name',label:'Name',info:'drvx-name',type:'text',ph:'z. B. Partnerin'},
   {key:'by',label:'Geburtsjahr',info:'drvx-by',type:'year',ph:'Auswählen',min:1920,max:2015},
   {key:'until',label:'Arbeiten bis Alter',info:'drvx-until',ph:'wie eigene'},
-  {key:'points',label:'Rentenpunkte',info:'drv-points',ph:'0'},
+  {key:'points',label:'Rentenpunkte',info:'drv-points',ph:'0',prec:4},
   {key:'salary',label:'Brutto €/Jahr',info:'drv-salary',ph:'0'},
   {key:'age',label:'Rentenbeginn',info:'drv-age',ph:'automatisch'},
   {key:'deduct',label:'Abzüge %',info:'drv-deduct',ph:'20'},
   {key:'emType',label:'EM-Rente',info:'drv-emType',type:'select',options:()=>[['0','Keine'],['1','Teilweise'],['2','Voll']]},
   {key:'em',label:'EM-Rente netto €/Monat',info:'drv-em',ph:'0'},
-  {key:'emZz',label:'Punkte Zurechnungszeit',info:'drv-emZz',ph:'0'},
+  {key:'emTotal',label:'Entgeltpunkte laut Bescheid',info:'drv-emTotal',ph:'0',prec:4},
+  {key:'emZz',label:'davon Zurechnungszeit',info:'drv-emZz',ph:'0',prec:4},
   {key:'emZf',label:'Zugangsfaktor EM',info:'drv-emZf',ph:'0,892',prec:4},
   {key:'emUntil',label:'Läuft bis Jahr',info:'drv-emUntil',ph:'bis Regelalter'},
   {key:'emLimit',label:'Hinzuverdienst­grenze €/Jahr',info:'drv-emLimit',ph:'41.528'}
@@ -9576,7 +9619,7 @@ const DRV_EXTRA_COLS=[
 /* Haushaltskarte: nur die Person (Name, Geburtsjahr). Ihre Altersvorsorge steht unter Altersvorsorge (je Person eine
    Karte für gesetzliche Rente und Beamtenversorgung), Arbeitsende und Arbeitszeit in den Lebensphasen (14.10.2026). */
 const DRV_CARD_COLS=DRV_EXTRA_COLS.filter(c=>['name','by'].includes(c.key));
-const PERSON_DRV_COLS=DRV_EXTRA_COLS.filter(c=>['points','salary','age','deduct','emType','em','emZz','emZf','emUntil','emLimit'].includes(c.key)).map(c=>c.key==='age'?Object.assign({},c,{label:'Rentenbeginn'}):c);
+const PERSON_DRV_COLS=DRV_EXTRA_COLS.filter(c=>['points','salary','age','deduct','emType','em','emTotal','emZz','emZf','emUntil','emLimit'].includes(c.key)).map(c=>c.key==='age'?Object.assign({},c,{label:'Rentenbeginn'}):c);
 const PERSON_BV_COLS=[{key:'bvPay',label:'Bezüge brutto €/Monat',info:'bv-pay',ph:'0'},{key:'bvYears',label:'Dienstjahre bisher',info:'bv-years',ph:'0'},
   {key:'bvAge',label:'Altersgrenze',info:'bv-age',ph:'automatisch'},{key:'bvFrom',label:'Pension ab Alter',info:'bv-from',ph:'wie Grenze'},{key:'bvDeduct',label:'Abzüge %',info:'bv-deduct',ph:'25'}];
 function getDrvExtra(){const l=_lsJSON('lt-drv-extra',[]);return Array.isArray(l)?l:[];}
@@ -9891,6 +9934,10 @@ function _migrationTasks(){
   getDrvExtra().forEach(p=>{if(p.id&&+p.net>0)out.push({kind:'net',personId:p.id,name:_personName(p.id),amount:+p.net});});
   getAvDepots().forEach(d=>(Array.isArray(d.kidsOpen)?d.kidsOpen:[]).forEach(v=>out.push({kind:'kid',depotId:d.id,depot:(d.name||'').trim()||'Altersvorsorgedepot',value:v,person:d.person||''})));
   getDrvExtra().forEach(p=>{const lg=p.id&&_legacyPartTime(p);if(lg)out.push({kind:'pt',personId:p.id,name:_personName(p.id),from:lg.from,pct:Math.round(lg.pct*1000)/10,optional:true});});
+  /* Schema 19: EM-Rente mit Rentenpunkten aus einer früheren Version – offen, ob sie die Zurechnungszeit enthalten */
+  const emOpen=(d,pid,name)=>{const t=+d.emType;if((t===1||t===2)&&!(+d.emTotal>0)&&+d.points>0)out.push({kind:'em',personId:pid,name,points:+d.points});};
+  emOpen(_lsJSON('lt-drv',{})||{},'',_meName());
+  getDrvExtra().forEach(p=>{if(p.id)emOpen(p,p.id,_personName(p.id));});
   return out;
 }
 /* P35: Nettogehalt aus Schema 13 einem Budgetposten zuordnen oder als neuen Posten anlegen */
@@ -9954,10 +10001,12 @@ function _migrationCardHTML(){
   const tasks=_migrationTasks(),bk=appStorage.backupBeforeUpdate();
   if(!tasks.length)return '<div id="migCard"></div>';
   const item=(t,i)=>{
-    const title=t.kind==='net'?L(`Gehalt von ${t.name} zuordnen`,`Assign the salary of ${t.name}`)
+    const title=t.kind==='em'?L(`Entgeltpunkte der EM-Rente klären (${t.name})`,`Clarify the earning points of the disability pension (${t.name})`)
+      :t.kind==='net'?L(`Gehalt von ${t.name} zuordnen`,`Assign the salary of ${t.name}`)
       :t.kind==='kid'?L(`Kinder-Jahrgang „${_numStr(t.value)}“ klären`,`Resolve child year "${_numStr(t.value)}"`)
       :L(`Teilzeit von ${t.name} ab ${_ageTxt(t.from)}`,`Part-time of ${t.name} from ${_ageTxt(t.from)}`);
-    const sub=t.kind==='net'?L(`${fmt(t.amount)}/Monat aus der früheren Version – zählt bis dahin weiter als Gehalt`,`${fmt(t.amount)}/month from the previous version – keeps counting as salary until then`)
+    const sub=t.kind==='em'?L(`${_pts(t.points)} Rentenpunkte aus der früheren Version – offen, ob die Zurechnungszeit enthalten ist; gerechnet wird wie bisher`,`${_pts(t.points)} pension points from the previous version – unknown whether they include the credited period; calculated as before`)
+      :t.kind==='net'?L(`${fmt(t.amount)}/Monat aus der früheren Version – zählt bis dahin weiter als Gehalt`,`${fmt(t.amount)}/month from the previous version – keeps counting as salary until then`)
       :t.kind==='kid'?L(`am Depot „${t.depot}“: kein gültiges Geburtsjahr – gerechnet wird weiter wie bisher`,`on depot "${t.depot}": not a valid year of birth – calculated as before`)
       :L(`${_numStr(t.pct)} % genau ab diesem Alter – gilt weiter; optional auf Lebensphasen umstellen`,`${_numStr(t.pct)} % from exactly this age – still applies; optionally switch to life phases`);
     return `<div class="ns-item"><button type="button" class="ns-main" onclick="_migRun(${i})"><span class="ns-t">${escHTML(title)}</span><span class="ns-s">${escHTML(sub)}</span></button></div>`;
@@ -9965,7 +10014,7 @@ function _migrationCardHTML(){
   const dl=bk?`<div class="ns-item"><button type="button" class="ns-main" onclick="_downloadBeforeUpdate()"><span class="ns-t">${L('Stand vor dem Update sichern','Save the state before the update')}</span><span class="ns-s">${L('unveränderte Daten','unchanged data')}${bk.version?L(' der Version ',' of version ')+bk.version:''}</span></button></div>`:'';
   return `<div id="migCard" class="ns-card mig-card"><div class="ns-head"><b>${L('Nach dem Update','After the update')}</b><span>${L('Diese Angaben ließen sich nicht eindeutig übernehmen. Bis du sie klärst, rechnet die App wie bisher.','These entries could not be carried over unambiguously. Until you resolve them, the app calculates as before.')}</span></div>${tasks.map(item).join('')}${dl}</div>`;
 }
-function _migRun(i){const t=_migrationTasks()[i];if(!t)return;if(t.kind==='net')openNetIncomeSheet(t.personId);else if(t.kind==='kid')openChildYearSheet(t.depotId,t.value);else openPartTimeSheet(t.personId);}
+function _migRun(i){const t=_migrationTasks()[i];if(!t)return;if(t.kind==='em')openEmPointsSheet(t.personId);else if(t.kind==='net')openNetIncomeSheet(t.personId);else if(t.kind==='kid')openChildYearSheet(t.depotId,t.value);else openPartTimeSheet(t.personId);}
 function _afterMigrationChange(){_ltCalcCache=null;_afterDataChange();const el=document.getElementById('migCard');if(el)el.outerHTML=_migrationCardHTML();if(document.getElementById('page-lifetime')?.classList.contains('active'))renderLifetimePageCalcs();}
 /* unveränderter Stand vor dem letzten Update als Datei (Rohtext, genau wie gespeichert) */
 function _downloadBeforeUpdate(){
@@ -9976,6 +10025,63 @@ function _downloadBeforeUpdate(){
 }
 function _migOpt(name,v,label,sub,checked){return `<label class="ds-row mig-opt"><input type="radio" name="${name}" value="${escHTML(v)}"${checked?' checked':''}><span class="ds-l">${escHTML(label)}<small>${escHTML(sub)}</small></span></label>`;}
 const _migPvHTML=rows=>rows.map(([l,v])=>`<div><span>${escHTML(l)}</span><b>${escHTML(v)}</b></div>`).join('');
+/* Schema 19: Rentenpunkte einer EM-Rente aus einer früheren Version als Entgeltpunkte laut Bescheid übernehmen. Die
+   Person entscheidet, ob die bisherigen Punkte die Zurechnungszeit enthalten; ohne Entscheidung bleibt alles wie bisher. */
+function _emLegacyRaw(pid){return pid?getDrvExtra().find(r=>r.id===pid):(_lsJSON('lt-drv',{})||{});}
+function _emLegacyResult(pid,patch){
+  const s=getLifetimeSettings(),raw=Object.assign({},_emLegacyRaw(pid)||{},patch||{});
+  if(patch){delete raw.points;if(!(patch.emZz>0))delete raw.emZz;}
+  if(pid)return calcDrvExtra(s,raw);
+  const d=Object.assign({},DRV_DEFAULTS,raw);Object.keys(DRV_DEFAULTS).forEach(k=>{d[k]=isFinite(+d[k])?+d[k]:DRV_DEFAULTS[k];});
+  return calcDrvPension(s,_drvEmClean(d));
+}
+function _emLegacyPatch(choice,zz,pid){
+  const P=+((_emLegacyRaw(pid)||{}).points)||0;
+  const total=choice==='total'?P:P+zz;
+  return{emTotal:Math.round(total*1e6)/1e6,emZz:zz};
+}
+/* Übernehmen: choice 'total' = die bisherigen Punkte sind die Entgeltpunkte laut Bescheid (mit Zurechnungszeit),
+   'actual' = sie sind ohne Zurechnungszeit; zz = Zurechnungszeit. Schreibt Entgeltpunkte laut Bescheid und Zurechnungszeit,
+   die Rentenpunkte entfallen. */
+function _applyEmLegacy(pid,choice,zz){
+  const raw=_emLegacyRaw(pid);if(!raw||!(+raw.points>0))throw new Error(L('Nichts zu klären.','Nothing to clarify.'));
+  if(choice!=='total'&&choice!=='actual')throw new Error(L('Bitte eine Möglichkeit wählen – oder abbrechen, dann bleibt alles wie bisher.','Please choose an option – or cancel to keep everything as before.'));
+  if(!(zz>=0))throw new Error(L('Bitte für die Zurechnungszeit eine Zahl ab 0 eintragen.','Please enter a number from 0 for the credited period.'));
+  const patch=_emLegacyPatch(choice,zz,pid);
+  if(zz>patch.emTotal+1e-9)throw new Error(L(`Die Zurechnungszeit kann nicht größer sein als ${_pts(patch.emTotal)} Entgeltpunkte.`,`The credited period cannot be larger than ${_pts(patch.emTotal)} earning points.`));
+  const apply=o=>{const x=Object.assign({},o);delete x.points;x.emTotal=patch.emTotal;if(patch.emZz>0)x.emZz=patch.emZz;else delete x.emZz;return x;};
+  if(pid)appStorage.setItem('lt-drv-extra',JSON.stringify(getDrvExtra().map(p=>p.id===pid?apply(p):p)));
+  else appStorage.setItem('lt-drv',JSON.stringify(apply(_lsJSON('lt-drv',{})||{})));
+}
+function openEmPointsSheet(pid){
+  const raw=_emLegacyRaw(pid);if(!raw||!(+raw.points>0)||+raw.emTotal>0)return;
+  const P=+raw.points,name=pid?_personName(pid):_meName(),before=_emLegacyResult(pid,null);
+  /* A5: ergeben die Punkte schon etwa die EM-Rente, enthalten sie vermutlich die Zurechnungszeit */
+  const e=before.em,i=before.inp||{},sug=e&&P*(i.rw||0)*(e.type===1?0.5:1)*_drvNetF(i)>=0.95*e.gross?'total':'actual';
+  const vs=L(' · Vorschlag',' · suggestion');
+  const body=`<p class="ds-note">${escHTML(L(`Für ${name} stehen aus der früheren Version ${_pts(P)} Rentenpunkte bei der Erwerbsminderungsrente. Jetzt trägst du die Entgeltpunkte laut Rentenbescheid (gesamt, mit Zurechnungszeit) und den Anteil der Zurechnungszeit ein. Was sind die ${_pts(P)} Punkte?`,`From the previous version, ${name} has ${_pts(P)} pension points with the disability pension. Now you enter the earning points per pension notice (total, including the credited period) and the share of the credited period. What are the ${_pts(P)} points?`))}</p>`
+    +`<div class="ds-group">`+_migOpt('migEm','total',L('Entgeltpunkte laut Bescheid, mit Zurechnungszeit','Earning points per notice, including the credited period'),L(`gesamt ${_pts(P)}; tatsächlich erworben = ${_pts(P)} − Zurechnungszeit`,`total ${_pts(P)}; actually earned = ${_pts(P)} − credited period`)+(sug==='total'?vs:''),false)
+    +_migOpt('migEm','actual',L('Tatsächlich erworben, ohne Zurechnungszeit','Actually earned, without the credited period'),L(`gesamt = ${_pts(P)} + Zurechnungszeit`,`total = ${_pts(P)} + credited period`)+(sug==='actual'?vs:''),false)+`</div>`
+    +`<div class="ds-group"><label class="ds-row"><span class="ds-l" data-info="drv-emZz">${L('davon Zurechnungszeit','of which credited period')}</span><input class="ds-in" id="migEmZz" type="text" inputmode="decimal" autocomplete="off" placeholder="0"></label></div>`
+    +`<div class="mig-pv" id="migPv"></div><p class="ds-help">${escHTML(L('Ohne Auswahl bleibt alles wie bisher. Die Werte findest du im Rentenbescheid bei der Berechnung der Entgeltpunkte.','Without a choice everything stays as before. You find the values in the pension notice where the earning points are calculated.'))}</p>`;
+  const read=()=>{const v=document.querySelector('input[name="migEm"]:checked'),n=_parseDec((document.getElementById('migEmZz')||{}).value||'');return{choice:v?v.value:null,zz:isFinite(n)?n:0,bad:!isFinite(n)&&((document.getElementById('migEmZz')||{}).value||'').trim()!==''};};
+  if(!_openSheet(L('Punkte klären','Clarify points'),body,()=>{
+    const v=read();
+    if(v.bad)throw new Error(L('Bitte für die Zurechnungszeit eine Zahl ab 0 eintragen.','Please enter a number from 0 for the credited period.'));
+    _applyEmLegacy(pid,v.choice,v.zz);
+    setTimeout(_afterMigrationChange,0);
+  },L('Übernehmen','Apply'),()=>openEmPointsSheet(pid)))return;
+  const upd=()=>{const v=read(),el=document.getElementById('migPv');if(!el)return;
+    if(!v.choice||v.bad){el.innerHTML='';return;}
+    const patch=_emLegacyPatch(v.choice,v.zz,pid),after=_emLegacyResult(pid,patch);
+    const m=r=>r.minimum>0?fmt(r.minimum):'–',em=r=>r.em&&r.em.gross>0?fmt(r.em.gross):'–';
+    el.innerHTML=_migPvHTML([[L('Tatsächlich erworben','Actually earned'),_pts(before.inp.points)+' → '+_pts(after.inp.points)],
+      [L('EM-Rente','Disability pension'),em(before)+' → '+em(after)],
+      [L('Untergrenze (rechnerisch)','Lower bound (calculated)'),m(before)+' → '+m(after)],
+      [L('Altersrente geschätzt','Pension estimated'),fmt(before.netto)+' → '+fmt(after.netto)]]);};
+  const b=document.getElementById('dsBody');b.addEventListener('change',upd);b.addEventListener('input',upd);
+  upd();
+}
 /* P35: Gehalt zuordnen – vorhandener Posten oder neuer Posten; Vorher/Nachher für Budget und Prognose */
 function openNetIncomeSheet(pid){
   const amount=_pendingNet(pid),name=_personName(pid);if(!(amount>0))return;
@@ -10156,17 +10262,23 @@ function calcDrvPension(s,drv){
   /* Punkte bis zum Ende der Arbeit (Beginn Vorruhestand), beim Weiterarbeiten anteilig zur Arbeitszeit */
   const years=_workYears(s,curAge,age);
   const epYear=drv.salary>0&&drv.de>0?Math.min(drv.salary,drv.bbg||Infinity)/drv.de:0;
-  const pts=Math.max(0,drv.points),epNew=epYear*years,epTotal=pts+epNew;
+  /* tatsächlich erworbene Punkte: bei einer EM-Rente mit Bescheidwert gesamt − Zurechnungszeit (_emPoints) */
+  const ep=_emPoints(drv),pts=ep.actual,epNew=epYear*years,epTotal=pts+epNew;
   const em=calcEm(s,drv,age);
-  /* Nach einer EM-Rente (§ 77 Abs. 3 SGB VI): Punkte, die schon Grundlage der EM-Rente waren, behalten deren Zugangsfaktor;
-     neue Punkte aus Beschäftigung bekommen den der Altersrente. Die Zurechnungszeit zählt hier nicht mit – sie wirkt nur
-     über den Besitzschutz (em.full), sonst würde sie neben den neuen Punkten doppelt zählen. */
-  const zfPts=em?em.zf:zf;
+  /* Nach einer EM-Rente (§ 77 Abs. 3 SGB VI): Punkte, die schon Grundlage der EM-Rente waren, behalten deren Zugangsfaktor –
+     bei teilweiser Erwerbsminderung nur die Hälfte von ihnen (Satz 2), für die andere Hälfte gilt der Zugangsfaktor der
+     Altersrente. Neue Punkte aus Beschäftigung bekommen den der Altersrente. Die Zurechnungszeit zählt hier nicht mit – sie
+     wirkt über den Besitzschutz (em.full), sonst würde sie neben den neuen Punkten doppelt zählen. */
+  const zfPts=em?(em.type===1?0.5*em.zf+0.5*zf:em.zf):zf;
   const brutto=(pts*zfPts+epNew*zf)*drv.rw;
-  const calcNetto=brutto*(1-Math.min(90,Math.max(0,drv.deduct))/100);
-  const netto=em?Math.max(calcNetto,em.full):calcNetto;
-  const r={age,rag,zf,zfMonths,zfPts,years,epYear,epNew,epTotal,brutto,netto,inp:{points:pts,salary:drv.salary||0,rw:drv.rw,de:drv.de,bbg:drv.bbg,deduct:drv.deduct}};
-  if(em){r.em=em;r.calcNetto=calcNetto;r.besitz=em.full>calcNetto+0.005;}
+  const calcNetto=brutto*_drvNetF(drv);
+  /* Rechnerische Untergrenze (Besitzschutz, § 88 SGB VI; persönliche Entgeltpunkte, kein garantierter Nettobetrag) und
+     geschätzte Altersrente (der höhere Wert), beides eine vereinfachte Modellrechnung. Nicht berechnet: Die Zeit der
+     EM-Rente zählt in der Altersrente als Anrechnungszeit (§ 58 Abs. 1 Satz 1 Nr. 5 SGB VI); die Rente kann deshalb höher
+     ausfallen als geschätzt (r.open). */
+  const minimum=em?em.full:0,netto=em?Math.max(calcNetto,minimum):calcNetto;
+  const r={age,rag,zf,zfMonths,zfPts,years,epYear,epNew,epTotal,brutto,netto,inp:{points:pts,salary:drv.salary||0,rw:drv.rw,de:drv.de,bbg:drv.bbg,deduct:drv.deduct},ptsLegacy:ep.legacy};
+  if(em){r.em=em;r.calcNetto=calcNetto;r.minimum=minimum;r.besitz=minimum>calcNetto+0.005;r.open=true;}
   return r;
 }
 /* ══ Beamtenversorgung (Ruhegehalt nach BeamtVG) ══
@@ -10214,7 +10326,7 @@ function fmtAge(a){const y=Math.floor(a),m=Math.round((a-y)*12);return m?y+L(' J
 function _retIncomeDuplicate(name){
   const n=String(name||'').toLowerCase().trim();if(!n||!_mod('pension'))return null;
   const drv=getDrv(),xs=getDrvExtra();
-  const emOn=v=>(+v.emType===1||+v.emType===2)&&(+v.em>0||+v.emZz>0);
+  const emOn=v=>(+v.emType===1||+v.emType===2)&&(+v.em>0||+v.emTotal>0);
   if(/erwerbsminder|\bem-?rente\b|\bemr\b/.test(n)&&(emOn(drv)||xs.some(emOn)))return 'Erwerbsminderungsrente';
   if(/gesetzliche|altersrente|regelalters|\bdrv\b|rentenversicherung/.test(n)&&(drv.points>0||drv.salary>0||xs.length))return 'Gesetzliche Rente';
   if(/pension|ruhegehalt|beamtenversorgung|versorgungsbez/.test(n)&&hasBeamte())return 'Beamtenpension';
@@ -10793,6 +10905,8 @@ function _ltScheduleRender(ms=250){
 /* Deutsche Zahleneingabe: "7,5" -> 7.5, "1.500" -> 1500, "1.500,50" -> 1500.5; "1.5" ist ungültig (P10) */
 function _parseDec(v){return parseGermanNumber(v);}
 const _numStr=v=>v==null||v===''||!isFinite(v)?'':String(Math.round(v*100)/100).replace('.',',');
+/* Entgeltpunkte mit vier Nachkommastellen (wie im Rentenbescheid); _numStr würde beim erneuten Speichern runden */
+const _epStr=v=>v==null||v===''||!isFinite(v)?'':String(Math.round(v*10000)/10000).replace('.',',');
 function updateLifetimeInputs(){
   /* Geburtsmonat: Monatsnamen der aktuellen Sprache */
   const bm=document.getElementById('lt-birth-month');
@@ -10841,9 +10955,10 @@ function migrateLoanParams(){
 /* ── Gesetzliche Rente: Rechner (Prognose-Panel live, Data-Seite im Bearbeiten-Modus) ── */
 function _drvFieldsHTML(d,prefix,mode){
   const s=getLifetimeSettings();
-  const f=(k,label,val,ph)=>`<div class="input-group"><label data-info="drv-${k}">${label}</label><input class="num-input${mode==='form'?' form-store':''}" type="text" inputmode="decimal" id="${prefix}-drv-${k}" data-drv="${k}" value="${val}" placeholder="${ph||''}"></div>`;
+  const f=(k,label,val,ph,cls)=>`<div class="input-group${cls?' '+cls:''}"><label data-info="drv-${k}">${label}</label><input class="num-input${mode==='form'?' form-store':''}" type="text" inputmode="decimal" id="${prefix}-drv-${k}" data-drv="${k}" value="${val}" placeholder="${ph||''}"></div>`;
   let h=`<div class="input-grid">`;
-  h+=f('points','Rentenpunkte',_numStr(d.points||''),'0');
+  /* Rentenpunkte: ohne EM-Rente; mit EM-Rente nur, solange sie aus einer früheren Version stammen (_syncDrvEm) */
+  {const t0=d.emType===1||d.emType===2?d.emType:0;h+=f('points','Rentenpunkte',_epStr(d.points||''),'0','drv-pts').replace('drv-pts"',`drv-pts"${_drvPtsShown(t0,+d.points||0,+d.emTotal||0)?'':' hidden'}`);}
   h+=f('salary','Brutto €/Jahr',d.salary?Math.round(d.salary).toLocaleString('de-DE'):'','0');
   h+=f('age','Rentenbeginn',d.age>0?_numStr(d.age):'',String(Math.round(regelaltersgrenze(s.birthYear)*10)/10).replace('.',','));
   h+=f('deduct','Abzüge %',_numStr(d.deduct),'20');
@@ -10852,8 +10967,9 @@ function _drvFieldsHTML(d,prefix,mode){
   h+=`<div class="input-group"><label data-info="drv-emType">EM-Rente</label><select class="num-input${mode==='form'?' form-store':''}" id="${prefix}-drv-emType" data-drv="emType">${[[0,'Keine'],[1,'Teilweise'],[2,'Voll']].map(([v,l])=>`<option value="${v}"${v===t?' selected':''}>${l}</option>`).join('')}</select></div>`;
   h+=`<div class="drv-em"${t?'':' hidden'}>`;
   h+=f('em','EM-Rente netto €/Monat',d.em>0?_numStr(d.em):'','0');
-  /* Schema 18: Zurechnungszeit getrennt von den tatsächlich erworbenen Punkten, Zugangsfaktor laut Bescheid */
-  h+=f('emZz','Punkte Zurechnungszeit',d.emZz>0?_numStr(d.emZz):'','0');
+  /* Schema 19: Entgeltpunkte gesamt laut Bescheid und der darin enthaltene Anteil der Zurechnungszeit */
+  h+=f('emTotal','Entgeltpunkte laut Bescheid',d.emTotal>0?_epStr(d.emTotal):'','0');
+  h+=f('emZz','davon Zurechnungszeit',d.emZz>0?_epStr(d.emZz):'','0');
   h+=f('emZf','Zugangsfaktor EM',d.emZf>0?_zfStr(d.emZf):'','0,892');
   h+=f('emUntil','Läuft bis Jahr',d.emUntil>0?String(Math.round(d.emUntil)):'','bis Regelalter');
   h+=`<div class="drv-em-limit">`+f('emLimit','Hinzuverdienst­grenze €/Jahr',d.emLimit>0?Math.round(d.emLimit).toLocaleString('de-DE'):'',_emLimitPh(t))+`</div>`;
@@ -10873,6 +10989,23 @@ function _syncDrvEm(prefix){
   const t=+sel.value||0,box=sel.closest('.input-grid');
   box.querySelector('.drv-em').hidden=!t;
   const lim=box.querySelector('[data-drv="emLimit"]');if(lim)lim.placeholder=_emLimitPh(t);
+  const num=k=>{const el=box.querySelector(`[data-drv="${k}"]`);const n=el?_parseDec(el.value):NaN;return isFinite(n)?n:0;};
+  const pg=box.querySelector('.drv-pts');if(pg)pg.hidden=!_drvPtsShown(t,num('points'),num('emTotal'));
+}
+/* Schema 19: Die Zurechnungszeit ist ein Teil der Entgeltpunkte laut Bescheid */
+function _drvEmCheck(d,name){
+  if(!(d.emType===1||d.emType===2)||!(d.emZz>0))return;
+  if(!(d.emTotal>0))throw new Error(L(`${name}: Bitte die Entgeltpunkte laut Bescheid (gesamt) eintragen – die Zurechnungszeit ist ein Teil davon.`,`${name}: Please enter the earning points per notice (total) – the credited period is part of them.`));
+  if(d.emZz>d.emTotal+1e-9)throw new Error(L(`${name}: Die Zurechnungszeit kann nicht größer sein als die Entgeltpunkte laut Bescheid.`,`${name}: The credited period cannot be larger than the earning points per notice.`));
+}
+/* Rentenpunkte zeigen: ohne EM-Rente immer; mit EM-Rente nur Rentenpunkte aus einer früheren Version, solange keine
+   Entgeltpunkte laut Bescheid eingetragen sind (beim Speichern ersetzen diese sie) */
+function _drvPtsShown(t,points,total){return !t||(points>0&&!(total>0));}
+/* EM-Rente abgewählt: Rentenpunkte = tatsächlich erworbene (Entgeltpunkte laut Bescheid − Zurechnungszeit), wenn leer */
+function _drvEmOffPoints(getV,setV,t){
+  if(t)return;
+  const tot=getV('emTotal'),zz=getV('emZz');
+  if(!(getV('points')>0)&&tot>0)setV('points',_epStr(Math.max(0,tot-Math.min(tot,zz))));
 }
 function _drvFromInputs(prefix){
   const d=getDrv();
@@ -10886,35 +11019,55 @@ function _drvResultText(d){
   const s=getLifetimeSettings();
   return _drvResultHTML(d,calcDrvPension(s,d),s.workEnd);
 }
+/* Nach einer EM-Rente: Modellrechnung, rechnerische Untergrenze (Besitzschutz, persönliche Entgeltpunkte) */
+const _drvMinTxt=r=>r&&r.minimum>0?L(' · Modellrechnung, Untergrenze ≈ ',' · model calculation, lower bound ≈ ')+fmt(r.minimum):'';
 /* ══ Einkommen im Ruhestand: Erklärung je Zeile (Rechenweg mit den eigenen Werten) ══ */
 let _incExplain=[];
 const _pts=n=>(+n||0).toLocaleString('de-DE',{maximumFractionDigits:2});
 function _explainDrv(r,name){
   const i=r.inp||{},gross=Math.min(i.salary||0,i.bbg||Infinity),net=r.calcNetto??r.netto;
-  let h=L(`<p><strong>Rentenpunkte</strong>: ${_pts(i.points)} heute`,`<p><strong>Pension points</strong>: ${_pts(i.points)} today`);
+  const known=r.em&&r.em.known;
+  let h=known?L(`<p><strong>Entgeltpunkte laut Bescheid</strong>: ${_pts(r.em.total)}, davon ${_pts(r.em.zz)} aus der Zurechnungszeit → <strong>${_pts(i.points)} tatsächlich erworben</strong>. Nur diese zählen in der Altersrente aus Punkten; die Zurechnungszeit wirkt über die rechnerische Untergrenze (Besitzschutz) und zählt nie zusätzlich zu neuen Punkten.</p>`,`<p><strong>Earning points per notice</strong>: ${_pts(r.em.total)}, of which ${_pts(r.em.zz)} from the credited period → <strong>${_pts(i.points)} actually earned</strong>. Only these count in the old-age pension from points; the credited period works through the calculated lower bound (protected minimum) and never counts on top of new points.</p>`)
+    :r.ptsLegacy?L(`<p>Die Rentenpunkte stammen aus einer früheren Version; ob sie die Zurechnungszeit enthalten, ist offen. Sie zählen wie bisher als tatsächlich erworben. Genauer: Entgeltpunkte laut Bescheid und davon die Zurechnungszeit eintragen.</p>`,`<p>The pension points come from a previous version; whether they include the credited period is unknown. They count as actually earned, as before. More precise: enter the earning points per notice and the credited period they contain.</p>`):'';
+  h+=known?L(`<p><strong>Punkte</strong>: ${_pts(i.points)} tatsächlich erworben`,`<p><strong>Points</strong>: ${_pts(i.points)} actually earned`):L(`<p><strong>Rentenpunkte</strong>: ${_pts(i.points)} heute`,`<p><strong>Pension points</strong>: ${_pts(i.points)} today`);
   if(r.epYear>0)h+=L(` + ${_pts(r.epYear)} je Jahr (${fmt(gross)} Brutto ÷ ${fmt(i.de)} Durchschnittsentgelt) × ${_pts(r.years)} Jahre bis zum Ende der Arbeit`,` + ${_pts(r.epYear)} per year (${fmt(gross)} gross ÷ ${fmt(i.de)} average salary) × ${_pts(r.years)} years until the end of work`);
   h+=L(` = <strong>${_pts(r.epTotal)} Punkte</strong>.</p>`,` = <strong>${_pts(r.epTotal)} points</strong>.</p>`);
   if(r.epYear>0&&!name)h+=L(`<p>Beim Weiterarbeiten zählen die Jahre anteilig zur Arbeitszeit, im Vorruhestand kommen keine Punkte mehr dazu.</p>`,`<p>When working on, the years count in proportion to working time; in early retirement no more points are added.</p>`);
   const zf=r.zf??1,zfTxt=Math.abs(zf-1)<1e-9?'':` × ${_pts(zf)} Zugangsfaktor`,zfEn=Math.abs(zf-1)<1e-9?'':` × ${_pts(zf)} access factor`;
-  /* nach einer EM-Rente: alte Punkte mit deren Zugangsfaktor, neue mit dem der Altersrente (§ 77 Abs. 3 SGB VI) */
-  if(r.em)h+=L(`<p><strong>Altersrente aus Punkten</strong>: (${_pts(i.points)} Punkte × ${_zfStr(r.zfPts)} Zugangsfaktor der EM-Rente${r.epNew>0?' + '+_pts(r.epNew)+' neue Punkte × '+_pts(zf):''}) × ${_pts(i.rw)} € Rentenwert = ${fmt(r.brutto)} brutto − ${_pts(i.deduct)} % Abzüge = <strong>${fmt(net)} netto</strong>. Die Zurechnungszeit${r.em.zz>0?' ('+_pts(r.em.zz)+' Punkte)':''} zählt hier nicht mit; sie wirkt über den Besitzschutz.</p>`,`<p><strong>Old-age pension from points</strong>: (${_pts(i.points)} points × ${_zfStr(r.zfPts)} access factor of the disability pension${r.epNew>0?' + '+_pts(r.epNew)+' new points × '+_pts(zf):''}) × ${_pts(i.rw)} € pension value = ${fmt(r.brutto)} gross − ${_pts(i.deduct)} % deductions = <strong>${fmt(net)} net</strong>. The additional credited period${r.em.zz>0?' ('+_pts(r.em.zz)+' points)':''} does not count here; it works through the protected minimum.</p>`);
+  /* nach einer EM-Rente: alte Punkte mit deren Zugangsfaktor, bei teilweiser EM nur zur Hälfte; neue mit dem der
+     Altersrente (§ 77 Abs. 3 SGB VI) */
+  if(r.em){
+    const e=r.em,half=e.type===1;
+    const zfDe=half?`${_zfStr(r.zfPts)} Zugangsfaktor (je zur Hälfte ${_zfStr(e.zf)} der EM-Rente und ${_zfStr(zf)} der Altersrente, § 77 Abs. 3 Satz 2 SGB VI)`:`${_zfStr(r.zfPts)} Zugangsfaktor der EM-Rente (§ 77 Abs. 3 SGB VI)`;
+    const zfEn=half?`${_zfStr(r.zfPts)} access factor (half ${_zfStr(e.zf)} of the disability pension, half ${_zfStr(zf)} of the old-age pension, § 77 (3) sentence 2 SGB VI)`:`${_zfStr(r.zfPts)} access factor of the disability pension (§ 77 (3) SGB VI)`;
+    h+=L(`<p><strong>Altersrente aus Punkten</strong>: (${_pts(i.points)} Punkte × ${zfDe}${r.epNew>0?' + '+_pts(r.epNew)+' neue Punkte × '+_pts(zf):''}) × ${_pts(i.rw)} € Rentenwert = ${fmt(r.brutto)} brutto − ${_pts(i.deduct)} % Abzüge = <strong>${fmt(net)} netto</strong>.</p>`,`<p><strong>Old-age pension from points</strong>: (${_pts(i.points)} points × ${zfEn}${r.epNew>0?' + '+_pts(r.epNew)+' new points × '+_pts(zf):''}) × ${_pts(i.rw)} € pension value = ${fmt(r.brutto)} gross − ${_pts(i.deduct)} % deductions = <strong>${fmt(net)} net</strong>.</p>`);
+  }
   else h+=L(`<p><strong>Rente</strong>: ${_pts(r.epTotal)} × ${_pts(i.rw)} € Rentenwert${zfTxt} = ${fmt(r.brutto)} brutto − ${_pts(i.deduct)} % Abzüge (Kranken-/Pflegeversicherung, Steuer) = <strong>${fmt(net)} netto</strong>.</p>`,`<p><strong>Pension</strong>: ${_pts(r.epTotal)} × ${_pts(i.rw)} € pension value${zfEn} = ${fmt(r.brutto)} gross − ${_pts(i.deduct)} % deductions (health/care insurance, tax) = <strong>${fmt(net)} net</strong>.</p>`);
   if(r.zfMonths<0)h+=L(`<p><strong>Früher Beginn</strong>: ${-r.zfMonths} Monate vor der Regelaltersgrenze (${fmtAge(r.rag)}) kosten je Monat 0,3 % (§ 77 SGB VI), also ${_pts(-r.zfMonths*0.3)} %. Möglich ab 63 mit 35 Versicherungsjahren; die Wartezeit wird nicht geprüft.</p>`,`<p><strong>Early start</strong>: ${-r.zfMonths} months before the statutory retirement age (${fmtAge(r.rag)}) cost 0.3 % each (§ 77 SGB VI), i.e. ${_pts(-r.zfMonths*0.3)} %. Possible from 63 with 35 insurance years; the qualifying period is not checked.</p>`);
   else if(r.zfMonths>0)h+=L(`<p><strong>Später Beginn</strong>: ${r.zfMonths} Monate nach der Regelaltersgrenze bringen je Monat 0,5 % (§ 77 SGB VI), also +${_pts(r.zfMonths*0.5)} %.</p>`,`<p><strong>Late start</strong>: ${r.zfMonths} months after the statutory retirement age add 0.5 % each (§ 77 SGB VI), i.e. +${_pts(r.zfMonths*0.5)} %.</p>`);
-  if(r.em&&r.em.full>0)h+=L(`<p><strong>Besitzschutz</strong> (§ 88 SGB VI): Folgt die Altersrente der EM-Rente (spätestens 24 Monate nach deren Ende), bekommt sie mindestens deren persönliche Entgeltpunkte, mit dem Rentenartfaktor 1,0 der Altersrente${r.em.type===1?' statt 0,5 – also das Doppelte der teilweisen EM-Rente':''}: ${fmt(r.em.full)} netto. Angesetzt wird der höhere Wert: <strong>${fmt(r.netto)}</strong>${r.besitz?' (Besitzschutz)':' (aus Punkten)'}.</p>`,`<p><strong>Protected minimum</strong> (§ 88 SGB VI): if the old-age pension follows the disability pension (at the latest 24 months after it ends), it gets at least its personal earning points, with the pension type factor 1.0 of the old-age pension${r.em.type===1?' instead of 0.5 – i.e. twice the partial disability pension':''}: ${fmt(r.em.full)} net. The higher value is used: <strong>${fmt(r.netto)}</strong>${r.besitz?' (protected minimum)':' (from points)'}.</p>`);
+  if(r.em&&r.em.full>0){
+    /* rechnerische Untergrenze in persönlichen Entgeltpunkten (kein garantierter Nettobetrag), geschätzte Altersrente,
+       Kennzeichnung als vereinfachte Modellrechnung */
+    const e=r.em,p4=v=>(+v||0).toLocaleString('de-DE',{maximumFractionDigits:4});
+    const pepDe=e.pepFromPay?`${fmt(e.gross)} Zahlbetrag ÷ (${_pts(e.raf)} Rentenartfaktor × ${_pts(i.rw)} € × ${_pts(100-i.deduct)} %) = ${p4(e.pep)} persönliche Entgeltpunkte (aus dem Zahlbetrag zurückgerechnet; genauer mit den Entgeltpunkten laut Bescheid)`:`${p4(e.total)} Entgeltpunkte × ${_zfStr(e.zf)} Zugangsfaktor = ${p4(e.pep)} persönliche Entgeltpunkte`;
+    const pepEn=e.pepFromPay?`${fmt(e.gross)} payment ÷ (${_pts(e.raf)} pension type factor × ${_pts(i.rw)} € × ${_pts(100-i.deduct)} %) = ${p4(e.pep)} personal earning points (derived from the payment; more precise with the earning points per notice)`:`${p4(e.total)} earning points × ${_zfStr(e.zf)} access factor = ${p4(e.pep)} personal earning points`;
+    h+=L(`<p><strong>Rechnerische Untergrenze nach heutigem Rentenrecht</strong> (Besitzschutz, § 88 SGB VI): Folgt die Altersrente der EM-Rente (spätestens 24 Monate nach deren Ende), liegen ihr mindestens deren persönliche Entgeltpunkte zugrunde, mit dem Rentenartfaktor 1,0 der Altersrente${e.type===1?' statt 0,5':''}: ${pepDe}. Die Untergrenze bezieht sich auf diese persönlichen Entgeltpunkte, nicht auf einen garantierten Zahlbetrag. In Euro mit dem heutigen Rentenwert und den eingetragenen Abzügen: ${p4(e.pep)} × 1,0 × ${_pts(i.rw)} € = ${fmt(e.fullGross)} brutto − ${_pts(i.deduct)} % = <strong>${fmt(e.full)} netto</strong>.</p>`,`<p><strong>Calculated lower bound under current pension law</strong> (protected minimum, § 88 SGB VI): if the old-age pension follows the disability pension (at the latest 24 months after it ends), it is based on at least its personal earning points, with the pension type factor 1.0 of the old-age pension${e.type===1?' instead of 0.5':''}: ${pepEn}. The lower bound refers to these personal earning points, not to a guaranteed payment. In euros with today's pension value and the deductions entered: ${p4(e.pep)} × 1.0 × ${_pts(i.rw)} € = ${fmt(e.fullGross)} gross − ${_pts(i.deduct)} % = <strong>${fmt(e.full)} net</strong>.</p>`);
+    h+=L(`<p><strong>Geschätzte Altersrente</strong>: der höhere Wert, <strong>${fmt(r.netto)}</strong>${r.besitz?' (Untergrenze)':' (aus Punkten)'}; damit rechnet die Prognose.</p>`,`<p><strong>Estimated old-age pension</strong>: the higher value, <strong>${fmt(r.netto)}</strong>${r.besitz?' (lower bound)':' (from points)'}; the forecast uses it.</p>`);
+    h+=L(`<p><strong>Vereinfachte Modellrechnung</strong>: Die Altersrente nach einer EM-Rente ist hier vereinfacht gerechnet. Die tatsächliche Bewertung der Zurechnungszeit und späterer Beitragszeiten kann davon abweichen. Insbesondere nicht berechnet: Die Zeit der EM-Rente zählt in der Altersrente als Anrechnungszeit (§ 58 Abs. 1 Satz 1 Nr. 5 SGB VI); Monate mit Beiträgen aus einer Beschäftigung bekommen dann mindestens deren Wert (§ 71 Abs. 2 SGB VI), Beiträge und Anrechnungszeit werden nicht addiert.${known?' Punkte aus einer Beschäftigung zwischen Bescheid und heute sind nicht enthalten.':''} Der Nettobetrag hängt außerdem vom künftigen Rentenwert, von Beiträgen und Steuern ab. Verbindlich ist eine Probeberechnung der Deutschen Rentenversicherung.</p>`,`<p><strong>Simplified model calculation</strong>: the old-age pension after a disability pension is calculated in a simplified way here. The actual valuation of the credited period and of later contribution periods may differ. In particular not calculated: the time of the disability pension counts as a credited period in the old-age pension (§ 58 (1) sentence 1 no. 5 SGB VI); months with contributions from employment then get at least its value (§ 71 (2) SGB VI), contributions and credited period are not added.${known?' Points from employment between the notice and today are not included.':''} The net amount also depends on the future pension value, contributions and taxes. Binding is a trial calculation by the Deutsche Rentenversicherung.</p>`);
+  }
   else if(r.em)h+=L(`<p>Die EM-Rente endet mehr als 24 Monate vor der Altersrente; ein Besitzschutz entfällt.</p>`,`<p>The disability pension ends more than 24 months before the old-age pension; there is no protected minimum.</p>`);
   h+=L(`<p>Beginn mit ${fmtAge(r.age)}${name?' (Alter von '+escHTML(name)+')':''}. Alle Beträge in heutiger Kaufkraft: Gehalt und Rentenwert wachsen wie die Löhne.</p>`,`<p>Starts at ${fmtAge(r.age)}${name?' ('+escHTML(name)+'’s age)':''}. All amounts in today's money: salary and pension value grow like wages.</p>`);
   return h;
 }
 function _explainEm(r,name,afterWork){
   const e=r.em,i=r.inp||{};
-  let h=e.derived?L(`<p><strong>Zahlbetrag</strong>: ${fmt(e.gross)} netto/Monat, aus Punkten berechnet: (${_pts(i.points)} + ${_pts(e.zz)} Punkte Zurechnungszeit) × ${_zfStr(e.zf)} Zugangsfaktor × ${_pts(e.raf)} Rentenartfaktor × ${_pts(i.rw)} € − ${_pts(i.deduct)} % Abzüge (${e.type===1?'teilweise':'volle'} Erwerbsminderung${name?', '+escHTML(name):''}).</p>`,`<p><strong>Payment</strong>: ${fmt(e.gross)} net/month, calculated from points: (${_pts(i.points)} + ${_pts(e.zz)} credited points) × ${_zfStr(e.zf)} access factor × ${_pts(e.raf)} pension type factor × ${_pts(i.rw)} € − ${_pts(i.deduct)} % deductions (${e.type===1?'partial':'full'} reduced earning capacity${name?', '+escHTML(name):''}).</p>`)
+  let h=e.derived?L(`<p><strong>Zahlbetrag</strong>: ${fmt(e.gross)} netto/Monat, aus Entgeltpunkten berechnet: ${_pts(e.total)} Entgeltpunkte laut Bescheid (davon ${_pts(e.zz)} Zurechnungszeit) × ${_zfStr(e.zf)} Zugangsfaktor × ${_pts(e.raf)} Rentenartfaktor × ${_pts(i.rw)} € − ${_pts(i.deduct)} % Abzüge (${e.type===1?'teilweise':'volle'} Erwerbsminderung${name?', '+escHTML(name):''}).</p>`,`<p><strong>Payment</strong>: ${fmt(e.gross)} net/month, calculated from earning points: ${_pts(e.total)} earning points per notice (of which ${_pts(e.zz)} credited) × ${_zfStr(e.zf)} access factor × ${_pts(e.raf)} pension type factor × ${_pts(i.rw)} € − ${_pts(i.deduct)} % deductions (${e.type===1?'partial':'full'} reduced earning capacity${name?', '+escHTML(name):''}).</p>`)
    :L(`<p><strong>Zahlbetrag</strong>: ${fmt(e.gross)} netto/Monat laut Bescheid (${e.type===1?'teilweise':'volle'} Erwerbsminderung${name?', '+escHTML(name):''}).</p>`,`<p><strong>Payment</strong>: ${fmt(e.gross)} net/month per notice (${e.type===1?'partial':'full'} reduced earning capacity${name?', '+escHTML(name):''}).</p>`);
   if(e.cut>0)h+=L(`<p><strong>Mit Hinzuverdienst</strong>: ${fmt(i.salary)} im Jahr liegen ${fmt(e.over)} über der Grenze von ${fmt(e.limit)}. 40 % davon mindern die Bruttorente, netto rund ${fmt(e.cut)}/Monat → ${fmt(e.amount)}.</p>`,`<p><strong>With additional earnings</strong>: ${fmt(i.salary)} a year are ${fmt(e.over)} above the limit of ${fmt(e.limit)}. 40 % of that reduces the gross pension, net about ${fmt(e.cut)}/month → ${fmt(e.amount)}.</p>`);
   const who=name?L(' (Alter von '+escHTML(name)+')',' ('+escHTML(name)+'’s age)'):'';
   h+=afterWork||!(e.cut>0)?L(`<p><strong>In der Prognose</strong>: ${fmt(e.gross)}/Monat ab dem Ende der Arbeit, ohne Anrechnung bis ${fmtAge(e.until)}${who}.</p>`,`<p><strong>In the forecast</strong>: ${fmt(e.gross)}/month from the end of work, without offset, until ${fmtAge(e.until)}${who}.</p>`)
     :L(`<p><strong>In der Prognose</strong>: ${fmt(e.amount)}/Monat, solange noch gearbeitet wird, danach ${fmt(e.gross)} bis ${fmtAge(e.until)}${who}.</p>`,`<p><strong>In the forecast</strong>: ${fmt(e.amount)}/month while still working, then ${fmt(e.gross)} until ${fmtAge(e.until)}${who}.</p>`);
-  h+=e.full>0?L(`<p>Danach wird sie automatisch zur Altersrente, mindestens ${fmt(e.full)}. Deshalb steht sie nicht in der Summe: Sie wird durch die Altersrente ersetzt, nicht zusätzlich gezahlt.</p>`,`<p>After that it automatically becomes the old-age pension, at least ${fmt(e.full)}. That is why it is not in the total: it is replaced by the old-age pension, not paid on top.</p>`)
+  h+=e.full>0?L(`<p>Danach wird sie automatisch zur Altersrente, rechnerisch mindestens ${fmt(e.full)} (vereinfachte Modellrechnung). Deshalb steht sie nicht in der Summe: Sie wird durch die Altersrente ersetzt, nicht zusätzlich gezahlt.</p>`,`<p>After that it automatically becomes the old-age pension, at least ${fmt(e.full)}. That is why it is not in the total: it is replaced by the old-age pension, not paid on top.</p>`)
     :L(`<p>Sie endet vor der Altersrente und steht deshalb nicht in der Summe.</p>`,`<p>It ends before the old-age pension and is therefore not in the total.</p>`);
   return h;
 }
@@ -10941,30 +11094,44 @@ function _drvResultHTML(d,r,saveUntil){
   let emTxt='';
   if(d.emType===1||d.emType===2){
     const e=r.em;
-    if(!e)emTxt=L('Zahlbetrag der Erwerbsminderungsrente oder die Punkte der Zurechnungszeit eintragen.','Enter the payment of the disability pension or the credited points.');
+    if(!e)emTxt=L('Zahlbetrag der Erwerbsminderungsrente oder die Entgeltpunkte laut Bescheid eintragen.','Enter the payment of the disability pension or the earning points per notice.');
     else{
-      emTxt=L(`EM-Rente <strong>${fmt(e.amount)}</strong> netto/Monat${e.derived?' (aus Punkten)':''} bis ${fmtAge(e.until)}`+(e.full>0?`, danach Altersrente`:', danach keine EM-Rente mehr')+'.',`Disability pension <strong>${fmt(e.amount)}</strong> net/month until ${fmtAge(e.until)}`+(e.full>0?`, then old-age pension`:', then no more disability pension')+'.');
+      emTxt=L(`EM-Rente <strong>${fmt(e.amount)}</strong> netto/Monat${e.derived?' (aus Entgeltpunkten)':''} bis ${fmtAge(e.until)}`+(e.full>0?`, danach Altersrente`:', danach keine EM-Rente mehr')+'.',`Disability pension <strong>${fmt(e.amount)}</strong> net/month${e.derived?' (from earning points)':''} until ${fmtAge(e.until)}`+(e.full>0?`, then old-age pension`:', then no more disability pension')+'.');
       if(e.over>0)emTxt+=L(` <span style="color:var(--red)">Hinzuverdienst liegt ${fmt(e.over)} über der Grenze von ${fmt(e.limit)}/Jahr – netto rund ${fmt(e.cut)}/Monat weniger.</span> <span style="color:var(--muted)">Ohne Hinzuverdienst (ab dem Ende der Arbeit) rechnet die Prognose mit ${fmt(e.gross)}.</span>`,` <span style="color:var(--red)">Additional earnings are ${fmt(e.over)} above the limit of ${fmt(e.limit)}/year – about ${fmt(e.cut)}/month less net.</span> <span style="color:var(--muted)">Without additional earnings (from the end of work) the forecast uses ${fmt(e.gross)}.</span>`);
     }
     emTxt='<br>'+emTxt;
-    if(!(r.epTotal>0))return emTxt.slice(4);
+    if(!(r.epTotal>0)&&!(r.minimum>0))return emTxt.slice(4);
   }
-  if(!(r.epTotal>0))return L('Rentenpunkte und/oder Gehalt eintragen, um die gesetzliche Rente hochzurechnen.','Enter pension points and/or salary to project the state pension.');
+  if(!(r.epTotal>0)&&!(r.minimum>0))return L('Rentenpunkte und/oder Gehalt eintragen, um die gesetzliche Rente hochzurechnen.','Enter pension points and/or salary to project the state pension.');
   const ep=r.epTotal.toLocaleString('de-DE',{maximumFractionDigits:1});
   const add=r.epYear*r.years;
   const pts=add>0?', +'+add.toLocaleString('de-DE',{maximumFractionDigits:1})+L(' Punkte bis ',' points until ')+Math.round(Math.min(saveUntil,r.age)):'';
-  /* Greift die Mindesthöhe aus der EM-Rente, die Hochrechnung nur zum Vergleich zeigen */
   const zfTxt=r.zfMonths<0?L(`, −${_pts(-r.zfMonths*0.3)} % für ${-r.zfMonths} Monate vor ${fmtAge(r.rag)}`,`, −${_pts(-r.zfMonths*0.3)} % for ${-r.zfMonths} months before ${fmtAge(r.rag)}`):r.zfMonths>0?L(`, +${_pts(r.zfMonths*0.5)} % für ${r.zfMonths} Monate nach ${fmtAge(r.rag)}`,`, +${_pts(r.zfMonths*0.5)} % for ${r.zfMonths} months after ${fmtAge(r.rag)}`):'';
-  /* A5: Punkte, die schon die ganze EM-Rente ergeben, enthalten vermutlich die Zurechnungszeit (zählt sonst doppelt) */
-  const i=r.inp||{},ptsNet=i.points*(i.rw||0)*(r.em&&r.em.type===1?0.5:1)*(1-Math.min(90,Math.max(0,i.deduct||0))/100);
-  let warn='';
-  /* Schema 18: mit getrennt erfasster Zurechnungszeit Abgleich mit dem Bescheid; ohne sie der Hinweis aus A5 */
-  if(r.em&&r.em.zz>0&&!r.em.derived&&r.em.fromPoints>0&&Math.abs(r.em.fromPoints-r.em.gross)>0.15*r.em.gross)warn=L(`Punkte und Zurechnungszeit ergeben ≈ ${fmt(r.em.fromPoints)} EM-Rente, der Bescheid nennt ${fmt(r.em.gross)}. Prüfe den Zugangsfaktor und ob die Rentenpunkte die Zurechnungszeit schon enthalten.`,`Points and credited period give ≈ ${fmt(r.em.fromPoints)} disability pension, the notice states ${fmt(r.em.gross)}. Check the access factor and whether the pension points already include the credited period.`);
-  else if(r.em&&!(r.em.zz>0)&&i.points>0&&ptsNet>=0.95*r.em.gross)warn=L('Die Rentenpunkte ergeben schon etwa die EM-Rente. Enthalten sie die Zurechnungszeit? Dann die Punkte ohne Zurechnungszeit eintragen und die Zurechnungszeit im eigenen Feld, sonst zählt sie doppelt.','The pension points already add up to about the disability pension. Do they include the additional credited period? Then enter the points without it and the credited period in its own field, otherwise it counts twice.');
+  const i=r.inp||{},e=r.em;
+  let warn='',note='';
+  if(e){
+    /* Schema 19: Bescheidwert gegen den Zahlbetrag; Rentenpunkte aus einer früheren Version klären (A5: enthalten sie
+       vermutlich schon die Zurechnungszeit?) */
+    const ptsNet=i.points*(i.rw||0)*(e.type===1?0.5:1)*_drvNetF(i);
+    if(e.known&&!e.derived&&e.fromPoints>0&&Math.abs(e.fromPoints-e.gross)>0.15*e.gross)warn=L(`Die Entgeltpunkte laut Bescheid ergeben ≈ ${fmt(e.fromPoints)} EM-Rente, der Bescheid nennt ${fmt(e.gross)}. Prüfe Entgeltpunkte, Zugangsfaktor und Abzüge.`,`The earning points per notice give ≈ ${fmt(e.fromPoints)} disability pension, the notice states ${fmt(e.gross)}. Check earning points, access factor and deductions.`);
+    else if(r.ptsLegacy&&ptsNet>=0.95*e.gross)warn=L('Die Rentenpunkte ergeben schon etwa die EM-Rente und enthalten vermutlich die Zurechnungszeit. Bitte stattdessen die Entgeltpunkte laut Bescheid und davon die Zurechnungszeit eintragen, sonst zählt sie doppelt.','The pension points already add up to about the disability pension and probably include the credited period. Please enter the earning points per notice and the credited period they contain instead, otherwise it counts twice.');
+    else if(r.ptsLegacy)warn=L('Rentenpunkte aus einer früheren Version: Bitte stattdessen die Entgeltpunkte laut Bescheid und davon die Zurechnungszeit eintragen. Bis dahin rechnet die App wie bisher.','Pension points from a previous version: please enter the earning points per notice and the credited period they contain instead. Until then the app calculates as before.');
+    if(e.full>0&&e.pepFromPay&&!r.ptsLegacy)note=L('Untergrenze aus dem Zahlbetrag zurückgerechnet; genauer mit den Entgeltpunkten laut Bescheid. ','Lower bound derived from the payment; more precise with the earning points per notice. ');
+    if(e.full>0)note+=L('Vereinfachte Modellrechnung: Die tatsächliche Bewertung der Zurechnungszeit und späterer Beitragszeiten kann abweichen (z. B. zählt die Zeit der EM-Rente in der Altersrente als Anrechnungszeit; das ist nicht berechnet). Die Untergrenze bezieht sich auf persönliche Entgeltpunkte, nicht auf einen garantierten Nettobetrag.','Simplified model calculation: the actual valuation of the credited period and of later contribution periods may differ (e.g. the time of the disability pension counts as a credited period in the old-age pension; this is not calculated). The lower bound refers to personal earning points, not to a guaranteed net amount.');
+  }
   /* A10: allgemeine Wartezeit (fünf Beitragsjahre) wird nicht geprüft; bei sehr wenigen Punkten ohne weitere Beiträge darauf hinweisen */
-  else if(!r.em&&r.epTotal<5&&!(i.salary>0))warn=L('Wenige Punkte: Eine Rente gibt es erst nach fünf Beitragsjahren (Kindererziehungszeiten zählen mit). Ist die Wartezeit nicht erfüllt, entfällt dieser Betrag.','Few points: a pension is only paid after five years of contributions (child-rearing periods count). If this qualifying period is not met, this amount does not apply.');
-  const detail=r.em&&r.netto>r.calcNetto?L(`mindestens volle EM-Rente; aus Punkten ${fmt(r.calcNetto)} netto${pts}`,`at least the full disability pension; from points ${fmt(r.calcNetto)} net${pts}`):`${fmt(r.brutto)} ${L('brutto','gross')}${pts}${zfTxt}`;
-  return L(`≈ <strong>${ep} Punkte</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)}`,`≈ <strong>${ep} points</strong> → <strong>${fmt(r.netto)}</strong> net/month from ${fmtAge(r.age)}`)+` <span style="color:var(--muted)">(${detail})</span>`+emTxt+(warn?`<br><span style="color:var(--red)">${warn}</span>`:'');
+  else if(r.epTotal<5&&!(i.salary>0))warn=L('Wenige Punkte: Eine Rente gibt es erst nach fünf Beitragsjahren (Kindererziehungszeiten zählen mit). Ist die Wartezeit nicht erfüllt, entfällt dieser Betrag.','Few points: a pension is only paid after five years of contributions (child-rearing periods count). If this qualifying period is not met, this amount does not apply.');
+  let main;
+  if(e&&e.full>0){
+    /* geschätzte Altersrente (vereinfachte Modellrechnung) und rechnerische Untergrenze (Besitzschutz) getrennt */
+    const known=e.known?L(`${_pts(e.total)} Entgeltpunkte laut Bescheid − ${_pts(e.zz)} Zurechnungszeit = ${_pts(i.points)} tatsächlich erworben; `,`${_pts(e.total)} earning points per notice − ${_pts(e.zz)} credited = ${_pts(i.points)} actually earned; `):'';
+    main=L(`Altersrente ab ${fmtAge(r.age)} (vereinfachte Modellrechnung): geschätzt <strong>${fmt(r.netto)}</strong> netto/Monat; rechnerische Untergrenze nach heutigem Rentenrecht ≈ <strong>${fmt(r.minimum)}</strong>`,`Old-age pension from ${fmtAge(r.age)} (simplified model calculation): estimated <strong>${fmt(r.netto)}</strong> net/month; calculated lower bound under current pension law ≈ <strong>${fmt(r.minimum)}</strong>`)
+      +` <span style="color:var(--muted)">(${known}${L('Untergrenze aus ','lower bound from ')}${_pts(e.pep)}${L(' persönlichen Entgeltpunkten; aus Punkten ',' personal earning points; from points ')}${fmt(r.calcNetto)}${pts})</span>`;
+  }else{
+    const detail=`${fmt(r.brutto)} ${L('brutto','gross')}${pts}${zfTxt}`;
+    main=L(`≈ <strong>${ep} Punkte</strong> → <strong>${fmt(r.netto)}</strong> netto/Monat ab ${fmtAge(r.age)}`,`≈ <strong>${ep} points</strong> → <strong>${fmt(r.netto)}</strong> net/month from ${fmtAge(r.age)}`)+` <span style="color:var(--muted)">(${detail})</span>`;
+  }
+  return main+emTxt+(warn?`<br><span style="color:var(--red)">${warn}</span>`:'')+(note?`<br><span style="color:var(--muted)">${note}</span>`:'');
 }
 function renderDrvEditor(){
   const el=document.getElementById('lt-drv');
@@ -11032,12 +11199,12 @@ function _pensionSummaryHTML(){
   const net=L('netto ab ','net from '),pts=n=>_pts(n)+L(' Punkte',' points'),yrs=n=>_pts(n)+L(' Dienstjahre',' years of service');
   const d=calcDrvPension(s,getDrv());
   if(d.em)row('pvMeDrv',L('Erwerbsminderungsrente','Disability pension'),me,fmt(d.em.amount),L('netto bis ','net until ')+fmtAge(d.em.until));
-  if(d.epTotal>0)row('pvMeDrv',L('Gesetzliche Rente','State pension'),me+' · '+pts(d.epTotal),fmt(d.netto),net+fmtAge(d.age));
+  if(d.epTotal>0||d.minimum>0)row('pvMeDrv',L('Gesetzliche Rente','State pension'),me+' · '+pts(d.epTotal),fmt(d.netto),net+fmtAge(d.age)+_drvMinTxt(d));
   if(hasBeamte()){const b=calcBeamtePension(s,getBeamte());row('dpBv',L('Beamtenpension','Civil service pension'),me+' · '+yrs(b.total),b.eligible===false?L('kein Anspruch','no entitlement'):fmt(b.netto),b.eligible===false?'':net+fmtAge(b.age));}
   getDrvExtra().filter(p=>p.id).forEach(p=>{
     const n=(p.name||'').trim()||L('Weitere Person','Other person'),r=calcDrvExtra(s,p),b=calcBeamteExtra(s,p);
     if(r.em&&r.em.gross>0)row('drv:'+p.id,L('Erwerbsminderungsrente','Disability pension'),n,fmt(r.em.gross),L('netto bis ','net until ')+_ageTxt(r.em.until));
-    if(r.epTotal>0)row('drv:'+p.id,L('Gesetzliche Rente','State pension'),n+' · '+pts(r.epTotal),fmt(r.netto),net+_ageTxt(r.age));
+    if(r.epTotal>0||r.minimum>0)row('drv:'+p.id,L('Gesetzliche Rente','State pension'),n+' · '+pts(r.epTotal),fmt(r.netto),net+_ageTxt(r.age)+_drvMinTxt(r));
     if(b)row('bv:'+p.id,L('Beamtenpension','Civil service pension'),n+' · '+yrs(b.total),b.eligible===false?L('kein Anspruch','no entitlement'):fmt(b.netto),b.eligible===false?'':net+_ageTxt(b.age));
   });
   getAvDepots().filter(x=>x.id).forEach(x=>row('avd:'+x.id,(x.name||'').trim()||L('Altersvorsorgedepot','Retirement depot'),(x.person?_personName(x.person):me)+' · '+L('Beitrag','contribution'),fmt(+x.contrib||0),L('pro Monat','per month')));
@@ -11329,7 +11496,7 @@ function _incomeCard(plan){
   const add=(n,v,from,until,o)=>{const r=Object.assign({n,v,from,until,who:owner},o||{});r.on=age=>age>=r.from-1e-9&&!(r.until!=null&&r.until<=age+1e-9);rows.push(r);};
   const d=plan.drv;
   if(d&&d.em&&d.em.gross>0&&d.em.until>cur)add('Erwerbsminderungsrente',d.em.gross,0,d.em.until,{temp:true,when:L('bis ','until ')+fmtAge(d.em.until)+(d.em.full>0?L(', danach Altersrente',', then old-age pension'):''),ex:_explainEm(d,'',true)});
-  if(d&&d.netto>0)add('Gesetzliche Rente',d.netto,d.age,null,{when:L('ab ','from ')+fmtAge(d.age),ex:_explainDrv(d)});
+  if(d&&d.netto>0)add('Gesetzliche Rente',d.netto,d.age,null,{when:L('ab ','from ')+fmtAge(d.age)+_drvMinTxt(d),ex:_explainDrv(d)});
   if(plan.bv&&plan.bv.netto>0)add('Beamtenpension',plan.bv.netto,plan.bv.age,null,{when:L('ab ','from ')+fmtAge(plan.bv.age),ex:_explainBv(plan.bv)});
   (plan.drvExtra||[]).forEach(r=>{
     owner=r.personId||'';
@@ -11342,7 +11509,7 @@ function _incomeCard(plan){
       segs.filter(g=>g.toMain>s.workEnd+1e-9).forEach(g=>add(L('Gehalt ','Salary ')+r.name+(g.w<1-1e-9?' ('+_numStr(Math.round(g.w*1000)/10)+' %)':''),r.net*g.f,g.fromMain>cur+0.01?g.fromMain:0,g.toMain,{temp:true,work:true,
         when:(g.fromMain>cur+0.01?L('ab ','from ')+fmtAge(g.fromMain)+L(' bis ',' to '):L('Nettogehalt bis ','Net salary until '))+fmtAge(g.toMain)+who(r.name,g.to),ex}));
     }
-    if(r.netto>0)add(L('Rente ','Pension ')+r.name,r.netto,r.fromMain,null,{when:L('ab ','from ')+fmtAge(r.fromMain)+who(r.name,r.age),ex:_explainDrv(r,r.name)});
+    if(r.netto>0)add(L('Rente ','Pension ')+r.name,r.netto,r.fromMain,null,{when:L('ab ','from ')+fmtAge(r.fromMain)+who(r.name,r.age)+_drvMinTxt(r),ex:_explainDrv(r,r.name)});
   });
   (plan.bvExtra||[]).forEach(r=>(owner=r.personId||'',add(L('Beamtenpension ','Civil service pension ')+r.name,r.netto,r.fromMain,null,{when:L('ab ','from ')+fmtAge(r.fromMain)+who(r.name,r.age),ex:_explainBv(r)})));
   (plan.avd||[]).forEach(r=>{owner=r.person||'';const nm=r.person?((getDrvExtra().find(p=>p.id===r.person)||{}).name||''):'';

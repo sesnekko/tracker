@@ -5,11 +5,11 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `master_export_YYYY-MM-DD.json` (bis Oktober 2026 `vermoegen_YYYY-MM-DD.json`). Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 18
+## Struktur, Version 19
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `18`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `19`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
@@ -559,7 +559,8 @@ Wert aus dem Besitzschutz (mindestens die volle Erwerbsminderungsrente, bei teil
 also das Doppelte des Zahlbetrags) und der Hochrechnung aus Rentenpunkten plus Punkten
 aus dem Hinzuverdienst bis zum Ende der Arbeit. Rentenpunkte daher ohne Zurechnungszeit
 eintragen, sonst zählt sie doppelt. Endet die EM-Rente vorher, gilt die normale
-Hochrechnung. Seit Version 18 siehe „Zurechnungszeit, Zugangsfaktor und Besitzschutz“.
+Hochrechnung. Seit Version 19 siehe „Entgeltpunkte laut EM-Bescheid, Untergrenze und Schätzung“
+(Gesamtwert laut Bescheid und Zurechnungszeit als Teil davon; rechnerische Untergrenze in persönlichen Entgeltpunkten).
 
 ## Erwerbsminderungsrente weiterer Personen (Version 8)
 
@@ -651,7 +652,56 @@ diesen Monat wechselt. Historische Kurswerte rechnen deshalb mit dem Schlusskurs
 (VERMOEGEN.md, 4.6). Budget und Prognose leiten den Kalendermonat daraus ab (`_budgetYM()`,
 `latestKey`).
 
-## Zurechnungszeit, Zugangsfaktor und Besitzschutz (Version 18)
+## Entgeltpunkte laut EM-Bescheid, Untergrenze und Schätzung (Version 19)
+
+Anforderung vom 15.10.2026: die gesamten Entgeltpunkte laut Rentenbescheid und den darin enthaltenen Anteil der
+Zurechnungszeit erfassen; die App leitet daraus die Werte für die Altersrente ab, ohne Punkte doppelt zu zählen.
+
+| Feld | Inhalt | Legacy |
+| --- | --- | --- |
+| `statutoryPension.disabilityTotalPoints` (neu) | Entgeltpunkte gesamt laut EM-Bescheid, mit Zurechnungszeit (≥ 0) | `lt-drv.emTotal`, `lt-drv-extra[].emTotal` |
+| `statutoryPension.disabilityCreditedPoints` | seit Version 19 der **darin enthaltene** Anteil der Zurechnungszeit (≤ Gesamtwert); in Version 18 zusätzlich zu `points` | `emZz` |
+| `statutoryPension.points` | bei einer EM-Rente mit Gesamtwert nicht erlaubt (> 0); ohne Gesamtwert Rentenpunkte aus einer früheren Version | `points` |
+
+Prüfung (Version 19, nur mit EM-Art 1 oder 2): `disabilityCreditedPoints` verlangt `disabilityTotalPoints` und ist höchstens
+so groß; `points > 0` neben `disabilityTotalPoints` wird abgelehnt. Ohne EM-Art bleiben EM-Felder wirkungslos und werden
+nicht geprüft (wie bisher).
+
+Abgeleitet (`_emPoints`, `_emPep`, `calcEm`, `calcDrvPension`):
+- **Tatsächlich erworben** = Gesamtwert − Zurechnungszeit. Nur diese Punkte zählen in der Altersrente aus Punkten, dazu
+  neue Punkte aus Beschäftigung ab heute. Andere beitragsfreie Zeiten (Schule, Krankheit …) bleiben darin, weil sie auch
+  in der Altersrente zählen.
+- **EM-Rente** ohne Zahlbetrag: Gesamtwert × Zugangsfaktor × Rentenartfaktor × Rentenwert × (1 − Abzüge).
+- **Zugangsfaktor der alten Punkte** (§ 77 Abs. 3 SGB VI): der der EM-Rente; bei **teilweiser** EM nur für die Hälfte,
+  die andere Hälfte mit dem der Altersrente (Satz 2), z. B. 0,5 × 0,892 + 0,5 × 1,0 = 0,946.
+- **Rechnerische Untergrenze nach heutigem Rentenrecht** (Besitzschutz, § 88 Abs. 1 Satz 2; bis 15.10.2026 als
+  „gesicherte Mindestleistung“ bezeichnet): Sie bezieht sich auf persönliche Entgeltpunkte, nicht auf einen garantierten
+  Nettobetrag. Persönliche Entgeltpunkte der EM-Rente (Gesamtwert ×
+  Zugangsfaktor) × Rentenartfaktor 1,0 × Rentenwert × (1 − Abzüge), wenn die Altersrente spätestens 24 Monate nach dem
+  Ende der EM-Rente beginnt. Ohne Gesamtwert aus dem Zahlbetrag zurückgerechnet (Zahlbetrag ÷ (Rentenartfaktor ×
+  Rentenwert × (1 − Abzüge))) – das ergibt wie bisher den doppelten Zahlbetrag bei teilweiser EM.
+- **Geschätzte Altersrente** = der höhere Wert aus Punkten und Untergrenze; damit rechnet die Prognose. Beides ist als
+  **vereinfachte Modellrechnung** gekennzeichnet (Ergebniszeile, Erklärung, Zeile im Einkommen): Die tatsächliche Bewertung
+  der Zurechnungszeit und späterer Beitragszeiten kann abweichen; der Nettobetrag hängt vom künftigen Rentenwert, von
+  Beiträgen und Steuern ab.
+- **Nicht berechnet** (in Ergebniszeile und Erklärung genannt): Die Zeit der EM-Rente zählt in der Altersrente als
+  Anrechnungszeit (§ 58 Abs. 1 Satz 1 Nr. 5); Monate mit Beiträgen bekommen mindestens deren Wert (§ 71 Abs. 2). Die
+  Altersrente kann deshalb höher ausfallen als geschätzt. Punkte aus einer Beschäftigung zwischen Bescheid und heute sind
+  nicht enthalten.
+
+Migration 18 → 19 (`moveDisabilityPoints`, Bedeutung bleibt erhalten):
+- EM-Rente mit getrennter Zurechnungszeit: `disabilityTotalPoints = points + disabilityCreditedPoints`, `points` entfällt;
+  die tatsächlichen Punkte (Gesamtwert − Zurechnungszeit) sind genau die bisherigen `points`.
+- EM-Rente mit Rentenpunkten ohne Zurechnungszeit: offen, ob die Punkte sie enthalten. Sie bleiben unverändert und
+  rechnen wie bisher (als tatsächlich erworben; Untergrenze aus dem Zahlbetrag). Die Karte „Nach dem Update“ bietet
+  „Entgeltpunkte der EM-Rente klären“ an: Die Person wählt, ob die Punkte der Gesamtwert laut Bescheid (mit
+  Zurechnungszeit) oder die tatsächlich erworbenen sind, trägt die Zurechnungszeit ein und sieht Vorher/Nachher
+  (`openEmPointsSheet`, `_applyEmLegacy`). Ohne Entscheidung bleibt alles wie bisher.
+- EM-Felder ohne EM-Art: unverändert (wirkungslos).
+- Ein Dokument mit Version 19 lehnt eine ältere App ab; Sicherungen erst importieren, wenn alle Geräte aktualisiert sind.
+- Tests: `.tests/em-old-age.test.cjs`.
+
+## Zurechnungszeit, Zugangsfaktor und Besitzschutz (Version 18, seit Version 19 abgelöst)
 
 Anforderung vom 15.10.2026: tatsächlich erworbene Entgeltpunkte und Zurechnungszeit getrennt erfassen, bei der Umwandlung
 in die Altersrente Zugangsfaktor, Rentenartfaktor und Besitzschutz berücksichtigen, individuelle Hinzuverdienstgrenzen
