@@ -60,7 +60,7 @@ test('Prognose: Phasenbalken je Person auf derselben Zeitachse, Alter der Person
   const bar = a.run("_personBarHTML(getLifetimeSettings(),getDrvExtra()[0],95)");
   assert.match(bar, /class="lp-p1"/); assert.match(bar, /class="lp-p4"/);
   assert.match(bar, /<span class="last" style="left:100%">88<\/span>/, 'endet mit deinem Planhorizont, in ihrem Alter');
-  assert.match(bar, /<span class="first" style="left:0%">heute<\/span>/);
+  assert.doesNotMatch(bar, />heute</, 'ohne „heute“ (15.10.2026)');
 });
 
 test('Infobox: begrenzte Höhe, Text scrollt, Tabelle in eigenem Rahmen; Hinweis auf die Annahmen der Prognose-Seite', () => {
