@@ -6,6 +6,7 @@
 (function () {
   const exact = {
     /* ── Persona-Befunde 14.10.2026: Einrichtung, Startseite, Daten ── */
+    'EM-Rente': 'Disability pension',
     'Punkte Zurechnungszeit': 'Credited points',
     'Zugangsfaktor EM': 'Access factor (disability)',
     'Zahlbetrag der Erwerbsminderungsrente oder die Punkte der Zurechnungszeit eintragen.': 'Enter the payment of the disability pension or the credited points.',

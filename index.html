@@ -983,7 +983,7 @@ body.v2-noliab #page-home .kpi-item[data-kpi="assets"],body.v2-noliab #page-home
 .v2-row-r{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
 #legendAssets .legend-name,#legendAssets-ipad .legend-name{color:var(--ink);font-size:15.5px;line-height:1.3}
 .v2-sub{display:flex;align-items:center;gap:6px;min-height:18px;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden}
-.v2-kind::before{content:'·';margin-right:6px}.legend-pct:empty+.v2-kind::before{content:none}
+.v2-kind::before{content:'·';margin-right:6px}.legend-pct:empty{display:none}.legend-pct:empty+.v2-kind::before{content:none}
 /* Mit eingeblendetem „Details“ wird die Zeile schmaler: Prozent bleibt ganz, nur der Text wird gekürzt */
 .v2-sub .legend-pct{flex-shrink:0;white-space:nowrap}
 .v2-sub .v2-kind{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1326,7 +1326,7 @@ body:not(.v2-editing) :is(#page-import,#ltAssume) .v2-form-head{display:none}
 .ds-add{display:block;width:100%;margin-top:10px;min-height:46px;border:1.5px dashed color-mix(in srgb,var(--muted) 45%,transparent);border-radius:12px;background:none;color:var(--ink);font:inherit;font-size:15px;cursor:pointer}
 .ds-add:active{background:var(--fill)}
 .ds-empty{font-size:13.5px;color:var(--muted);line-height:1.5;margin:14px 2px 0}
-.ds-sec-actions{display:flex;justify-content:flex-end;padding:12px 0 0}
+.ds-sec-actions{display:flex;justify-content:flex-end;padding:12px 0 0;margin-bottom:12px}/* Abstand zum Inhalt darunter (auch ohne eigenen Rand) */
 body.v2-editing .ds-sec-actions{display:none}
 
 /* Bottom-Sheet (Mobil) bzw. Dialog (ab Tablet) */
@@ -1401,6 +1401,7 @@ button.num-input.ds-date-btn.is-empty{color:var(--muted)}
 .ds-seg{display:flex;flex-shrink:0;gap:2px;padding:2px;border-radius:9px;background:var(--fill)}
 .ds-seg button{border:none;background:none;font:inherit;font-size:14px;color:var(--muted);padding:6px 11px;border-radius:7px;cursor:pointer}
 .ds-seg button.on{background:var(--bg);color:var(--ink);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+@media (max-width:420px){.ds-seg button{padding:6px 9px}}/* schmale Bildschirme: Platz für die Beschriftung daneben („Rhythmus“ ohne Trennung) */
 body.dark .ds-seg button.on{background:var(--bg3)}
 .ds-group-t[hidden],.ds-summary[hidden],[id$="-depFields"][hidden]{display:none}
 .ds-group .v2-switch{flex-shrink:0}
@@ -1634,7 +1635,7 @@ button.v2-inc-row:active{opacity:.7}
 .v2-ret-stats .k{font-size:13px;color:var(--muted)}
 .v2-ret-stats .n{font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:2px;line-height:1.25}
 .v2-ret-stats .s{font-size:12.5px;color:var(--muted);margin-top:3px}
-.v2-mini{display:block;height:4px;border-radius:2px;background:var(--fill);margin-top:7px;overflow:hidden;max-width:150px}
+.v2-mini{display:block;height:4px;border-radius:2px;background:var(--fill);margin:7px 0 5px;overflow:hidden;max-width:150px}
 .v2-mini i{display:block;height:100%;border-radius:2px;background:var(--green)}
 #v2-lt-open{margin-top:12px}
 
@@ -1795,7 +1796,7 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 @keyframes obMarkIn{from{opacity:0;transform:translateY(14px) scale(.94)}to{opacity:1;transform:none}}
 .ob-setup{justify-content:flex-start;align-items:stretch;padding:0 20px;padding-top:max(14px,env(safe-area-inset-top))}
 .ob-setup>*{width:100%;max-width:480px;margin-left:auto;margin-right:auto}
-.ob-setup .ob-progress{height:3px;gap:4px;margin:6px auto 4px}
+.ob-setup .ob-progress{height:3px;gap:4px;margin:6px auto 12px}/* Abstand zu „Zurück“ und × */
 .ob-setup .ob-tour-top{min-height:44px;margin-bottom:14px}
 .ob-setup .ob-title{font-size:28px;line-height:1.2;font-weight:400;text-align:left;margin:0 auto 10px;outline:none}
 .ob-setup .ob-sub{text-align:left;font-size:16px;line-height:1.5;margin:0 auto 22px;max-width:480px}
@@ -2068,9 +2069,6 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
 }
 /* ── Kompakte Darstellung (14.10.2026): Prognose-Seite ── */
 .v2-ret-lbl .v2-ret-more{display:block;margin-top:2px}
-.v2-ret-facts{margin-top:14px;padding-top:12px;box-shadow:inset 0 .5px 0 var(--sep)}
-.v2-ret-facts .n{font-size:16px}
-.v2-ret-facts .k{white-space:normal;line-height:1.25;overflow:visible}
 .v2-fold{flex:0 0 auto;width:7px;height:7px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:rotate(45deg);opacity:.55;margin:0 4px 4px 2px;transition:transform .2s}
 .is-open>.v2-fold{transform:rotate(-135deg);margin-bottom:-2px}
 .v2-lp-item{box-shadow:inset 0 .5px 0 var(--sep)}
@@ -2122,6 +2120,17 @@ body.v2-editing #page-import .pv-sum{display:none}
 .v2-lp-bars{margin-top:4px}
 .v2-lp-who{margin-top:8px}.v2-lp-who>b{display:block;font-size:12px;font-weight:500;color:var(--muted)}
 .v2-lp-who .lp-bar{margin-top:5px}.v2-lp-who .lp-ticks{margin-top:4px}
+/* ── Abstände und Umbrüche (15.10.2026) ── */
+/* lange zusammengesetzte Wörter in Beschriftungen trennen statt in das Eingabefeld laufen („Erwerbs-minderung“) */
+label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:auto}
+/* Feldbeschriftung mit Info-Symbol: Text und Symbol als Flex-Elemente – das Symbol steht immer direkt hinter dem Text
+   (nie allein in einer neuen Zeile), ein zu langes Wort wird an Silbengrenzen getrennt statt unter das Feld zu laufen */
+.input-group>label[data-info]{display:flex;align-items:baseline;min-width:0}
+.input-group>label[data-info]::after{flex:0 0 auto}
+.drv-params>summary small{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Karten der Altersvorsorge (Ich, Beamtenversorgung): Felder ohne zweiten Kasten in der Karte, sonst wird die
+   Beschriftungsspalte so schmal, dass „Rentenpunkte“ getrennt werden muss */
+#page-import .pv-card>.input-grid,#page-import .pv-card .drv-params .input-grid{background:none;padding:0;border-radius:0}
 </style>
 
 <!-- Pull to Refresh Indicator -->
@@ -2681,7 +2690,7 @@ body.v2-editing #page-import .pv-sum{display:none}
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="i18n-en.js?v=14"></script>
+<script src="i18n-en.js?v=15"></script>
 <script src="data-store.js?v=30"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
@@ -3631,7 +3640,7 @@ function _v2Icon(key){
 }
 function _v2GroupKind(key){
   const fs=_v2GroupFields(key),has=c=>fs.some(f=>f.category===c);
-  if(fs.length&&fs.every(f=>f.category==='liab'))return L('Kredit · keinem Vermögenswert zugeordnet','Loan · not linked to an asset');
+  if(fs.length&&fs.every(f=>f.category==='liab'))return L('Kredit ohne Zuordnung','Loan without asset');
   let t=fs.some(f=>f.category!=='liab'&&AssetModel.liquidity(f)==='liquid')?'liquide':has('bav')?'Vorsorge':'illiquide';
   if(has('liab'))t+=' · nach Kredit';
   return t;
@@ -3878,7 +3887,7 @@ function renderFlowSection(){
   const pct=v=>(v*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' %';
   const stats=[];
   stats.push(['Ø Sparleistung / Monat',fmt(r.months?r.flow/r.months:0)]);
-  if(r.marketPa!=null)stats.push(['Kursrendite p. a.','≈ '+pct(r.marketPa)]);
+  if(r.marketPa!=null)stats.push(['Kursrendite p. a.','≈ '+pct(r.marketPa)]);
   if(avgExp>0)stats.push(['Notgroschen',(cash/avgExp).toLocaleString('de-DE',{maximumFractionDigits:1})+' Monate']);
   if(c.liab>0)stats.push(['Verschuldung',pct(c.liab/Math.max(c.assets,1))]);
   h+=`<div class="v2-flow-stats">`+stats.map(x=>`<div class="v2-stat"><span class="k">${x[0]}</span><span class="n">${x[1]}</span></div>`).join('')+`</div>`;
@@ -7308,10 +7317,10 @@ function _loanCardHTML(f,p){
   return `<section class="loan-card"><div class="loan-card-heading"><span>${escHTML(f.label)}</span>${_positionRemoveHTML(f)}</div>
     <div class="input-grid"><div class="input-group"><label for="loan-name-${f.id}">Bezeichnung</label><input class="num-input" id="loan-name-${f.id}" data-loan-name="${f.id}" value="${escHTML(f.label)}" type="text"></div>
     <div class="input-group"><label for="loan-asset-${f.id}">Link zu Vermögenswert</label><select class="num-input" id="loan-asset-${f.id}" data-loan-asset="${f.id}">${_loanAssetOptions(p.assetId,!Object.prototype.hasOwnProperty.call(p,'assetId'))}</select></div>
-    ${input('principal','Darlehensbetrag €',money(p.principal))}${input('rate','Sollzinssatz p. a. %',num(p.rate))}${input('repayment','Anfänglicher Tilgungssatz p. a. %',num(p.repayment))}${input('firstDue','Erster Fälligkeitstermin (MM/JJ)',_loanMonthLabel(p.firstDue),'MM/JJ',false)}${input('fixedYears','Sollzinsbindung in Jahren',num(p.fixedYears))}${input('pay','Monatliche Ratenhöhe €',money(p.pay!==undefined?p.pay:(p.principal&&p.repayment!==undefined?LoanModel.payment(p):undefined)))}
+    ${input('principal','Darlehensbetrag €',money(p.principal))}${input('rate','Sollzinssatz p. a. %',num(p.rate))}${input('repayment','Anfänglicher Tilgungssatz p. a. %',num(p.repayment))}${input('firstDue','Erster Fälligkeitstermin (MM/JJ)',_loanMonthLabel(p.firstDue),'MM/JJ',false)}${input('fixedYears','Sollzinsbindung in Jahren',num(p.fixedYears))}${input('pay','Monatliche Ratenhöhe €',money(p.pay!==undefined?p.pay:(p.principal&&p.repayment!==undefined?LoanModel.payment(p):undefined)))}
     <p class="loan-hint">Aus Darlehensbetrag, Sollzins und anfänglicher Tilgung wird die Rate berechnet. Änderst du die Rate, wird der Tilgungssatz angepasst.</p>
     <div class="input-group"><label for="f-${f.id}">Restschuld €<small>Mit vollständigen Darlehensdaten automatisch</small></label><input class="num-input" type="text" inputmode="decimal" id="f-${f.id}" data-loan-balance="${f.id}" data-loan-derived="${LoanModel.configured(p)?'1':'0'}" placeholder="0"></div>
-    ${input('follow','Anschlusszins p. a. % (optional)',num(p.follow),'= Sollzins')}
+    ${input('follow','Anschlusszins p. a. % (optional)',num(p.follow),'= Sollzins')}
     ${p.extra!==undefined?input('extra','Bisherige jährliche Sondertilgung €',num(p.extra)):''}${p.fixed!==undefined?input('fixed','Bisherige Zinsbindung bis Jahr',p.fixed,'Jahr',false):''}
     </div><div class="loan-extras"><h4>Sondertilgungen</h4><div id="loanExtras-${f.id}">${(p.extras||[]).map(e=>_loanExtraHTML(f.id,e)).join('')}</div><button type="button" class="btn btn-ghost edit-only" data-extra-add="${f.id}">+ Sondertilgung hinzufügen</button></div>
     <div class="loan-summary" data-loan-summary="${f.id}" aria-live="polite"></div><div id="loanPlan-${f.id}"></div></section>`;
@@ -8427,8 +8436,8 @@ function _loanSheetHTML(id,f,p,o){
   <div class="ds-group-t">Darlehensvertrag (optional)</div>
   <div class="ds-group">
     ${row('principal','Darlehensbetrag €',money(p.principal),{cls:' ds-money'})}
-    ${row('rate','Sollzins % p. a.',num(p.rate))}
-    ${row('repayment','Anfängliche Tilgung % p. a.',num(p.repayment))}
+    ${row('rate','Sollzins % p. a.',num(p.rate))}
+    ${row('repayment','Anfängliche Tilgung % p. a.',num(p.repayment))}
     ${row('pay','Monatsrate €',money(pay),{cls:' ds-money',hint:'aus Betrag, Zins und Tilgung'})}
     <label class="ds-row"><span class="ds-l">Erste Rate</span>${_dateFieldHTML({id:L('firstDue'),value:p.firstDue||'',title:'Erste Rate',optional:true,attrs:`data-loan="${escHTML(id)}" data-k="firstDue"`})}</label>
   </div>
@@ -8439,7 +8448,7 @@ function _loanSheetHTML(id,f,p,o){
       ${/* A12: „bis Jahr“ gilt auch ohne Darlehensvertrag; „in Jahren“ zählt ab der ersten Rate und braucht den Vertrag */''}
       <label class="ds-row"><span class="ds-l">Zinsbindung bis<small>Jahr, in dem die Zinsbindung endet</small></span>${_dateFieldHTML({id:L('fixed'),value:p.fixed??'',mode:'year',title:'Zinsbindung bis',optional:true,attrs:`data-loan="${escHTML(id)}" data-k="fixed"`})}</label>
       ${p.fixedYears!==undefined?row('fixedYears','Zinsbindung in Jahren',num(p.fixedYears),{hint:'ab der ersten Rate'}):''}
-      ${row('follow','Anschlusszins % p. a.',num(p.follow),{ph:'wie Sollzins'})}
+      ${row('follow','Anschlusszins % p. a.',num(p.follow),{ph:'wie Sollzins'})}
       ${p.extra!==undefined?row('extra','Jährliche Sondertilgung € (bisher)',money(p.extra),{cls:' ds-money'}):''}
     </div>
     <div class="ds-group-t">Sondertilgungen</div>
@@ -9541,7 +9550,7 @@ const DRV_EXTRA_COLS=[
   {key:'salary',label:'Brutto €/Jahr',info:'drv-salary',ph:'0'},
   {key:'age',label:'Rentenbeginn',info:'drv-age',ph:'automatisch'},
   {key:'deduct',label:'Abzüge %',info:'drv-deduct',ph:'20'},
-  {key:'emType',label:'Erwerbsminderung',info:'drv-emType',type:'select',options:()=>[['0','Keine'],['1','Teilweise'],['2','Voll']]},
+  {key:'emType',label:'EM-Rente',info:'drv-emType',type:'select',options:()=>[['0','Keine'],['1','Teilweise'],['2','Voll']]},
   {key:'em',label:'EM-Rente netto €/Monat',info:'drv-em',ph:'0'},
   {key:'emZz',label:'Punkte Zurechnungszeit',info:'drv-emZz',ph:'0'},
   {key:'emZf',label:'Zugangsfaktor EM',info:'drv-emZf',ph:'0,892',prec:4},
@@ -9624,17 +9633,30 @@ function _personPhaseText(s,p){
   return parts.join(' · ');
 }
 /* Zeitstrahl aus Abschnitten [{to, cls}] ab start (heute); gleiche Farbe wird zusammengefasst */
+/* Altersmarken unter einem Balken: „heute“, die Grenzen mit genug Abstand (9 %) und das Ende. Der Rentenbeginn (key) wird
+   immer beschriftet; ist er zu nah an einer anderen Marke, entfällt diese (15.10.2026, z. B. 65 und 67 dicht beieinander). */
+function _ticksHTML(cands,endLabel){
+  const shown=[];
+  cands.forEach(t=>{
+    if(t.pct<=0.01||t.pct>=99.99)return;
+    const lastPct=shown.length?shown[shown.length-1].pct:0;
+    if(t.pct-lastPct>=9&&100-t.pct>=9){shown.push(t);return;}
+    if(!t.key||t.pct<9)return;
+    while(shown.length&&t.pct-shown[shown.length-1].pct<9&&!shown[shown.length-1].key)shown.pop();
+    shown.push(t);
+  });
+  const dropEnd=shown.length&&100-shown[shown.length-1].pct<9;
+  return `<span class="first" style="left:0%">heute</span>`+shown.map(t=>`<span style="left:${t.pct.toFixed(2)}%">${t.label}</span>`).join('')+(dropEnd?'':`<span class="last" style="left:100%">${endLabel}</span>`);
+}
 function _segBarHTML(start,parts){
   const list=[];parts.forEach(p=>{const l=list[list.length-1];if(l&&l.cls===p.cls)l.to=p.to;else if(p.to>(l?l.to:start)+1e-9)list.push(Object.assign({},p));});
   const end=list.length?list[list.length-1].to:start+1,span=Math.max(1e-9,end-start);
-  let bar='',ticks=`<span class="first" style="left:0%">heute</span>`,last=0,a=start;
+  let bar='',a=start;const cands=[];
   list.forEach((p,i)=>{
     const w=p.to-a;if(w>0.01)bar+=`<i class="${p.cls}" style="flex:${w.toFixed(3)}"></i>`;a=p.to;
-    const pct=(p.to-start)/span*100;
-    if(i===list.length-1)ticks+=`<span class="last" style="left:100%">${_ageTxt(p.to)}</span>`;
-    else if(pct-last>=9&&100-pct>=9){ticks+=`<span style="left:${pct.toFixed(2)}%">${_ageTxt(p.to)}</span>`;last=pct;}
+    if(i<list.length-1)cands.push({pct:(p.to-start)/span*100,label:_ageTxt(p.to),key:list[i+1].cls==='lp-p4'});
   });
-  return `<div class="lp-bar">${bar}</div><div class="lp-ticks">${ticks}</div>`;
+  return `<div class="lp-bar">${bar}</div><div class="lp-ticks">${_ticksHTML(cands,_ageTxt(end))}</div>`;
 }
 /* Zeitstrahl einer weiteren Person in ihrem Alter: Vollzeit · Teilzeit · ohne Arbeit · Rente */
 function _personTimelineHTML(s,p){
@@ -9763,7 +9785,7 @@ const AVD_COLS=[
   {key:'contrib',label:'Beitrag €/Monat',info:'avd-contrib',ph:'0'},
   {key:'balance',label:'Guthaben heute €',info:'avd-balance',ph:'0'},
   {key:'start',label:'Beginn Jahr',info:'avd-start',ph:String(AVD_START)},
-  {key:'ret',label:'Rendite % p. a.',info:'avd-ret',ph:String(AVD_DEFAULTS.ret)},
+  {key:'ret',label:'Rendite % p. a.',info:'avd-ret',ph:String(AVD_DEFAULTS.ret)},
   {key:'from',label:'Auszahlung ab Alter',info:'avd-from',ph:'automatisch'},
   {key:'lump',label:'Teilauszahlung',info:'avd-lump',type:'select',options:()=>[['0','Keine'],['30','30 % zu Beginn']]},
   {key:'deduct',label:'Abzüge %',info:'avd-deduct',ph:String(AVD_DEFAULTS.deduct)}
@@ -10790,7 +10812,7 @@ function _drvFieldsHTML(d,prefix,mode){
   h+=f('deduct','Abzüge %',_numStr(d.deduct),'20');
   /* Erwerbsminderungsrente: Auswahl, Details nur bei teilweise/voll */
   const t=d.emType===1||d.emType===2?d.emType:0;
-  h+=`<div class="input-group"><label data-info="drv-emType">Erwerbsminderung</label><select class="num-input${mode==='form'?' form-store':''}" id="${prefix}-drv-emType" data-drv="emType">${[[0,'Keine'],[1,'Teilweise'],[2,'Voll']].map(([v,l])=>`<option value="${v}"${v===t?' selected':''}>${l}</option>`).join('')}</select></div>`;
+  h+=`<div class="input-group"><label data-info="drv-emType">EM-Rente</label><select class="num-input${mode==='form'?' form-store':''}" id="${prefix}-drv-emType" data-drv="emType">${[[0,'Keine'],[1,'Teilweise'],[2,'Voll']].map(([v,l])=>`<option value="${v}"${v===t?' selected':''}>${l}</option>`).join('')}</select></div>`;
   h+=`<div class="drv-em"${t?'':' hidden'}>`;
   h+=f('em','EM-Rente netto €/Monat',d.em>0?_numStr(d.em):'','0');
   /* Schema 18: Zurechnungszeit getrennt von den tatsächlich erworbenen Punkten, Zugangsfaktor laut Bescheid */
@@ -10870,7 +10892,7 @@ function _explainBv(r){
 }
 function _explainAvd(r){
   let h=L(`<p><strong>Beiträge</strong>: ${fmt(r.own/12)}/Monat eigener Beitrag${r.firstSub?' + '+fmt(r.firstSub.total)+' Zulagen im Jahr':''}. Bis zur Auszahlung ${fmt(r.ownSum)} eigene Beiträge und ${fmt(r.subSum)} Zulagen${r.bonus?' (inkl. 200 € Berufseinsteigerbonus)':''}. Die Beiträge folgen deinen Lebensphasen.</p>`,`<p><strong>Contributions</strong>: ${fmt(r.own/12)}/month own contribution${r.firstSub?' + '+fmt(r.firstSub.total)+' subsidies a year':''}. Until payout ${fmt(r.ownSum)} own contributions and ${fmt(r.subSum)} subsidies${r.bonus?' (incl. 200 € career-starter bonus)':''}. Contributions follow your life phases.</p>`);
-  h+=L(`<p><strong>Kapital</strong> mit ${fmtAge(r.from)}: ${fmt(Math.round(r.capReal))} in heutiger Kaufkraft (${_pts(r.ret*100)} % Rendite p. a.${r.balance>0?', inkl. heutigem Guthaben von '+fmt(r.balance):''}).</p>`,`<p><strong>Capital</strong> at ${fmtAge(r.from)}: ${fmt(Math.round(r.capReal))} in today's money (${_pts(r.ret*100)} % return p.a.${r.balance>0?', incl. today\'s balance of '+fmt(r.balance):''}).</p>`);
+  h+=L(`<p><strong>Kapital</strong> mit ${fmtAge(r.from)}: ${fmt(Math.round(r.capReal))} in heutiger Kaufkraft (${_pts(r.ret*100)} % Rendite p. a.${r.balance>0?', inkl. heutigem Guthaben von '+fmt(r.balance):''}).</p>`,`<p><strong>Capital</strong> at ${fmtAge(r.from)}: ${fmt(Math.round(r.capReal))} in today's money (${_pts(r.ret*100)} % return p.a.${r.balance>0?', incl. today\'s balance of '+fmt(r.balance):''}).</p>`);
   if(r.lumpNet>0)h+=L(`<p><strong>Teilauszahlung</strong> zu Beginn: ${fmt(Math.round(r.lumpNet))} netto, fließt ins liquide Vermögen.</p>`,`<p><strong>Partial lump sum</strong> at the start: ${fmt(Math.round(r.lumpNet))} net, goes to liquid assets.</p>`);
   h+=L(`<p><strong>Auszahlplan</strong> bis ${r.until}: <strong>${fmt(r.netto)} netto/Monat</strong> nach ${_pts(r.deduct*100)} % Abzügen.</p>`,`<p><strong>Payout plan</strong> until ${r.until}: <strong>${fmt(r.netto)} net/month</strong> after ${_pts(r.deduct*100)} % deductions.</p>`);
   return h;
@@ -11375,22 +11397,9 @@ function renderLifetimePageCalcs(){
   setEur('lt-at-retire',availAtR);
   sub('lt-at-retire-sub',Math.round(coverage*100)+' % des Ziels · Median');
   /* Weitere Kennzahlen (aufklappbar) */
-  const endIdx=plan.nSteps-1;
-  let wSum=0,rSum=0;
-  plan.groups.forEach(g=>{if(g.gross>0){wSum+=g.gross;rSum+=g.gross*g.ret;}});
-  const pr=wSum>0?rSum/wSum:0;
-  const pc=v=>(v*100).toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})+' %';
   const ic=_incomeCard(plan),inc=ic.rows;
-  /* Kreditfrei: erstes Alter, ab dem im Erwartungspfad keine Kreditrate mehr anfällt */
-  const lpAll=getLoanParams(),detL=(plan.data[plan.latestKey]._details)||{};
-  let lastPayoff=null;
-  _vf().filter(f=>f.category==='liab').forEach(f=>{
-    const b=+detL[f.id]||0;if(b<=0||!hasLoanModel(lpAll[f.id]))return;
-    const st=loanStatus(b,lpAll[f.id]);
-    if(st.payoff&&(!lastPayoff||st.payoff>lastPayoff))lastPayoff=st.payoff;
-  });
+  /* Die Kennzahlen Vermögen am Horizont, Ø Rendite und Schuldenfrei sind seit 15.10.2026 entfernt (Wunsch) */
   const ml=document.getElementById('lt-more-list');
-  let ltFacts=[];
   if(ml){
     let h='';
     if(inc.length){
@@ -11415,9 +11424,6 @@ function renderLifetimePageCalcs(){
       h+=`</div>`;
       _incExplain=inc.map(x=>({t:x.n,h:x.ex||''}));
     }
-    /* Kennzahlen stehen seit 14.10.2026 im Statusblock (_v2LtSummary) */
-    ltFacts=[[fmtCompact(mc.p50[endIdx]/defl(plan.horizonAge)),'Vermögen mit '+plan.horizonAge,'Median'],[pc(pr),'Ø Rendite p. a.','real '+pc((1+pr)/(1+infl)-1)]];
-    if(lastPayoff)ltFacts.push([fmtMonth(lastPayoff),'Schuldenfrei','mit '+Math.floor(_ageAt(s,+lastPayoff.slice(0,4),+lastPayoff.slice(5)-1))]);
     ml.innerHTML=h;
     ml.onclick=e=>{const b=e.target.closest&&e.target.closest('[data-inc]');if(!b)return;const it=_incExplain[+b.dataset.inc];if(it&&it.h)showInfoHTML(it.t,it.h);};
   }
@@ -11547,7 +11553,7 @@ function renderLifetimePageCalcs(){
   document.querySelectorAll('[data-lt-range]').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.ltRange)===ltRange));
 
   _ltState={plan,det,mc,tc,real,infl,currentAge,allAges,histLine,projLine,projHi,projLo,histAssetMaps,availAtR,coverage,R,retireAge};
-  _v2LtSummary({s,plan,mc,tc,retireAge,availAtR,coverage,R,currentAge,facts:ltFacts});
+  _v2LtSummary({s,plan,mc,tc,retireAge,availAtR,coverage,R,currentAge});
   _v2LtPhases({s,plan,mc,currentAge,infl});
   /* C7: die Partner-Story („Euer Plan“) nur mit Partner/in bzw. weiterer erwachsener Person */
   const psBtn=document.getElementById('psOpen');if(psBtn)psBtn.hidden=!getDrvExtra().some(p=>p.id);
@@ -11600,11 +11606,11 @@ function _v2LtSummary(o){
     `<div class="v2-ret-stats">`+
       `<div data-info="v2-at-retire"><span class="k">${L('Verfügbar mit ','Available at ')}${_ageTxt(R)}</span><span class="n">${fmtCompact(Math.round(availAtR))}</span><span class="v2-mini"><i style="width:${cov.toFixed(1)}%"></i></span><span class="s">nötig: ${fmt(Math.round(tc.target/100)*100)}</span></div>`+
       `<div data-info="v2-retire-age"><span class="k">Sicher möglich ab</span><span class="n">${retTxt}</span><span class="s">${retSub}</span></div>`+
-    `</div>`+((o.facts||[]).length?`<div class="v2-facts v2-ret-facts">${o.facts.map(f=>`<div><span class="n">${f[0]}</span><span class="k">${f[1]}</span><span class="s">${f[2]}</span></div>`).join('')}</div>`:'');
+    `</div>`;
   const pv=document.getElementById('v2-prev-pct');
   if(pv){pv.textContent=pct+' %';pv.style.color=ok?'var(--green)':'var(--red)';}
   const pt=document.getElementById('v2-prev-txt');
-  if(pt)pt.textContent='Erfolgschance bis '+plan.horizonAge+' · Ziel '+safety+' %';
+  if(pt)pt.textContent='Erfolgschance bis '+plan.horizonAge+' · Ziel '+safety+'\u00a0%';
   _v2SyncSwitches();
 }
 /* Ausführliche Erklärung der Erfolgschance mit den aktuellen Zahlen (14.10.2026): was die Zahl bedeutet, wie simuliert
@@ -11843,15 +11849,11 @@ function _phaseBounds(s,cur,end){
 }
 function _phaseBarHTML(b){
   const span=Math.max(1e-9,b[4]-b[0]);
-  let bar='',ticks='',last=-1;
+  let bar='';
   for(let i=0;i<4;i++){const w=b[i+1]-b[i];if(w>0.01)bar+=`<i class="lp-p${i+1}" style="flex:${w.toFixed(3)}"></i>`;}
-  b.forEach((a,i)=>{
-    const pct=(a-b[0])/span*100;
-    if(i>0&&i<4&&(b[i]-b[i-1]<=0.01||pct-last<9||100-pct<9))return;
-    ticks+=`<span class="${i===0?'first':i===4?'last':''}" style="left:${pct.toFixed(2)}%">${i===0?'heute':_ageTxt(a)}</span>`;
-    last=pct;
-  });
-  return `<div class="lp-bar">${bar}</div><div class="lp-ticks">${ticks}</div>`;
+  /* Grenzen ohne Phasen der Länge null; b[3] ist der Beginn der Rente */
+  const cands=[1,2,3].filter(i=>b[i]-b[i-1]>0.01).map(i=>({pct:(b[i]-b[0])/span*100,label:_ageTxt(b[i]),key:i===3}));
+  return `<div class="lp-bar">${bar}</div><div class="lp-ticks">${_ticksHTML(cands,_ageTxt(b[4]))}</div>`;
 }
 /* Renten (€/Monat, heutige Kaufkraft), die in einem Alter laufen */
 /* Renten und Einkünfte in einem Alter; das Gehalt weiterer Personen (kind 'work') ist keine Rente und wird getrennt gezeigt (P5) */
@@ -11874,7 +11876,7 @@ function _phaseSavingSplit(plan,s){
 function _phaseText(s,plan,i,b){
   const save=_phaseSaving(plan),mo=L('/Mon.','/mo.');
   const ppl=getDrvExtra().filter(p=>p.id),w1=_phaseWorkTxt(s,ppl,1);
-  if(i===0)return (save>0?fmt(Math.round(save))+mo+L(' sparen',' saved')+(s.savingsGrowth>0?', +'+_numStr(s.savingsGrowth)+' % p. a.':''):L('Sparraten unter Annahmen eintragen','Enter savings under assumptions'))+(w1&&w1!==L('Vollzeit','full-time')?' · '+w1:'');
+  if(i===0)return (save>0?fmt(Math.round(save))+mo+L(' sparen',' saved')+(s.savingsGrowth>0?', +'+_numStr(s.savingsGrowth)+' % p. a.':''):L('Sparraten unter Annahmen eintragen','Enter savings under assumptions'))+(w1&&w1!==L('Vollzeit','full-time')?' · '+w1:'');
   const pc=v=>Math.round(v*100)+' %';
   if(i===1){
     const parts=[_phaseWorkTxt(s,ppl,2)];
@@ -11929,13 +11931,12 @@ function _v2LtPhases(o){
   /* C4: entfallene Phasen nur als kurze Notiz unter der Liste */
   const skipped=LT_PHASE_NAMES.filter((_,i)=>i<3&&b[i+1]-b[i]<=0.01);
   const skippedHTML=skipped.length?`<p class="v2-lp-skip">${escHTML(skipped.join(L(' und ',' and ')))}${skipped.length>1?L(' entfallen',' skipped'):L(' entfällt',' skipped')} · ${L('unter Bearbeiten planbar','can be planned under Edit')}</p>`:'';
-  /* weitere Personen: eigene Phasen (Arbeitsende, Teilzeit, Rente), öffnet das Sheet bei der Person */
-  const people=getDrvExtra().filter(p=>p.id).map(p=>{const r=calcDrvExtra(s,p),n=(p.name||'').trim()||L('Weitere Person','Other person');
-    return `<div class="v2-lp-item"><button type="button" class="v2-lp-row pers" aria-expanded="false" onclick="_v2Fold(this)"><span class="hh-ava sm" aria-hidden="true">${escHTML(n[0].toUpperCase())}</span><span class="t"><b>${escHTML(n)}</b><small>${r.netto>0?L('Rente ab ','pension from ')+_ageTxt(r.age):''}</small></span><span class="v">${r.netto>0?`<b>${fmt(Math.round(r.netto))}</b><small>${L('Rente/Monat','pension/month')}</small>`:''}</span><i class="v2-fold" aria-hidden="true"></i></button><div class="v2-lp-desc" hidden>${escHTML(_personPhaseText(s,p))} <button type="button" class="v2-lp-edit" data-f="p-${escHTML(p.id)}" onclick="openPhasesSheet(this.dataset.f)">${L('Bearbeiten ›','Edit ›')}</button></div></div>`;}).join('');
+  /* „Weitere Personen“ als Zeilen entfallen seit 15.10.2026: ihr Balken oben zeigt Arbeit, Arbeitsende und Rentenbeginn,
+     ihre Rente steht unter „Einkommen im Ruhestand“, „Bearbeiten“ öffnet dasselbe Sheet */
   /* mit weiteren Personen: je Person ein Balken auf derselben Zeitachse (heute bis zum Planhorizont), Alter je Person */
   const ppl=getDrvExtra().filter(p=>p.id);
   const bars=ppl.length?`<div class="v2-lp-bars"><div class="v2-lp-who"><b>${L('Ich','Me')}</b>${_phaseBarHTML(b)}</div>${ppl.map(p=>`<div class="v2-lp-who"><b>${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</b>${_personBarHTML(s,p,b[4])}</div>`).join('')}</div>`:_phaseBarHTML(b);
-  el.innerHTML=`<div class="v2-lp-head"><span class="v2-ret-title" data-info="lt-phases">Lebensphasen</span><button type="button" class="v2-lp-btn" onclick="openPhasesSheet()">Bearbeiten</button></div>${bars}<div class="v2-lp-rows">${rows}${skippedHTML}${people?`<div class="v2-lp-sub">${L('Weitere Personen','Other people')}</div>${people}`:''}</div>`;
+  el.innerHTML=`<div class="v2-lp-head"><span class="v2-ret-title" data-info="lt-phases">Lebensphasen</span><button type="button" class="v2-lp-btn" onclick="openPhasesSheet()">Bearbeiten</button></div>${bars}<div class="v2-lp-rows">${rows}${skippedHTML}</div>`;
 }
 /* Daten-Seite: Lebensphasen als eine Zeile mit Zeitstrahl, öffnet das Sheet */
 function _renderPhaseSummary(){
@@ -11994,7 +11995,7 @@ function openPhasesSheet(focus){
   /* Zeitstrahl je weiterer Person oben im Kopf (ihr Alter) */
   const ptl=people.map(p=>`<div class="lp-ptl"><b>${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</b><div id="lpp-${p.id}-tl"></div></div>`).join('');
   const body=
-    `<div class="lp-head"><div class="lp-card"><div id="lpTime">${_phaseBarHTML(b)}</div>${ptl}<div class="lp-pv"><b id="lpPct">—</b><span id="lpPctT">Erfolgschance wird berechnet …</span></div></div></div>`+
+    `<div class="lp-head"><div class="lp-card">${people.length?`<div class="lp-ptl"><b>${L('Ich','Me')}</b><div id="lpTime">${_phaseBarHTML(b)}</div></div>`:`<div id="lpTime">${_phaseBarHTML(b)}</div>`}${ptl}<div class="lp-pv"><b id="lpPct">—</b><span id="lpPctT">Erfolgschance wird berechnet …</span></div></div></div>`+
     `<p class="ds-note">Jede Phase beginnt, wo die vorige endet. Gleiches Alter wie bei der Phase davor: Die Phase entfällt.</p>`+
     (people.length?`<p class="ds-note">${L('Die Phasen richten sich nach deinem Alter. Arbeitszeit, Altersvorsorge und Arbeitsende stellst du je Person ein; den Rentenbeginn weiterer Personen bei ihrer gesetzlichen Rente unter Daten → Altersvorsorge.','The phases follow your age. Working time, pension savings and end of work are set per person; the pension start of other people with their state pension under Data → Pensions.')}</p>`:'')+
     sec(1,`1 · ${LT_PHASE_NAMES[0]}`,'<i class="lp-p1"></i>',
@@ -12137,7 +12138,7 @@ function _phasesPreview(){
   const save=_phaseSaving(plan),pc=v=>_numStr(Math.round(v*1000)/10)+' %',ppl=(d.people||[]).filter(p=>p.id&&(ctx.people||[]).includes(p.id));
   const join=(...a)=>a.filter(Boolean).join(' · ');
   const w1=_phaseWorkTxt(d.s,ppl,1);
-  setT('lp-s-1',join(b[1]>b[0]+0.01?L('bis ','until ')+_ageTxt(b[1]):'',save>0?fmt(Math.round(save))+L('/Monat sparen','/month saved'):L('Sparraten wie unter Annahmen','savings as under assumptions'),d.growth?'+'+_numStr(d.growth)+' % p. a.':'',w1===L('Vollzeit','full-time')?'':w1));
+  setT('lp-s-1',join(b[1]>b[0]+0.01?L('bis ','until ')+_ageTxt(b[1]):'',save>0?fmt(Math.round(save))+L('/Monat sparen','/month saved'):L('Sparraten wie unter Annahmen','savings as under assumptions'),d.growth?'+'+_numStr(d.growth)+' % p. a.':'',w1===L('Vollzeit','full-time')?'':w1));
   setT('lp-s-2',b[2]>b[1]+0.01?join(L('bis ','until ')+_ageTxt(b[2]),_phaseWorkTxt(d.s,ppl,2),L('Sparen ','saving ')+pc(d.sav/100),d.draw>0?L('Entnahme ','withdrawal ')+fmt(d.draw):''):L('entfällt','skipped'));
   setT('lp-s-3',b[3]>b[2]+0.01?join(L('bis ','until ')+_ageTxt(b[3]),L('Bedarf ','need ')+fmt(d.need3),_phaseWorkTxt(d.s,ppl,3)):L('entfällt','skipped'));
   setT('lp-s-4',join(L('Bedarf ','need ')+fmt(d.need4??d.need3),_phaseWorkTxt(d.s,ppl,4)));

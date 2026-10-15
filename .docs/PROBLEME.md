@@ -208,6 +208,24 @@ Cache `verm-v128`):
 
 `node --test .tests/` **348/348**, Audit **22/0**.
 
+**Darstellung, Abstände und Umbrüche (15.10.2026)**, gefunden mit einem Prüfskript im Browser (gestapelte oder
+nebeneinanderliegende Kästen ohne Abstand, Beschriftungen, die in ihr Feld laufen) auf allen Seiten, im Bearbeiten-Modus, in
+acht Sheets und in allen Einrichtungsschritten, auf 375 px und 1440 px, Deutsch und Englisch:
+- „Bearbeiten“ über Haushalt und Altersvorsorge ohne Abstand zum Inhalt → 12 px (`.ds-sec-actions`).
+- Info-Symbol ⓘ rutschte allein in eine neue Zeile; lange Wörter („Erwerbsminderung“) liefen unter das Eingabefeld →
+  Beschriftung mit Info-Symbol als Flex-Zeile, Silbentrennung für Beschriftungen (`hyphens:auto`, Seite ist `lang="de"`).
+- Karten „Ich“ und Beamtenversorgung doppelt eingerückt (Karte in Karte), dadurch zu schmale Beschriftungsspalte → innerer
+  Kasten entfällt. Auswahlfeld „Erwerbsminderung“ heißt „EM-Rente“.
+- „% p. a.“ brach zwischen „p.“ und „a.“ um → geschütztes Leerzeichen; „Ziel 85 %“ ebenso.
+- „Rhythmus“ wurde neben dem Umschalter getrennt → Umschalter auf schmalen Bildschirmen etwas schmaler.
+- Rechengrößen: Pfeil rutschte in eine zweite Zeile → Werte bei Platzmangel mit „…“.
+- Prognose: Abstand unter dem kleinen Balken „nötig: …“. Die drei Kennzahlen unter dem Statusblock (Vermögen mit 95, Ø Rendite, Schuldenfrei) auf Wunsch entfernt.
+- Startseite: Kredit ohne Vermögenswert mit eingerückter Unterzeile → „Kredit ohne Zuordnung“ ohne leeres Prozentfeld.
+- Einrichtung: Fortschrittsbalken 4 px über „Zurück“ und × → 12 px. Phasen-Sheet: „Ich“ über dem eigenen Balken.
+- Prognose → Lebensphasen: Zeilen „Weitere Personen“ entfernt (doppelt zu Balken und Einkommen); unter jedem Balken ist der
+  Rentenbeginn immer beschriftet, bei Claudia stand vorher 65 statt 67.
+Nicht beanstandet (bewusst so): Zeilen einer Liste mit Trennlinie, Segmente der Budget-Balken, Rückseiten der Kacheln.
+
 **Persona-Simulation vom 14.10.2026** (`.docs/Onboarding Persona/Ergebnis_Simulation_2026-10-14.md`, 14 Personas,
 Befunde A1–A13, B1–B6, C1–C14). Umgesetzt in dieser Runde, kein Schemawechsel (weiter Version 17); Versionen
 `data-store.js?v=29`, `i18n-en.js?v=13`, Cache `verm-v127`. Nicht Teil dieser Runde: Folge-Review 3
