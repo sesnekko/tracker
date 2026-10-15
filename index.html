@@ -1504,6 +1504,8 @@ body.dark .ask{background:var(--bg2);box-shadow:0 0 0 .5px var(--border),0 18px 
 body.dark{--lp1:#7aaa82;--lp2:#a9c3ad;--lp3:#c07058;--lp4:#8d887c}
 .lp-p1{background:var(--lp1)}.lp-p2{background:var(--lp2)}.lp-p3{background:var(--lp3)}.lp-p4{background:var(--lp4)}
 .lp-bar{display:flex;gap:3px;height:10px;margin-top:14px}
+/* ältere Person: Jahre vor ihrem „heute“ auf der gemeinsamen Achse bis zum Planalter (15.10.2026) */
+.lp-bar>i.lp-past{background:color-mix(in srgb,var(--muted) 16%,transparent)}
 .lp-bar i{display:block;height:100%;border-radius:3px;min-width:4px}
 .lp-ticks{position:relative;height:18px;margin-top:6px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .lp-ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
@@ -9719,28 +9721,28 @@ function _personPhaseText(s,p){
 /* Zeitstrahl aus Abschnitten [{to, cls}] ab start (heute); gleiche Farbe wird zusammengefasst */
 /* Altersmarken unter einem Balken: „heute“, die Grenzen mit genug Abstand (9 %) und das Ende. Der Rentenbeginn (key) wird
    immer beschriftet; ist er zu nah an einer anderen Marke, entfällt diese (15.10.2026, z. B. 65 und 67 dicht beieinander). */
-function _ticksHTML(cands,endLabel){
+function _ticksHTML(cands,endLabel,startPct=0){
   const shown=[];
   cands.forEach(t=>{
-    if(t.pct<=0.01||t.pct>=99.99)return;
-    const lastPct=shown.length?shown[shown.length-1].pct:0;
+    if(t.pct<=startPct+0.01||t.pct>=99.99)return;
+    const lastPct=shown.length?shown[shown.length-1].pct:startPct;
     if(t.pct-lastPct>=9&&100-t.pct>=9){shown.push(t);return;}
-    if(!t.key||t.pct<9)return;
+    if(!t.key||t.pct-startPct<9)return;
     while(shown.length&&t.pct-shown[shown.length-1].pct<9&&!shown[shown.length-1].key)shown.pop();
     shown.push(t);
   });
   const dropEnd=shown.length&&100-shown[shown.length-1].pct<9;
-  return `<span class="first" style="left:0%">heute</span>`+shown.map(t=>`<span style="left:${t.pct.toFixed(2)}%">${t.label}</span>`).join('')+(dropEnd?'':`<span class="last" style="left:100%">${endLabel}</span>`);
+  return `<span class="first" style="left:${startPct>0?startPct.toFixed(2):0}%">heute</span>`+shown.map(t=>`<span style="left:${t.pct.toFixed(2)}%">${t.label}</span>`).join('')+(dropEnd?'':`<span class="last" style="left:100%">${endLabel}</span>`);
 }
-function _segBarHTML(start,parts){
+function _segBarHTML(start,parts,lead=0){
   const list=[];parts.forEach(p=>{const l=list[list.length-1];if(l&&l.cls===p.cls)l.to=p.to;else if(p.to>(l?l.to:start)+1e-9)list.push(Object.assign({},p));});
-  const end=list.length?list[list.length-1].to:start+1,span=Math.max(1e-9,end-start);
-  let bar='',a=start;const cands=[];
+  const ld=lead>0.01?lead:0,end=list.length?list[list.length-1].to:start+1,span=Math.max(1e-9,end-start+ld);
+  let bar=ld?`<i class="lp-past" style="flex:${ld.toFixed(3)}"></i>`:'',a=start;const cands=[];
   list.forEach((p,i)=>{
     const w=p.to-a;if(w>0.01)bar+=`<i class="${p.cls}" style="flex:${w.toFixed(3)}"></i>`;a=p.to;
-    if(i<list.length-1)cands.push({pct:(p.to-start)/span*100,label:_ageTxt(p.to),key:list[i+1].cls==='lp-p4'});
+    if(i<list.length-1)cands.push({pct:(ld+p.to-start)/span*100,label:_ageTxt(p.to),key:list[i+1].cls==='lp-p4'});
   });
-  return `<div class="lp-bar">${bar}</div><div class="lp-ticks">${_ticksHTML(cands,_ageTxt(end))}</div>`;
+  return `<div class="lp-bar">${bar}</div><div class="lp-ticks">${_ticksHTML(cands,_ageTxt(end),ld/span*100)}</div>`;
 }
 /* Planalter für alle Personen (15.10.2026): „Planen bis Alter“ gilt für jede erwachsene Person in ihrem eigenen Alter. Die
    Prognose läuft, bis die jüngste Person es erreicht hat (in deinem Alter: Planalter + Altersabstand); Renten laufen bis zum
@@ -9752,13 +9754,19 @@ function _planEndMain(s,people){
 }
 /* Beschriftung des Planendes: „102 (Anna 100)“, wenn eine jüngere Person es bestimmt */
 const _horizonTxt=plan=>plan.horizonWho?`${plan.horizonAge} (${plan.horizonWho.name} ${_ageTxt(plan.horizonWho.age)})`:String(plan.horizonAge);
-/* Ein Balken, der vor dem Ende der gemeinsamen Zeitachse (heute bis Planende) aufhört, ist entsprechend kürzer */
-const _barPart=(html,frac)=>frac>=0.995?html:`<div class="lp-part" style="width:${(Math.max(0.05,frac)*100).toFixed(2)}%">${html}</div>`;
-/* Dein Balken endet mit deinem Planalter; läuft die Prognose wegen einer jüngeren Person länger, ist er kürzer */
-function _ownBarHTML(b,s){
-  if(!(b[4]>s.planHorizon+0.01))return _phaseBarHTML(b);
-  const h=Math.max(b[0]+0.01,s.planHorizon),c=b.map(x=>Math.min(x,h));
-  return _barPart(_phaseBarHTML(c),(h-b[0])/(b[4]-b[0]));
+/* Balken mehrerer Personen (15.10.2026): alle gleich lang, alle enden rechts beim Planalter. Wer älter ist als die jüngste
+   Person, hat weniger Jahre bis dahin; sein Balken beginnt mit einem ausgegrauten Stück (lp-past) so lang wie der
+   Altersabstand. Heutiges Alter der jüngsten Person (du und weitere Personen): */
+function _youngestNow(s,people){
+  const cur=_curAgeOf(s);let y=cur;
+  (people||[]).forEach(p=>{const by=+p.by;if(by>1900)y=Math.min(y,cur-(by-s.birthYear));});
+  return y;
+}
+/* Dein Balken endet mit deinem Planalter (auch wenn die Prognose wegen einer jüngeren Person länger läuft); lead = Jahre,
+   die du älter bist als die jüngste Person */
+function _ownBarHTML(b,s,lead=0){
+  const h=Math.max(b[0]+0.01,s.planHorizon),c=b[4]>h+0.01?b.map(x=>Math.min(x,h)):b;
+  return _phaseBarHTML(c,lead);
 }
 /* Abschnitte einer weiteren Person in ihrem Alter, in den Farben der Lebensphasen (15.10.2026): solange sie arbeitet in der
    Farbe der Phase (Ansparen, ab Phase 2 Weiterarbeiten), danach ohne Arbeit bis zur Rente, dann Rente; die Arbeitszeit steht
@@ -9777,15 +9785,15 @@ function _personBarParts(s,p,endMain){
   return{start,parts};
 }
 /* Zeitstrahl einer weiteren Person (Lebensphasen-Sheet): Balken wie unten, darunter Arbeitszeit, Arbeitsende und Rente */
-function _personTimelineHTML(s,p,horizonMain){
-  const hm=horizonMain??Math.max(_planEndMain(s,getDrvExtra()).end,_curAgeOf(s)+1);
-  return _personBarHTML(s,p,hm).replace('class="lp-bar"','class="lp-bar hh-bar"')+`<div class="hh-tl">${_personPhaseText(s,p)}</div>`;
+function _personTimelineHTML(s,p,horizonMain,people){
+  const hm=horizonMain??Math.max(_planEndMain(s,people??getDrvExtra()).end,_curAgeOf(s)+1);
+  return _personBarHTML(s,p,hm,people).replace('class="lp-bar"','class="lp-bar hh-bar"')+`<div class="hh-tl">${_personPhaseText(s,p)}</div>`;
 }
 /* Phasenbalken einer weiteren Person in ihrem Alter auf derselben Zeitachse wie deiner (heute bis zum Planende) */
-function _personBarHTML(s,p,horizonMain){
+function _personBarHTML(s,p,horizonMain,people){
   const curMain=_curAgeOf(s),sh=calcDrvExtra(s,p).prof.shift,endMain=Math.max(curMain+0.5,Math.min(horizonMain,s.planHorizon+sh));
   const x=_personBarParts(s,p,endMain);
-  return _barPart(_segBarHTML(x.start,x.parts),(endMain-curMain)/Math.max(1e-9,horizonMain-curMain));
+  return _segBarHTML(x.start,x.parts,Math.max(0,x.start-_youngestNow(s,people??getDrvExtra())));
 }
 /* Gehalt je Abschnitt: „3.200 €/Monat bis 50, dann 1.600 € (50 %) bis 60“ */
 function _salarySegsTxt(net,segs){
@@ -12460,13 +12468,13 @@ function _phaseBounds(s,cur,end){
   const c=v=>Math.min(end,Math.max(cur,v));
   return[cur,c(s.phase2From),c(s.workEnd),c(s.phase4From),Math.max(cur,end)];
 }
-function _phaseBarHTML(b){
-  const span=Math.max(1e-9,b[4]-b[0]);
-  let bar='';
+function _phaseBarHTML(b,lead=0){
+  const ld=lead>0.01?lead:0,span=Math.max(1e-9,b[4]-b[0]+ld);
+  let bar=ld?`<i class="lp-past" style="flex:${ld.toFixed(3)}"></i>`:'';
   for(let i=0;i<4;i++){const w=b[i+1]-b[i];if(w>0.01)bar+=`<i class="lp-p${i+1}" style="flex:${w.toFixed(3)}"></i>`;}
   /* Grenzen ohne Phasen der Länge null; b[3] ist der Beginn der Rente */
-  const cands=[1,2,3].filter(i=>b[i]-b[i-1]>0.01).map(i=>({pct:(b[i]-b[0])/span*100,label:_ageTxt(b[i]),key:i===3}));
-  return `<div class="lp-bar">${bar}</div><div class="lp-ticks">${_ticksHTML(cands,_ageTxt(b[4]))}</div>`;
+  const cands=[1,2,3].filter(i=>b[i]-b[i-1]>0.01).map(i=>({pct:(ld+b[i]-b[0])/span*100,label:_ageTxt(b[i]),key:i===3}));
+  return `<div class="lp-bar">${bar}</div><div class="lp-ticks">${_ticksHTML(cands,_ageTxt(b[4]),ld/span*100)}</div>`;
 }
 /* Renten (€/Monat, heutige Kaufkraft), die in einem Alter laufen */
 /* Renten und Einkünfte in einem Alter; das Gehalt weiterer Personen (kind 'work') ist keine Rente und wird getrennt gezeigt (P5) */
@@ -12548,7 +12556,7 @@ function _v2LtPhases(o){
      ihre Rente steht unter „Einkommen im Ruhestand“, „Bearbeiten“ öffnet dasselbe Sheet */
   /* mit weiteren Personen: je Person ein Balken auf derselben Zeitachse (heute bis zum Planhorizont), Alter je Person */
   const ppl=getDrvExtra().filter(p=>p.id);
-  const bars=ppl.length?`<div class="v2-lp-bars"><div class="v2-lp-who"><b>${escHTML(_meName())}</b>${_ownBarHTML(b,s)}</div>${ppl.map(p=>`<div class="v2-lp-who"><b>${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</b>${_personBarHTML(s,p,b[4])}</div>`).join('')}</div>`:_phaseBarHTML(b);
+  const bars=ppl.length?`<div class="v2-lp-bars"><div class="v2-lp-who"><b>${escHTML(_meName())}</b>${_ownBarHTML(b,s,_curAgeOf(s)-_youngestNow(s,ppl))}</div>${ppl.map(p=>`<div class="v2-lp-who"><b>${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</b>${_personBarHTML(s,p,b[4])}</div>`).join('')}</div>`:_phaseBarHTML(b);
   el.innerHTML=`<div class="v2-lp-head"><span class="v2-ret-title" data-info="lt-phases">Lebensphasen</span><button type="button" class="v2-lp-btn" onclick="openPhasesSheet()">Bearbeiten</button></div>${bars}<div class="v2-lp-rows">${rows}${skippedHTML}</div>`;
 }
 /* Daten-Seite: Lebensphasen als eine Zeile mit Zeitstrahl, öffnet das Sheet */
@@ -12608,7 +12616,7 @@ function openPhasesSheet(focus){
   /* Zeitstrahl je weiterer Person oben im Kopf (ihr Alter) */
   const ptl=people.map(p=>`<div class="lp-ptl"><b>${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</b><div id="lpp-${p.id}-tl"></div></div>`).join('');
   const body=
-    `<div class="lp-head"><div class="lp-card">${people.length?`<div class="lp-ptl"><b>${escHTML(_meName())}</b><div id="lpTime">${_ownBarHTML(b,s)}</div></div>`:`<div id="lpTime">${_ownBarHTML(b,s)}</div>`}${ptl}<div class="lp-pv"><b id="lpPct">—</b><span id="lpPctT">Erfolgschance wird berechnet …</span></div></div></div>`+
+    `<div class="lp-head"><div class="lp-card">${people.length?`<div class="lp-ptl"><b>${escHTML(_meName())}</b><div id="lpTime">${_ownBarHTML(b,s,_curAgeOf(s)-_youngestNow(s,people))}</div></div>`:`<div id="lpTime">${_ownBarHTML(b,s)}</div>`}${ptl}<div class="lp-pv"><b id="lpPct">—</b><span id="lpPctT">Erfolgschance wird berechnet …</span></div></div></div>`+
     `<p class="ds-note">Jede Phase beginnt, wo die vorige endet. Gleiches Alter wie bei der Phase davor: Die Phase entfällt.</p>`+
     (people.length?`<p class="ds-note">${L('Die Phasen richten sich nach deinem Alter. Arbeitszeit, Altersvorsorge und Arbeitsende stellst du je Person ein; den Rentenbeginn weiterer Personen bei ihrer gesetzlichen Rente unter Daten → Altersvorsorge.','The phases follow your age. Working time, pension savings and end of work are set per person; the pension start of other people with their state pension under Data → Pensions.')}</p>`:'')+
     sec(1,`1 · ${LT_PHASE_NAMES[0]}`,'<i class="lp-p1"></i>',
@@ -12741,7 +12749,7 @@ function _phasesPreview(){
   if(!d){pctEl.textContent='—';pctEl.className='';txt.textContent='Bitte gültige Werte eintragen – die Phasen folgen aufeinander.';return;}
   const plan=_mod('assets')?buildPlan(d.s,{drv:d.drv,bv:d.bv,people:d.people}):null;
   const b=_phaseBounds(d.s,cur,plan?plan.horizonAge:Math.max(Math.round(_planEndMain(d.s,d.people).end),Math.ceil(cur)+1));
-  document.getElementById('lpTime').innerHTML=_ownBarHTML(b,d.s);
+  document.getElementById('lpTime').innerHTML=_ownBarHTML(b,d.s,(d.people||[]).some(p=>p.id)?_curAgeOf(d.s)-_youngestNow(d.s,d.people):0);
   const yrs=(x,y)=>{const n=Math.round((y-x)*10)/10;return n<=0.01?'entfällt':(n===1?'1 Jahr':_numStr(n)+' Jahre');};
   [['lp-r-1',0],['lp-r-2',1],['lp-r-3',2]].forEach(([id,i])=>{const el=document.getElementById(id);if(el)el.textContent=yrs(b[i],b[i+1]);});
   const r4=document.getElementById('lp-r-4');if(r4)r4.textContent='ab '+_ageTxt(b[3]);
@@ -12767,7 +12775,7 @@ function _phasesPreview(){
     for(let i=1;i<=4;i++)setPh(`lpw-${p.id}-${i}`,i===1?'100':_numStr(Math.round(pr.w[i-2]*1000)/10));
     for(let i=2;i<=4;i++)setPh(`lpv-${p.id}-${i}`,starts[i-1]<pr.workEndMain-1e-9?'100':'0');
     const tl=document.getElementById('lpp-'+p.id+'-tl');
-    if(tl)tl.innerHTML=_personTimelineHTML(d.s,p,b[4]);
+    if(tl)tl.innerHTML=_personTimelineHTML(d.s,p,b[4],d.people);
     setPh('lpp-'+p.id+'-until',_ageTxt(d.s.workEnd));
   });
   const h4=document.getElementById('lp-need4-h');

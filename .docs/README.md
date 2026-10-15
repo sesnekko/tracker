@@ -5,7 +5,7 @@ in Commit `1b57aa8` (Schema 15). Danach Review-Runde P34–P38, Anmerkungen aus 
 Folge-Review 2 P64, P65 (Commit `b9f80d4`), die Persona-Befunde und die kompaktere Daten- und Prognose-Seite (Commit `50300cc`),
 danach EM-Rente mit Zurechnungszeit und Besitzschutz, das Altersvorsorgedepot Monat für Monat und die EM-Rente mit
 Entgeltpunkten laut Bescheid (15.10.2026): Schema 19,
-Service-Worker-Cache `verm-v137`,
+Service-Worker-Cache `verm-v138`,
 `data-store.js?v=32`, `i18n-en.js?v=18`. Unabhängige Prüfberichte:
 [REVIEW_2026-10.md](REVIEW_2026-10.md), [REVIEW_2026-10_FOLGE.md](REVIEW_2026-10_FOLGE.md),
 [REVIEW_2026-10_FOLGE2.md](REVIEW_2026-10_FOLGE2.md), [REVIEW_2026-10_FOLGE3.md](REVIEW_2026-10_FOLGE3.md).

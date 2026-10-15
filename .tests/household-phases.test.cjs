@@ -31,17 +31,28 @@ test('1. Planalter für alle: eine jüngere Person verlängert die Prognose, ein
   assert.ok(pens.length >= 1 && pens.every(x => x.until == null || x.until >= 95), JSON.stringify(pens));
 });
 
-test('1. Balken: jede Person endet mit dem Planalter in ihrem Alter, auf derselben Zeitachse', () => {
+/* Rückmeldung 15.10.2026: Balken gleich lang, alle enden rechts beim Planalter; eine ältere Person beginnt mit einem
+   ausgegrauten Stück so lang wie der Altersabstand (vorher: kürzerer Balken auf der Kalender-Zeitachse) */
+const flexes = h => [...h.matchAll(/<i class="(lp-[a-z0-9]+)" style="flex:([\d.]+)"/g)].map(m => [m[1], +m[2]]);
+const total = h => flexes(h).reduce((x, [, f]) => x + f, 0);
+test('1. Balken: gleich lang, alle enden beim Planalter; die ältere Person beginnt ausgegraut', () => {
   const old = ctx([{ id: 'p1', name: 'Mia', by: 1975, points: 10 }]);
-  const bar = old.run("_personBarHTML(getLifetimeSettings(),getDrvExtra()[0],buildPlan().horizonAge)");
-  assert.match(bar, /<span class="last" style="left:100%">95<\/span>/, 'Mia endet mit ihren 95');
-  const w = +bar.match(/lp-part" style="width:([\d.]+)%/)[1];
-  assert.ok(Math.abs(w - (90 - 46.75) / (95 - 46.75) * 100) < 0.05, 'kürzer: bei deinen 90 ist sie 95');
+  const s = 'getLifetimeSettings()';
+  const mia = old.run(`_personBarHTML(${s},getDrvExtra()[0],buildPlan().horizonAge)`);
+  const me = old.run(`(()=>{const s=${s},p=buildPlan();return _ownBarHTML(_phaseBounds(s,_curAgeOf(s),p.horizonAge),s,_curAgeOf(s)-_youngestNow(s,getDrvExtra()));})()`);
+  assert.deepEqual(flexes(mia)[0], ['lp-past', 5], 'fünf Jahre älter: fünf Jahre ausgegraut');
+  assert.equal(flexes(me)[0][0] === 'lp-past', false, 'du bist die jüngste Person');
+  assert.ok(Math.abs(total(mia) - total(me)) < 0.01, total(mia) + ' ≠ ' + total(me));
+  assert.match(mia, /<span class="last" style="left:100%">95<\/span>/); assert.match(me, /<span class="last" style="left:100%">95<\/span>/);
+  assert.match(mia, /<span class="first" style="left:10\.36%">heute<\/span>/, '„heute“ nach dem ausgegrauten Stück');
+  assert.doesNotMatch(mia + me, /lp-part/);
+  // jüngere Person: die Prognose läuft länger, dein Balken beginnt ausgegraut und endet bei deinen 95
   const young = ctx([{ id: 'p1', name: 'Kim', by: 1985, points: 10 }]);
-  const own = young.run("(()=>{const s=getLifetimeSettings(),p=buildPlan();return _ownBarHTML(_phaseBounds(s,_curAgeOf(s),p.horizonAge),s);})()");
-  assert.match(own, /lp-part/); assert.match(own, /class="last" style="left:100%">95</, 'dein Balken endet bei deinen 95');
-  const kim = young.run("_personBarHTML(getLifetimeSettings(),getDrvExtra()[0],buildPlan().horizonAge)");
-  assert.doesNotMatch(kim, /lp-part/, 'die jüngste Person reicht bis zum Ende'); assert.match(kim, /left:100%">95</);
+  const me2 = young.run(`(()=>{const s=${s},p=buildPlan();return _ownBarHTML(_phaseBounds(s,_curAgeOf(s),p.horizonAge),s,_curAgeOf(s)-_youngestNow(s,getDrvExtra()));})()`);
+  const kim = young.run(`_personBarHTML(${s},getDrvExtra()[0],buildPlan().horizonAge)`);
+  assert.deepEqual(flexes(me2)[0], ['lp-past', 5]);
+  assert.ok(Math.abs(total(me2) - total(kim)) < 0.01);
+  assert.match(me2, /left:100%">95</); assert.match(kim, /left:100%">95</);
 });
 
 test('2. EM-Rente im Budget ist kein Gehalt: keine Arbeitszeit, nicht in den Lebensphasen geändert', () => {
