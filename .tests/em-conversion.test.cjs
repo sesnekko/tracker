@@ -81,3 +81,13 @@ test('Phasenbalken: der Rentenbeginn ist immer beschriftet; eine zu nahe Marke d
   const bar = a.run('_personBarHTML(getLifetimeSettings(),getDrvExtra()[0],95)');
   assert.match(bar, />67</); assert.doesNotMatch(bar, />65</);
 });
+
+/* 15.10.2026: In der installierten iPhone-App sperrt lockBodyScroll jedes Wischen (touchmove + preventDefault). Der Text
+   eines offenen Info-Fensters muss trotzdem scrollen, sonst ist z. B. die Erklärung der Erfolgschance nicht lesbar. */
+test('Infobox: Wischen im langen Text bleibt erlaubt, außerhalb gesperrt', () => {
+  const a = app(html);
+  a.run(`globalThis.__mk=(box)=>{const e={prevented:false,preventDefault(){this.prevented=true;},target:{closest:s=>s==='.live-popup.show .info-popup-text'?box:null}};preventTouchMove(e);return e.prevented;};`);
+  assert.equal(a.run('__mk({scrollHeight:900,clientHeight:400})'), false, 'langer Text: scrollt');
+  assert.equal(a.run('__mk({scrollHeight:300,clientHeight:400})'), true, 'kurzer Text: Seite bleibt gesperrt');
+  assert.equal(a.run('__mk(null)'), true, 'außerhalb des Textes gesperrt');
+});

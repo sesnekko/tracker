@@ -319,6 +319,13 @@ Bewertung der EM-Bezugszeit fehlt. Umsetzung (Phase 2, Formeln unverändert):
 
 `node --test .tests/` **378/378**, Audit **22/0**.
 
+**Info-Fenster auf dem iPhone nicht scrollbar (15.10.2026)**, z. B. „Erfolgschance“: In der installierten App hält
+`lockBodyScroll` die Seite mit einer touchmove-Sperre (`preventDefault`) fest; sie blockierte auch das Wischen im Text des
+Fensters. Im normalen Browser greift dieser Zweig nicht, deshalb fiel es bei der ersten Korrektur nicht auf. Jetzt lässt
+`preventTouchMove` Wischen im Text eines offenen Info-Fensters zu, wenn er länger ist als das Fenster; sonst bleibt die Sperre.
+Test „Infobox: Wischen im langen Text …“ (`em-conversion.test.cjs`); Browser: Sperre manuell angehängt, Wischen im Text nicht
+blockiert, auf Hintergrund und Titel blockiert. Nicht geprüft: echtes iPhone. `node --test .tests/` **379/379**.
+
 **Persona-Simulation vom 14.10.2026** (`.docs/Onboarding Persona/Ergebnis_Simulation_2026-10-14.md`, 14 Personas,
 Befunde A1–A13, B1–B6, C1–C14). Umgesetzt in dieser Runde, kein Schemawechsel (weiter Version 17); Versionen
 `data-store.js?v=29`, `i18n-en.js?v=13`, Cache `verm-v127`. Nicht Teil dieser Runde: Folge-Review 3
