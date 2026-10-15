@@ -1,7 +1,7 @@
-const CACHE='verm-v127';
+const CACHE='verm-v128';
 const ASSETS=[
   './index.html',
-  './data-store.js?v=29',
+  './data-store.js?v=30',
   './loan-model.js?v=2',
   './loan-history.js?v=1',
   './asset-model.js?v=4',
@@ -10,7 +10,7 @@ const ASSETS=[
   './icon-192.png?v=2',
   './icon-512.png?v=2',
   './logo-a.png?v=1',
-  './i18n-en.js?v=13',
+  './i18n-en.js?v=14',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',
   'https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js',
   'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap'

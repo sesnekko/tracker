@@ -46,6 +46,11 @@ Von oben nach unten:
 | „So wird gerechnet“, Partner-Story | `.v2-lt-links`: `[data-info=lt-method]` (`INFO['lt-method']`), `#psOpen` → `openPartnerStory()` | zwei Zeilen in einer Karte | Partner-Story nur mit weiterer erwachsener Person |
 | Annahmen | `#ltAssume` > `#v2-forecast-sec` (Lebensplanung, Lebensphasen, Ereignisse, Rendite & Sparrate je Asset) | `updateLifetimeInputs()`, `renderEventEditor()`, `buildAssetParamsTable()`; speichert sofort (`v2-live`). Seit 14.10.2026 hier statt auf der Daten-Seite; die Optik kommt aus denselben Regeln (`:is(#page-import,#ltAssume)`) | ja, zugeklappt |
 
+Lebensphasen mit weiteren Personen: je Person ein Phasenbalken auf derselben Zeitachse (heute bis zum Planhorizont, Alter
+der Person; `_personBarHTML`: Vollzeit, Teilzeit, ohne Arbeit, Rente in den Farben der Phasen). Die Erklärung der
+Erfolgschance (`openSuccessExplain`) steht in einer Infobox mit begrenzter Höhe; der Text scrollt, Titel und „Schließen“
+bleiben stehen.
+
 Auf dem Mac (≥1280 px) liegt alles ab der Ergebnis-Karte in der rechten Spalte `.desk-rail`; die Annahmen stehen
 darunter (Bereich `assume`, höchstens 860 px breit).
 
@@ -253,10 +258,14 @@ Rentenformeln im Überblick (Rechtsgrundlagen in 7.1):
   für die heutige Arbeitszeit gilt; danach keine).
   Brutto = Punkte × Rentenwert (42,52 €) × **Zugangsfaktor** (1 − 0,003 je Monat vor der
   Regelaltersgrenze, höchstens −14,4 %; 1 + 0,005 je Monat danach); netto = brutto × (1 − Abzüge %).
-  Beginn frühestens mit 63. Mit EM-Rente mindestens die volle EM-Rente (teilweise × 2); nach einer
-  bis zur Regelaltersgrenze laufenden EM-Rente gilt der Faktor 1.
-- **EM-Rente** (`calcEm`): Hinzuverdienstgrenze 2026 (voll 20.763,75 €, teilweise mindestens 41.527,50 €).
-  40 % des Überschusses mindern die Bruttorente; netto um die Abzüge verringert.
+  Beginn frühestens mit 63. Nach einer EM-Rente (seit 15.10.2026, Schema 18): Punkte, die Grundlage der EM-Rente
+  waren, behalten deren Zugangsfaktor (§ 77 Abs. 3), neue Punkte zählen mit dem der Altersrente (nach einer bis zur
+  Regelaltersgrenze laufenden EM-Rente 1); die Zurechnungszeit zählt nicht mit. Besitzschutz (§ 88): beginnt die
+  Altersrente höchstens 24 Monate nach dem Ende der EM-Rente, mindestens deren persönliche Entgeltpunkte mit
+  Rentenartfaktor 1 (teilweise × 2). Angesetzt wird der höhere Wert.
+- **EM-Rente** (`calcEm`): Zahlbetrag laut Bescheid oder aus (Punkte + Zurechnungszeit) × Zugangsfaktor × Rentenartfaktor
+  × Rentenwert. Hinzuverdienstgrenze laut Bescheid bei beiden Arten, sonst gesetzlich 2026 (voll 20.763,75 €, teilweise
+  41.527,50 €). 40 % des Überschusses mindern die Bruttorente; netto um die Abzüge verringert.
 - **Beamte**: Anspruch ab fünf Dienstjahren. Ruhegehaltssatz 1,79375 % je Dienstjahr, höchstens
   71,75 %, mindestens 35 %. Antragsruhestand frühestens mit 63; Abschlag 3,6 % je Jahr vor der
   Altersgrenze, höchstens 14,4 %; kein Abschlag mit 65 und 45 Dienstjahren.
@@ -454,7 +463,10 @@ Jeder Abschnitt ist ein ausklappbares `<details class="lp-sec">`; der Kopf zeigt
 | Rentenbeginn weiterer Personen | – | `statutoryPension.retirementAge` | nicht im Sheet, sondern bei ihrer gesetzlichen Rente (Daten → Altersvorsorge) |
 
 Arbeitszeit ist der Anteil einer Vollzeitstelle (0–100), Altersvorsorge der Anteil der heutigen
-Beiträge (0–200; Betriebsrenten-Sparraten zählen zu dir, Altersvorsorgedepots zu ihrer Person). Unter
+Beiträge (0–200; Betriebsrenten-Sparraten zählen zu dir, Altersvorsorgedepots zu ihrer Person). In ein
+Altersvorsorgedepot fließen Beiträge und Zulagen nur, solange die Person arbeitet (seit 15.10.2026, `_avdParams().factor`):
+im Vorruhestand und danach nichts mehr, auch mit einem Vorsorge-Anteil für die Phase (der gilt dort nur für
+Vorsorge-Gruppen wie eine private Rentenversicherung); das Kapital verzinst sich bis zum Auszahlungsbeginn weiter. Unter
 den Arbeitsphasen steht, wie sich das Haushaltseinkommen ändert („Ab 50: Einkommen −2.500 €/Monat
 gegenüber heute; Altersvorsorgedepots +200 €/Monat → 1.284 €/Monat aus dem Vermögen“, `_phaseEffectTxt`).
 „Zusätzliche Entnahme“ ist nur noch für Ausgaben über dem Budget gedacht, Einkommenslücken rechnet die App.

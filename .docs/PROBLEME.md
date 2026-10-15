@@ -196,6 +196,18 @@ sondern mit dem asynchronen Testbrowser geprüft (Simulation). *Nicht geprüft:*
 `file://` in dieser Runde, eine echte neuere App-Version auf demselben Gerät. Port 8123 und produktive `file://`-Tabs nicht
 benutzt.
 
+**Anforderungen vom 15.10.2026** (umgesetzt, noch nicht gepusht; Schema 18, `data-store.js?v=30`, `i18n-en.js?v=14`,
+Cache `verm-v128`):
+
+| Punkt | Änderung | Nachweis |
+| --- | --- | --- |
+| EM-Rentenprognose | Zurechnungszeit (`disabilityCreditedPoints`) und Zugangsfaktor der EM-Rente (`disabilityAccessFactor`) getrennt von den tatsächlichen Punkten (Schema 18). Altersrente: alte Punkte mit dem Zugangsfaktor der EM-Rente, neue mit dem der Altersrente (§ 77 Abs. 3), Zurechnungszeit nur über den Besitzschutz; Besitzschutz mit Rentenartfaktor 1,0, auch wenn die EM-Rente bis 24 Monate vorher endet (§ 88). Hinzuverdienstgrenze laut Bescheid bei beiden Arten. EM-Rente ohne Zahlbetrag aus Punkten; Abgleich mit dem Bescheid (> 15 % Abweichung → Hinweis). Erklärung zeigt den Rechenweg | `em-conversion.test.cjs` (7 der 10 Tests); geändert mit Begründung: `disability-pension.test.cjs` (Grenze bei voller EM bleibt; Zugangsfaktor der alten Punkte), `retirement-income.test.cjs` (Text Besitzschutz), `data-model.test.cjs` (neue Kennwerte aus dem Vergleich ausgenommen) |
+| Infobox Erfolgschance | Höchstens 84 % der Höhe, Text scrollt, Titel und „Schließen“ bleiben; Überschriften, Listen und Tabelle gestaltet; Verweis auf „Prognose → Annahmen“ | Test „Infobox“, Browser (iPhone-Größe) |
+| AV-Depot im Vorruhestand | Beiträge und Zulagen nur, solange die Person arbeitet; der Vorsorge-Anteil im Vorruhestand gilt nur noch für Vorsorge-Gruppen. Das Kapital verzinst sich bis zur Auszahlung weiter (geprüft: deterministisch und im Topf eines verknüpften Depots) | Test „Altersvorsorgedepot“; geändert mit Begründung: `life-phases.test.cjs`, `forecast-cashflow.test.cjs` P18b und Audit P18b (verlangten Einzahlungen nach dem Arbeitsende) |
+| Phasenbalken je Person | Prognose → Lebensphasen: je Person ein Balken auf derselben Zeitachse, im Alter der Person | Test „Phasenbalken“, Browser |
+
+`node --test .tests/` **348/348**, Audit **22/0**.
+
 **Persona-Simulation vom 14.10.2026** (`.docs/Onboarding Persona/Ergebnis_Simulation_2026-10-14.md`, 14 Personas,
 Befunde A1–A13, B1–B6, C1–C14). Umgesetzt in dieser Runde, kein Schemawechsel (weiter Version 17); Versionen
 `data-store.js?v=29`, `i18n-en.js?v=13`, Cache `verm-v127`. Nicht Teil dieser Runde: Folge-Review 3
@@ -553,7 +565,7 @@ wären als feste Tests: P1, P2, P8, P10, P13 und der Monotonie-/Volatilitätstes
 
 | Bereich | Vorgehen | Ergebnis |
 | --- | --- | --- |
-| Testsuite | `node --test .tests/` | 218/218; nach P10, P30, P31 und DEMO-5/6: 231/231; nach Personen, Kindern und P32: 246/246; nach Teilzeit: 253/253; Lebensphasen gesammelt: 256/256; Arbeitszeit je Phase und Person: 260/260; Review P34–P38: 283/283; Anmerkungen aus dem Test: 288/288; Folge-Review P54, P55, P63: 309/309; Folge-Review 2 P64, P65: 322/322; Persona-Befunde 14.10. und kompakte Darstellung: 338/338 |
+| Testsuite | `node --test .tests/` | 218/218; nach P10, P30, P31 und DEMO-5/6: 231/231; nach Personen, Kindern und P32: 246/246; nach Teilzeit: 253/253; Lebensphasen gesammelt: 256/256; Arbeitszeit je Phase und Person: 260/260; Review P34–P38: 283/283; Anmerkungen aus dem Test: 288/288; Folge-Review P54, P55, P63: 309/309; Folge-Review 2 P64, P65: 322/322; Persona-Befunde 14.10. und kompakte Darstellung: 338/338; Anforderungen 15.10. (EM, Depot, Infobox, Balken): 348/348 |
 | Audit | `node .scripts/audit-forecast.cjs` | 22 Prüfungen, 0 Abweichungen (vorher 19). Demo: Start 2026-10, Erfolgschance 100 %, sicher ab 52 (ohne Annas Gehalt 95,8 % und 58) |
 | Neue Tests | `forecast-cashflow.test.cjs` (21: Geldfluss-Erhaltung, Zeitgrenzen, Depot-Auszahlungen, Suchkandidaten, Haushaltsdefizit), `pension-rules.test.cjs` (14: Renten, Pension, Zulagen, Partnergehalt, Einkommenskarte, Schema 13), `flows.test.cjs` (5), `concurrency.test.cjs` (6), `setup.test.cjs` P4 | alle grün |
 | Gegenprobe | dieselben Tests gegen `7504901` (`APP_HTML=…` bzw. Kopie der alten Dateien) | alle Fehlertests scheitern am alten Stand; nur Kontrollfälle bestehen |

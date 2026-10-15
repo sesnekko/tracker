@@ -6,7 +6,7 @@
   // Stand vor dem letzten Update (Rohtext), geschrieben direkt vor dem ersten Speichern eines migrierten Dokuments (P37).
   const BACKUP_KEY = 'vermoegen-data-v1-before-update';
   const FORMAT = 'vermoegen-backup';
-  const VERSION = 17;
+  const VERSION = 18;
   const CATEGORIES = ['cash', 'etf', 'stock', 'bitcoin', 'crypto', 'metal', 'realEstate', 'vehicle', 'other', 'bav', 'illiquid', 'liab'];
   const BUDGET_CATEGORIES = ['einkommen', 'fixe', 'variable', 'sparen'];
   const MODULES = ['assets', 'liab', 'pension', 'budget', 'forecast'];
@@ -52,8 +52,12 @@
     bbg: 'contributionCeiling',
     // Version 7: laufende Erwerbsminderungsrente (1 = teilweise, 2 = voll) der eigenen Person,
     // seit Version 8 auch für weitere Personen.
-    emType: 'disabilityType', em: 'disabilityPension', emUntil: 'disabilityUntilYear', emLimit: 'earningsLimit'
+    emType: 'disabilityType', em: 'disabilityPension', emUntil: 'disabilityUntilYear', emLimit: 'earningsLimit',
+    // Version 18: Entgeltpunkte aus der Zurechnungszeit getrennt von den tatsächlich erworbenen Punkten und der
+    // Zugangsfaktor der Erwerbsminderungsrente (für die spätere Altersrente, § 77 Abs. 3 und § 88 SGB VI).
+    emZz: 'disabilityCreditedPoints', emZf: 'disabilityAccessFactor'
   };
+  const DRV_V18 = ['disabilityCreditedPoints', 'disabilityAccessFactor'];
   // Gemeinsame Rechengrößen stehen nur bei der eigenen Person und gelten für alle.
   const DRV_PRIMARY = ['pensionPointValue', 'averageSalary', 'contributionCeiling'];
   // Version 8: Altersvorsorgedepots (ab 2027) je Person; fehlende Felder = Standardwerte der App.
@@ -490,7 +494,7 @@
     safeKeys(doc);
     object(doc, 'Datei', ['format', 'schemaVersion', 'currency', 'exportedAt', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences'], ['format', 'schemaVersion', 'currency', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences']);
     if (doc.format !== FORMAT) fail('format', 'keine Assets-Sicherung');
-    if (![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
+    if (![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
     if (doc.currency !== 'EUR') fail('currency', 'nur EUR wird unterstützt');
     if (own(doc, 'exportedAt') && (typeof doc.exportedAt !== 'string' || !Number.isFinite(Date.parse(doc.exportedAt)))) fail('exportedAt', 'ungültiges Datum');
     const groups = unique(doc.groups, 'groups');
@@ -644,7 +648,9 @@
       for (const k of ['birthYear', 'birthMonth', 'workUntilAge']) if (own(p, k)) num(p[k], k);
       if (own(p, 'birthMonth') && !(Number.isInteger(p.birthMonth) && p.birthMonth >= 1 && p.birthMonth <= 12)) fail('birthMonth', '1 bis 12 erwartet');
       if (own(p, 'monthlyNetIncome')) num(p.monthlyNetIncome, 'Nettogehalt', 0);
-      numericObject(p.statutoryPension, 'Gesetzliche Rente', Object.values(DRV));
+      numericObject(p.statutoryPension, 'Gesetzliche Rente', Object.values(DRV).filter(k => v >= 18 || !DRV_V18.includes(k)));
+      if (own(p.statutoryPension, 'disabilityCreditedPoints') && !(p.statutoryPension.disabilityCreditedPoints >= 0)) fail('Zurechnungszeit', 'Entgeltpunkte ab 0 erwartet');
+      if (own(p.statutoryPension, 'disabilityAccessFactor') && !(p.statutoryPension.disabilityAccessFactor > 0 && p.statutoryPension.disabilityAccessFactor <= 1)) fail('Zugangsfaktor', 'mehr als 0 und höchstens 1 erwartet');
       if (own(p, 'civilServicePension')) numericObject(p.civilServicePension, 'Beamtenversorgung', Object.values(CIVIL));
       if (!primary && DRV_PRIMARY.some(k => own(p.statutoryPension, k))) fail('Gesetzliche Rente', 'Gemeinsame Rentenwerte gehören zur eigenen Person');
       if (own(p.statutoryPension, 'disabilityType') && ![1, 2].includes(p.statutoryPension.disabilityType)) fail('Erwerbsminderungsrente', 'teilweise (1) oder voll (2) erwartet');

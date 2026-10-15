@@ -112,11 +112,12 @@ test('other people: EM pension uses their own age and is converted to the own ag
   near(ends.em.until, 44);
   near(ends.em.untilMain, 51);
   assert.equal(ends.em.full, 0);
-  // Type "Keine" (0) or a limit with full EM is dropped like for the own pension.
+  // Type "Keine" (0) is dropped like for the own pension. Seit 15.10.2026 gilt eine Hinzuverdienstgrenze laut Bescheid
+  // bei beiden Arten (Anforderung „individuelle Hinzuverdienstgrenzen ermöglichen“); vorher wurde sie bei voller EM verworfen.
   assert.equal(calc(Object.assign({ emType: 0, em: 900 }, base)).em, undefined);
   const r = a.json(`(()=>{const p=Object.assign({emType:'2',em:1000,emLimit:50000,emUntil:''},${JSON.stringify(base)});_drvEmClean(p);return p;})()`);
   assert.equal(r.emType, 2);
-  assert.equal('emLimit' in r, false);
+  assert.equal(r.emLimit, 50000);
   assert.equal('emUntil' in r, false);
 
   a.run(`appStorage.setItem('lt-drv-extra',JSON.stringify([${JSON.stringify(Object.assign({ emType: 2, em: 1000, emUntil: 2030 }, base))}]));`);
@@ -177,7 +178,9 @@ test('old-age pension after a partial EM pension: the higher of the protected mi
   const calc = d => a.json(`calcDrvPension(getLifetimeSettings(),Object.assign(getDrv(),${JSON.stringify(d)}))`);
   const working = calc({ points: 20, salary: 51944, emType: 1, em: 500 });
   near(working.epTotal, 20 + (67 - 46.75));
-  near(working.calcNetto, working.epTotal * 42.52 * 0.8);
+  // § 77 Abs. 3 SGB VI (seit 15.10.2026 abgebildet): die 20 Punkte, die schon Grundlage der EM-Rente waren, behalten deren
+  // Zugangsfaktor (ohne Angabe 0,892); die neuen Punkte aus der Teilzeit zählen mit dem Faktor der Altersrente (1,0).
+  near(working.calcNetto, (20 * 0.892 + (67 - 46.75)) * 42.52 * 0.8);
   assert.ok(working.calcNetto > 1000);
   near(working.netto, working.calcNetto);
   // Without further points the protected minimum (twice the partial EM pension) applies.

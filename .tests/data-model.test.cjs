@@ -25,7 +25,8 @@ const PHASE_FIELDS = "['pensionAge','pensionSpending','p1Work','p2Saving','p2Wor
 // (1) die Eingaben des Modells mit dem alten Stand und (2) die Ergebnisse zwischen Migration und frischem Import im
 // aktuellen Code. So bleibt belegt, dass die Migration nichts verliert, ohne einen fachlich falschen Sollwert festzuhalten.
 const GROUP_FIELDS = "['key','cat','gross','debt','legacyDebt','ret','vol','retDyn','volDyn','saving','avail','tax','hasLoanModel']";
-const DRV_NEW = "['inp','rag','zf','zfMonths','workEndMain','workUntil','by','net','netInBudget','personId','prof']";
+// zfPts, epNew, besitz: Kennwerte der Altersrente nach einer EM-Rente (Schema 18), keine Eingaben
+const DRV_NEW = "['inp','rag','zf','zfMonths','zfPts','epNew','besitz','workEndMain','workUntil','by','net','netInBudget','personId','prof']";
 function forecastInputs(a) {
   return a.json('(()=>{const p=buildPlan();const strip=d=>{d=Object.assign({},d);'+DRV_NEW+'.forEach(k=>delete d[k]);return d;};return {settings:Object.fromEntries(Object.entries(p.s).filter(([k])=>!'+PHASE_FIELDS+'.includes(k))),drv:strip(p.drv),extra:p.drvExtra.map(strip),groups:p.groups.map(g=>{const x={};'+GROUP_FIELDS+'.forEach(k=>x[k]=g[k]);x.loans=g.loans.map(l=>({bal:l.bal,rate:l.rate,pay:l.pay,extra:l.extra,follow:l.follow,fixedAge:l.fixedAge}));return x;})};})()');
 }

@@ -84,9 +84,11 @@ function check(id, scenario, actual, expected, evidence) {
   d.retirement.pensionDepots = [{ id: 'dep', name: 'Depot', personId: 'person-main',
     monthlyContribution: 150, payoutAge: 65, returnPercent: 0, deductionPercent: 0 }];
   const a = context(d);
-  // This year's phase is entirely Vorruhestand: the own contribution requires cash.
-  const actual = a.json('(()=>{const s=getLifetimeSettings(),z=avdYear(s,getAvDepots()[0],2027),p=buildPlan();return {own:z.own,cashAt43:simulatePlan(p,s.withdrawFrom).total[1],ownSum:p.avd[0].ownSum,capReal:p.avd[0].capReal};})()');
-  check('P18b', 'AV-Eigenbeitrag 1800 muss aus 1000 Cash finanziert werden', actual.cashAt43 >= 1000, false, actual);
+  // This year's phase is entirely Vorruhestand. Since 15.10.2026: after the end of work neither own contributions nor
+  // subsidies flow into a retirement depot (no eligibility without employment), even with a pension share for the phase;
+  // previously this case expected 1800 € to be paid from 1000 € cash. Now nothing is due and cash stays untouched.
+  const actual = a.json('(()=>{const s=getLifetimeSettings(),z=avdYear(s,getAvDepots()[0],2027),p=buildPlan();return {own:z?z.own:0,cashAt43:simulatePlan(p,s.withdrawFrom).total[1],ownSum:p.avd[0]?p.avd[0].ownSum:0,capReal:p.avd[0]?p.avd[0].capReal:0};})()');
+  check('P18b', 'Kein AV-Eigenbeitrag nach dem Arbeitsende; Cash bleibt 1000', actual.own === 0 && actual.ownSum === 0 && actual.cashAt43 === 1000, true, actual);
 }
 
 {

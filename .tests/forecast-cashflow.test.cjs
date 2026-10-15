@@ -35,14 +35,17 @@ test('P18a: saving after the end of work is an internal transfer and creates no 
   assert.equal(r.short, null);
 });
 
-test('P18b: own contributions to a retirement depot after the end of work must be paid from assets', () => {
+/* P18b ging davon aus, dass im Vorruhestand weiter in ein Altersvorsorgedepot eingezahlt werden kann (Vorsorge-Anteil der
+   Phase), und verlangte, dass diese Beiträge aus dem Vermögen kommen. Seit 15.10.2026 gilt fachlich: Nach dem Ende der
+   Arbeit fließen weder Beiträge noch Zulagen in das Depot (keine Förderberechtigung ohne Beschäftigung); das angesparte
+   Kapital verzinst sich weiter. Der Fall prüft deshalb, dass nichts mehr abfließt. */
+test('P18b (15.10.2026): after the end of work nothing flows into a retirement depot, even with a pension share in early retirement', () => {
   const d = fixture();
   d.forecast.settings.phase3PensionPercent = 100;
   d.retirement.pensionDepots = [{ id: 'dep', name: 'Depot', personId: 'person-main', monthlyContribution: 150, payoutAge: 65, returnPercent: 0, deductionPercent: 0 }];
   const r = simulate(context(d));
-  // 2027 sind 12 × 150 = 1.800 € Eigenbeitrag fällig, vorhanden sind 1.000 €: nicht finanzierbar.
-  assert.ok(r.short !== null && r.short <= 43, 'Fehlbetrag spätestens 2027, war ' + r.short);
-  assert.ok(r.total[1] < 1000, 'Cash bleibt nicht unangetastet');
+  assert.equal(r.short, null, 'kein Fehlbetrag durch Depotbeiträge');
+  assert.deepEqual(r.total.map(v => Math.round(v * 1e6) / 1e6), [1000, 1000, 1000], 'Cash bleibt unangetastet');
 });
 
 test('P22: an under-funded purchase moves only the funded part and fails', () => {
