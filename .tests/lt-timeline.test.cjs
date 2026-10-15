@@ -63,11 +63,18 @@ test('Werte je Alter: Prognose aus dem Erwartungspfad in heutiger Kaufkraft, His
   assert.ok(Math.abs(r.home - r.homeExp) < 1e-6);
   assert.ok(Math.abs(r.loan - r.loanExp) < 1e-6);
   assert.ok(r.loan > r.loanNow, 'Restschuld sinkt (Tilgung) → Beitrag zum Vermögen steigt');
+  // Historie: erfasste Werte (nominal); in Kaufkraft mit dem genauen Alter des Monats umgerechnet wie der Chart
   const hist = a.json(`(()=>{const S=Object.assign({},__S),j=S.plan.groups.findIndex(g=>g.key==='Immobilien'),past=Math.floor(S.currentAge)-1;
-    S.allAges=[past,...S.allAges];
+    S.allAges=[past,...S.allAges];S.histAgeMap=new Map([[past,past+0.5]]);
     S.histGrossMaps=S.plan.groups.map((g,k)=>new Map(k===j?[[past,111]]:[]));S.histDebtMaps=S.plan.groups.map((g,k)=>new Map(k===j?[[past,222]]:[]));
-    const rows=_ltGroupRows(S);return[rows.find(x=>x.key==='Immobilien'&&!x.liab).vals[0],rows.find(x=>x.liab).vals[0]];})()`);
-  assert.deepEqual(hist, [111, -222]);
+    const rows=_ltGroupRows(S),h=rows.find(x=>x.key==='Immobilien'&&!x.liab),l=rows.find(x=>x.liab);
+    return{n:[h.valsN[0],l.valsN[0]],r:[h.vals[0],l.vals[0]],f:Math.pow(1+S.infl,S.currentAge-past-0.5)};})()`);
+  assert.deepEqual(hist.n, [111, -222], 'nominal = wie erfasst');
+  assert.ok(Math.abs(hist.r[0] - 111 * hist.f) < 1e-9 && Math.abs(hist.r[1] + 222 * hist.f) < 1e-9, 'Kaufkraft: höher, je weiter zurück');
+  // Zukunft nominal: Erwartungspfad ohne Abzinsung (Immobilie wächst mit ihrer Rendite)
+  const fut = a.json(`(()=>{const S=__S,rows=_ltGroupRows(S),j=S.plan.groups.findIndex(g=>g.key==='Immobilien'),h=rows.find(x=>x.key==='Immobilien'&&!x.liab);return[h.valsN[10],S.det.perGross[j][10],h.vals[10]];})()`);
+  assert.equal(fut[0], fut[1]);
+  assert.ok(fut[0] > fut[2], 'nominal über Kaufkraft');
 });
 
 test('Anzeige je Stelle: Anteil an den Vermögenswerten, Veränderung gegenüber heute', () => {
@@ -94,7 +101,8 @@ test('Liste wie auf der Vermögen-Seite, Kopf mit „Zurück zur Prognose“', (
   // gleiche Zeile wie _createLegendRow: Symbol, Name, Anteil · Art, Wert, Veränderung
   assert.match(h, /<li class="legend-row" data-tl="0"><span class="v2-ico"><svg[^]*?<\/svg><\/span><div class="v2-row-l"><span class="legend-name">Immobilien<\/span><span class="v2-sub"><span class="legend-pct">\d+ %<\/span><span class="v2-kind">illiquide<\/span><\/span><\/div><div class="v2-row-r"><span class="legend-val">315\.000 €<\/span><span class="legend-delta"><\/span><\/div><\/li>/);
   assert.match(h, /<li class="legend-row lt-tl-liab" data-tl="\d+">.*?Kredit Wohnung.*?<span class="legend-pct"><\/span><span class="v2-kind">Restschuld<\/span>.*?<span class="legend-val neg">−202\.000 €<\/span>/);
-  assert.match(h, /Erwarteter Verlauf ohne Kursschwankungen, in heutiger Kaufkraft/);
+  assert.match(h, /<div class="ds-seg lt-tl-unit" role="group" aria-label="Einheit"><button type="button" data-tl-unit="n" class="on" aria-pressed="true">Nominal<\/button><button type="button" data-tl-unit="r" class="" aria-pressed="false">Kaufkraft<\/button><\/div><ul class="legend-list" id="ltLegend">/, 'Start nominal');
+  assert.match(h, /<p class="lt-tl-note" id="lt-tl-note">.*Nominal: Vergangenheit wie erfasst, Zukunft in Euro des jeweiligen Jahres.*Chart und Gesamtwert oben zeigen heutige Kaufkraft\.<\/p>$/);
   assert.match(a.run('_ltTimelineHTML([])'), /v2-empty/);
 });
 
@@ -139,4 +147,32 @@ test('Markup und Darstellung: Platz in der rechten Spalte, Fahren über den Char
   assert.match(html, /#legendAssets \.legend-row,#legendAssets-ipad \.legend-row,#ltLegend \.legend-row\{/);
   assert.match(html, /_ltTimelineAt\(idx\);\n    showCross\(idx\);/, 'Fahren über den Chart aktualisiert die Liste');
   assert.match(html, /_ltTimelineAt\(null\);\n  \}\n  let active=false;/, 'Loslassen zeigt wieder heute');
+  // Asset-Flächen auf der Log-Skala mindestens 1.000 € (eine 0 zeichnete eine Diagonale über den ganzen Chart)
+  assert.match(html, /const clip=v=>Math\.round\(ltUseLog\?Math\.max\(1000,v\):v\);/);
+});
+
+test('Sortierung beim Fahren: nach Größe im gewählten Alter, erst Vermögenswerte, dann Restschulden', () => {
+  const a = withState();
+  const rows = '[{liab:false},{liab:false},{liab:false},{liab:true},{liab:true}]';
+  assert.deepEqual(a.json(`_ltTlOrder(${rows},[{v:100},{v:300},{v:200},{v:-50},{v:-400}])`), [1, 2, 0, 4, 3]);
+  assert.deepEqual(a.json(`_ltTlOrder(${rows},[{v:100},{v:100},{v:null},{v:-50},{v:-50}])`), [0, 1, 2, 3, 4], 'gleich groß: Reihenfolge bleibt');
+  // heute entspricht der Startreihenfolge der Liste
+  assert.deepEqual(a.json('(()=>{const r=_ltGroupRows(__S);return _ltTlOrder(r,_ltTlView(r,null));})()'), a.json('_ltGroupRows(__S).map((x,i)=>i)'));
+  assert.match(html, /_ltTlSort\(box\.querySelector\('#ltLegend'\),M\.rows,view\);/);
+});
+
+test('Einheit umschalten: nominal und Kaufkraft je Alter, Hinweis passt sich an', () => {
+  const a = withState();
+  const r = a.json(`(()=>{const rows=_ltGroupRows(__S),i=rows.findIndex(x=>x.key==='Immobilien'&&!x.liab);return{n:_ltTlView(rows,10,true)[i].v,r:_ltTlView(rows,10,false)[i].v,today:[_ltTlView(rows,null,true)[i].v,_ltTlView(rows,null,false)[i].v],now:rows[i].now,valsN:rows[i].valsN[10],vals:rows[i].vals[10]};})()`);
+  assert.equal(r.n, r.valsN); assert.equal(r.r, r.vals);
+  assert.deepEqual(r.today, [r.now, r.now], 'heute in beiden Einheiten gleich');
+  a.run("haptic=()=>{};globalThis.__cls={};document.getElementById('page-lifetime').classList.toggle=(c,on)=>{__cls[c]=on;};_ltState=__S;ltTlNominal=true;ltTimeline(true)");
+  a.run('ltTlUnit(false)');
+  assert.equal(a.run('ltTlNominal'), false);
+  assert.match(a.el('lt-tl-note').textContent, /Kaufkraft: alle Werte in heutigen Euro, wie Chart und Gesamtwert oben/);
+  a.run('ltTlUnit(true)');
+  assert.match(a.el('lt-tl-note').textContent, /^Fahr über den Chart: .*Nominal: Vergangenheit wie erfasst/);
+  assert.match(html, /box\.onclick=e=>\{const b=e\.target\.closest&&e\.target\.closest\('\[data-tl-unit\]'\);if\(b\)ltTlUnit\(b\.dataset\.tlUnit==='n'\);\};/);
+  assert.match(html, /_ltTlView\(M\.rows,age==null\?null:idx,ltTlNominal\)/, 'Fahren über den Chart nutzt die gewählte Einheit');
+  assert.match(html, /histGrossMaps\[j\]\.set\(ia,q\.add\);histDebtMaps\[j\]\.set\(ia,q\.sub\);/, 'Historie nominal gespeichert');
 });

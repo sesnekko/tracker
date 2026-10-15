@@ -66,17 +66,23 @@ test('Entnahme bzw. Einzahlung im Etappenalter, Ausgangsplan bleibt unverändert
   assert.equal(r.same, true);
 });
 
-test('Kachel: wird berechnet, Ziel mit Fortschritt, Fehlbetrag, kein Polster nötig', () => {
+test('Kachel: wird berechnet, Ziel mit Fortschritt in einer Zeile, Fehlbetrag, kein Polster nötig', () => {
   const a = demo();
   const P = '{s:{phase2From:50,workEnd:60},currentAge:41.75}';
   assert.match(a.run(`_msTileHTML(${P},undefined)`), /^<div data-info="v2-milestone"><span class="k">Ziel mit 50 · liquide<\/span><span class="n">…<\/span><span class="s">wird berechnet<\/span><\/div>$/);
+  // Prozent neben dem Balken, darunter genau eine Zeile; „heute …“ nur auf breiten Karten (CSS)
   const ok = a.run(`_msTileHTML(${P},{reachable:true,age:50,phase:2,today:100000,projected:400000,buffer:150000,need:250000,short:0})`);
-  assert.match(ok, /<span class="n">250 Tsd\. €<\/span><span class="v2-mini"><i style="width:40\.0%"><\/i><\/span><span class="s">heute 100 Tsd\. € · 40 %<\/span><span class="s">erwartet 400 Tsd\. €<\/span>/);
+  assert.match(ok, /<span class="n">250 Tsd\. €<\/span><span class="v2-ms-bar"><span class="v2-mini"><i style="width:40\.0%"><\/i><\/span><span class="v2-ms-pct">40 %<\/span><\/span><span class="s"><span class="v2-ms-today">heute 100 Tsd\. € · <\/span>erwartet 400 Tsd\. €<\/span><\/div>$/);
+  assert.equal((ok.match(/class="s"/g) || []).length, 1, 'nur eine Zeile');
   const short = a.run(`_msTileHTML(${P},{reachable:true,age:50,phase:2,today:100000,projected:200000,buffer:-30000,need:230000,short:30000})`);
-  assert.match(short, /<span class="s"><span class="v2-ms-short">es fehlen ≈ 30 Tsd\. €<\/span><\/span>/);
+  assert.match(short, /<span class="s"><span class="v2-ms-today">heute 100 Tsd\. € · <\/span><span class="v2-ms-short">es fehlen ≈ 30 Tsd\. €<\/span><\/span>/);
   const none = a.run(`_msTileHTML(${P},{reachable:true,age:50,phase:2,today:100000,projected:200000,buffer:200000,need:0,short:0})`);
-  assert.match(none, /<span class="n">0 €<\/span><span class="v2-mini"><i style="width:100\.0%"><\/i><\/span><span class="s">kein Polster nötig<\/span>/);
-  assert.match(a.run(`_msTileHTML({s:{phase2From:50,workEnd:60},currentAge:63},undefined)`), /Nötig heute · liquide/);
+  assert.match(none, /<span class="n">0 €<\/span><span class="s">kein Polster nötig<\/span><\/div>$/);
+  // schon im Ruhestand: „heute“ immer sichtbar (es gibt keinen erwarteten Wert)
+  const now = a.run(`_msTileHTML({s:{phase2From:50,workEnd:60},currentAge:63},{reachable:true,age:63,phase:0,today:100000,projected:100000,buffer:20000,need:80000,short:0})`);
+  assert.match(now, /Nötig heute · liquide.*<span class="s">heute 100 Tsd\. €<\/span><\/div>$/);
+  assert.match(html, /\.v2-ms-today\{display:none\}\n@container \(min-width:520px\)\{\.v2-ms-today\{display:inline\}\}/);
+  assert.match(html, /\.v2-ret-stats\{display:grid;grid-template-columns:minmax\(0,2fr\) minmax\(max-content,1fr\);/, 'Etappenziel 2/3');
 });
 
 test('Ergebnis-Karte: Etappenziel statt „Verfügbar mit …“, Hintergrundrechnung zeichnet neu', () => {

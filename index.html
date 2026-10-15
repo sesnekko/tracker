@@ -1666,8 +1666,9 @@ button.v2-inc-row:active{opacity:.7}
 .v2-gauge-cap{position:relative;height:18px;margin-top:5px}
 .v2-gauge-cap span{position:absolute;transform:translateX(-50%);font-size:12px;color:var(--muted);white-space:nowrap}
 .v2-ret-text{font-size:14px;color:var(--text);line-height:1.45;margin:6px 0 0}
-.v2-ret-stats{display:grid;grid-template-columns:1fr 1fr;margin-top:16px;padding-top:14px;box-shadow:inset 0 .5px 0 var(--sep)}
+.v2-ret-stats{display:grid;grid-template-columns:minmax(0,2fr) minmax(max-content,1fr);margin-top:16px;padding-top:14px;box-shadow:inset 0 .5px 0 var(--sep)}
 .v2-ret-stats>div{display:flex;flex-direction:column;cursor:pointer;min-width:0}
+.v2-ret-stats>div:first-child{padding-right:14px}
 .v2-ret-stats>div+div{padding-left:16px;box-shadow:inset .5px 0 0 var(--sep)}
 .v2-ret-stats .k{font-size:13px;color:var(--muted)}
 .v2-ret-stats .n{font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:2px;line-height:1.25}
@@ -1692,10 +1693,18 @@ button.v2-inc-row:active{opacity:.7}
 .lt-tl-exit{display:inline-flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap}
 .lt-tl-exit svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 #ltLegend .legend-row{cursor:default}
+.lt-tl-unit{display:inline-flex;margin:0 2px 10px}
+.lt-tl-unit button{font-size:13px;padding:5px 12px}
 .lt-tl-note{font-size:12.5px;line-height:1.45;color:var(--muted);margin:10px 2px 0}
 .v2-mini{display:block;height:4px;border-radius:2px;background:var(--fill);margin:7px 0 5px;overflow:hidden;max-width:150px}
 .v2-mini i{display:block;height:100%;border-radius:2px;background:var(--green)}
 .v2-ms-short{color:var(--red)}
+/* Etappenziel: Balken mit Prozent, darunter eine Zeile; „heute …“ nur auf breiten Karten */
+.v2-ms-bar{display:flex;align-items:center;gap:8px;margin:7px 0 5px;max-width:200px}
+.v2-ms-bar .v2-mini{flex:1;margin:0}
+.v2-ms-pct{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.v2-ms-today{display:none}
+@container (min-width:520px){.v2-ms-today{display:inline}}
 #v2-lt-open{margin-top:12px}
 
 /* Guided setup: short explanations, one clear action per screen. */
@@ -12176,7 +12185,7 @@ function renderLifetimePageCalcs(){
   const ink=getComputedStyle(document.body).getPropertyValue('--ink').trim();
   const grn=getComputedStyle(document.body).getPropertyValue('--green').trim();
   /* Historie: je Lebensjahr der letzte Monatsstand, ggf. in heutige Kaufkraft umgerechnet */
-  const histMap=new Map(),histAssetMaps=plan.groups.map(()=>new Map()),histGrossMaps=plan.groups.map(()=>new Map()),histDebtMaps=plan.groups.map(()=>new Map());
+  const histMap=new Map(),histAssetMaps=plan.groups.map(()=>new Map()),histGrossMaps=plan.groups.map(()=>new Map()),histDebtMaps=plan.groups.map(()=>new Map()),histAgeMap=new Map();
   sorted.forEach(ym=>{
     const[y,m]=ym.split('-').map(Number);
     const age=_ageAt(s,y,m-1);
@@ -12184,7 +12193,9 @@ function renderLifetimePageCalcs(){
     const f=real?Math.pow(1+infl,currentAge-age):1;
     histMap.set(ia,calc(data[ym]).net*f);
     const det2=data[ym]._details||{};
-    plan.groups.forEach((g,j)=>{const q=_groupParts(det2,g.key);histAssetMaps[j].set(ia,(q.add-q.sub)*f);histGrossMaps[j].set(ia,q.add*f);histDebtMaps[j].set(ia,q.sub*f);});
+    /* Zeitverlauf-Liste: erfasste (nominale) Werte und das genaue Alter des Monats, umgerechnet wird erst in _ltGroupRows */
+    histAgeMap.set(ia,age);
+    plan.groups.forEach((g,j)=>{const q=_groupParts(det2,g.key);histAssetMaps[j].set(ia,(q.add-q.sub)*f);histGrossMaps[j].set(ia,q.add);histDebtMaps[j].set(ia,q.sub);});
   });
   const histAges=[...histMap.keys()];
   const projAges=Array.from({length:plan.nSteps},(_,y)=>plan.firstAge+y);
@@ -12223,8 +12234,10 @@ function renderLifetimePageCalcs(){
     gSub.addColorStop(0,`rgba(${topR},${topG},${topB},0.28)`);
     gSub.addColorStop(1,`rgba(${topR},${topG},${topB},0.15)`);
     const subBorder=!isDark?`rgba(${topR},${topG},${topB},0.5)`:`rgba(${topR},${topG},${topB},0.4)`;
-    /* Netto inkl. Schulden, negativ nur auf linearer Skala darstellbar */
-    const clip=v=>Math.round(ltUseLog?Math.max(0,v):v);
+    /* Netto inkl. Schulden, negativ nur auf linearer Skala darstellbar. Log-Skala: wie die Hauptlinien mindestens
+       1.000 € (Untergrenze der Achse); eine 0 lässt sich dort nicht zeichnen, und Chart.js schloss die Fläche dann mit
+       einer Diagonale über den ganzen Chart (15.10.2026, z. B. Auto erst ab dem zweiten Jahr) */
+    const clip=v=>Math.round(ltUseLog?Math.max(1000,v):v);
     const lineData=allAges.map(a=>{
       if(a<=Math.floor(currentAge)&&histAssetMaps[j].has(a))return clip(histAssetMaps[j].get(a));
       const yi=projIdx(a);
@@ -12286,7 +12299,7 @@ function renderLifetimePageCalcs(){
   document.getElementById('ltLogToggleBtn').classList.toggle('active',ltUseLog);
   document.querySelectorAll('[data-lt-range]').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.ltRange)===ltRange));
 
-  _ltState={plan,det,mc,tc,real,infl,currentAge,allAges,histLine,projLine,projHi,projLo,histAssetMaps,histGrossMaps,histDebtMaps,xMax:ltXMaxIdx,todayIdx:bridgeIdx,availAtR,coverage,R,retireAge};
+  _ltState={plan,det,mc,tc,real,infl,currentAge,allAges,histLine,projLine,projHi,projLo,histAssetMaps,histGrossMaps,histDebtMaps,histAgeMap,xMax:ltXMaxIdx,todayIdx:bridgeIdx,availAtR,coverage,R,retireAge};
   _ltTimelineRender();
   /* Etappenziel: aus dem Zwischenspeicher, sonst nach der Seite im Hintergrund (_msSchedule) */
   _ltState.summary={s,plan,mc,tc,retireAge,availAtR,coverage,R,currentAge};
@@ -12321,13 +12334,16 @@ function _v2LtNotes(plan){
 function _msTileHTML(plan,ms){
   const a=_msAge(plan);
   const k=a.phase?L('Ziel mit ','Target at ')+_ageTxt(a.age)+L(' · liquide',' · liquid'):L('Nötig heute · liquide','Needed today · liquid');
-  const tile=(n,bar,s1,s2)=>`<div data-info="v2-milestone"><span class="k">${k}</span><span class="n">${n}</span>${bar==null?'':`<span class="v2-mini"><i style="width:${bar.toFixed(1)}%"></i></span>`}<span class="s">${s1}</span>${s2?`<span class="s">${s2}</span>`:''}</div>`;
-  if(ms===undefined)return tile('…',null,L('wird berechnet','calculating'),'');
-  if(!ms.reachable)return tile('—',null,L('Ein Polster allein reicht nicht','A buffer alone is not enough'),'');
-  const need=Math.round(ms.need/1000)*1000,pct=need>0?Math.min(100,ms.today/need*100):100;
-  const s1=need>0?L('heute ','today ')+fmtCompact(ms.today)+' · '+Math.floor(pct)+' %':L('kein Polster nötig','no buffer needed');
-  const s2=ms.short>0?`<span class="v2-ms-short">${L('es fehlen ≈ ','short by ≈ ')}${fmtCompact(ms.short)}</span>`:a.phase?L('erwartet ','expected ')+fmtCompact(ms.projected):'';
-  return tile(fmtCompact(need),pct,s1,s2);
+  /* eine Zeile unter dem Balken (15.10.2026): Prozent neben dem Balken, „heute …“ nur, wenn die Karte breit genug ist */
+  const tile=(n,pct,line)=>`<div data-info="v2-milestone"><span class="k">${k}</span><span class="n">${n}</span>${pct==null?'':`<span class="v2-ms-bar"><span class="v2-mini"><i style="width:${pct.toFixed(1)}%"></i></span><span class="v2-ms-pct">${Math.floor(pct)} %</span></span>`}${line?`<span class="s">${line}</span>`:''}</div>`;
+  if(ms===undefined)return tile('…',null,L('wird berechnet','calculating'));
+  if(!ms.reachable)return tile('—',null,L('Ein Polster allein reicht nicht','A buffer alone is not enough'));
+  const need=Math.round(ms.need/1000)*1000;
+  if(!(need>0))return tile(fmtCompact(0),null,L('kein Polster nötig','no buffer needed'));
+  const pct=Math.min(100,ms.today/need*100),today=L('heute ','today ')+fmtCompact(ms.today);
+  const tail=ms.short>0?`<span class="v2-ms-short">${L('es fehlen ≈ ','short by ≈ ')}${fmtCompact(ms.short)}</span>`:a.phase?L('erwartet ','expected ')+fmtCompact(ms.projected):'';
+  const line=a.phase?`<span class="v2-ms-today">${today} · </span>${tail}`:tail?today+' · '+tail:today;
+  return tile(fmtCompact(need),pct,line);
 }
 function _v2LtSummary(o){
   const el=document.getElementById('v2-lt-summary');
@@ -13038,23 +13054,28 @@ let _ltCleanup=null;
    und, falls vorhanden, eine für die Restschuld. Beim Fahren über den Chart zeigt jede Zeile den Wert im gewählten Alter,
    den Anteil und die Veränderung gegenüber heute. Historie aus den Monatsständen, Prognose aus dem Erwartungspfad (ohne
    Schwankungen), beides in heutiger Kaufkraft wie der Chart. Verbindlichkeiten zählen negativ. ── */
-let ltTimelineOn=false,_ltTl=null;
+let ltTimelineOn=false,_ltTl=null,ltTlNominal=true;/* Einheit der Liste: Start nominal (Wunsch 15.10.2026) */
 function _ltGroupRows(S){
   if(!S||!S.plan||!S.det||!S.det.perGross)return[];
-  const{plan,det,allAges,currentAge,infl}=S,cur=Math.floor(currentAge);
-  const series=(maps,arr,j)=>allAges.map(a=>{
-    if(a<=cur&&maps&&maps[j]&&maps[j].has(a))return maps[j].get(a);
-    const yi=a-plan.firstAge;
-    return yi>=0&&yi<plan.nSteps?arr[j][yi]/Math.pow(1+infl,a-currentAge):null;
-  });
-  const assets=[],liabs=[];
+  const{plan,det,allAges,currentAge,infl}=S,cur=Math.floor(currentAge),ha=S.histAgeMap;
+  /* je Alter nominal (n: erfasster Wert bzw. Euro des jeweiligen Jahres) und real (r: heutige Kaufkraft) */
+  const series=(maps,arr,j)=>{
+    const n=[],r=[];
+    allAges.forEach(a=>{
+      if(a<=cur&&maps&&maps[j]&&maps[j].has(a)){const v=maps[j].get(a),ex=ha&&ha.has(a)?ha.get(a):a;n.push(v);r.push(v*Math.pow(1+infl,currentAge-ex));return;}
+      const yi=a-plan.firstAge;
+      if(yi>=0&&yi<plan.nSteps){const v=arr[j][yi];n.push(v);r.push(v/Math.pow(1+infl,a-currentAge));}else{n.push(null);r.push(null);}
+    });
+    return{n,r};
+  };
+  const neg=v=>v==null?null:-v,assets=[],liabs=[];
   plan.groups.forEach((g,j)=>{
     const gv=series(S.histGrossMaps,det.perGross,j),dv=series(S.histDebtMaps,det.perDebt,j),name=_groupDisplayName(g.key);
-    if(g.gross>0.5||gv.some(v=>v>0.5))assets.push({key:g.key,liab:false,name,kind:_v2GroupKind(g.key,true),icon:_v2Icon(g.key),now:g.gross,vals:gv});
-    if(g.debt>0.5||dv.some(v=>v>0.5)){
+    if(g.gross>0.5||gv.r.some(v=>v>0.5))assets.push({key:g.key,liab:false,name,kind:_v2GroupKind(g.key,true),icon:_v2Icon(g.key),now:g.gross,vals:gv.r,valsN:gv.n});
+    if(g.debt>0.5||dv.r.some(v=>v>0.5)){
       const fs=_vf().filter(f=>f.category==='liab'&&_liabTargetGroup(f)===g.key);
       const lname=fs.length===1?fs[0].label:g.gross>0.5?L('Kredite · ','Loans · ')+name:name;
-      liabs.push({key:g.key,liab:true,name:lname,kind:L('Restschuld','Outstanding balance'),icon:`<svg viewBox="0 0 24 24">${V2_ICONS.bank}</svg>`,now:-g.debt,vals:dv.map(v=>v==null?null:-v)});
+      liabs.push({key:g.key,liab:true,name:lname,kind:L('Restschuld','Outstanding balance'),icon:`<svg viewBox="0 0 24 24">${V2_ICONS.bank}</svg>`,now:-g.debt,vals:dv.r.map(neg),valsN:dv.n.map(neg)});
     }
   });
   const big=(x,y)=>Math.abs(y.now)-Math.abs(x.now);
@@ -13062,8 +13083,8 @@ function _ltGroupRows(S){
 }
 /* Anzeige je Zeile an einer Stelle des Charts (at = Index in allAges, null = heute): Wert, Anteil an den Vermögenswerten,
    Veränderung zu heute */
-function _ltTlView(rows,at){
-  const val=r=>at==null?r.now:r.vals[at];
+function _ltTlView(rows,at,nominal){
+  const val=r=>at==null?r.now:(nominal&&r.valsN?r.valsN:r.vals)[at];
   const total=rows.reduce((a,r)=>{const v=val(r);return a+(!r.liab&&v>0?v:0);},0);
   return rows.map(r=>{
     const v=val(r);
@@ -13073,9 +13094,24 @@ function _ltTlView(rows,at){
 function _ltTimelineHTML(rows){
   const head=`<div class="v2-lp-head"><span class="v2-ret-title">${L('Zeitverlauf','Timeline')}<small class="lt-tl-age" id="lt-tl-age">${L('heute','today')}</small></span><button type="button" class="v2-lp-btn lt-tl-exit" onclick="ltTimeline(false)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>${L('Zurück zur Prognose','Back to forecast')}</button></div>`;
   if(!rows.length)return head+`<div class="v2-empty">${L('Keine Vermögenswerte vorhanden','No assets yet')}</div>`;
+  const unit=(u,t)=>{const on=(u==='n')===ltTlNominal;return `<button type="button" data-tl-unit="${u}" class="${on?'on':''}" aria-pressed="${on}">${t}</button>`;};
+  const seg=`<div class="ds-seg lt-tl-unit" role="group" aria-label="${L('Einheit','Unit')}">${unit('n',L('Nominal','Nominal'))}${unit('r',L('Kaufkraft','Purchasing power'))}</div>`;
   const view=_ltTlView(rows,null);
   const li=rows.map((r,i)=>`<li class="legend-row${r.liab?' lt-tl-liab':''}" data-tl="${i}"><span class="v2-ico">${r.icon}</span><div class="v2-row-l"><span class="legend-name">${escHTML(r.name)}</span><span class="v2-sub"><span class="legend-pct">${view[i].pct}</span><span class="v2-kind">${escHTML(r.kind)}</span></span></div><div class="v2-row-r"><span class="legend-val${view[i].v<-0.5?' neg':''}">${fmt(Math.round(view[i].v))}</span><span class="legend-delta"></span></div></li>`).join('');
-  return head+`<ul class="legend-list" id="ltLegend">${li}</ul><p class="lt-tl-note">${L('Fahr über den Chart: Werte im gewählten Alter und Veränderung gegenüber heute. Erwarteter Verlauf ohne Kursschwankungen, in heutiger Kaufkraft.','Move along the chart: values at the chosen age and change from today. Expected path without market swings, in today\'s money.')}</p>`;
+  return head+seg+`<ul class="legend-list" id="ltLegend">${li}</ul><p class="lt-tl-note" id="lt-tl-note">${_ltTlNote()}</p>`;
+}
+function _ltTlNote(){
+  return ltTlNominal
+    ?L('Fahr über den Chart: Werte im gewählten Alter und Veränderung gegenüber heute. Nominal: Vergangenheit wie erfasst, Zukunft in Euro des jeweiligen Jahres (erwarteter Verlauf ohne Kursschwankungen). Chart und Gesamtwert oben zeigen heutige Kaufkraft.','Move along the chart: values at the chosen age and change from today. Nominal: the past as recorded, the future in euros of each year (expected path without market swings). The chart and total above show today\'s money.')
+    :L('Fahr über den Chart: Werte im gewählten Alter und Veränderung gegenüber heute. Kaufkraft: alle Werte in heutigen Euro, wie Chart und Gesamtwert oben (erwarteter Verlauf ohne Kursschwankungen).','Move along the chart: values at the chosen age and change from today. Purchasing power: all values in today\'s euros, like the chart and total above (expected path without market swings).');
+}
+/* Einheit umschalten (Tipp auf „Nominal“/„Kaufkraft“); gezeigt wird wieder heute */
+function ltTlUnit(nominal){
+  ltTlNominal=!!nominal;haptic('light');
+  const box=document.getElementById('lt-timeline');if(!box)return;
+  box.querySelectorAll('[data-tl-unit]').forEach(b=>{const on=(b.dataset.tlUnit==='n')===ltTlNominal;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
+  const n=document.getElementById('lt-tl-note');if(n)n.textContent=_ltTlNote();
+  _ltTimelineAt(null);
 }
 function _ltTimelineRender(){
   const on=ltTimelineOn&&!!_ltState,pg=document.getElementById('page-lifetime'),box=document.getElementById('lt-timeline');
@@ -13083,12 +13119,13 @@ function _ltTimelineRender(){
   if(!box)return;
   _ltTl=on?{rows:_ltGroupRows(_ltState)}:null;
   box.innerHTML=on?_ltTimelineHTML(_ltTl.rows):'';
+  box.onclick=e=>{const b=e.target.closest&&e.target.closest('[data-tl-unit]');if(b)ltTlUnit(b.dataset.tlUnit==='n');};
 }
 /* idx = Index im Chart (allAges); null = heute */
 function _ltTimelineAt(idx){
   const M=_ltTl,S=_ltState,box=document.getElementById('lt-timeline');
   if(!M||!S||!box)return;
-  const age=idx==null?null:S.allAges[idx],view=_ltTlView(M.rows,age==null?null:idx);
+  const age=idx==null?null:S.allAges[idx],view=_ltTlView(M.rows,age==null?null:idx,ltTlNominal);
   const ageEl=document.getElementById('lt-tl-age');
   if(ageEl)ageEl.textContent=age==null?L('heute','today'):L('mit ','at ')+age+' ('+Math.round(S.plan.s.birthYear+age)+')';
   box.querySelectorAll('#ltLegend .legend-row').forEach(li=>{
@@ -13097,6 +13134,25 @@ function _ltTimelineAt(idx){
     if(vEl){vEl.textContent=x.v==null?'—':fmt(Math.round(x.v));vEl.classList.toggle('neg',x.v!=null&&x.v<-0.5);}
     if(pEl)pEl.textContent=x.pct;
     _setLegendDelta(li.querySelector('.legend-delta'),x.delta);
+  });
+  _ltTlSort(box.querySelector('#ltLegend'),M.rows,view);
+}
+/* Reihenfolge wie auf der Vermögen-Seite nach Größe im gewählten Alter (erst Vermögenswerte, dann Restschulden, je nach
+   Betrag absteigend); umsortierte Zeilen gleiten an ihren neuen Platz */
+function _ltTlOrder(rows,view){
+  return rows.map((r,i)=>i).sort((i,j)=>(rows[i].liab-rows[j].liab)||(Math.abs(view[j].v||0)-Math.abs(view[i].v||0))||(i-j));
+}
+function _ltTlSort(ul,rows,view){
+  if(!ul)return;
+  const cur=[...ul.children],order=_ltTlOrder(rows,view),next=order.map(i=>cur.find(li=>+li.dataset.tl===i)).filter(Boolean);
+  if(next.length!==cur.length||next.every((li,i)=>li===cur[i]))return;
+  const top=new Map(cur.map(li=>[li,li.getBoundingClientRect().top]));
+  next.forEach(li=>ul.appendChild(li));
+  next.forEach(li=>{
+    const d=top.get(li)-li.getBoundingClientRect().top;
+    if(Math.abs(d)<1)return;
+    li.style.transition='none';li.style.transform=`translateY(${d}px)`;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{li.style.transition='transform 420ms cubic-bezier(.22,1,.36,1)';li.style.transform='';}));
   });
 }
 /* Ansicht wechseln; auf dem iPhone danach Chart und Liste zusammen bzw. wieder die Ergebnis-Karte zeigen */
