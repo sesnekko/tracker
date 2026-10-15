@@ -242,6 +242,11 @@ Nachrechnung (195 €/Monat inkl. Zulage, 5 %, 186 Monate Einzahlung, 204 Monate
   nominal und real auf den Cent) und „depot contributions survive a midyear work stop“ (P42: Juli-Wechsel 900 € / 315 €,
   April 450 € / 202,50 €, Oktober 1.350 € / 427,50 €, anderer Geburtsmonat). Vorher: 2027 `null`, Eigenbeitrag 0.
 
+**Eigener Name (15.10.2026):** Bisher hieß die eigene Person überall fest „Ich“. Jetzt Feld „Name“ auf der Ich-Karte
+(Bearbeiten-Modus), gespeichert in `retirement.primary.name` (kein Schemawechsel, `data-store.js?v=31`, `i18n-en.js?v=16`,
+Cache `verm-v132`). Test `own-name.test.cjs` (Speicher, Export/Import, Leeren, Escaping, Anzeige); Browser: Speichern über
+die Oberfläche, weitere Person bleibt, Name in Haushalt, Phasenbalken, Einkommen im Ruhestand und Lebensphasen-Sheet.
+
 Dazu Darstellung auf dem iPhone (Rückmeldung mit Bildschirmfotos):
 - Mitlaufender „Bearbeiten“ (Daten) und die Leiste „Bearbeiten · Abbrechen · Speichern“ lagen in der installierten App im
   Unschärfe-Verlauf unter der Statusleiste → dort 18 px unterhalb der sicheren Zone, wie die Kopfzeile.

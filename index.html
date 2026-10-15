@@ -2702,8 +2702,8 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="i18n-en.js?v=15"></script>
-<script src="data-store.js?v=30"></script>
+<script src="i18n-en.js?v=16"></script>
+<script src="data-store.js?v=31"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
 <script src="asset-model.js?v=4"></script>
@@ -2985,6 +2985,7 @@ const INFO={
   'avd-deduct':['Abzüge','<p>Die Auszahlungen sind voll einkommensteuerpflichtig. Leer = 20 % pauschal. Im Gegenzug sind die Beiträge in der Ansparphase steuerlich begünstigt; diesen Steuervorteil rechnet die App nicht ein.</p>'],
   'drvx-by':['Geburtsjahr','<p>Geburtsjahr dieser Person. Bestimmt ihre Regelaltersgrenze und wann ihre Rente beginnt.</p>'],
   'drvx-until':['Arbeiten bis Alter','<p>Bis zu diesem Alter (ihr Alter) sammelt diese Person mit ihrem Gehalt weitere Rentenpunkte und bezieht ihr Gehalt, also die Budget-Einnahmen, die ihr zugeordnet sind. Leer = wie dein eigenes Ende der Arbeit („Weiterarbeiten bis Alter“).</p>'],
+  'lt-own-name':['Name','<p>Dein Name, wie er neben den anderen Personen steht: im Haushalt, bei den Lebensphasen, im Einkommen im Ruhestand und bei der Zuordnung von Einnahmen und Depots.</p><p>Leer lassen = „Ich“.</p>'],
   'lt-birth-month':['Geburtsmonat','<p>Bestimmt zusammen mit dem Geburtsjahr dein genaues Alter. Phasenwechsel, Rentenbeginn und Auszahlungen werden auf den Monat genau gerechnet.</p><p>Für weitere Personen wird derselbe Geburtsmonat angenommen.</p>'],
   'v2-at-retire':['Verfügbar bei Rentenbeginn','<p>Median des entnehmbaren Vermögens zum geplanten Ruhestand (ohne Sachwerte, Altersvorsorge erst ab „Verfügbar ab“), in heutiger Kaufkraft.</p><p><strong>Ziel</strong>: Vermögen, das zum Ruhestand nötig ist, um den Bedarf abzüglich Renten bis „Planen bis Alter“ zu decken.</p>'],
   'v2-retire-age':['Rente sicher möglich ab','<p>Frühestes Alter, ab dem die Erfolgschance mindestens das Sicherheitsniveau erreicht.</p>'],
@@ -7077,6 +7078,9 @@ function _saveEntryNow(onStale){
   const hby=document.getElementById('hh-birth-year'),hbm=document.getElementById('hh-birth-month');
   if(hby&&hby.value&&hby.value!==appStorage.getItem('lt-birth-year')){const y=+hby.value;if(!(Number.isInteger(y)&&y>=1920&&y<=2015))throw new Error(L('Bitte ein Geburtsjahr wählen.','Please choose a year of birth.'));appStorage.setItem('lt-birth-year',String(y));}
   if(hbm&&hbm.value!==(appStorage.getItem('lt-birth-month')??'1'))appStorage.setItem('lt-birth-month',hbm.value);
+  /* eigener Name: leer = „Ich“ (der Speicher setzt dann den Standardnamen); unverändert nichts schreiben */
+  const hon=document.getElementById('hh-own-name');
+  if(hon){const v=hon.value.trim().slice(0,40);if(v!==_ownName())appStorage.setItem('lt-own-name',v);}
   if(document.getElementById('dp-bv-pay')){const bv=_bvFromInputs();if(bv.pay>0)appStorage.setItem('lt-beamte',JSON.stringify(bv));else appStorage.removeItem('lt-beamte');}
   const dpWrap=document.getElementById('dpPensions');
   if(dpWrap)appStorage.setItem('lt-pensions',JSON.stringify(_collectPlanRows(dpWrap,PENSION_COLS).filter(r=>r.name||r.amount)));
@@ -8732,7 +8736,7 @@ function openBudgetSheet(opts={}){
     <div class="ds-row"><span class="ds-l">Art</span>${_seg('b-type',[['income','Einnahme'],['expense','Ausgabe'],['saving','Sparen']],type)}</div>
     <div class="ds-row" id="b-costRow"><span class="ds-l">Kosten</span>${_seg('b-cost',[['fixe','Fix'],['variable','Variabel']],cost)}</div>
     <label class="ds-row" id="b-amountRow"><span class="ds-l">Betrag €</span><input class="ds-in ds-money" type="text" inputmode="decimal" id="b-amount" value="${amount?_moneyInput(amount):''}" placeholder="0"></label>
-    <label class="ds-row" id="b-personRow"><span class="ds-l" data-info="b-person">Person</span><select class="ds-in ds-wide" id="b-person">${[['','Haushalt'],[_ownPersonId(),'Ich'],..._personOptions('').slice(1)].map(([v,l])=>`<option value="${escHTML(v)}"${v===person?' selected':''}>${escHTML(l)}</option>`).join('')}</select></label>
+    <label class="ds-row" id="b-personRow"><span class="ds-l" data-info="b-person">Person</span><select class="ds-in ds-wide" id="b-person">${[['','Haushalt'],[_ownPersonId(),_meName()],..._personOptions('').slice(1)].map(([v,l])=>`<option value="${escHTML(v)}"${v===person?' selected':''}>${escHTML(l)}</option>`).join('')}</select></label>
     <div class="ds-row" id="b-workRow"><span class="ds-l" data-info="b-work">${L('Arbeitszeit','Working time')}<small>${L('für die Prognose: Gehalt bei Vollzeit oder Teilzeit','for the forecast: salary at full-time or part-time')}</small></span>${_seg('b-work',[['full',L('Vollzeit','Full-time')],['part',L('Teilzeit','Part-time')]],workPct==null?'':workPct>=100?'full':'part')}</div>
     <label class="ds-row" id="b-workPctRow"><span class="ds-l">${L('Teilzeit %','Part-time %')}<small>${L('Anteil einer Vollzeitstelle','share of a full-time position')}</small></span><input class="ds-in" type="text" inputmode="decimal" id="b-workPct" value="${workPct!=null&&workPct<100?_numStr(workPct):''}" placeholder="50"></label>
     <div class="ds-row" id="b-retRow" data-b-ret style="cursor:pointer"><span class="ds-l">Auch im Ruhestand<small id="b-retHint"></small></span><span class="v2-switch" role="switch" tabindex="0" id="b-retOn" aria-checked="${retire}" aria-label="Auch im Ruhestand"><i></i></span></div>
@@ -8942,13 +8946,13 @@ function buildDynamicForm(){
   const ppl=getDrvExtra().filter(p=>p.id);
   /* Lesemodus kompakt: eine leere eigene Karte (z. B. bei Beamtenpension) erscheint erst beim Bearbeiten */
   const myDrv=getDrv(),myEmpty=!(+myDrv.points>0||+myDrv.salary>0||+myDrv.em>0),pplDrv=ppl.some(p=>+p.points>0||+p.salary>0||+p.em>0);
-  html+=`<div class="lt-block-label${myEmpty&&!pplDrv?' edit-only':''}">Gesetzliche Rente</div><div class="hh-card pv-card${myEmpty?' pv-empty':''}" id="pvMeDrv"><div class="hh-head">${_hhHeadHTML(L('Ich','Me'),L('Gesetzliche Rente','State pension'))}</div>`+_drvFieldsHTML(myDrv,'dp','form')+`</div>`;
+  html+=`<div class="lt-block-label${myEmpty&&!pplDrv?' edit-only':''}">Gesetzliche Rente</div><div class="hh-card pv-card${myEmpty?' pv-empty':''}" id="pvMeDrv"><div class="hh-head">${_hhHeadHTML(_meName(),L('Gesetzliche Rente','State pension'))}</div>`+_drvFieldsHTML(myDrv,'dp','form')+`</div>`;
   html+=`<div id="dpDrvPeople">${_pvDrvRowsHTML(ppl)}</div>`;
   if(ppl.length)html+=`<p class="ds-help edit-only">${L('Rentenwert, Ø-Entgelt und BBG trägst du bei dir ein; sie gelten für alle.','Pension value, average salary and contribution ceiling are entered with yours; they apply to everyone.')}</p>`;
   /* Beamtenversorgung: je Person nur sichtbar, wenn eingetragen; im Bearbeiten-Modus hinzufügbar */
   const bvOn=hasBeamte(),bvPeople=ppl.filter(p=>p.bv&&+p.bv.pay>0);
   html+=`<div class="lt-block-label${bvOn||bvPeople.length?'':' edit-only'}">${L('Beamtenversorgung','Civil service pension')}</div>`;
-  html+=`<div id="dpBv" class="hh-card pv-card"${bvOn?'':' hidden'}><div class="hh-head">${_hhHeadHTML(L('Ich','Me'),L('Beamtenversorgung','Civil service pension'))}</div>${_bvFieldsHTML(getBeamte())}</div>`;
+  html+=`<div id="dpBv" class="hh-card pv-card"${bvOn?'':' hidden'}><div class="hh-head">${_hhHeadHTML(_meName(),L('Beamtenversorgung','Civil service pension'))}</div>${_bvFieldsHTML(getBeamte())}</div>`;
   html+=`<div id="dpBvPeople">${_pvBvRowsHTML(ppl)}</div>`;
   html+=`<div class="pv-add edit-only">${bvOn?'':`<button class="btn btn-ghost plan-add" id="dpBvAdd">+ ${L('Beamtenversorgung · Ich','Civil service pension · Me')}</button>`}${ppl.filter(p=>!(p.bv&&+p.bv.pay>0)).map(p=>`<button class="btn btn-ghost plan-add" data-bv-add="${escHTML(p.id)}">+ ${L('Beamtenversorgung · ','Civil service pension · ')}${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</button>`).join('')}</div>`;
   const avds=getAvDepots();
@@ -9583,7 +9587,10 @@ function getDrvExtra(){const l=_lsJSON('lt-drv-extra',[]);return Array.isArray(l
 function _ownPersonId(){try{return appStorage.primaryId?appStorage.primaryId():appStorage.document().retirement.primary.id;}catch(error){return 'person-main';}}
 function _personName(id){const p=getDrvExtra().find(r=>r.id===id);return p?((p.name||'').trim()||'Weitere Person'):'';}
 /* Auswahl für Zuordnungen: own = Beschriftung der eigenen Person bzw. des leeren Werts */
-function _personOptions(own){return [['',own],...getDrvExtra().filter(r=>r.id).map(r=>[r.id,(r.name||'').trim()||'Weitere Person'])];}
+/* Eigener Name (Daten → Haushalt → Ich, 15.10.2026): steht überall, wo du neben anderen Personen genannt wirst; ohne Eintrag „Ich“ */
+function _ownName(){return String(appStorage.getItem('lt-own-name')||'').trim();}
+function _meName(){return _ownName()||L('Ich','Me');}
+function _personOptions(own){return [['',_ownName()||own],...getDrvExtra().filter(r=>r.id).map(r=>[r.id,(r.name||'').trim()||'Weitere Person'])];}
 /* Altersabstand: Alter einer Person + Abstand = dein Alter */
 function _personShift(s,id){const p=id?getDrvExtra().find(r=>r.id===id):null;return p&&+p.by>1900?+p.by-s.birthYear:0;}
 /* Nettogehalt einer Person: Ø ihrer wiederkehrenden Budget-Einnahmen (ohne „Auch im Ruhestand“). Solange ein Nettogehalt
@@ -9731,9 +9738,10 @@ function _meCardHTML(){
   const b=_phaseBounds(s,cur,Math.max(Math.round(s.planHorizon),Math.ceil(cur)+1));
   /* Geburtsdaten der eigenen Person: hier bearbeitbar wie bei allen Personen (Bearbeiten-Modus, 14.10.2026) */
   const by=appStorage.getItem('lt-birth-year'),bm=appStorage.getItem('lt-birth-month');
-  return `<div class="hh-card hh-me"><div class="hh-head">${_hhHeadHTML(L('Ich','Me'),by?L('Jahrgang ','Born ')+s.birthYear:L('Geburtsjahr fehlt','Year of birth missing'))}</div>`
+  return `<div class="hh-card hh-me"><div class="hh-head">${_hhHeadHTML(_meName(),by?L('Jahrgang ','Born ')+s.birthYear:L('Geburtsjahr fehlt','Year of birth missing'))}</div>`
     +`<div class="hh-time">${_phaseBarHTML(b).replace('class="lp-bar"','class="lp-bar hh-bar"')}<div class="hh-tl">${escHTML(_ownPhaseText(b))}</div>`
     +`<button type="button" class="hh-link" onclick="openPhasesSheet()">${L('Lebensphasen ›','Life phases ›')}</button></div>`
+    +`<div class="input-group"><label data-info="lt-own-name">${L('Name','Name')}</label><input class="num-input form-store" type="text" id="hh-own-name" maxlength="40" autocomplete="given-name" placeholder="${L('Ich','Me')}" value="${escHTML(_ownName())}"></div>`
     +`<div class="input-group"><label data-info="lt-birth-year">${L('Geburtsjahr','Year of birth')}</label>${_dateFieldHTML({id:'hh-birth-year',value:by||'',mode:'year',cls:'num-input form-store',title:L('Geburtsjahr','Year of birth'),placeholder:L('Auswählen','Choose'),min:1920,max:2015})}</div>`
     +`<div class="input-group"><label data-info="lt-birth-month">${L('Geburtsmonat','Birth month')}</label><select class="num-input form-store" id="hh-birth-month">${MONTH_FULL.map((x,i)=>`<option value="${i+1}"${i+1===(+bm||1)?' selected':''}>${x}</option>`).join('')}</select></div>`
     +`<div class="hh-ctx">${_personContextHTML('')}</div></div>`;
@@ -11019,7 +11027,7 @@ function _updateBvResult(){
 /* Altersvorsorge ohne Bearbeiten: je Person und Art eine Zeile mit dem Ergebnis (gleiche Rechnung wie die Felder).
    Antippen öffnet das Bearbeiten an dieser Stelle (_pvJump). */
 function _pensionSummaryHTML(){
-  const s=getLifetimeSettings(),rows=[],me=L('Ich','Me');
+  const s=getLifetimeSettings(),rows=[],me=_meName();
   const row=(to,title,sub,val,small)=>rows.push(`<button type="button" class="ds-item" data-pv-jump="${escHTML(to)}"><span class="ds-item-l"><span>${escHTML(title)}</span><small>${escHTML(sub)}</small></span><span class="ds-item-v">${val}${small?`<small>${escHTML(small)}</small>`:''}</span><span class="v2-chev"></span></button>`);
   const net=L('netto ab ','net from '),pts=n=>_pts(n)+L(' Punkte',' points'),yrs=n=>_pts(n)+L(' Dienstjahre',' years of service');
   const d=calcDrvPension(s,getDrv());
@@ -11442,7 +11450,7 @@ function renderLifetimePageCalcs(){
       if(ic.steady&&(Math.abs(ic.steady.sum-A.sum)>0.5||Math.abs(ic.steady.age-A.age)>1e-9))h+=`<div class="v2-inc-cap">${L('Lebenslang ab ','Lifelong from ')}${_ageTxt(ic.steady.age)}: ${fmt(Math.round(ic.steady.sum))}${ic.need>0?' ('+Math.round(ic.steady.cov*100)+' %)':''}</div>`;
       /* je Person gegliedert (14.10.2026): Ich, weitere Personen, Haushalt; Zwischensumme zum Rentenbeginn */
       const rowHTML=(x,i)=>`<button type="button" class="v2-inc-row" data-inc="${i}"><i style="background:${x.on(A.age)?shade(i):'var(--fill)'}"></i><span class="n">${escHTML(x.n)}<small>${escHTML(x.when)}</small></span><span class="v">${fmt(Math.round(x.v))}</span></button>`;
-      const order=['',...getDrvExtra().filter(p=>p.id).map(p=>p.id),'hh'],whoName=w=>w===''?L('Ich','Me'):w==='hh'?L('Haushalt','Household'):_personName(w)||L('Weitere Person','Other person');
+      const order=['',...getDrvExtra().filter(p=>p.id).map(p=>p.id),'hh'],whoName=w=>w===''?_meName():w==='hh'?L('Haushalt','Household'):_personName(w)||L('Weitere Person','Other person');
       inc.forEach(x=>{if(!order.includes(x.who??''))order.push(x.who);});
       const grp=order.map(w=>({w,items:inc.map((x,i)=>({x,i})).filter(o=>(o.x.who??'')===w)})).filter(g=>g.items.length);
       /* C6: beginnt bei einer Person noch nichts zum Rentenbeginn, die Summe ab ihrem ersten Einkommen zeigen */
@@ -11956,7 +11964,7 @@ function _v2LtPhases(o){
      ihre Rente steht unter „Einkommen im Ruhestand“, „Bearbeiten“ öffnet dasselbe Sheet */
   /* mit weiteren Personen: je Person ein Balken auf derselben Zeitachse (heute bis zum Planhorizont), Alter je Person */
   const ppl=getDrvExtra().filter(p=>p.id);
-  const bars=ppl.length?`<div class="v2-lp-bars"><div class="v2-lp-who"><b>${L('Ich','Me')}</b>${_phaseBarHTML(b)}</div>${ppl.map(p=>`<div class="v2-lp-who"><b>${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</b>${_personBarHTML(s,p,b[4])}</div>`).join('')}</div>`:_phaseBarHTML(b);
+  const bars=ppl.length?`<div class="v2-lp-bars"><div class="v2-lp-who"><b>${escHTML(_meName())}</b>${_phaseBarHTML(b)}</div>${ppl.map(p=>`<div class="v2-lp-who"><b>${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</b>${_personBarHTML(s,p,b[4])}</div>`).join('')}</div>`:_phaseBarHTML(b);
   el.innerHTML=`<div class="v2-lp-head"><span class="v2-ret-title" data-info="lt-phases">Lebensphasen</span><button type="button" class="v2-lp-btn" onclick="openPhasesSheet()">Bearbeiten</button></div>${bars}<div class="v2-lp-rows">${rows}${skippedHTML}</div>`;
 }
 /* Daten-Seite: Lebensphasen als eine Zeile mit Zeitstrahl, öffnet das Sheet */
@@ -11994,7 +12002,7 @@ function openPhasesSheet(focus){
   /* Ausklappbare Abschnitte: Kopf mit Zusammenfassung, offen nur der gewählte */
   const sec=(key,title,mark,inner)=>`<details class="lp-sec" id="lp-sec-${key}"${String(focus)===String(key)?' open':''}><summary><span class="lp-sum-t">${mark}<span><b>${title}</b><small id="lp-s-${key}"></small></span></span><span class="lp-range" id="lp-r-${key}"></span></summary><div class="ds-group">${inner}</div></details>`;
   const people=getDrvExtra().filter(r=>r.id);
-  const adults=[{key:'me',name:L('Ich','Me')},...people.filter(p=>!_legacyPartTime(p)).map(p=>({key:p.id,name:(p.name||'').trim()||L('Weitere Person','Other person'),p}))];
+  const adults=[{key:'me',name:_meName()},...people.filter(p=>!_legacyPartTime(p)).map(p=>({key:p.id,name:(p.name||'').trim()||L('Weitere Person','Other person'),p}))];
   /* je erwachsene Person ein Feld in einer Zeile (Arbeitszeit bzw. Altersvorsorge der Phase) */
   const cell=(id,name,val,ph)=>`<label class="lp-cell"><small>${escHTML(name)}</small><input class="ds-in" id="${id}" type="text" inputmode="decimal" autocomplete="off" value="${escHTML(val)}"${ph?` placeholder="${escHTML(ph)}"`:''} data-lp></label>`;
   /* Arbeitszeit heute steht beim Gehalt im Budget (Schema 17): dann hier nur angezeigt */
@@ -12009,14 +12017,14 @@ function openPhasesSheet(focus){
   const eff=i=>`<p class="lp-eff" id="lp-e-${i}"></p>`;
   /* Arbeitsende je Person in einer Zeile: deins beendet das Weiterarbeiten, weitere Personen in ihrem Alter */
   const workEnd=people.length?mrow('lp-a3',L('Arbeiten bis Alter','Work until age'),L('du: danach beginnt der Vorruhestand · weitere Personen in ihrem Alter, leer = gleiches Alter wie du','you: then early retirement begins · other people in their own age, empty = same age as you'),
-    [cell('lp-a3',L('Ich','Me'),_numStr(s.workEnd)),...people.map(p=>cell('lpp-'+p.id+'-until',(p.name||'').trim()||L('Weitere Person','Other person'),+p.until>0?_numStr(+p.until):'',_ageTxt(s.workEnd)))])
+    [cell('lp-a3',_meName(),_numStr(s.workEnd)),...people.map(p=>cell('lpp-'+p.id+'-until',(p.name||'').trim()||L('Weitere Person','Other person'),+p.until>0?_numStr(+p.until):'',_ageTxt(s.workEnd)))])
     :row('lp-a3','Weiterarbeiten bis Alter','Danach beginnt der Vorruhestand',_numStr(s.workEnd),'60');
   /* Teilzeit ab Alter aus Schema 14 (P36): gilt genau so weiter, bis sie umgestellt wird */
   const legacyNotes=people.filter(p=>_legacyPartTime(p)).map(p=>`<p class="lp-eff">${escHTML(L(`${(p.name||'').trim()||'Weitere Person'}: Teilzeit ${_numStr(+p.ptPct)} % genau ab ${_ageTxt(+p.ptFrom)} aus der früheren Version – gilt unverändert; Arbeitszeit je Phase nach dem Umstellen.`,`${(p.name||'').trim()||'Other person'}: part-time ${_numStr(+p.ptPct)} % from exactly ${_ageTxt(+p.ptFrom)} from the previous version – still applies; working time per phase after switching.`))} <button type="button" class="hh-link" data-f="${escHTML(p.id)}" onclick="openPartTimeSheet(this.dataset.f)">${L('Umstellen …','Switch …')}</button></p>`).join('');
   /* Zeitstrahl je weiterer Person oben im Kopf (ihr Alter) */
   const ptl=people.map(p=>`<div class="lp-ptl"><b>${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</b><div id="lpp-${p.id}-tl"></div></div>`).join('');
   const body=
-    `<div class="lp-head"><div class="lp-card">${people.length?`<div class="lp-ptl"><b>${L('Ich','Me')}</b><div id="lpTime">${_phaseBarHTML(b)}</div></div>`:`<div id="lpTime">${_phaseBarHTML(b)}</div>`}${ptl}<div class="lp-pv"><b id="lpPct">—</b><span id="lpPctT">Erfolgschance wird berechnet …</span></div></div></div>`+
+    `<div class="lp-head"><div class="lp-card">${people.length?`<div class="lp-ptl"><b>${escHTML(_meName())}</b><div id="lpTime">${_phaseBarHTML(b)}</div></div>`:`<div id="lpTime">${_phaseBarHTML(b)}</div>`}${ptl}<div class="lp-pv"><b id="lpPct">—</b><span id="lpPctT">Erfolgschance wird berechnet …</span></div></div></div>`+
     `<p class="ds-note">Jede Phase beginnt, wo die vorige endet. Gleiches Alter wie bei der Phase davor: Die Phase entfällt.</p>`+
     (people.length?`<p class="ds-note">${L('Die Phasen richten sich nach deinem Alter. Arbeitszeit, Altersvorsorge und Arbeitsende stellst du je Person ein; den Rentenbeginn weiterer Personen bei ihrer gesetzlichen Rente unter Daten → Altersvorsorge.','The phases follow your age. Working time, pension savings and end of work are set per person; the pension start of other people with their state pension under Data → Pensions.')}</p>`:'')+
     sec(1,`1 · ${LT_PHASE_NAMES[0]}`,'<i class="lp-p1"></i>',
@@ -12070,7 +12078,7 @@ function _phasesDraft(strict){
   /* Arbeitszeit (0–100 % einer Vollzeitstelle) und Altersvorsorge (0–200 % der heutigen Beiträge) je Person, leer = Standard */
   const wIn=(key,i,nm)=>num(`lpw-${key}-${i}`,nm+': Arbeitszeit ('+LT_PHASE_NAMES[i-1]+')',0,100,null);
   const pIn=(key,i,nm)=>num(`lpv-${key}-${i}`,nm+': Altersvorsorge ('+LT_PHASE_NAMES[i-1]+')',0,200,null);
-  const w1=wIn('me',1,'Ich'),w2=wIn('me',2,'Ich'),pen2=pIn('me',2,'Ich'),pen3=pIn('me',3,'Ich');
+  const me=_meName(),w1=wIn('me',1,me),w2=wIn('me',2,me),pen2=pIn('me',2,me),pen3=pIn('me',3,me);
   if(need3==null){bad('Bitte den Bedarf im Vorruhestand eintragen.');return null;}
   if([a2,a3,a4in,growth,sav,sav3,draw,need3,need4,w1,w2,pen2,pen3].some(v=>Number.isNaN(v)))return null;
   /* „Rente ab“ leer = automatisch (gesetzliche Rente bzw. Regelaltersgrenze); eine passende gesetzliche Rente zieht mit */
@@ -12112,7 +12120,7 @@ function _phasesInput(e){
 function _phaseWorkTxt(s,people,i){
   const at=[-Infinity,s.phase2From,s.workEnd,s.phase4From][i-1],wt=w=>w>=1-1e-9?L('Vollzeit','full-time'):w>0?_numStr(Math.round(w*1000)/10)+' %':L('keine Arbeit','not working');
   const list=[];
-  if(i<=2)list.push([L('Ich','Me'),_ownWork(s).w[i-1]]);
+  if(i<=2)list.push([_meName(),_ownWork(s).w[i-1]]);
   people.filter(p=>p.id).forEach(p=>{const pr=_personWork(s,p),a=Math.max(at,_curAgeOf(s));if(a<pr.workEndMain-1e-9)list.push([(p.name||'').trim()||L('Weitere Person','Other person'),_workShare(pr,a)]);});
   if(!list.length)return '';
   if(list.length===1&&i<=2&&!people.some(p=>p.id))return list[0][1]>=1-1e-9?L('Vollzeit','full-time'):list[0][1]>0?L('Teilzeit ','part-time ')+wt(list[0][1]):L('keine Arbeit','not working');
@@ -12236,7 +12244,7 @@ function _v2Sum(mod,title){
 function _v2SubText(mod){
   try{
     const data=loadData(),e=data[selectedMonth]||data[Object.keys(data).sort().pop()];
-    if(mod==='household'){const k=getChildren().length,kg=_childrenEntitled(_budgetYM()).length*CHILD_BENEFIT;return [L('Ich','Me'),...getDrvExtra().map(p=>(p.name||'').trim()||L('Weitere Person','Other person')),...(k?[k===1?L('1 Kind','1 child'):k+L(' Kinder',' children')]:[]),...(kg?[L('Kindergeld ','Child benefit ')+fmt(kg)]:[])].join(' · ');}
+    if(mod==='household'){const k=getChildren().length,kg=_childrenEntitled(_budgetYM()).length*CHILD_BENEFIT;return [_meName(),...getDrvExtra().map(p=>(p.name||'').trim()||L('Weitere Person','Other person')),...(k?[k===1?L('1 Kind','1 child'):k+L(' Kinder',' children')]:[]),...(kg?[L('Kindergeld ','Child benefit ')+fmt(kg)]:[])].join(' · ');}
     if(mod==='assets'){if(!e)return'';const n=_fc.fields.filter(f=>f.category!=='liab'&&(+((e._details||{})[f.id])||0)>0).length;return n+(n===1?' Position · ':' Positionen · ')+fmt(calc(e).assets);}
     if(mod==='liab'){if(!e)return'';const b=_fc.fields.filter(f=>f.category==='liab').reduce((a,f)=>a+(+((e._details||{})[f.id])||0),0);return 'Restschuld '+fmt(b);}
     if(mod==='pension'){const s=getLifetimeSettings();const r=calcDrvPension(s,getDrv());const xs=getDrvExtra().map(p=>calcDrvExtra(s,p)),x=xs.reduce((a,q)=>a+q.netto,0),em=[r,...xs].reduce((a,q)=>a+(q.em?q.em.amount:0),0);const bv=calcBeamtePension(s,getBeamte()).netto;const n=s.pensions.length;const av=getAvDepots().map(d=>calcAvDepot(s,_avdResolve(d))).reduce((a,q)=>a+q.netto,0);return [em>0?'EM-Rente ≈ '+fmt(em)+'/Mon.':'',r.netto+x>0?'Gesetzlich ≈ '+fmt(r.netto+x)+'/Mon.':(bv>0?'':'Gesetzliche Rente'),bv>0?'Pension ≈ '+fmt(bv)+'/Mon.':'',av>0?'AV-Depot ≈ '+fmt(av)+'/Mon.':''].filter(Boolean).join(' · ')+(n?' · '+n+' weitere':'');}
