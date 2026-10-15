@@ -4970,7 +4970,12 @@ function preventScroll(e){
   return false;
 }
 
+/* Seite festhalten, solange ein Fenster offen ist (installierte iPhone-App). Der Text eines offenen Info-Fensters darf
+   weiter scrollen, wenn er länger ist als das Fenster (15.10.2026; vorher blockierte die Sperre jedes Wischen, z. B. in der
+   Erklärung der Erfolgschance). overscroll-behavior:contain hält das Scrollen im Text. */
 function preventTouchMove(e){
+  const t=e.target,box=t&&t.closest?t.closest('.live-popup.show .info-popup-text'):null;
+  if(box&&box.scrollHeight>box.clientHeight)return;
   e.preventDefault();
 }
 
