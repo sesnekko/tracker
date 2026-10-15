@@ -1675,6 +1675,14 @@ button.v2-inc-row:active{opacity:.7}
 /* Zeitverlauf (15.10.2026): Zeile unter den Kennzahlen im Stil von „So wird gerechnet“, öffnet die Liste je Anlage */
 .v2-lt-link.v2-tl-row{margin-top:14px;padding:12px 0 0;min-height:0;box-shadow:inset 0 .5px 0 var(--sep)}
 .v2-lt-link.v2-tl-row:active{background:none;opacity:.7}
+/* Breite Karte (iPad, schmales Mac-Fenster): Zeitverlauf oben rechts unter „Abgesichert“, neben der Erfolgschance */
+.v2-ret{container-type:inline-size}
+@container (min-width:560px){
+  .v2-ret-in{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:24px;align-items:start}
+  .v2-ret-in>*{grid-column:1/-1}
+  .v2-ret-in>.v2-ret-main{grid-column:1;grid-row:2}
+  .v2-ret-in>.v2-lt-link.v2-tl-row{grid-column:2;grid-row:2;justify-self:end;width:auto;margin-top:12px;padding:0;box-shadow:none}
+}
 /* Zeitverlauf-Ansicht: ersetzt Ergebnis, Phasen und Annahmen unter dem Chart bzw. in der rechten Spalte */
 .lt-tl{display:none;margin-top:18px}
 #page-lifetime.lt-tl-on .lt-tl{display:block}
@@ -1687,6 +1695,7 @@ button.v2-inc-row:active{opacity:.7}
 .lt-tl-note{font-size:12.5px;line-height:1.45;color:var(--muted);margin:10px 2px 0}
 .v2-mini{display:block;height:4px;border-radius:2px;background:var(--fill);margin:7px 0 5px;overflow:hidden;max-width:150px}
 .v2-mini i{display:block;height:100%;border-radius:2px;background:var(--green)}
+.v2-ms-short{color:var(--red)}
 #v2-lt-open{margin-top:12px}
 
 /* Guided setup: short explanations, one clear action per screen. */
@@ -2741,7 +2750,7 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="i18n-en.js?v=18"></script>
+<script src="i18n-en.js?v=19"></script>
 <script src="data-store.js?v=32"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
@@ -3027,6 +3036,7 @@ const INFO={
   'lt-own-name':['Name','<p>Dein Name, wie er neben den anderen Personen steht: im Haushalt, bei den Lebensphasen, im Einkommen im Ruhestand und bei der Zuordnung von Einnahmen und Depots.</p><p>Leer lassen = „Ich“.</p>'],
   'lt-birth-month':['Geburtsmonat','<p>Bestimmt zusammen mit dem Geburtsjahr dein genaues Alter. Phasenwechsel, Rentenbeginn und Auszahlungen werden auf den Monat genau gerechnet.</p><p>Für weitere Personen wird derselbe Geburtsmonat angenommen.</p>'],
   'v2-at-retire':['Verfügbar bei Rentenbeginn','<p>Median des entnehmbaren Vermögens zum geplanten Ruhestand (ohne Sachwerte, Altersvorsorge erst ab „Verfügbar ab“), in heutiger Kaufkraft.</p><p><strong>Ziel</strong>: Vermögen, das zum Ruhestand nötig ist, um den Bedarf abzüglich Renten bis „Planen bis Alter“ zu decken.</p>'],
+  'v2-milestone':['Etappenziel','<p>Liquides Vermögen, das zu Beginn der nächsten Lebensphase mindestens da sein sollte: zum Start von „Weiterarbeiten“, ohne diese Phase zum Ruhestand. Liquide heißt entnehmbar: Konten, Depots, Krypto, Altersvorsorge erst ab „Verfügbar ab“, keine Immobilien und Sachwerte.</p><p><strong>So wird gerechnet:</strong> Die App sucht den größten Betrag, den du in diesem Alter einmalig aus dem liquiden Vermögen nehmen könntest, ohne dass die Erfolgschance unter dein Sicherheitsniveau fällt – mit denselben 500 Marktverläufen wie die Erfolgschance. Ziel = erwartetes liquides Vermögen (Median) minus diesen Puffer. Reicht es auch ohne Entnahme nicht, sucht sie den nötigen Zuschuss („es fehlen“).</p><p><strong>heute</strong>: dein liquides Vermögen heute und wie viel Prozent des Ziels es schon ausmacht. <strong>erwartet</strong>: Median der Prognose in diesem Alter.</p><p>Alle Beträge in heutiger Kaufkraft. Eine Näherung: Sie nimmt an, dass alles andere wie geplant läuft.</p>'],
   'v2-retire-age':['Rente sicher möglich ab','<p>Frühestes Alter, ab dem die Erfolgschance mindestens das Sicherheitsniveau erreicht.</p>'],
   'flow-in':['Einzahlungen','<p>Geld, das neu ins Vermögen geflossen ist: mehr Cash, Zukäufe von Wertpapieren/Krypto (Stückzahl steigt), Einzahlungen in die Altersvorsorge und Tilgung von Krediten.</p><p>Wird je Monat saldiert – Umschichtungen (z. B. ETF verkauft, Erlös auf dem Tagesgeld) zählen nicht.</p>'],
   'flow-out':['Entnahmen & Verkäufe','<p>Geld, das das Vermögen verlassen hat: Verkäufe (Stückzahl sinkt) ohne Wiederanlage, Abhebungen vom Cash, neue Kredite.</p><p>Verkäufe werden über die Stückzahl erkannt und nie als Kursverlust gezählt.</p>'],
@@ -10983,6 +10993,76 @@ function targetCapital(plan,R,det){
   return{target:sum,rNom,rReal,tax};
 }
 
+/* ── Etappenziel (15.10.2026, ersetzt „Verfügbar mit …“ in der Ergebnis-Karte): liquides Vermögen, das zu Beginn der
+   nächsten Lebensphase mindestens da sein sollte. Alter: Beginn „Weiterarbeiten“, ohne diese Phase Beginn des Ruhestands,
+   sind beide vorbei heute. Gesucht wird der größte Betrag X, den man in diesem Alter einmalig aus dem liquiden
+   (entnehmbaren) Vermögen nehmen könnte, ohne dass die Erfolgschance unter das Sicherheitsniveau fällt – mit denselben
+   Marktverläufen wie die Erfolgschance. Ziel = erwartetes liquides Vermögen (Median) − X. Reicht es schon ohne Entnahme
+   nicht, ist X negativ (nötiger Zuschuss, „es fehlen“). Alle Beträge in heutiger Kaufkraft. Eine Näherung: Alles andere
+   läuft wie geplant. ── */
+function _msAge(plan){
+  const s=plan.s,cur=plan.currentAge,later=a=>a>cur+1/24;
+  if(s.workEnd>s.phase2From+0.01&&later(s.phase2From))return{age:s.phase2From,phase:2};
+  if(later(s.workEnd))return{age:s.workEnd,phase:3};
+  return{age:cur,phase:0};
+}
+/* Plan mit einer zusätzlichen Entnahme (x > 0) bzw. Einzahlung (x < 0) im Alter des Etappenziels, heutige Kaufkraft */
+function _msPlan(plan,k,x){
+  const ev=x>=0?{name:'Etappenziel',amount:x,k,fromIdx:-2,toIdx:-1,fromExt:false,toExt:true}
+    :{name:'Etappenziel',amount:-x,k,fromIdx:-1,toIdx:-1,fromExt:true,toExt:false};
+  ev.age=plan.currentAge+k/12;
+  return Object.assign({},plan,{events:plan.events.concat(ev),_sched:{}});
+}
+/* Suche in Schritten (je Schritt ein Monte-Carlo-Durchgang), damit die Seite dazwischen reagiert */
+function* _msSteps(plan,mc){
+  const s=plan.s,infl=s.inflation/100,R=s.withdrawFrom,level=s.safety/100,{age,phase}=_msAge(plan);
+  const k=_kAt(plan,age);
+  const today=plan.buckets.reduce((a,b)=>a+(b.withdrawable&&b.avail<=plan.currentAge+1e-9?Math.max(0,b.value):0),0);
+  let projected=today;
+  if(phase){const y=Math.min(plan.nSteps-1,Math.max(0,Math.round(age)-plan.firstAge));projected=mc.avail50[y]/Math.pow(1+infl,plan.firstAge+y-plan.currentAge);}
+  const res={age,phase,today,projected};
+  const pass=x=>_mcPass(_msPlan(plan,k,x),R,level);
+  const ok0=Math.round(mc.success*MC_RUNS)>=Math.ceil(level*MC_RUNS-1e-9);
+  const tol=Math.max(1000,0.01*Math.max(projected,today));
+  let lo,hi;/* lo besteht, hi nicht */
+  if(ok0){
+    lo=0;hi=Math.max(0,projected);
+    if(hi<=tol)return Object.assign(res,{buffer:Math.max(0,hi),need:0,short:0,reachable:true});
+    const top=pass(hi);yield;
+    if(top)return Object.assign(res,{buffer:hi,need:0,short:0,reachable:true});
+  }else{
+    hi=0;let step=Math.max(10000,0.25*Math.max(projected,today,50000));
+    for(;;){
+      if(step>2e7)return Object.assign(res,{reachable:false});
+      const okD=pass(-step);yield;
+      if(okD){lo=-step;break;}
+      hi=-step;step*=2;
+    }
+  }
+  while(hi-lo>tol){
+    const mid=(lo+hi)/2,ok=pass(mid);yield;
+    if(ok)lo=mid;else hi=mid;
+  }
+  return Object.assign(res,{buffer:lo,need:Math.max(0,projected-lo),short:Math.max(0,-lo),reachable:true});
+}
+function _milestoneCalc(plan,mc){const g=_msSteps(plan,mc);let r;while(!(r=g.next()).done);return r.value;}
+/* Im Hintergrund nach der Seite rechnen; passt das Ergebnis noch zum Stand, Ergebnis-Karte neu zeichnen */
+let _msTimer=null;
+function _msSchedule(){
+  clearTimeout(_msTimer);
+  const c=_ltCalcCache,st=_ltState;
+  if(!c||!st||c.ms!==undefined)return;
+  const g=_msSteps(st.plan,c.mc);
+  const tick=()=>{
+    if(_ltCalcCache!==c)return;
+    const r=g.next();
+    if(!r.done){_msTimer=setTimeout(tick,0);return;}
+    c.ms=r.value;
+    if(_ltState&&_ltState.summary)_v2LtSummary(Object.assign({},_ltState.summary,{ms:c.ms}));
+  };
+  _msTimer=setTimeout(tick,40);
+}
+
 /* ══ Prognose: Eingaben ══ */
 let _ltRenderTimer=null;
 function _ltScheduleRender(ms=250){
@@ -12208,7 +12288,10 @@ function renderLifetimePageCalcs(){
 
   _ltState={plan,det,mc,tc,real,infl,currentAge,allAges,histLine,projLine,projHi,projLo,histAssetMaps,histGrossMaps,histDebtMaps,xMax:ltXMaxIdx,todayIdx:bridgeIdx,availAtR,coverage,R,retireAge};
   _ltTimelineRender();
-  _v2LtSummary({s,plan,mc,tc,retireAge,availAtR,coverage,R,currentAge});
+  /* Etappenziel: aus dem Zwischenspeicher, sonst nach der Seite im Hintergrund (_msSchedule) */
+  _ltState.summary={s,plan,mc,tc,retireAge,availAtR,coverage,R,currentAge};
+  _v2LtSummary(Object.assign({},_ltState.summary,{ms:_ltCalcCache.ms}));
+  _msSchedule();
   _v2LtPhases({s,plan,mc,currentAge,infl});
   /* C7: die Partner-Story („Euer Plan“) nur mit Partner/in bzw. weiterer erwachsener Person */
   const psBtn=document.getElementById('psOpen');if(psBtn)psBtn.hidden=!getDrvExtra().some(p=>p.id);
@@ -12234,6 +12317,18 @@ function _v2LtNotes(plan){
   if(plan.latestKey<currentYM())n.push(L(`Startwerte vom Stand ${fmtMonth(plan.latestKey)}. Trag den aktuellen Monat ein, damit die Prognose von heute ausgeht.`,`Starting values from ${fmtMonth(plan.latestKey)}. Enter the current month so the forecast starts from today.`));
   return n.map(t=>`<p class="v2-ret-text" style="color:var(--muted)">${t}</p>`).join('');
 }
+/* Etappenziel-Kachel (ms: undefined = wird berechnet, sonst Ergebnis von _msSteps) */
+function _msTileHTML(plan,ms){
+  const a=_msAge(plan);
+  const k=a.phase?L('Ziel mit ','Target at ')+_ageTxt(a.age)+L(' · liquide',' · liquid'):L('Nötig heute · liquide','Needed today · liquid');
+  const tile=(n,bar,s1,s2)=>`<div data-info="v2-milestone"><span class="k">${k}</span><span class="n">${n}</span>${bar==null?'':`<span class="v2-mini"><i style="width:${bar.toFixed(1)}%"></i></span>`}<span class="s">${s1}</span>${s2?`<span class="s">${s2}</span>`:''}</div>`;
+  if(ms===undefined)return tile('…',null,L('wird berechnet','calculating'),'');
+  if(!ms.reachable)return tile('—',null,L('Ein Polster allein reicht nicht','A buffer alone is not enough'),'');
+  const need=Math.round(ms.need/1000)*1000,pct=need>0?Math.min(100,ms.today/need*100):100;
+  const s1=need>0?L('heute ','today ')+fmtCompact(ms.today)+' · '+Math.floor(pct)+' %':L('kein Polster nötig','no buffer needed');
+  const s2=ms.short>0?`<span class="v2-ms-short">${L('es fehlen ≈ ','short by ≈ ')}${fmtCompact(ms.short)}</span>`:a.phase?L('erwartet ','expected ')+fmtCompact(ms.projected):'';
+  return tile(fmtCompact(need),pct,s1,s2);
+}
 function _v2LtSummary(o){
   const el=document.getElementById('v2-lt-summary');
   if(!el)return;
@@ -12241,18 +12336,18 @@ function _v2LtSummary(o){
   const pct=Math.round(mc.success*100),safety=Math.round(s.safety),ok=mc.success>=s.safety/100;
   const retTxt=retireAge===null?'—':(retireAge<=Math.ceil(currentAge)?'sofort':retireAge+' Jahren');
   const retSub=retireAge===null?'nicht bis '+plan.horizonAge+' erreichbar':'bei '+safety+' % Sicherheit';
-  const cov=Math.max(0,Math.min(100,coverage*100));
-  el.innerHTML=
+  el.innerHTML=`<div class="v2-ret-in">`+
     `<div class="v2-ret-head"><span class="v2-ret-title">${s.phase4From>s.workEnd+0.01?'Vorruhestand':'Ruhestand'} mit ${_ageTxt(R)}</span><span class="v2-chip ${ok?'up':'down'}">${ok?'Abgesichert':'Noch nicht abgesichert'}</span></div>`+
     /* kompakt (14.10.2026): eine Kopfzeile mit Ziel, ein Satz, zwei Kacheln, darunter die Kennzahlen; die Skala entfällt */
     `<button type="button" class="v2-ret-main" onclick="openSuccessExplain()" aria-label="${L('Erfolgschance erklären','Explain the probability of success')}"><span class="v2-ret-big">${pct}<small>%</small></span><span class="v2-ret-lbl">${L('Erfolgschance','Probability of success')} · ${L('Ziel ','target ')}${safety} %<span class="v2-ret-more">${L('Was bedeutet das? ›','What does this mean? ›')}</span></span></button>`+
     `<p class="v2-ret-text">In ${pct} von 100 simulierten Marktverläufen reicht dein Geld bis ${escHTML(_horizonTxt(plan))}.</p>`+
     _v2LtNotes(plan)+
     `<div class="v2-ret-stats">`+
-      `<div data-info="v2-at-retire"><span class="k">${L('Verfügbar mit ','Available at ')}${_ageTxt(R)}</span><span class="n">${fmtCompact(Math.round(availAtR))}</span><span class="v2-mini"><i style="width:${cov.toFixed(1)}%"></i></span><span class="s">nötig: ${fmt(Math.round(tc.target/100)*100)}</span></div>`+
+      _msTileHTML(plan,o.ms)+
       `<div data-info="v2-retire-age"><span class="k">Sicher möglich ab</span><span class="n">${retTxt}</span><span class="s">${retSub}</span></div>`+
     `</div>`+
-    `<button type="button" class="v2-lt-link v2-tl-row" onclick="ltTimeline(true)"><span class="ps-open-i v2-lt-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${V2_ICONS.chart}</svg></span><span class="t">${L('Zeitverlauf','Timeline')}<small>${L('Anlagen und Kredite über die Jahre','Assets and loans over the years')}</small></span><span class="v2-chev" aria-hidden="true"></span></button>`;
+    `<button type="button" class="v2-lt-link v2-tl-row" onclick="ltTimeline(true)"><span class="ps-open-i v2-lt-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${V2_ICONS.chart}</svg></span><span class="t">${L('Zeitverlauf','Timeline')}<small>${L('Anlagen und Kredite über die Jahre','Assets and loans over the years')}</small></span><span class="v2-chev" aria-hidden="true"></span></button>`+
+    `</div>`;
   const pv=document.getElementById('v2-prev-pct');
   if(pv){pv.textContent=pct+' %';pv.style.color=ok?'var(--green)':'var(--red)';}
   const pt=document.getElementById('v2-prev-txt');

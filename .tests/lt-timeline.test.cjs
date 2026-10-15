@@ -1,4 +1,4 @@
-/* 15.10.2026: Prognose → „Zeitverlauf“. Die Zeile steht in der Ergebnis-Karte unter „Verfügbar mit …“ und „Sicher
+/* 15.10.2026: Prognose → „Zeitverlauf“. Die Zeile steht in der Ergebnis-Karte unter „Ziel mit …“ und „Sicher
    möglich ab“ und wechselt in eine eigene Ansicht: statt Ergebnis, Phasen und Annahmen die Liste der Vermögen-Seite, je
    Gruppe Vermögenswert und Restschuld als eigene Zeilen; beim Fahren über den Chart Wert, Anteil und Veränderung zu heute
    im gewählten Alter (Historie aus den Monatsständen, Prognose aus dem Erwartungspfad, heutige Kaufkraft).
@@ -98,15 +98,19 @@ test('Liste wie auf der Vermögen-Seite, Kopf mit „Zurück zur Prognose“', (
   assert.match(a.run('_ltTimelineHTML([])'), /v2-empty/);
 });
 
-test('Ergebnis-Karte: Zeile „Zeitverlauf“ unter „Verfügbar mit …“ und „Sicher möglich ab“', () => {
+test('Ergebnis-Karte: Zeile „Zeitverlauf“ unter „Ziel mit …“ und „Sicher möglich ab“', () => {
   const a = withState();
   a.run(`(()=>{const p=__S.plan,R=p.s.withdrawFrom,mc=runMonteCarlo(p,R,true);
     _v2LtSummary({s:p.s,plan:p,mc,tc:targetCapital(p,R,__S.det),retireAge:findRetireAge(p),availAtR:mc.avail50[0],coverage:0.5,R,currentAge:p.currentAge});})()`);
   const h = a.el('v2-lt-summary').innerHTML;
-  const i1 = h.indexOf('Verfügbar mit'), i2 = h.indexOf('Sicher möglich ab'), i3 = h.indexOf('class="v2-lt-link v2-tl-row"');
+  const i1 = h.indexOf('data-info="v2-milestone"'), i2 = h.indexOf('Sicher möglich ab'), i3 = h.indexOf('class="v2-lt-link v2-tl-row"');
   assert.ok(i1 > 0 && i1 < i2 && i2 < i3, 'Reihenfolge: beide Kennzahlen, dann die Zeile');
-  assert.match(h, /<\/div><button type="button" class="v2-lt-link v2-tl-row" onclick="ltTimeline\(true\)"><span class="ps-open-i v2-lt-ico" aria-hidden="true"><svg[^]*?<\/svg><\/span><span class="t">Zeitverlauf<small>Anlagen und Kredite über die Jahre<\/small><\/span><span class="v2-chev" aria-hidden="true"><\/span><\/button>$/);
+  assert.match(h, /<\/div><button type="button" class="v2-lt-link v2-tl-row" onclick="ltTimeline\(true\)"><span class="ps-open-i v2-lt-ico" aria-hidden="true"><svg[^]*?<\/svg><\/span><span class="t">Zeitverlauf<small>Anlagen und Kredite über die Jahre<\/small><\/span><span class="v2-chev" aria-hidden="true"><\/span><\/button><\/div>$/);
   assert.doesNotMatch(h, /v2-tl-tile/);
+  // breite Karte (iPad, schmales Mac-Fenster): oben rechts unter „Abgesichert“, neben der Erfolgschance
+  assert.match(h, /^<div class="v2-ret-in"><div class="v2-ret-head">/);
+  assert.match(html, /\.v2-ret\{container-type:inline-size\}\n@container \(min-width:560px\)\{/);
+  assert.match(html, /\.v2-ret-in>\.v2-ret-main\{grid-column:1;grid-row:2\}\n  \.v2-ret-in>\.v2-lt-link\.v2-tl-row\{grid-column:2;grid-row:2;/);
 });
 
 test('Ansicht wechseln: Liste ein, Ergebnis aus; zurück stellt die Prognose wieder her', () => {

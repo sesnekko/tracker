@@ -38,7 +38,7 @@ Von oben nach unten:
 | Ziel-Balken (verfügbar / Ziel) | `#lt-target-section` | `renderLifetimePageCalcs()`, Crosshair | **nein** (gleicher Container) |
 | Chart | `#chartLifetime` (Chart.js `charts['lifetime']`) | `renderLifetimePageCalcs()` | ja |
 | Zeitraum 5 J / 10 J / 25 J / Alle, Flächen, Log | `[data-lt-range]`, `#ltAssetsToggleBtn`, `#ltLogToggleBtn` | Zustand `ltRange`, `ltShowAssets`, `ltUseLog` (Z. ≈2625, Standard aus „Darstellung der Charts“) | ja |
-| Ergebnis-Karte „Vorruhestand/Ruhestand mit X“ | `#v2-lt-summary` | `_v2LtSummary()`: Erfolgschance mit Ziel in einer Zeile („Was bedeutet das? ›“ → `openSuccessExplain`), ein Satz, zwei Kacheln (Verfügbar mit X, Sicher möglich ab); die Skala entfällt. Die Kennzahlen Vermögen am Horizont, Ø Rendite und Schuldenfrei sind seit 15.10.2026 entfernt | ja |
+| Ergebnis-Karte „Vorruhestand/Ruhestand mit X“ | `#v2-lt-summary` | `_v2LtSummary()`: Erfolgschance mit Ziel in einer Zeile („Was bedeutet das? ›“ → `openSuccessExplain`), ein Satz, zwei Kacheln (Etappenziel „Ziel mit X · liquide“, seit 15.10.2026 statt „Verfügbar mit X“; Sicher möglich ab), darunter die Zeile „Zeitverlauf“ (8.2a); die Skala entfällt. Die Kennzahlen Vermögen am Horizont, Ø Rendite und Schuldenfrei sind seit 15.10.2026 entfernt | ja |
 | Lebensphasen-Karte | `#v2-lt-phases` | `_v2LtPhases()`: je Phase **eine Zeile** (Name, Zeitraum, Wert); Antippen klappt die Beschreibung auf (`_v2Fold`), dort „Phase bearbeiten ›“ → `openPhasesSheet(i)`. Weitere Personen nur als eigener Phasenbalken (die Zeilen „Weitere Personen“ sind seit 15.10.2026 entfernt: Balken, „Einkommen im Ruhestand“ und „Bearbeiten“ zeigen dasselbe). Unter jedem Balken ist der Rentenbeginn immer beschriftet (`_ticksHTML`); eine zu nahe Marke davor entfällt | ja |
 | „Annahmen bearbeiten“ | `#v2-lt-open` | klappt den Abschnitt „Annahmen“ unten auf dieser Seite auf und scrollt hin (`_v2OpenForecastSettings`) | ja |
 | 4 KPI-Kacheln (Ziel, Erfolgschance, Rente möglich ab, Bei Rentenbeginn) | `.kpi-grid`, `#lt-target-real` … | `renderLifetimePageCalcs()` | **nein** (CSS Z. ≈1516) |
@@ -386,7 +386,25 @@ und externe Zuflüsse. Die Tests in `forecast-cashflow.test.cjs` prüfen das mit
 - **Zielkapital** (`targetCapital`): Barwert von `Bedarf − Renten + Kreditraten` ab Ruhestand bis
   zum Horizont, je Jahr ÷ (1 − Ø Abzug), abgezinst mit der realen Rendite der entnehmbaren
   Gruppen bei Rentenbeginn (gewichtet nach dem Erwartungspfad).
-- **Verfügbar bei Rentenbeginn** = `avail50` im Alter `round(R)`, real. **Deckung** = verfügbar ÷ Ziel.
+- **Verfügbar bei Rentenbeginn** = `avail50` im Alter `round(R)`, real. **Deckung** = verfügbar ÷ Ziel. Beides steht
+  seit 15.10.2026 nicht mehr in der Ergebnis-Karte (nur noch in den ausgeblendeten Kacheln und Balken).
+- **Etappenziel** (`_msSteps`, `_milestoneCalc`, Kachel `_msTileHTML`, seit 15.10.2026 statt „Verfügbar mit X“):
+  liquides (entnehmbares) Vermögen, das zu Beginn der nächsten Lebensphase mindestens da sein sollte.
+  - Alter (`_msAge`): Beginn „Weiterarbeiten“ (`phase2From`), ohne diese Phase Beginn des Ruhestands (`workEnd`),
+    sind beide vorbei heute („Nötig heute“).
+  - Suche: größter einmaliger Betrag X, den man in diesem Alter aus dem entnehmbaren Vermögen nehmen könnte, ohne
+    dass `_mcPass` (dieselben 500 Zufallsverläufe, Sicherheitsniveau) scheitert. `_msPlan` hängt dafür ein Ereignis
+    an eine Kopie des Plans (X > 0: Ausgabe aus `*`, X < 0: Zufluss von außen; heutige Kaufkraft). Bestehender Plan:
+    obere Grenze = erwarteter Wert; sonst wird der nötige Zuschuss verdoppelnd gesucht (bis 20 Mio €, sonst „Ein
+    Polster allein reicht nicht“). Danach Bisektion bis max(1.000 €, 1 % des erwarteten Werts).
+  - Ergebnis: **Ziel** = `avail50` im Etappenalter (real) − X, mindestens 0; **heute** = entnehmbare Töpfe heute,
+    Balken und Prozent = heute ÷ Ziel; **erwartet** = `avail50` im Etappenalter; X < 0 → „es fehlen ≈ −X“ (rot).
+  - Rechenzeit: je Schritt ein Monte-Carlo-Durchgang (Node: rund 65 ms, früher Abbruch oft schneller), meist 6–10
+    Schritte. `_msSchedule` rechnet nach dem Zeichnen der Seite Schritt für Schritt per `setTimeout`, zeigt solange
+    „wird berechnet“, speichert das Ergebnis in `_ltCalcCache.ms` und verwirft es, wenn sich der Stand inzwischen
+    geändert hat. Zeitraum, Skala oder Design neu zeichnen rechnet nicht neu.
+  - Näherung: Der Puffer wird von jedem Verlauf gleich abgezogen; „Ziel“ heißt also: so viel weniger als erwartet
+    darf es sein, wenn alles andere wie geplant läuft.
 - **Phasen-Karte**: Median-Nettovermögen am Ende jeder Phase; „Fehlbetrag mit X“ in der Phase, in
   der die Hälfte der Läufe ihren ersten Fehlbetrag hatte (`failAge50`, P27). Ein kleines
   Restvermögen bei gedecktem Bedarf ist kein Fehlbetrag.
@@ -454,9 +472,11 @@ Ziel-Balken und, wenn geöffnet, die Liste im Zeitverlauf (8.2a).
 
 ### 8.2a Zeitverlauf (`ltTimeline`, `_ltGroupRows`, `_ltTimelineAt`)
 
-Seit 15.10.2026 steht in der Ergebnis-Karte unter den Kennzahlen „Verfügbar mit …“ und „Sicher möglich ab“ die
+Seit 15.10.2026 steht in der Ergebnis-Karte unter den Kennzahlen „Ziel mit …“ und „Sicher möglich ab“ die
 Zeile „Zeitverlauf · Anlagen und Kredite über die Jahre ›“ (Stil wie „So wird gerechnet“). Ein erster Entwurf als
-Kachel zwischen den beiden Kennzahlen passte optisch nicht und wurde verworfen. Die Zeile wechselt in eine eigene Ansicht
+Kachel zwischen den beiden Kennzahlen passte optisch nicht und wurde verworfen. Ist die Karte mindestens 560 px
+breit (iPad, schmales Mac-Fenster; Container-Abfrage auf `.v2-ret`), steht die Zeile oben rechts unter „Abgesichert“
+neben der Erfolgschance; auf dem iPhone und in der rechten Mac-Spalte bleibt sie unter den Kennzahlen. Die Zeile wechselt in eine eigene Ansicht
 (`#page-lifetime.lt-tl-on`): Unter dem Chart (Mac: rechte Spalte) stehen dann statt Ergebnis, Phasen,
 Kennzahlen und Annahmen nur die Liste und oben „Zurück zur Prognose“, das die normale Ansicht wiederherstellt.
 Auf dem iPhone rollt die Seite beim Öffnen zum Chart und beim Schließen zurück zur Ergebnis-Karte. Der Zustand
@@ -623,6 +643,9 @@ Abgedeckt (`node --test .tests/`):
   Ereignis im laufenden Jahr (P13), künftiger Snapshot (P28), Geburtsmonat (P17), kein Ruhestand am
   Horizont (P23), Suchkandidaten mit eigenen Renten (P9), nicht monotone Suche, Fehlbetrag statt
   Liquiditätsschwelle (P27), Budgetmonat (P7).
+- **Etappenziel** (`lt-milestone.test.cjs`): Alter je Phase, Puffer und Fehlbetrag mit Grenzprüfung (Puffer besteht,
+  Puffer + Toleranz nicht), nicht erreichbar, Ereignis im Etappenalter ohne Änderung des Plans, Kachel,
+  Hintergrundrechnung mit Verwerfen veralteter Ergebnisse, Info-Text Deutsch/Englisch.
 - **Zeitverlauf** (`lt-timeline.test.cjs`): `per = perGross − perDebt`, Zeilen und Reihenfolge, Werte je
   Alter (Prognose und Historie), Anteil und Veränderung, Liste wie auf der Vermögen-Seite, Knopf in der
   Ergebnis-Karte (Zeile unter den Kennzahlen), Ansicht wechseln, Markup.
