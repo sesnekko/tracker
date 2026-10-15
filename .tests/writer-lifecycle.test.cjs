@@ -441,6 +441,15 @@ test('P54: das Budget-Sheet speichert einen Entwurf vom alten Stand nicht', asyn
   assert.deepEqual([...new Set(amounts)], [3500], 'die Änderung aus A bleibt');
   assert.match(r.B.el('dsError').textContent, /^Nicht gespeichert/);
 });
+/* 15.10.2026: Haushalt und Altersvorsorge werden im Sheet bearbeitet (wie Vermögenswerte); dieselbe Regel gilt dort */
+test('P54: das Personen-Sheet speichert Geburtsdaten vom alten Stand nicht', async () => {
+  const r = await readerThenPromoted(doc(),
+    B => { B.run("CSS={escape:String};openPersonSheet('me')"); fill(B, { 'hp-name': '', 'hp-by': '1980', 'hp-bm': '1' }); },
+    A => A.run("appStorage.setItem('lt-birth-year','1984')"));
+  r.B.run('_submitSheet()');
+  assert.equal(JSON.parse(r.b.shared.getItem(Data.KEY)).retirement.primary.birthYear, 1984, 'die Änderung aus A bleibt');
+  assert.match(r.B.el('dsError').textContent, /^Nicht gespeichert/);
+});
 test('P54: Daten-Bearbeiten speichert vom alten Stand nichts und nennt die Konfliktentscheidung', async () => {
   const r = await readerThenPromoted(doc(),
     B => {

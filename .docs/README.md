@@ -5,7 +5,7 @@ in Commit `1b57aa8` (Schema 15). Danach Review-Runde P34–P38, Anmerkungen aus 
 Folge-Review 2 P64, P65 (Commit `b9f80d4`), die Persona-Befunde und die kompaktere Daten- und Prognose-Seite (Commit `50300cc`),
 danach EM-Rente mit Zurechnungszeit und Besitzschutz, das Altersvorsorgedepot Monat für Monat und die EM-Rente mit
 Entgeltpunkten laut Bescheid (15.10.2026): Schema 19,
-Service-Worker-Cache `verm-v133`,
+Service-Worker-Cache `verm-v134`,
 `data-store.js?v=32`, `i18n-en.js?v=17`. Unabhängige Prüfberichte:
 [REVIEW_2026-10.md](REVIEW_2026-10.md), [REVIEW_2026-10_FOLGE.md](REVIEW_2026-10_FOLGE.md),
 [REVIEW_2026-10_FOLGE2.md](REVIEW_2026-10_FOLGE2.md), [REVIEW_2026-10_FOLGE3.md](REVIEW_2026-10_FOLGE3.md).
@@ -141,7 +141,8 @@ die alte Fassung, der zweite die neue.
 
 ### Tests
 
-- Aufruf: `node --test .tests/` – 33 Testdateien, 359 Tests, alle grün (15.10.2026 nach Schema 19, EM-Rente mit
+- Aufruf: `node --test .tests/` – 34 Testdateien, 369 Tests, alle grün (15.10.2026 nach der einheitlichen Daten-Seite,
+  `data-page-lists.test.cjs`, Schema 19, EM-Rente mit
   Entgeltpunkten laut Bescheid, `em-old-age.test.cjs`, dem eigenen Namen, `own-name.test.cjs`, und der Monatsrechnung des
   Altersvorsorgedepots; 14.10.2026 nach der Review-Runde
   P34–P38, den Anmerkungen aus dem Test, dem Folge-Review P54, P55, P63, dem Folge-Review 2 P64, P65 und den

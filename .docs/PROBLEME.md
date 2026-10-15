@@ -281,6 +281,27 @@ Untergrenze 54,6132 persönliche Entgeltpunkte ≈ 1.857,72 € netto; aus Punkt
 
 `node --test .tests/` **359/359**, Audit **22/0**.
 
+**Daten-Seite einheitlich (15.10.2026)**, Rückmeldung: Haushalt zeigte Karten und einen einzelnen „Bearbeiten“-Knopf für den
+ganzen Bereich, andere Bereiche Listen. Vorbild sind Vermögenswerte und Verbindlichkeiten: Liste, Eintrag antippen öffnet ein
+Sheet zum Ansehen und Bearbeiten, je Bereich ein „+ … hinzufügen“.
+- Haushalt: Listen „Personen“ und „Kinder“; Sheets für Person (Name, Geburtsdaten, Lebensphasen-Link, Zugeordnetes,
+  Entfernen) und Kind.
+- Altersvorsorge: Listen je Art (gesetzliche Rente je Person, Beamtenversorgung, Depots, weitere Renten); Sheets mit allen
+  Feldern und Ergebnis live. Vorher sprang ein Tipp in den Bearbeiten-Modus des ganzen Bereichs.
+- Einnahmen & Ausgaben: die automatischen Kreditraten, Depots und Kindergeld als Listenzeilen statt Infokästen; antippen
+  öffnet Kredit, Depot oder Kind.
+- Speichern und Entfernen nach denselben Regeln wie zuvor im Bearbeiten-Modus (leere Felder, Phasen und Pension einer Person
+  bleiben, Depots und Renten einer entfernten Person gehören danach dir), dazu die Sheet-Regeln für Schreibrecht und
+  veraltete Stände (P54).
+- Der Bearbeiten-Modus der Daten-Seite ist damit ohne Einstieg; sein Code (Karten, `saveEntry`) bleibt vorerst und wird
+  separat entfernt. Der mitlaufende „Bearbeiten“-Knopf entfällt mit ihm.
+- Tests: `data-page-lists.test.cjs` (9), `writer-lifecycle.test.cjs` „P54: das Personen-Sheet …“; umgestellt mit Begründung:
+  `own-name.test.cjs` (Personen-Sheet statt Ich-Karte), `persona-fixes.test.cjs` „UI: Altersvorsorge als Listen …“ (vorher
+  Sprung in den Bearbeiten-Modus). Browser (iPhone-Größe): Listen, Personen-, Renten-, Depot-, Beamten-, Kind- und
+  Renten-Sheet, Anlegen, Speichern, Entfernen mit Rückfrage; englische Texte im Harness.
+
+`node --test .tests/` **369/369**, Audit **22/0**.
+
 **Persona-Simulation vom 14.10.2026** (`.docs/Onboarding Persona/Ergebnis_Simulation_2026-10-14.md`, 14 Personas,
 Befunde A1–A13, B1–B6, C1–C14). Umgesetzt in dieser Runde, kein Schemawechsel (weiter Version 17); Versionen
 `data-store.js?v=29`, `i18n-en.js?v=13`, Cache `verm-v127`. Nicht Teil dieser Runde: Folge-Review 3

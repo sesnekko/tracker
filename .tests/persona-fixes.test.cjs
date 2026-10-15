@@ -208,18 +208,24 @@ test('UI: Annahmen stehen auf der Prognose-Seite, die Daten-Seite springt dorthi
   assert.match(html,/:is\(#page-import,#ltAssume\) \.input-group\{display:grid/,'gleiche Optik wie auf der Daten-Seite');
 });
 
-test('UI: Altersvorsorge ohne Bearbeiten als Zeilen je Person und Art; Antippen öffnet das Bearbeiten',()=>{
+/* 15.10.2026: Altersvorsorge wie Vermögenswerte – je Art eine Liste, Eintrag antippen öffnet sein Sheet (vorher: Zeilen, die in
+   den Bearbeiten-Modus des ganzen Bereichs sprangen, data-pv-jump, und Karten unter .pv-fields) */
+test('UI: Altersvorsorge als Listen je Art und Person; Antippen öffnet das Sheet des Eintrags',()=>{
   const a=context(),s=p10();
   s.pens.partner.amount='1.203';s.pens.partner.salary='46.000';
   apply(a,s);a.run("appStorage.setItem('v2-modules',JSON.stringify({assets:true,liab:true,budget:true,forecast:true,pension:true}));_modsCache=null;");
   const sum=a.run('_pensionSummaryHTML()');
-  const rows=[...sum.matchAll(/data-pv-jump="([^"]+)"><span class="ds-item-l"><span>([^<]+)<\/span><small>([^<]+)<\/small>/g)].map(m=>[m[1],m[2],m[3]]);
-  assert.deepEqual(rows.map(r=>r[1]),['Beamtenpension','Gesetzliche Rente']);
-  assert.equal(rows[0][0],'dpBv');assert.match(rows[0][2],/^Ich · /);
-  assert.match(rows[1][0],/^drv:person-1$/);assert.match(rows[1][2],/^Claudia · /);
+  const groups=[...sum.matchAll(/<div class="ds-list-t">([^<]+)<\/div>/g)].map(m=>m[1]);
+  assert.deepEqual(groups,['Gesetzliche Rente','Beamtenversorgung']);
+  const rows=[...sum.matchAll(/data-ds-open="([^"]+)" data-id="([^"]*)"><span class="ds-item-l"><span>([^<]+)<\/span><small>([^<]+)<\/small>/g)].map(m=>[m[1]+':'+m[2],m[3],m[4]]);
+  assert.deepEqual(rows.map(r=>r[0]),['drv:me','drv:person-1','bv:me']);
+  assert.equal(rows[0][2],'Noch nicht eingetragen','eigene gesetzliche Rente fehlt: Zeile zum Eintragen');
+  assert.equal(rows[1][1],'Claudia');
   assert.match(sum,/netto ab 62/);
-  assert.match(a.run("(buildDynamicFormForTest(),document.getElementById('dataPageContent').innerHTML)"),/<div class="pv-sum">[\s\S]*<div class="pv-fields">/);
-  const empty=context();assert.match(empty.run('_pensionSummaryHTML()'),/Noch keine Altersvorsorge erfasst/);
+  assert.match(sum,/data-ds-open="add-pv">\+ Altersvorsorge hinzufügen/);
+  const page=a.run("(buildDynamicFormForTest(),document.getElementById('dataPageContent').innerHTML)");
+  assert.doesNotMatch(page,/class="ds-sec-actions"|class="pv-fields"|class="pv-sum"|data-pv-jump/,'kein Bearbeiten für den ganzen Bereich');
+  const empty=context();assert.match(empty.run('_pensionSummaryHTML()'),/Noch nicht eingetragen/);
 });
 
 test('UI: „Nach und nach ergänzen“ zeigt nur beim ersten Vorschlag den Text',()=>{

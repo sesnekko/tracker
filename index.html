@@ -385,6 +385,12 @@ details.input-collapsible[open]>.input-collapsible-summary::before{transform:rot
 .input-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-bottom:12px}
 .drv-em:not([hidden]),.drv-em-limit:not([hidden]){display:contents}
 .input-group.drv-pts[hidden]{display:none}
+/* Sheets von Haushalt und Altersvorsorge (15.10.2026) */
+#dsBody .ds-row[hidden]{display:none}
+.pv-res{margin:12px 4px 0}
+.pv-ctx>div+div{margin-top:4px}
+#dsBody .pv-params{margin-top:12px}
+#dsBody .pv-sheet-t:first-of-type{padding-top:4px}
 .input-group{display:flex;flex-direction:column;gap:3px;min-width:0}
 .input-group label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .num-input{
@@ -7312,21 +7318,26 @@ function _automaticDepotRows(month){
 }
 /* Budgetposten, der durch ein Depot ersetzt wird (Verknüpfung „Beitrag für“) */
 function _depotLinked(r){return !!r.depotId&&_mod('pension')&&getAvDepots().some(d=>d.id===r.depotId);}
+/* Automatische Posten im Budget (Kreditraten, Altersvorsorgedepots, Kindergeld) als Liste wie die übrigen Posten
+   (15.10.2026); antippen öffnet die Quelle: Kredit, Depot oder Kind */
 function _childBudgetHTML(month){
   const kids=getChildren();if(!kids.length)return '';
-  const now=_childrenEntitled(month);
-  return `<div class="loan-budget"><h4>Kindergeld · automatisch</h4><div><span>${now.length===1?'1 Kind':now.length+' Kinder'}</span><strong>${fmt(now.length*CHILD_BENEFIT)}</strong></div><p>${kids.map(c=>escHTML(_childName(c))+' bis '+fmtMonth(_childEnd(c))).join(' · ')}${(loadBudgetData()?.einkommen||[]).some(_childBenefitReplaced)?' · ersetzt den Posten „Kindergeld“':''}</p></div>`;
+  const replaced=(loadBudgetData()?.einkommen||[]).some(_childBenefitReplaced);
+  return kids.map(c=>{const on=month>=_childStart(c)&&month<=_childEnd(c);return _pvRow('child',c.id||'',L('Kindergeld ','Child benefit ')+_childName(c),L('bis ','until ')+fmtMonth(_childEnd(c))+(replaced?L(' · ersetzt den Posten „Kindergeld“',' · replaces the entry "Kindergeld"'):''),fmt(on?CHILD_BENEFIT:0),'',!on);}).join('');
 }
 function _depotBudgetHTML(month){
   if(!_mod('pension'))return '';
   const s=getLifetimeSettings(),y=+month.slice(0,4);
-  const rows=getAvDepots().filter(d=>d.id).map(d=>{const q=_avdParams(s,d),z=avdYear(s,d,Math.max(y,q.start),q);return z&&{name:(d.name||'').trim()||'Altersvorsorgedepot',z,from:q.start>y?q.start:null};}).filter(Boolean);
-  if(!rows.length)return '';
-  return `<div class="loan-budget"><h4>Altersvorsorgedepots · automatisch</h4>${rows.map(r=>`<div><span>${escHTML(r.name)}</span><strong>${fmt(r.z.own/12)}</strong></div><p>${r.from?'ab '+MONTH_FULL[0]+' '+r.from+' · ':''}+ Zulage Ø ${fmt(r.z.total/12)} pro Monat (${fmt(r.z.total)} im Jahr)</p>`).join('')}<p>Beitrag und Zulage stehen im Budget unter Vermögensaufbau, die Zulage zusätzlich als Einnahme. Sie wird einmal im Jahr gutgeschrieben, im Budget steht der Monatsschnitt. Einen eigenen Sparposten für den Beitrag verknüpfst du über „Beitrag für“, dann zählt er nicht doppelt.</p></div>`;
+  return getAvDepots().filter(d=>d.id).map(d=>{const q=_avdParams(s,d),z=avdYear(s,d,Math.max(y,q.start),q);if(!z)return '';
+    return _pvRow('avd',d.id,(d.name||'').trim()||L('Altersvorsorgedepot','Retirement depot'),(q.start>y?L('ab ','from ')+MONTH_FULL[0]+' '+q.start+' · ':'')+L('+ Zulage Ø ','+ subsidy Ø ')+fmt(z.total/12)+L('/Monat','/month'),fmt(z.own/12),L('Beitrag','contribution'));}).join('');
 }
 function _loanBudgetHTML(month){
-  const loans=_automaticLoanRows(month);if(!loans.length)return '';
-  return `<div class="loan-budget"><h4>Automatische Kreditraten · ${fmtMonth(month)}</h4>${loans.map(l=>`<div><span>${escHTML(l.label)}</span><strong>${_loanMoney(l.row.totalPayment)}</strong></div><p>Zins ${_loanMoney(l.row.interest)} · Tilgung ${_loanMoney(l.row.principal)}${l.row.extra?' · Sondertilgung '+_loanMoney(l.row.extra):''}</p>`).join('')}<p>Diese Beträge werden im Budget berücksichtigt. Gleichnamige manuelle Kreditposten werden durch die berechneten Werte ersetzt, um Doppelzählungen zu vermeiden.</p></div>`;
+  return _automaticLoanRows(month).map(l=>_pvRow('liab',l.id,l.label,L('Zins ','Interest ')+_loanMoney(l.row.interest)+L(' · Tilgung ',' · repayment ')+_loanMoney(l.row.principal)+(l.row.extra?L(' · Sondertilgung ',' · extra ')+_loanMoney(l.row.extra):''),_loanMoney(l.row.totalPayment),L('Rate','payment'))).join('');
+}
+function _autoBudgetHTML(month){
+  const rows=_loanBudgetHTML(month)+_depotBudgetHTML(month)+_childBudgetHTML(month);if(!rows)return '';
+  return `<div class="ds-list-t">${L('Automatisch · ','Automatic · ')+fmtMonth(month)}</div><div class="ds-list pv-list">${rows}</div>`
+    +`<p class="ds-help">${L('Berechnet aus Krediten, Altersvorsorgedepots und Kindern und im Budget berücksichtigt. Gleichnamige eigene Posten werden ersetzt; einen eigenen Sparposten für ein Depot verknüpfst du über „Beitrag für“. Die Zulage kommt einmal im Jahr, hier steht der Monatsschnitt.','Calculated from loans, retirement depots and children and included in the budget. Own entries with the same name are replaced; link an own saving entry for a depot via "Contribution for". The subsidy comes once a year; the monthly average is shown here.')}</p>`;
 }
 function _loanPlanHTML(p){
   const s=LoanModel.schedule(p),year=selectedMonth.slice(0,4),rows=Array.from({length:12},(_,i)=>LoanModel.at(p,year+'-'+String(i+1).padStart(2,'0')));
@@ -7680,6 +7691,8 @@ function _initSheet(){
   b.addEventListener('focusin',_monthSheetFocus);
   b.addEventListener('input',_phasesInput);
   b.addEventListener('change',_monthSheetChange);
+  b.addEventListener('change',_pvSheetInput);
+  b.addEventListener('input',_pvSheetInput);
   b.addEventListener('input',e=>{if(e.target.id==='b-loan'&&_sheetCtx.budget)_sheetCtx.budget.loanTouched=true;if(e.target.id==='b-depot'&&_sheetCtx.budget)_sheetCtx.budget.depotTouched=true;_sheetDirty=true;_dataInput(e);_monthSheetInput(e);_historyInput(e);_unitHint(e);if(_sheetCtx.budget)_budgetSheetUpdate();});
   b.addEventListener('click',e=>{
     const tog=e.target.closest('[data-dep-toggle]');if(tog){_depToggle(tog.dataset.depToggle);return;}
@@ -8888,10 +8901,16 @@ function _dataInput(event){
   if(id){if(input.dataset.loan)_syncLoanPayment(id,input.dataset.k);_updateLoanSummary(id);}
 }
 function _dataClick(event){
+  /* Sheets von Haushalt und Altersvorsorge: Entfernen, Lebensphasen, Depot ins Vermögen */
+  if(event.target.closest&&event.target.closest('#dsBody')&&_pvSheetClick(event))return;
   const open=event.target.closest('[data-ds-open]');
   if(open){
     const kind=open.dataset.dsOpen,id=open.dataset.id;
     if(kind==='asset')openAssetSheet(id);else if(kind==='liab')openLoanSheet(id);
+    else if(kind==='add-hh'||kind==='add-pv')openPvAddSheet(kind==='add-hh'?'household':'pension');
+    else if(kind==='person'||kind==='add-person')openPersonSheet(kind==='person'?id:null);else if(kind==='child'||kind==='add-child')openChildSheet(kind==='child'?id:null);
+    else if(kind==='drv')openDrvSheet(id);else if(kind==='bv'||kind==='add-bv')openBvSheet(kind==='bv'?id:null);
+    else if(kind==='avd'||kind==='add-avd')openAvdSheet(kind==='avd'?id:null);else if(kind==='pen'||kind==='add-pen')openPenSheet(kind==='pen'?id:null);
     else if(kind==='budget')openBudgetSheet({ref:id});else if(kind==='once')openBudgetSheet({once:id});else if(kind==='add-budget')openBudgetSheet();
     else if(kind==='account')openAccountSheet(id);else if(kind==='add-account')openAccountSheet();else if(kind==='order')openOrderSheet(id);else if(kind==='add-order')openOrderSheet();
     else if(kind==='add-asset')openAddAssetSheet();else if(kind==='add-liab')openAddLiabSheet();else if(kind==='month')openMonthSheet();
@@ -8929,12 +8948,8 @@ function buildDynamicForm(){
   /* Haushalt: weitere Personen und Kinder (Schema 14). Ihre Einkünfte und Altersvorsorge werden ihnen zugeordnet. */
   {const dx=getDrvExtra(),kids=getChildren(),by=getLifetimeSettings().birthYear;
   html+=`<details class="input-collapsible" data-sec="household">${_v2Sum('household','Haushalt')}<div class="input-collapsible-body">`;
-  html+=`<div class="ds-sec-actions"><button type="button" class="v2-textbtn" onclick="enterEditMode()">Bearbeiten</button></div>`;
-  html+=_meCardHTML();
-  html+=`<div class="lt-block-label${dx.length?'':' edit-only'}" data-info="drvx-persons">Weitere Personen</div><div id="dpDrvExtra">${_v2DrvExtraRowsHTML(dx)}</div>`;
-  html+=`<button class="btn btn-ghost plan-add edit-only" id="dpDrvExtraAdd">+ Person</button>`;
-  html+=`<div class="lt-block-label${kids.length?'':' edit-only'}" data-info="children">Kinder</div><div id="dpChildren">${_childRowsHTML(getChildren())}</div>`;
-  html+=`<button class="btn btn-ghost plan-add edit-only" id="dpChildAdd">+ Kind</button>`;
+  /* wie Vermögenswerte (15.10.2026): Liste der Personen und Kinder, Eintrag antippen öffnet das Sheet */
+  html+=_householdListHTML();
   html+=`</div></details><div class="divider"></div>`;}
 
   /* Vermögenswerte und Verbindlichkeiten: Liste, Tippen öffnet das Sheet der Position */
@@ -8945,35 +8960,15 @@ function buildDynamicForm(){
   /* Altersvorsorge: gesetzliche Rente + weitere Renten (gleiche Daten wie auf der Prognose-Seite) */
   html+=`<div class="divider"></div>`;
   html+=`<details class="input-collapsible" data-mod="pension">${_v2Sum('pension','Altersvorsorge')}<div class="input-collapsible-body">`;
-  html+=`<div class="ds-sec-actions"><button type="button" class="v2-textbtn" onclick="enterEditMode()">Bearbeiten</button></div>`;
-  /* kompakt (14.10.2026): ohne Bearbeiten je Person und Art eine Zeile mit dem Ergebnis; die Felder erst beim Bearbeiten */
-  html+=`<div class="pv-sum">${_pensionSummaryHTML()}</div><div class="pv-fields">`;
-  /* Jede Altersvorsorge gehört zu einer Person: gesetzliche Rente und Beamtenversorgung je Person als Karte (14.10.2026).
-     Rentenwert, Durchschnittsentgelt und BBG stehen bei dir und gelten für alle. */
-  const ppl=getDrvExtra().filter(p=>p.id);
-  /* Lesemodus kompakt: eine leere eigene Karte (z. B. bei Beamtenpension) erscheint erst beim Bearbeiten */
-  const myDrv=getDrv(),myEmpty=!(+myDrv.points>0||+myDrv.salary>0||+myDrv.em>0||+myDrv.emTotal>0),pplDrv=ppl.some(p=>+p.points>0||+p.salary>0||+p.em>0||+p.emTotal>0);
-  html+=`<div class="lt-block-label${myEmpty&&!pplDrv?' edit-only':''}">Gesetzliche Rente</div><div class="hh-card pv-card${myEmpty?' pv-empty':''}" id="pvMeDrv"><div class="hh-head">${_hhHeadHTML(_meName(),L('Gesetzliche Rente','State pension'))}</div>`+_drvFieldsHTML(myDrv,'dp','form')+`</div>`;
-  html+=`<div id="dpDrvPeople">${_pvDrvRowsHTML(ppl)}</div>`;
-  if(ppl.length)html+=`<p class="ds-help edit-only">${L('Rentenwert, Ø-Entgelt und BBG trägst du bei dir ein; sie gelten für alle.','Pension value, average salary and contribution ceiling are entered with yours; they apply to everyone.')}</p>`;
-  /* Beamtenversorgung: je Person nur sichtbar, wenn eingetragen; im Bearbeiten-Modus hinzufügbar */
-  const bvOn=hasBeamte(),bvPeople=ppl.filter(p=>p.bv&&+p.bv.pay>0);
-  html+=`<div class="lt-block-label${bvOn||bvPeople.length?'':' edit-only'}">${L('Beamtenversorgung','Civil service pension')}</div>`;
-  html+=`<div id="dpBv" class="hh-card pv-card"${bvOn?'':' hidden'}><div class="hh-head">${_hhHeadHTML(_meName(),L('Beamtenversorgung','Civil service pension'))}</div>${_bvFieldsHTML(getBeamte())}</div>`;
-  html+=`<div id="dpBvPeople">${_pvBvRowsHTML(ppl)}</div>`;
-  html+=`<div class="pv-add edit-only">${bvOn?'':`<button class="btn btn-ghost plan-add" id="dpBvAdd">+ ${L('Beamtenversorgung · Ich','Civil service pension · Me')}</button>`}${ppl.filter(p=>!(p.bv&&+p.bv.pay>0)).map(p=>`<button class="btn btn-ghost plan-add" data-bv-add="${escHTML(p.id)}">+ ${L('Beamtenversorgung · ','Civil service pension · ')}${escHTML((p.name||'').trim()||L('Weitere Person','Other person'))}</button>`).join('')}</div>`;
-  const avds=getAvDepots();
-  html+=`<div class="lt-block-label${avds.length?'':' edit-only'}" id="dpAvdLabel">Altersvorsorgedepots</div><div id="dpAvd">${_avdRowsHTML(avds)}</div>`;
-  html+=`<button class="btn btn-ghost plan-add edit-only" id="dpAvdAdd">+ Altersvorsorgedepot</button>`;
-  const pens=getLifetimeSettings().pensions,bavPos=_vf().some(f=>f.category==='bav');
-  html+=`<div class="lt-block-label${pens.length?'':' edit-only'}">Weitere Renten & Einkünfte</div><div id="dpPensions">${_planRowsHTML(pens,PENSION_COLS,'form')}</div>`;
-  if(bavPos&&pens.length)html+=`<p class="ds-help">${L('Ein Vertrag, der hier als Rente steht, sollte nicht zusätzlich als Vermögen „Altersvorsorge“ zählen.','A contract listed here as a pension should not also count as an "Altersvorsorge" asset.')}</p>`;
-  html+=`<button class="btn btn-ghost plan-add edit-only" id="dpPensionAdd">+ Rente / Einkommen</button>`;
-  html+=`</div></div></details>`;
+  /* wie Vermögenswerte (15.10.2026): je Art eine Liste, Eintrag antippen öffnet das Sheet mit allen Angaben */
+  html+=_pensionSummaryHTML();
+  {const pens=getLifetimeSettings().pensions,bavPos=_vf().some(f=>f.category==='bav');
+  if(bavPos&&pens.length)html+=`<p class="ds-help">${L('Ein Vertrag, der hier als Rente steht, sollte nicht zusätzlich als Vermögen „Altersvorsorge“ zählen.','A contract listed here as a pension should not also count as an "Altersvorsorge" asset.')}</p>`;}
+  html+=`</div></details>`;
 
   /* Einnahmen & Ausgaben: wiederkehrende Posten und einmalige Zahlungen als Liste, Bearbeiten im Sheet */
   html+=`<div class="divider"></div>`;
-  html+=`<details class="input-collapsible" data-mod="budget">${_v2Sum('budget','Einnahmen & Ausgaben')}<div class="input-collapsible-body">${_loanBudgetHTML(_budgetYM())}${_depotBudgetHTML(_budgetYM())}${_childBudgetHTML(_budgetYM())}${_budgetListHTML()}</div></details>`;
+  html+=`<details class="input-collapsible" data-mod="budget">${_v2Sum('budget','Einnahmen & Ausgaben')}<div class="input-collapsible-body">${_autoBudgetHTML(_budgetYM())}${_budgetListHTML()}</div></details>`;
   
   html+=`</div>`;/* /input-panel */
   container.innerHTML=html;
@@ -11193,32 +11188,360 @@ function _updateBvResult(){
 
 /* Altersvorsorge ohne Bearbeiten: je Person und Art eine Zeile mit dem Ergebnis (gleiche Rechnung wie die Felder).
    Antippen öffnet das Bearbeiten an dieser Stelle (_pvJump). */
-function _pensionSummaryHTML(){
-  const s=getLifetimeSettings(),rows=[],me=_meName();
-  const row=(to,title,sub,val,small)=>rows.push(`<button type="button" class="ds-item" data-pv-jump="${escHTML(to)}"><span class="ds-item-l"><span>${escHTML(title)}</span><small>${escHTML(sub)}</small></span><span class="ds-item-v">${val}${small?`<small>${escHTML(small)}</small>`:''}</span><span class="v2-chev"></span></button>`);
-  const net=L('netto ab ','net from '),pts=n=>_pts(n)+L(' Punkte',' points'),yrs=n=>_pts(n)+L(' Dienstjahre',' years of service');
-  const d=calcDrvPension(s,getDrv());
-  if(d.em)row('pvMeDrv',L('Erwerbsminderungsrente','Disability pension'),me,fmt(d.em.amount),L('netto bis ','net until ')+fmtAge(d.em.until));
-  if(d.epTotal>0||d.minimum>0)row('pvMeDrv',L('Gesetzliche Rente','State pension'),me+' · '+pts(d.epTotal),fmt(d.netto),net+fmtAge(d.age)+_drvMinTxt(d));
-  if(hasBeamte()){const b=calcBeamtePension(s,getBeamte());row('dpBv',L('Beamtenpension','Civil service pension'),me+' · '+yrs(b.total),b.eligible===false?L('kein Anspruch','no entitlement'):fmt(b.netto),b.eligible===false?'':net+fmtAge(b.age));}
-  getDrvExtra().filter(p=>p.id).forEach(p=>{
-    const n=(p.name||'').trim()||L('Weitere Person','Other person'),r=calcDrvExtra(s,p),b=calcBeamteExtra(s,p);
-    if(r.em&&r.em.gross>0)row('drv:'+p.id,L('Erwerbsminderungsrente','Disability pension'),n,fmt(r.em.gross),L('netto bis ','net until ')+_ageTxt(r.em.until));
-    if(r.epTotal>0||r.minimum>0)row('drv:'+p.id,L('Gesetzliche Rente','State pension'),n+' · '+pts(r.epTotal),fmt(r.netto),net+_ageTxt(r.age)+_drvMinTxt(r));
-    if(b)row('bv:'+p.id,L('Beamtenpension','Civil service pension'),n+' · '+yrs(b.total),b.eligible===false?L('kein Anspruch','no entitlement'):fmt(b.netto),b.eligible===false?'':net+_ageTxt(b.age));
-  });
-  getAvDepots().filter(x=>x.id).forEach(x=>row('avd:'+x.id,(x.name||'').trim()||L('Altersvorsorgedepot','Retirement depot'),(x.person?_personName(x.person):me)+' · '+L('Beitrag','contribution'),fmt(+x.contrib||0),L('pro Monat','per month')));
-  (s.pensions||[]).filter(x=>+x.amount>0).forEach(x=>row('pen:'+(x.id||''),x.name||L('Weitere Rente','Other pension'),x.person?_personName(x.person):me,fmt(+x.amount),net+_ageTxt(+x.from||67)+(+x.until>0?L(' bis ',' until ')+_ageTxt(+x.until):'')));
-  if(!rows.length)return `<p class="ds-help">${L('Noch keine Altersvorsorge erfasst. Unter „Bearbeiten“ trägst du gesetzliche Rente, Pension, Depots und weitere Renten ein.','No pensions recorded yet. Under "Edit" you add state pension, civil service pension, depots and other pensions.')}</p>`;
-  return `<div class="ds-list pv-list">${rows.join('')}</div>`;
+/* ══ Daten-Seite: Haushalt und Altersvorsorge wie Vermögenswerte (15.10.2026) ══
+   Liste je Bereich, ein Eintrag antippen öffnet ein Sheet mit allen Angaben (Ansehen und Bearbeiten), „+ … hinzufügen“ legt an.
+   Gespeichert wird je Sheet (Schreibrecht und veraltete Stände wie bei allen Sheets, P54). */
+const _PV_INT=new Set(['salary','emLimit','bvPay','de','bbg']),_PV_MONEY=new Set(['em','contrib','balance','amount']);
+function _sheetFieldsHTML(cols,v,pfx){
+  return cols.map(c=>{
+    const id=`${pfx}-${c.key}`,val=v[c.key]==null?'':v[c.key],lab=`<span class="ds-l"${c.info?` data-info="${c.info}"`:''}>${c.label}</span>`;
+    if(c.type==='select')return `<label class="ds-row pc-${c.key}" for="${id}">${lab}<select class="ds-in ds-wide" id="${id}" data-k="${c.key}">${c.options().map(([o,l])=>`<option value="${escHTML(o)}"${String(val)===String(o)?' selected':''}>${escHTML(l)}</option>`).join('')}</select></label>`;
+    if(c.type==='year'){const y=val===''||!(+val)?'':String(Math.round(+val));return `<div class="ds-row pc-${c.key}">${lab}${_dateFieldHTML({id,value:y,mode:'year',cls:'ds-in',title:c.label,placeholder:c.ph,optional:true,min:c.min??'',max:c.max??'',attrs:`data-k="${c.key}"`})}</div>`;}
+    const text=c.type==='text',shown=val===''?'':text?String(val):_PV_INT.has(c.key)?Math.round(+val).toLocaleString('de-DE'):_PV_MONEY.has(c.key)?_moneyInput(+val):c.prec?String(Math.round(+val*10**c.prec)/10**c.prec).replace('.',','):_numStr(+val);
+    return `<label class="ds-row pc-${c.key}" for="${id}">${lab}<input class="ds-in${text?' ds-wide':''}${_PV_INT.has(c.key)||_PV_MONEY.has(c.key)?' ds-money':''}" id="${id}" type="text"${text?' autocomplete="off"':' inputmode="decimal"'} data-k="${c.key}" value="${escHTML(shown)}" placeholder="${escHTML(c.ph||'')}"${c.maxLen?` maxlength="${c.maxLen}"`:''}></label>`;
+  }).join('');
 }
-/* Zeile der Zusammenfassung antippen: Bearbeiten an der passenden Karte */
+/* Werte eines Sheets; strict: ungültige Zahl = Fehler (Speichern), sonst leer (Vorschau) */
+function _sheetFieldValues(cols,pfx,strict){
+  const o={};
+  cols.forEach(c=>{
+    const el=document.getElementById(`${pfx}-${c.key}`);if(!el)return;
+    const raw=String(el.value||'').trim();
+    if(c.type==='text'||c.type==='select'){o[c.key]=raw;return;}
+    if(raw===''){o[c.key]='';return;}
+    const n=_parseDec(raw);
+    if(!isFinite(n)||n<0){if(strict)throw new Error(L(`${c.label.replace(/­/g,'')}: bitte eine Zahl ab 0 eintragen.`,`${c.label.replace(/­/g,'')}: please enter a number from 0.`));o[c.key]='';return;}
+    o[c.key]=n;
+  });
+  return o;
+}
+const _pvRow=(kind,id,label,sub,val,small,zero)=>`<button type="button" class="ds-item${zero?' is-zero':''}" data-ds-open="${kind}" data-id="${escHTML(id)}"><span class="ds-item-l"><span>${escHTML(label)}</span>${sub?`<small>${escHTML(sub)}</small>`:''}</span><span class="ds-item-v">${val}${small?`<small>${escHTML(small)}</small>`:''}</span><span class="v2-chev"></span></button>`;
+const _pvAdd=(kind,label)=>`<button type="button" class="ds-add" data-ds-open="${kind}">${label}</button>`;
+const _pvName=p=>(p&&(p.name||'').trim())||L('Weitere Person','Other person');
+/* Nach einer Änderung aus einem Sheet: Rechnungen und Seiten neu */
+function _afterPvChange(){_ltCalcCache=null;_afterDataChange();updateLifetimeInputs();}
+function _pvWrite(fn){
+  appStorage.beginTransaction();
+  try{fn();appStorage.commitTransaction();}catch(error){appStorage.rollbackTransaction();throw error;}
+}
+/* Löschen aus einem Sheet nach Rückfrage (wie „Position entfernen“) */
+async function _pvRemove(title,text,fn){
+  if(!await _ask({title,text,ok:L('Entfernen','Remove'),danger:true}))return;
+  try{_pvWrite(fn);}catch(error){_sheetError(error.message);return;}
+  _closeSheet(true);_afterPvChange();_toast(L('Entfernt','Removed'));
+}
+
+/* ── Haushalt ── */
+function _householdListHTML(){
+  const s=getLifetimeSettings(),now=new Date(),cur=_ageAt(s,now.getFullYear(),now.getMonth());
+  const b=_phaseBounds(s,cur,Math.max(Math.round(s.planHorizon),Math.ceil(cur)+1));
+  const sal=id=>{const v=_personSalary(id);return v>0?[fmt(v),L('Gehalt/Monat','salary/month')]:['',''];};
+  const by=appStorage.getItem('lt-birth-year');
+  let h=`<div class="ds-list-t">${L('Personen','People')}</div><div class="ds-list pv-list">`;
+  const [mv,ms]=sal(_ownPersonId());
+  h+=_pvRow('person','me',_meName(),(by?L('Jahrgang ','born ')+s.birthYear:L('Geburtsjahr fehlt','year of birth missing'))+L(' · Rente ab ',' · pension from ')+_ageTxt(b[3]),mv,ms);
+  getDrvExtra().filter(p=>p.id).forEach(p=>{
+    const r=calcDrvExtra(s,p),[v,sm]=sal(p.id);
+    h+=_pvRow('person',p.id,_pvName(p),(+p.by>1900?L('Jahrgang ','born ')+p.by+' · ':'')+L('Rente ab ','pension from ')+_ageTxt(r.age),v,sm);
+  });
+  h+=`</div>`;
+  const kids=getChildren(),ym=_budgetYM();
+  if(kids.length){
+    h+=`<div class="ds-list-t">${L('Kinder','Children')}</div><div class="ds-list pv-list">`;
+    kids.forEach(c=>{const on=ym>=_childStart(c)&&ym<=_childEnd(c);h+=_pvRow('child',c.id||'',_childName(c),L('Jahrgang ','born ')+c.by+L(' · bis ',' · until ')+fmtMonth(_childEnd(c)),fmt(on?CHILD_BENEFIT:0),L('Kindergeld','child benefit'),!on);});
+    h+=`</div>`;
+  }
+  return h+_pvAdd('add-hh',L('+ Person oder Kind hinzufügen','+ Add person or child'));
+}
+/* Person: Name und Geburtsdaten; was ihr zugeordnet ist, zum Ansehen; Lebensphasen im eigenen Sheet */
+function openPersonSheet(id){
+  const me=id==='me',isNew=!id,p=me||isNew?null:getDrvExtra().find(r=>r.id===id);if(!me&&!isNew&&!p)return;
+  const cols=[{key:'name',label:L('Name','Name'),type:'text',maxLen:40,ph:me?L('Ich','Me'):L('z. B. Partnerin','e.g. partner'),info:me?'lt-own-name':'drvx-name'},
+    {key:'by',label:L('Geburtsjahr','Year of birth'),type:'year',ph:L('Auswählen','Choose'),min:1920,max:2015,info:me?'lt-birth-year':'drvx-by'}];
+  if(me)cols.push({key:'bm',label:L('Geburtsmonat','Birth month'),type:'select',info:'lt-birth-month',options:()=>MONTH_FULL.map((m,i)=>[String(i+1),m])});
+  const v=me?{name:_ownName(),by:appStorage.getItem('lt-birth-year')||'',bm:appStorage.getItem('lt-birth-month')||'1'}:{name:p?p.name||'':'',by:p&&+p.by>1900?+p.by:''};
+  let body=`<div class="ds-group">${_sheetFieldsHTML(cols,v,'hp')}</div>`;
+  if(!isNew){
+    const s=getLifetimeSettings(),now=new Date(),cur=_ageAt(s,now.getFullYear(),now.getMonth());
+    /* kurz: Arbeitsende und Rentenbeginn (im Alter der Person); die Phasen selbst im Lebensphasen-Sheet */
+    const pb=me?_phaseBounds(s,cur,Math.max(Math.round(s.planHorizon),Math.ceil(cur)+1)):null,pr=me?null:calcDrvExtra(s,p);
+    const phase=L('Arbeit bis ','work until ')+_ageTxt(me?s.workEnd:pr.workUntil)+L(' · Rente ab ',' · pension from ')+_ageTxt(me?pb[3]:pr.age)+' ›';
+    body+=`<button type="button" class="ds-linkrow" data-pv-phases="${me?'':'2'}"><span>${L('Lebensphasen','Life phases')}</span><small>${escHTML(phase)}</small></button>`;
+    body+=`<div class="ds-list-t">${L('Zugeordnet','Assigned')}</div><div class="ds-note pv-ctx">${_personContextHTML(me?'':id)}</div>`;
+  }else body+=`<p class="ds-help">${L('Arbeitszeit, Arbeitsende und Rentenbeginn stellst du danach in den Lebensphasen ein, die gesetzliche Rente unter Altersvorsorge.','Working time, end of work and pension start are set afterwards in the life phases, the state pension under Pensions.')}</p>`;
+  if(p)body+=`<button type="button" class="ds-danger" data-pv-remove="person">${L('Person entfernen','Remove person')}</button>`;
+  const title=isNew?L('Neue Person','New person'):me?_meName():_pvName(p);
+  if(!_openSheet(title,body,()=>_savePersonSheet(id,cols),isNew?L('Hinzufügen','Add'):undefined,()=>openPersonSheet(id)))return;
+  _sheetCtx={pv:{kind:'person',id}};
+}
+function _savePersonSheet(id,cols){
+  const me=id==='me',v=_sheetFieldValues(cols,'hp',true),name=String(v.name||'').trim().slice(0,40);
+  const y=v.by===''?null:+v.by;
+  if(y!=null&&!(Number.isInteger(y)&&y>=1920&&y<=2015))throw new Error(L('Bitte ein Geburtsjahr wählen.','Please choose a year of birth.'));
+  _pvWrite(()=>{
+    if(me){
+      if(name!==_ownName())appStorage.setItem('lt-own-name',name);
+      if(y!=null&&String(y)!==appStorage.getItem('lt-birth-year'))appStorage.setItem('lt-birth-year',String(y));
+      if(v.bm&&v.bm!==(appStorage.getItem('lt-birth-month')??'1'))appStorage.setItem('lt-birth-month',v.bm);
+      return;
+    }
+    if(!id){
+      if(!name)throw new Error(L('Bitte einen Namen eintragen.','Please enter a name.'));
+      appStorage.setItem('lt-drv-extra',JSON.stringify([...getDrvExtra(),{name,by:y??''}]));
+      return;
+    }
+    appStorage.setItem('lt-drv-extra',JSON.stringify(getDrvExtra().map(p=>p.id===id?Object.assign({},p,{name,by:y??''}):p)));
+  });
+  _afterPvChange();return true;
+}
+/* Person entfernen: ihre Renten und Phasen entfallen; Depots und Renten, die ihr zugeordnet sind, gehören danach zu dir,
+   Kinderzulage und Gehälter zu dir bzw. zum Haushalt (wie früher beim Entfernen im Bearbeiten-Modus) */
+function _removePerson(id){
+  const p=getDrvExtra().find(r=>r.id===id);if(!p)return Promise.resolve();
+  return _pvRemove(L(`„${_pvName(p)}“ entfernen?`,`Remove "${_pvName(p)}"?`),L('Ihre gesetzliche Rente, Beamtenversorgung und Lebensphasen werden gelöscht. Altersvorsorgedepots und weitere Renten, die ihr zugeordnet sind, gehören danach zu dir; Gehälter im Budget zum Haushalt.','Their state pension, civil service pension and life phases are deleted. Retirement depots and other pensions assigned to them then belong to you; salaries in the budget to the household.'),()=>{
+    appStorage.setItem('lt-drv-extra',JSON.stringify(getDrvExtra().filter(r=>r.id!==id)));
+    appStorage.setItem('lt-av-depots',JSON.stringify(getAvDepots().map(d=>d.person===id?Object.assign({},d,{person:''}):d)));
+    appStorage.setItem('lt-pensions',JSON.stringify(_lsJSON('lt-pensions',[]).map(x=>x.person===id?Object.assign({},x,{person:''}):x)));
+    appStorage.setItem('lt-children',JSON.stringify(_lsJSON('lt-children',[]).map(c=>c.parent===id?Object.assign({},c,{parent:''}):c)));
+  });
+}
+/* Kind: wie die Kinderkarte, Kindergeld zur Ansicht */
+function openChildSheet(id){
+  const c=id?getChildren().find(x=>x.id===id):null;if(id&&!c)return;
+  const v=c?{name:c.name||'',by:+c.by||'',bm:+c.bm?String(+c.bm):'',until:+c.until===25?'25':'',parent:c.parent||''}:{name:'',by:'',bm:'',until:'',parent:''};
+  let body=`<div class="ds-group">${_sheetFieldsHTML(CHILD_COLS,v,'hc')}</div>`;
+  if(c){const ym=_budgetYM(),on=ym>=_childStart(c)&&ym<=_childEnd(c);body+=`<p class="ds-note">${escHTML(L('Kindergeld ','Child benefit ')+fmt(CHILD_BENEFIT)+L('/Monat von ','/month from ')+fmtMonth(_childStart(c))+L(' bis ',' until ')+fmtMonth(_childEnd(c))+(on?'':L(' – im gewählten Monat keins',' – none in the selected month')))}</p>`;
+    body+=`<button type="button" class="ds-danger" data-pv-remove="child">${L('Kind entfernen','Remove child')}</button>`;}
+  if(!_openSheet(c?_childName(c):L('Neues Kind','New child'),body,()=>_saveChildSheet(id),c?undefined:L('Hinzufügen','Add'),()=>openChildSheet(id)))return;
+  _sheetCtx={pv:{kind:'child',id}};
+}
+function _saveChildSheet(id){
+  const r=_sheetFieldValues(CHILD_COLS,'hc',true);
+  if(!(+r.by>1900))throw new Error(L('Bitte das Geburtsjahr wählen.','Please choose the year of birth.'));
+  const o={name:String(r.name||'').trim(),by:+r.by};if(+r.bm)o.bm=+r.bm;if(+r.until===25)o.until=25;if(r.parent)o.parent=r.parent;
+  _pvWrite(()=>{
+    const list=_lsJSON('lt-children',[]);
+    appStorage.setItem('lt-children',JSON.stringify(id?list.map(x=>x.id===id?Object.assign({id},o):x):[...list,o]));
+  });
+  _afterPvChange();return true;
+}
+
+/* ── Altersvorsorge ── */
+function _pensionSummaryHTML(){
+  const s=getLifetimeSettings(),me=_meName(),ppl=getDrvExtra().filter(p=>p.id);
+  const net=L('netto ab ','net from '),pts=n=>_pts(n)+L(' Punkte',' points');
+  /* gesetzliche Rente: jede erwachsene Person, auch ohne Angaben (zum Eintragen) */
+  const drvRow=(id,name,r,ageTxt)=>{
+    const has=r.epTotal>0||r.netto>0||!!r.em;
+    const sub=!has?L('Noch nicht eingetragen','Not entered yet'):r.em&&r.em.gross>0?L('EM-Rente ','Disability pension ')+fmt(r.em.amount)+(r.minimum>0?L(' · Modellrechnung',' · model calculation'):''):pts(r.epTotal);
+    return _pvRow('drv',id,name,sub,r.netto>0?fmt(r.netto):'—',r.netto>0?net+ageTxt(r.age):'',!has);
+  };
+  let h=`<div class="ds-list-t">${L('Gesetzliche Rente','State pension')}</div><div class="ds-list pv-list">`;
+  h+=drvRow('me',me,calcDrvPension(s,getDrv()),fmtAge);
+  ppl.forEach(p=>{h+=drvRow(p.id,_pvName(p),calcDrvExtra(s,p),_ageTxt);});
+  h+=`</div>`;
+  /* Beamtenversorgung: nur eingetragene */
+  const bvRows=[];
+  if(hasBeamte()){const b=calcBeamtePension(s,getBeamte());bvRows.push(_pvRow('bv','me',me,_pts(b.total)+L(' Dienstjahre',' years of service'),b.eligible===false?L('kein Anspruch','no entitlement'):fmt(b.netto),b.eligible===false?'':net+fmtAge(b.age)));}
+  ppl.forEach(p=>{const b=calcBeamteExtra(s,p);if(b)bvRows.push(_pvRow('bv',p.id,_pvName(p),_pts(b.total)+L(' Dienstjahre',' years of service'),b.eligible===false?L('kein Anspruch','no entitlement'):fmt(b.netto),b.eligible===false?'':net+_ageTxt(b.age)));});
+  if(bvRows.length)h+=`<div class="ds-list-t">${L('Beamtenversorgung','Civil service pension')}</div><div class="ds-list pv-list">${bvRows.join('')}</div>`;
+  /* Altersvorsorgedepots */
+  const avds=getAvDepots().filter(x=>x.id);
+  if(avds.length){
+    h+=`<div class="ds-list-t">${L('Altersvorsorgedepots','Retirement depots')}</div><div class="ds-list pv-list">`;
+    avds.forEach(x=>{const r=calcAvDepot(s,_avdResolve(x)),who=x.person?_personName(x.person):me;
+      h+=_pvRow('avd',x.id,(x.name||'').trim()||L('Altersvorsorgedepot','Retirement depot'),who+(r.netto>0?(r.started?L(' · läuft: ',' · running: '):L(' · ab ',' · from ')+_ageTxt(r.from)+' ≈ ')+fmt(r.netto)+L('/Monat','/month'):''),fmt(+x.contrib||0),L('Beitrag/Monat','contribution/month'));});
+    h+=`</div>`;
+  }
+  /* weitere Renten und Einkünfte */
+  const pens=(s.pensions||[]).filter(x=>x.id);
+  if(pens.length){
+    h+=`<div class="ds-list-t">${L('Weitere Renten & Einkünfte','Other pensions & income')}</div><div class="ds-list pv-list">`;
+    pens.forEach(x=>{h+=_pvRow('pen',x.id,x.name||L('Weitere Rente','Other pension'),(x.person?_personName(x.person):me)+L(' · ab ',' · from ')+_ageTxt(+x.from||67)+(+x.until>0?L(' bis ',' until ')+_ageTxt(+x.until):''),fmt(+x.amount||0),L('netto/Monat','net/month'),!(+x.amount>0));});
+    h+=`</div>`;
+  }
+  return h+_pvAdd('add-pv',L('+ Altersvorsorge hinzufügen','+ Add pension'));
+}
+/* Ein Knopf je Bereich wie „+ Vermögenswert hinzufügen“; hier wählt man die Art */
+function openPvAddSheet(area){
+  const bvFree=!hasBeamte()||getDrvExtra().some(x=>x.id&&!(x.bv&&+x.bv.pay>0));
+  const opts=area==='household'?[['add-person',L('Erwachsene Person','Adult'),L('z. B. Partnerin oder Partner, mit eigenem Gehalt und eigener Rente','e.g. partner, with own salary and pension')],['add-child',L('Kind','Child'),L('für Kindergeld und Kinderzulage','for child benefit and child subsidy')]]
+    :[['add-avd',L('Altersvorsorgedepot','Retirement depot'),L('gefördertes Depot ab 2027','subsidised depot from 2027')],['add-pen',L('Rente oder Einkommen','Pension or income'),L('z. B. Betriebsrente, Privatrente, Mieteinnahmen','e.g. company or private pension, rental income')],...(bvFree?[['add-bv',L('Beamtenversorgung','Civil service pension'),L('Pension aus Dienstjahren','pension from years of service')]]:[])];
+  const body=`<div class="ds-list pv-list">${opts.map(([k,t,sub])=>`<button type="button" class="ds-item" data-ds-open="${k}"><span class="ds-item-l"><span>${escHTML(t)}</span><small>${escHTML(sub)}</small></span><span class="v2-chev"></span></button>`).join('')}</div>`;
+  if(!_openSheet(L('Hinzufügen','Add'),body,()=>'quiet',L('Fertig','Done'),()=>openPvAddSheet(area)))return;
+  _sheetCtx={};
+  document.getElementById('dsCancel').style.visibility='hidden';
+}
+/* frühere Sprungziele (Vorschläge, Prognose): jetzt das Sheet des Eintrags */
 function _pvJump(to){
-  if(!_editMode)enterEditMode();
-  const k=to.includes(':')?to.slice(0,to.indexOf(':')):'',id=k?to.slice(k.length+1):'',esc=v=>CSS.escape(v);
-  const box={drv:'dpDrvPeople',bv:'dpBvPeople',avd:'dpAvd',pen:'dpPensions'}[k];
-  const el=box?document.querySelector(`#${box} .plan-row[data-row-id="${esc(id)}"]`):document.getElementById(to);
-  if(el)requestAnimationFrame(()=>el.scrollIntoView({block:'center',behavior:'smooth'}));
+  const k=to.includes(':')?to.slice(0,to.indexOf(':')):'',id=k?to.slice(k.length+1):'';
+  if(to==='pvMeDrv')openDrvSheet('me');else if(to==='dpBv')openBvSheet('me');
+  else if(k==='drv')openDrvSheet(id);else if(k==='bv')openBvSheet(id);else if(k==='avd')openAvdSheet(id);else if(k==='pen')openPenSheet(id);
+}
+/* Gesetzliche Rente einer Person: alle Angaben, EM-Rente, Rechengrößen (nur bei dir, gelten für alle), Ergebnis live */
+const DRV_PARAM_COLS=[{key:'rw',label:'Rentenwert €',info:'drv-rw',ph:'42,52'},{key:'de',label:'Ø-Entgelt €/Jahr',info:'drv-de',ph:'51.944'},{key:'bbg',label:'BBG €/Jahr',info:'drv-bbg',ph:'101.400'}];
+function openDrvSheet(pid){
+  const me=pid==='me',p=me?null:getDrvExtra().find(r=>r.id===pid);if(!me&&!p)return;
+  const d=me?getDrv():p,v={};
+  PERSON_DRV_COLS.forEach(c=>{const x=d[c.key];v[c.key]=c.key==='emType'?String(+x===1||+x===2?+x:0):x===''||x==null||(+x===0&&c.key!=='deduct')?'':+x;});
+  let body=`<div class="ds-list-t pv-sheet-t">${L('Gesetzliche Rente','State pension')}</div><div class="ds-group">${_sheetFieldsHTML(PERSON_DRV_COLS,v,'pv')}</div>`;
+  if(me)body+=`<details class="ds-zero pv-params"><summary>${L('Rechengrößen','Parameters')} · ${L('gelten für alle','apply to everyone')}</summary><div class="ds-group">${_sheetFieldsHTML(DRV_PARAM_COLS,{rw:d.rw,de:d.de,bbg:d.bbg},'pv')}</div></details>`;
+  body+=`<div class="lt-result pv-res" id="pvRes"></div>`;
+  if(!_openSheet(me?_meName():_pvName(p),body,()=>_saveDrvSheet(pid),undefined,()=>openDrvSheet(pid)))return;
+  _sheetCtx={pv:{kind:'drv',id:pid}};
+  _drvSheetSync(false);
+}
+/* Werte des Sheets wie beim früheren Speichern: leere Zahlen = 0 bzw. Standardwert (eigene), entfallen (weitere Person) */
+function _drvSheetDraft(pid,strict){
+  const me=pid==='me',v=_sheetFieldValues(PERSON_DRV_COLS,'pv',strict);
+  if(me){
+    Object.assign(v,_sheetFieldValues(DRV_PARAM_COLS,'pv',strict));
+    const d=getDrv();
+    Object.entries(v).forEach(([k,x])=>{d[k]=x===''?(k==='points'||k==='salary'||k==='age'||DRV_EM_KEYS.includes(k)?0:DRV_DEFAULTS[k]):(k==='emType'?+x:x);});
+    return _drvEmClean(d);
+  }
+  const x=Object.assign({},getDrvExtra().find(r=>r.id===pid)||{},v);
+  ['points','salary','deduct','em','emTotal','emZz','emZf','emUntil','emLimit'].forEach(k=>{if(x[k]==='')delete x[k];});if(x.age===''||x.age===0)delete x.age;
+  return _drvEmClean(x);
+}
+function _drvSheetSync(typeChanged){
+  const ctx=_sheetCtx&&_sheetCtx.pv;if(!ctx||ctx.kind!=='drv')return;
+  const el=k=>document.getElementById('pv-'+k),num=k=>{const n=el(k)?_parseDec(el(k).value):NaN;return isFinite(n)?n:0;};
+  const t=+(el('emType')||{}).value||0;
+  if(typeChanged)_drvEmOffPoints(num,(k,x)=>{if(el(k))el(k).value=x;},t);
+  ['em','emTotal','emZz','emZf','emUntil','emLimit'].forEach(k=>{const r=document.querySelector('#dsBody .pc-'+k);if(r)r.hidden=!t;});
+  const pr=document.querySelector('#dsBody .pc-points');if(pr)pr.hidden=!_drvPtsShown(t,num('points'),num('emTotal'));
+  if(el('emLimit'))el('emLimit').placeholder=_emLimitPh(t);
+  const s=getLifetimeSettings(),d=_drvSheetDraft(ctx.id,false),me=ctx.id==='me';
+  const r=me?calcDrvPension(s,d):calcDrvExtra(s,d);
+  const res=document.getElementById('pvRes');if(res)res.innerHTML=_drvResultHTML(d,r,me?s.workEnd:(+d.until>0?+d.until:s.workEnd));
+}
+function _saveDrvSheet(pid){
+  const me=pid==='me',d=_drvSheetDraft(pid,true);
+  _drvEmCheck(d,me?_meName():_pvName(d));
+  _pvWrite(()=>{
+    if(me)appStorage.setItem('lt-drv',JSON.stringify(d));
+    else appStorage.setItem('lt-drv-extra',JSON.stringify(getDrvExtra().map(p=>p.id===pid?d:p)));
+  });
+  _afterPvChange();return true;
+}
+/* Beamtenversorgung (eigene oder einer weiteren Person); neu mit Auswahl der Person */
+const BV_SHEET_COLS=[{key:'bvPay',label:'Bezüge brutto €/Monat',info:'bv-pay',ph:'0'},{key:'bvYears',label:'Dienstjahre bisher',info:'bv-years',ph:'0'},
+  {key:'bvAge',label:'Altersgrenze',info:'bv-age',ph:'automatisch'},{key:'bvFrom',label:'Pension ab Alter',info:'bv-from',ph:'wie Grenze'},{key:'bvDeduct',label:'Abzüge %',info:'bv-deduct',ph:'25'}];
+function openBvSheet(pid){
+  const isNew=!pid,me=pid==='me',p=me||isNew?null:getDrvExtra().find(r=>r.id===pid);if(!me&&!isNew&&!(p&&p.bv))return;
+  const b=me?getBeamte():p?p.bv:{},v={bvPay:+b.pay>0?+b.pay:'',bvYears:+b.years>0?+b.years:'',bvAge:+b.age>0?+b.age:'',bvFrom:+b.from>0?+b.from:'',bvDeduct:b.deduct==null||b.deduct===''?'':+b.deduct};
+  let who='';
+  if(isNew){
+    const free=[...(hasBeamte()?[]:[['me',_meName()]]),...getDrvExtra().filter(x=>x.id&&!(x.bv&&+x.bv.pay>0)).map(x=>[x.id,_pvName(x)])];
+    if(!free.length)return;
+    who=`<label class="ds-row" for="pv-who"><span class="ds-l">${L('Für','For')}</span><select class="ds-in ds-wide" id="pv-who">${free.map(([i,l])=>`<option value="${escHTML(i)}">${escHTML(l)}</option>`).join('')}</select></label>`;
+  }
+  let body=`${isNew?'':`<div class="ds-list-t pv-sheet-t">${L('Beamtenversorgung','Civil service pension')}</div>`}<div class="ds-group">${who}${_sheetFieldsHTML(BV_SHEET_COLS,v,'pv')}</div><div class="lt-result pv-res" id="pvRes"></div>`;
+  if(!isNew)body+=`<button type="button" class="ds-danger" data-pv-remove="bv">${L('Beamtenversorgung entfernen','Remove civil service pension')}</button>`;
+  if(!_openSheet(isNew?L('Beamtenversorgung','Civil service pension'):me?_meName():_pvName(p),body,()=>_saveBvSheet(pid),isNew?L('Hinzufügen','Add'):undefined,()=>openBvSheet(pid)))return;
+  _sheetCtx={pv:{kind:'bv',id:pid}};
+  _bvSheetSync();
+}
+function _bvSheetDraft(strict){
+  const v=_sheetFieldValues(BV_SHEET_COLS,'pv',strict);
+  return{pay:+v.bvPay||0,...(+v.bvYears>0?{years:+v.bvYears}:{}),...(+v.bvAge>0?{age:+v.bvAge}:{}),...(+v.bvFrom>0?{from:+v.bvFrom}:{}),...(v.bvDeduct!==''?{deduct:+v.bvDeduct}:{})};
+}
+function _bvSheetTarget(pid){const w=document.getElementById('pv-who');return pid||(w?w.value:'me');}
+function _bvSheetSync(){
+  const ctx=_sheetCtx&&_sheetCtx.pv;if(!ctx||ctx.kind!=='bv')return;
+  const s=getLifetimeSettings(),b=_bvSheetDraft(false),who=_bvSheetTarget(ctx.id),res=document.getElementById('pvRes');if(!res)return;
+  if(!(b.pay>0)){res.innerHTML=L('Bezüge und Dienstjahre eintragen, um die Pension hochzurechnen.','Enter salary and years of service to project the pension.');return;}
+  if(who==='me'){res.innerHTML=_bvResultText(Object.assign({},BV_DEFAULTS,b));return;}
+  const p=getDrvExtra().find(r=>r.id===who),r=p&&calcBeamteExtra(s,Object.assign({},p,{bv:b}));
+  res.innerHTML=r?_bvResultLine(b,r):'';
+}
+function _saveBvSheet(pid){
+  const b=_bvSheetDraft(true),who=_bvSheetTarget(pid);
+  if(!(b.pay>0))throw new Error(L('Bitte die Bezüge eintragen.','Please enter the salary.'));
+  _pvWrite(()=>{
+    if(who==='me')appStorage.setItem('lt-beamte',JSON.stringify(Object.assign({},BV_DEFAULTS,b)));
+    else appStorage.setItem('lt-drv-extra',JSON.stringify(getDrvExtra().map(p=>p.id===who?Object.assign({},p,{bv:b}):p)));
+  });
+  _afterPvChange();return true;
+}
+/* Altersvorsorgedepot: Felder wie die Karte, Ergebnis und Verknüpfung mit dem Vermögen */
+function openAvdSheet(id){
+  const d=id?getAvDepots().find(x=>x.id===id):null;if(id&&!d)return;
+  const v={};AVD_COLS.forEach(c=>{const x=d?d[c.key]:undefined;v[c.key]=c.key==='person'?(d&&d.person)||'':c.key==='name'?(d&&d.name)||'':c.key==='lump'?String(+x>0?Math.min(30,+x):0):x===''||x==null||(+x===0&&['contrib','balance','start','from'].includes(c.key))?'':+x;});
+  let body=`<div class="ds-group">${_sheetFieldsHTML(AVD_COLS,v,'pv')}</div><div class="lt-result pv-res" id="pvRes"></div>`;
+  if(d)body+=`<button type="button" class="ds-danger" data-pv-remove="avd">${L('Depot entfernen','Remove depot')}</button>`;
+  if(!_openSheet(d?(d.name||'').trim()||L('Altersvorsorgedepot','Retirement depot'):L('Neues Altersvorsorgedepot','New retirement depot'),body,()=>_saveAvdSheet(id),d?undefined:L('Hinzufügen','Add'),()=>openAvdSheet(id)))return;
+  _sheetCtx={pv:{kind:'avd',id}};
+  _avdSheetSync();
+}
+function _avdSheetDraft(id,strict){
+  const o=Object.assign({},_sheetFieldValues(AVD_COLS,'pv',strict));if(id)o.id=id;
+  const st=id?getAvDepots().find(x=>x.id===id):null;if(st&&st.pos)o.pos=st.pos;if(st&&Array.isArray(st.kidsOpen))o.kidsOpen=st.kidsOpen.slice();
+  return o;
+}
+function _avdSheetSync(){
+  const ctx=_sheetCtx&&_sheetCtx.pv;if(!ctx||ctx.kind!=='avd')return;
+  const raw=_avdSheetDraft(ctx.id,false),pos=_avdPosition(raw),r=calcAvDepot(getLifetimeSettings(),_avdResolve(raw));
+  const bal=document.querySelector('#dsBody .pc-balance');if(bal)bal.hidden=!!pos;
+  const res=document.getElementById('pvRes');if(!res)return;
+  res.innerHTML=_avdResultHTML(r)+'<br>'+(pos?`<button type="button" class="avd-pos" data-avd-pos="${escHTML(pos.id)}">${L('Im Vermögen: ','In assets: ')}${escHTML(pos.label)} · ${fmt(Math.round(_avdResolve(raw).balance||0))} ›</button>`
+    :ctx.id?`<button type="button" class="avd-pos" data-avd-new="${escHTML(ctx.id)}">${L('Im Vermögen anlegen, mit Kurssuche ›','Add to assets, with price search ›')}</button>`
+    :`<span style="color:var(--muted)">${L('Nach dem Anlegen kannst du das Depot mit Kursdaten ins Vermögen übernehmen.','After adding it you can take the depot into your assets with price data.')}</span>`);
+}
+function _saveAvdSheet(id){
+  const o=_avdClean(_avdSheetDraft(id,true));
+  if(!(o.contrib>0||o.balance>0||o.pos))throw new Error(L('Bitte einen Beitrag oder ein Guthaben eintragen.','Please enter a contribution or a balance.'));
+  const ids=new Set(getDrvExtra().map(r=>r.id).filter(Boolean));if(!ids.has(o.person))o.person='';
+  _pvWrite(()=>{
+    const list=getAvDepots();
+    appStorage.setItem('lt-av-depots',JSON.stringify(id?list.map(x=>x.id===id?o:x):[...list,o]));
+  });
+  _afterPvChange();return true;
+}
+/* Weitere Rente oder Einkommen: Felder wie die Zeile; Art und weitere gespeicherte Angaben bleiben erhalten */
+function openPenSheet(id){
+  const list=_lsJSON('lt-pensions',[]),x=id?list.find(r=>r.id===id):null;if(id&&!x)return;
+  const v={name:x?x.name||'':'',person:x?x.person||'':'',amount:x&&+x.amount>0?+x.amount:'',from:x&&+x.from>0?+x.from:'',until:x&&+x.until>0?+x.until:''};
+  let body=`<div class="ds-group">${_sheetFieldsHTML(PENSION_COLS,v,'pv')}</div>`;
+  if(x)body+=`<button type="button" class="ds-danger" data-pv-remove="pen">${L('Eintrag entfernen','Remove entry')}</button>`;
+  if(!_openSheet(x?x.name||L('Weitere Rente','Other pension'):L('Neue Rente oder Einkommen','New pension or income'),body,()=>_savePenSheet(id),x?undefined:L('Hinzufügen','Add'),()=>openPenSheet(id)))return;
+  _sheetCtx={pv:{kind:'pen',id}};
+}
+function _savePenSheet(id){
+  const v=_sheetFieldValues(PENSION_COLS,'pv',true);
+  if(!String(v.name||'').trim())throw new Error(L('Bitte eine Bezeichnung eintragen.','Please enter a name.'));
+  if(!(+v.amount>0))throw new Error(L('Bitte den Betrag eintragen.','Please enter the amount.'));
+  const o={name:String(v.name).trim(),person:v.person||'',amount:+v.amount,from:v.from===''?'':+v.from,until:v.until===''?'':+v.until};
+  _pvWrite(()=>{
+    const list=_lsJSON('lt-pensions',[]);
+    appStorage.setItem('lt-pensions',JSON.stringify(id?list.map(x=>x.id===id?Object.assign({},x,o):x):[...list,o]));
+  });
+  _afterPvChange();return true;
+}
+/* Eingaben und Klicks in diesen Sheets (Ergebnis live, Entfernen, Lebensphasen, Depot ins Vermögen) */
+function _pvSheetInput(e){
+  const ctx=_sheetCtx&&_sheetCtx.pv;if(!ctx)return;
+  if(ctx.kind==='drv')_drvSheetSync(e.type==='change'&&e.target.id==='pv-emType');
+  else if(ctx.kind==='bv')_bvSheetSync();else if(ctx.kind==='avd')_avdSheetSync();
+}
+function _pvSheetClick(e){
+  const ctx=_sheetCtx&&_sheetCtx.pv;if(!ctx)return false;
+  const rm=e.target.closest('[data-pv-remove]');
+  if(rm){
+    const k=rm.dataset.pvRemove,id=ctx.id;
+    if(k==='person')_removePerson(id);
+    else if(k==='child'){const c=getChildren().find(x=>x.id===id);_pvRemove(L(`„${_childName(c||{})}“ entfernen?`,`Remove "${_childName(c||{})}"?`),L('Das Kind zählt dann weder für Kindergeld noch für die Kinderzulage.','The child then counts neither for child benefit nor for the child subsidy.'),()=>appStorage.setItem('lt-children',JSON.stringify(_lsJSON('lt-children',[]).filter(x=>x.id!==id))));}
+    else if(k==='bv')_pvRemove(L('Beamtenversorgung entfernen?','Remove civil service pension?'),L('Die Pension zählt dann nicht mehr in der Prognose.','The pension then no longer counts in the forecast.'),()=>{if(id==='me')appStorage.removeItem('lt-beamte');else appStorage.setItem('lt-drv-extra',JSON.stringify(getDrvExtra().map(p=>{if(p.id!==id)return p;const y=Object.assign({},p);delete y.bv;return y;})));});
+    else if(k==='avd'){const d=getAvDepots().find(x=>x.id===id);_pvRemove(L(`„${(d&&d.name)||'Altersvorsorgedepot'}“ entfernen?`,`Remove "${(d&&d.name)||'retirement depot'}"?`),L('Beiträge, Zulagen und Auszahlungen des Depots zählen dann nicht mehr. Eine verknüpfte Position im Vermögen bleibt.','Contributions, subsidies and payouts of the depot then no longer count. A linked asset position stays.'),()=>appStorage.setItem('lt-av-depots',JSON.stringify(getAvDepots().filter(x=>x.id!==id))));}
+    else if(k==='pen'){const x=_lsJSON('lt-pensions',[]).find(r=>r.id===id);_pvRemove(L(`„${(x&&x.name)||'Eintrag'}“ entfernen?`,`Remove "${(x&&x.name)||'entry'}"?`),L('Der Betrag zählt dann nicht mehr in der Prognose.','The amount then no longer counts in the forecast.'),()=>appStorage.setItem('lt-pensions',JSON.stringify(_lsJSON('lt-pensions',[]).filter(r=>r.id!==id))));}
+    return true;
+  }
+  /* ein anderes Sheet öffnen: _openSheet schließt dieses (mit Rückfrage bei ungesicherten Eingaben) */
+  const ph=e.target.closest('[data-pv-phases]');if(ph){openPhasesSheet(ph.dataset.pvPhases?+ph.dataset.pvPhases:undefined);return true;}
+  const avp=e.target.closest('[data-avd-pos]');if(avp){openAssetSheet(avp.dataset.avdPos);return true;}
+  const avn=e.target.closest('[data-avd-new]');if(avn){openAvdPositionSheet(avn.dataset.avdNew);return true;}
+  return false;
 }
 /* ── Listen (weitere Renten, Ereignisse): gleiche Optik wie die Eingabefelder der Data-Seite ── */
 const PENSION_COLS=[{key:'name',label:'Name',info:'pen-name',type:'text',ph:'z. B. Betriebsrente'},{key:'person',label:'Für',info:'pen-person',type:'select',options:()=>_personOptions('Mich')},{key:'amount',label:'Netto €/Monat',info:'pen-amount',ph:'0'},{key:'from',label:'ab Alter',info:'pen-from',ph:'65'},{key:'until',label:'bis Alter',info:'pen-until',ph:'lebenslang',blank0:true}];
@@ -13936,7 +14259,7 @@ function _nextSteps(){
   /* A1: weitere Person ohne jede Altersvorsorge (die Prognose rechnet für sie sonst still ohne Rente) */
   if(assets.length&&m.forecast&&m.pension){
     const bare=doc.retirement.people.find(p=>{const sp=p.statutoryPension||{};return !(sp.points>0)&&!(sp.annualSalary>0)&&!((p.civilServicePension||{}).pensionableSalary>0)&&!doc.retirement.incomes.some(i=>i.personId===p.id);});
-    if(bare)out.push({id:'pension-'+bare.id,title:'Rente für '+(bare.name||'Person')+' ergänzen',text:'Ohne Angabe rechnet die Prognose für '+(bare.name||'diese Person')+' ohne Rente.',run:()=>{_openDataSection('pension');if(!_editMode)enterEditMode();}});
+    if(bare)out.push({id:'pension-'+bare.id,title:'Rente für '+(bare.name||'Person')+' ergänzen',text:'Ohne Angabe rechnet die Prognose für '+(bare.name||'diese Person')+' ohne Rente.',run:()=>{_openDataSection('pension');openDrvSheet(bare.id);}});
   }
   /* B5: Darlehensvertrag und Zinsbindung nur bei Immobilienkrediten vorschlagen; sonst fehlen höchstens Rate und Zins */
   const lp=getLoanParams(),isHome=p=>{const q=lp[p.id]||{},a=q.assetId&&pos.find(x=>x.id===q.assetId);return (a&&a.category==='realEstate')||/immobil|bau|haus|wohnung|hypothek/i.test(p.name);};
@@ -13968,8 +14291,7 @@ function _nsQuote(id){
 /* Vorschlag „Altersvorsorgedepot planen“: Altersvorsorge öffnen, bearbeiten, erstes Depot anlegen */
 function _nsAvDepot(){
   _openDataSection('pension');
-  if(!_editMode)enterEditMode();
-  const add=document.getElementById('dpAvdAdd');if(add)add.click();
+  openAvdSheet(null);
 }
 function _nsRefresh(){const el=document.getElementById('nextSteps');if(el)el.outerHTML=_nextStepsHTML();}
 function _nsRun(id){const t=_nextSteps().find(t=>t.id===id);if(t)t.run();}
