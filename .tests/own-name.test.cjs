@@ -26,29 +26,28 @@ test('Speicher: Name wird ins Dokument geschrieben, exportiert und importiert; l
   assert.equal(s.getItem('lt-own-name').length, 40, 'höchstens 40 Zeichen');
 });
 
-test('App: Feld auf der Ich-Karte, Speichern im Bearbeiten-Modus, Name statt „Ich“ neben anderen Personen', () => {
+// Seit 15.10.2026 im Personen-Sheet (Haushalt → Ich) statt im Bearbeiten-Modus der Ich-Karte
+test('App: Feld im Personen-Sheet, Speichern, Name statt „Ich“ neben anderen Personen', () => {
   const a = app(html); a.csv(demoCSV);
   assert.equal(a.run('_meName()'), 'Ich');
-  // Attrappen-DOM wie in writer-lifecycle.test.cjs: closest und CSS.escape fehlen im Harness
-  a.run("{const g=document.getElementById;document.getElementById=id=>{const e=g(id);if(e&&!e.closest)e.closest=()=>null;return e;};globalThis.CSS={escape:s=>String(s)};}");
-  a.run('enterEditMode()');
-  assert.equal(a.el('hh-own-name').value, '');
-  a.el('hh-own-name').value = 'Lukas';
-  assert.equal(a.run('saveEntry()'), true);
+  a.run("openPersonSheet('me')");
+  assert.match(a.run("document.getElementById('dsBody').innerHTML"), /id="hp-name"[^>]*placeholder="Ich" maxlength="40"/);
+  a.el('hp-name').value = 'Lukas';
+  a.run('_submitSheet()');
+  assert.equal(a.run('_sheetOpen'), false, 'gespeichert und geschlossen');
   assert.equal(a.json('appStorage.document().retirement.primary.name'), 'Lukas');
-  assert.match(a.run('_meCardHTML()'), /<b>Lukas<\/b>/);
-  // weitere Person erst jetzt: das Harness rendert die Personenzeilen der Daten-Seite nicht, Speichern liest sie dort aus
+  assert.match(a.run('_householdListHTML()'), /data-ds-open="person" data-id="me"><span class="ds-item-l"><span>Lukas<\/span>/);
   a.run("appStorage.setItem('lt-drv-extra',JSON.stringify([{id:'p1',name:'Miri',by:1990,until:60,points:10}]))");
   assert.equal(a.json("_personOptions('Mich')[0][1]"), 'Lukas', 'Auswahl „Für“');
   assert.match(a.run("_v2SubText('household')"), /^Lukas · Miri/);
   assert.match(a.run('_phaseWorkTxt(getLifetimeSettings(),getDrvExtra(),1)'), /Lukas/);
   // Name mit Sonderzeichen wird escaped
   a.run("appStorage.setItem('lt-own-name','<i>Lu</i>')");
-  assert.match(a.run('_meCardHTML()'), /&lt;i&gt;Lu&lt;\/i&gt;/);
-  assert.doesNotMatch(a.run('_meCardHTML()'), /<i>Lu/);
+  assert.match(a.run('_householdListHTML()'), /&lt;i&gt;Lu&lt;\/i&gt;/);
+  assert.doesNotMatch(a.run('_householdListHTML()'), /<i>Lu/);
   // leeren: wieder „Ich“
-  a.run('enterEditMode()'); a.el('hh-own-name').value = '';
-  a.run('saveEntry()');
+  a.run("openPersonSheet('me')"); a.el('hp-name').value = '';
+  a.run('_submitSheet()');
   assert.equal(a.run('_meName()'), 'Ich');
   assert.equal(a.json('appStorage.document().retirement.primary.name'), 'Eigene Person');
 });
