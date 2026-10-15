@@ -128,29 +128,28 @@ test('Besitzschutz in persönlichen Entgeltpunkten, nicht als doppelter Zahlbetr
   near(only.minimum, 1400, 1e-9);
 });
 
-test('Anzeige: vereinfachte Modellrechnung, geschätzte Altersrente und rechnerische Untergrenze getrennt, kein garantierter Betrag', () => {
+/* Sollwerte geändert (15.10.2026, Transparenz): Die Hauptzeile zeigt nur die verwendete Prognose; beide Wege und der
+   maßgebliche stehen eingeklappt unter „Berechnung“ (_drvCalcHTML), auf der Prognose-Seite in der Erklärung. Die eigenständige
+   Rechnung heißt „Vereinfachte Prognose aus Beitragszeiten“. Ausführliche Fälle in em-transparency.test.cjs. */
+test('Anzeige: vereinfachte Modellrechnung, verwendete Prognose in der Hauptzeile, Aufschlüsselung eingeklappt, kein garantierter Betrag', () => {
   const a = ctx();
   a.run(`appStorage.setItem('lt-drv',JSON.stringify(Object.assign(getDrv(),${JSON.stringify({ ...CASE, emType: 1, salary: 25000 })})))`);
   const line = a.run("(()=>{const d=getDrv();return _drvResultHTML(d,calcDrvPension(getLifetimeSettings(),d),67);})()");
-  assert.match(line, /Altersrente ab 67 \(vereinfachte Modellrechnung\): geschätzt <strong>1\.858 €<\/strong> netto\/Monat; rechnerische Untergrenze nach heutigem Rentenrecht ≈ <strong>1\.858 €<\/strong>/);
-  assert.match(line, /Untergrenze aus 54,61 persönlichen Entgeltpunkten/);
-  assert.match(line, /tatsächliche Bewertung der Zurechnungszeit und späterer Beitragszeiten kann abweichen/);
-  assert.match(line, /nicht auf einen garantierten Nettobetrag/);
+  assert.match(line, /^Altersrente ab 67 · vereinfachte Modellrechnung: ≈ <strong>1\.858 €<\/strong> netto\/Monat/);
+  assert.match(line, /<details class="pv-calc-d"><summary>Berechnung<\/summary>/);
+  assert.match(line, /61,2256 laut Bescheid − 39,8909 Zurechnungszeit/);
+  assert.match(line, /kein garantierter künftiger Nettobetrag/);
   assert.doesNotMatch(line, /gesichert|Mindestleistung/);
-  assert.match(line, /61,23 Entgeltpunkte laut Bescheid − 39,89 Zurechnungszeit = 21,33 tatsächlich erworben/);
-  assert.match(line, /Anrechnungszeit/);
   const ex = a.run('_explainDrv(calcDrvPension(getLifetimeSettings(),getDrv()))');
-  assert.match(ex, /Rechnerische Untergrenze nach heutigem Rentenrecht<\/strong> \(Besitzschutz, § 88 SGB VI\)/);
-  assert.match(ex, /bezieht sich auf diese persönlichen Entgeltpunkte, nicht auf einen garantierten Zahlbetrag/);
-  assert.match(ex, /Vereinfachte Modellrechnung<\/strong>: .*tatsächliche Bewertung der Zurechnungszeit und späterer Beitragszeiten kann davon abweichen/);
-  assert.doesNotMatch(ex, /[Gg]esichert|Mindestleistung/);
-  assert.match(ex, /61,2256 Entgeltpunkte × 0,892 Zugangsfaktor = 54,6132 persönliche Entgeltpunkte/);
-  assert.match(a.run("_explainEm(calcDrvPension(getLifetimeSettings(),getDrv()),'',true)"), /rechnerisch mindestens 1\.858 € \(vereinfachte Modellrechnung\)/);
-  assert.match(ex, /Geschätzte Altersrente/);
+  assert.match(ex, /Rechnerische Untergrenze nach heutigem Rentenrecht/);
+  assert.match(ex, /Grundlage: Besitzschutz \(§ 88 Abs\. 1 Satz 2 SGB VI\)/);
+  assert.match(ex, /Persönliche Entgeltpunkte der EM-Rente: 61,2256 × 0,892 Zugangsfaktor = <b>54,6132<\/b>/);
+  assert.match(ex, /je zur Hälfte 0,892 der EM-Rente und 1 der Altersrente \(§ 77 Abs\. 3 Satz 2 SGB VI\)/);
   assert.match(ex, /§ 58 Abs\. 1 Satz 1 Nr\. 5 SGB VI/);
-  assert.match(ex, /je zur Hälfte 0,892 der EM-Rente und 1 der Altersrente, § 77 Abs\. 3 Satz 2 SGB VI/);
-  assert.equal(a.run('_drvMinTxt(calcDrvPension(getLifetimeSettings(),getDrv()))'), ' · Modellrechnung, Untergrenze ≈ 1.858 €');
-  assert.equal(a.run('_drvMinTxt(calcDrvPension(getLifetimeSettings(),{...getDrv(),emType:0}))'), '', 'ohne EM-Rente keine Untergrenze');
+  assert.doesNotMatch(ex, /[Gg]esichert|Mindestleistung/);
+  assert.match(a.run("_explainEm(calcDrvPension(getLifetimeSettings(),getDrv()),'',true)"), /rechnerisch mindestens 1\.858 € \(vereinfachte Modellrechnung\)/);
+  assert.equal(a.run('_drvMinTxt(calcDrvPension(getLifetimeSettings(),getDrv()))'), ' · vereinfachte Modellrechnung');
+  assert.equal(a.run('_drvMinTxt(calcDrvPension(getLifetimeSettings(),{...getDrv(),emType:0}))'), '', 'ohne EM-Rente keine Kennzeichnung');
 });
 
 test('Migration 18 → 19: getrennte Zurechnungszeit wird zum Gesamtwert, die tatsächlichen Punkte bleiben gleich', () => {
@@ -222,7 +221,8 @@ test('Englischer Modus: Ergebniszeile und Erklärung ohne deutsche Begriffe', ()
   a.run(`appStorage.setItem('lt-drv',JSON.stringify(_drvEmClean(Object.assign(getDrv(),${JSON.stringify({ ...CASE, emType: 1, salary: 25000 })}))));appStorage.setItem('appLang','en');_lang=_readLang();`);
   const line = a.run("(()=>{const d=getDrv();return _drvResultHTML(d,calcDrvPension(getLifetimeSettings(),d),67);})()");
   const ex = a.run('_explainDrv(calcDrvPension(getLifetimeSettings(),getDrv()))');
-  assert.match(line, /simplified model calculation/); assert.match(line, /calculated lower bound under current pension law/);
-  assert.match(ex, /Calculated lower bound under current pension law/); assert.match(ex, /Simplified model calculation/);
-  for (const t of [line, ex]) assert.doesNotMatch(t, /Entgeltpunkte|Zurechnungszeit|Modellrechnung|geschätzt|netto|Untergrenze|guaranteed (minimum|at least)/);
+  assert.match(line, /simplified model calculation/); assert.match(line, /<summary>Calculation<\/summary>/);
+  assert.match(ex, /Simplified forecast from contribution periods/); assert.match(ex, /Calculated lower bound under current pension law/);
+  assert.match(ex, /Forecast used/); assert.match(ex, /Simplified model calculation/);
+  for (const t of [line, ex]) assert.doesNotMatch(t, /Entgeltpunkte|Zurechnungszeit|Modellrechnung|geschätzt|netto|Untergrenze|Beitragszeiten|Berechnung|guaranteed (minimum|at least)/);
 });

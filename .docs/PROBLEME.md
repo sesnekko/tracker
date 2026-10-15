@@ -302,6 +302,23 @@ Sheet zum Ansehen und Bearbeiten, je Bereich ein „+ … hinzufügen“.
 
 `node --test .tests/` **369/369**, Audit **22/0**.
 
+**Transparenz der Altersrente nach EM-Rente (15.10.2026)**, Anlass: „geschätzt 1.858 €“ und „Untergrenze 1.858 €“ standen
+gleich nebeneinander, ohne erkennbar zu machen, warum. Analyse (Phase 1): Rechnung fachlich wie beabsichtigt (§ 77 Abs. 3
+Satz 2 und § 88 vereinfacht, keine Doppelzählung, nie addiert); die eigenständige Rechnung ist systematisch niedrig, weil die
+Bewertung der EM-Bezugszeit fehlt. Umsetzung (Phase 2, Formeln unverändert):
+- Neue Kennzahlen am Ergebnis: `standalone`, `lowerBound`, `basis`, `ptsUntil`; Prognosewerte gegenüber dem vorherigen Stand
+  identisch (Vergleich von `buildPlan` für fünf Fälle, Audit 22/0).
+- Hauptzeile nur mit der verwendeten Prognose; Aufschlüsselung eingeklappt („Berechnung“) bzw. in der Erklärung, gemeinsam
+  aus `_drvCalcHTML`, deutsch und englisch. Eigenständige Rechnung heißt „Vereinfachte Prognose aus Beitragszeiten“ mit
+  unmittelbarem Hinweis „keine vollständige Altersrentenprognose“.
+- Gleiche Beträge: „Beide Berechnungswege kommen unabhängig voneinander zum selben Betrag … nicht maßgeblich“ vs. „Die
+  rechnerische Untergrenze ist höher … wird verwendet“.
+- Tests: `em-transparency.test.cjs` (9 Tests für die 12 Fälle); Sollwerte mit Begründung geändert in `em-old-age.test.cjs`
+  („Anzeige …“, „Englischer Modus …“) und `retirement-income.test.cjs` (Erklärung in drei Schritten). Browser: iPhone-Breite
+  (Sheet zu/auf, offen beim Tippen, Erklärung) und Desktop-Dialog 1024 px (kein Überlauf).
+
+`node --test .tests/` **378/378**, Audit **22/0**.
+
 **Persona-Simulation vom 14.10.2026** (`.docs/Onboarding Persona/Ergebnis_Simulation_2026-10-14.md`, 14 Personas,
 Befunde A1–A13, B1–B6, C1–C14). Umgesetzt in dieser Runde, kein Schemawechsel (weiter Version 17); Versionen
 `data-store.js?v=29`, `i18n-en.js?v=13`, Cache `verm-v127`. Nicht Teil dieser Runde: Folge-Review 3
