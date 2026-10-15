@@ -1,4 +1,4 @@
-const CACHE='verm-v130';
+const CACHE='verm-v131';
 const ASSETS=[
   './index.html',
   './data-store.js?v=30',

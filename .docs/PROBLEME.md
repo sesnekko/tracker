@@ -196,7 +196,7 @@ sondern mit dem asynchronen Testbrowser geprüft (Simulation). *Nicht geprüft:*
 `file://` in dieser Runde, eine echte neuere App-Version auf demselben Gerät. Port 8123 und produktive `file://`-Tabs nicht
 benutzt.
 
-**Anforderungen vom 15.10.2026** (umgesetzt, noch nicht gepusht; Schema 18, `data-store.js?v=30`, `i18n-en.js?v=14`,
+**Anforderungen vom 15.10.2026** (gepusht in `9147d5f`; Schema 18, `data-store.js?v=30`, `i18n-en.js?v=14`,
 Cache `verm-v128`):
 
 | Punkt | Änderung | Nachweis |
@@ -225,6 +225,35 @@ acht Sheets und in allen Einrichtungsschritten, auf 375 px und 1440 px, Deutsch 
 - Prognose → Lebensphasen: Zeilen „Weitere Personen“ entfernt (doppelt zu Balken und Einkommen); unter jedem Balken ist der
   Rentenbeginn immer beschriftet, bei Claudia stand vorher 65 statt 67.
 Nicht beanstandet (bewusst so): Zeilen einer Liste mit Trennlinie, Segmente der Budget-Balken, Rückseiten der Kacheln.
+
+**Altersvorsorgedepot: Kapital Monat für Monat (15.10.2026)**, Anlass: die Erklärung nannte 60.807 € „mit 67“, die eigene
+Nachrechnung (195 €/Monat inkl. Zulage, 5 %, 186 Monate Einzahlung, 204 Monate Wachstum) 123.993,72 €.
+- Der Hauptunterschied war kein Rechenfehler: die App zeigte nur die heutige Kaufkraft (Inflation 2 % über 33 Jahre).
+  Die Erklärung nennt jetzt beides: „Kapital mit 67: 124.098 € … In heutiger Kaufkraft sind das 64.880 €“.
+- Echte Ungenauigkeiten, behoben:
+  - Beiträge und Zulagen kamen als ein Jahresbetrag am Jahresende; jetzt jeden Monat.
+  - Das Arbeitsende wurde je Kalenderjahr zur Jahresmitte geprüft: ein Wechsel ab Juli strich alle Beiträge des Jahres,
+    einer bis Juni zählte das ganze Jahr. Jetzt monatsgenau. Damit ist **P42** (REVIEW_2026-10) behoben.
+  - Verzinst wurde nur bis zum Beginn des Auszahlungsjahres; jetzt bis zum Monat des Auszahlungsbeginns.
+  - Die Planrechnung (verknüpftes Depot als eigener Topf) verteilt Beiträge mit denselben Monatsgewichten.
+- Verbleibender Unterschied zur eigenen Rechnung (+104 € nominal): im angebrochenen letzten Jahr (sechs Monate, 900 €
+  Eigenbeitrag) ist die gesetzliche Zulage 315 € (50 % auf 360 € + 25 % auf 540 €), nicht anteilig 270 €.
+- Tests: `pension-depot.test.cjs` „depot capital: monthly contributions …“ (unabhängige Monatsformel, 186 Beitragsmonate,
+  nominal und real auf den Cent) und „depot contributions survive a midyear work stop“ (P42: Juli-Wechsel 900 € / 315 €,
+  April 450 € / 202,50 €, Oktober 1.350 € / 427,50 €, anderer Geburtsmonat). Vorher: 2027 `null`, Eigenbeitrag 0.
+
+Dazu Darstellung auf dem iPhone (Rückmeldung mit Bildschirmfotos):
+- Mitlaufender „Bearbeiten“ (Daten) und die Leiste „Bearbeiten · Abbrechen · Speichern“ lagen in der installierten App im
+  Unschärfe-Verlauf unter der Statusleiste → dort 18 px unterhalb der sicheren Zone, wie die Kopfzeile.
+- Lebensphasen-Sheet: über dem Zeitstrahl-Kopf 6 px Lücke, beim Scrollen rückte er 6 px hoch und haftete dann
+  (Sticky bleibt im Inhaltsbereich von `.ds-body`) → oberes Padding dort 0, Kopf `top:0`; vor und während des Scrollens
+  an derselben Stelle (Browser: 0 px bei Scrollposition 0–200).
+- Phasenkarten: „Bedarf 5.000“ und „€“ in getrennten Zeilen. Der Text nutzt jetzt die freie Breite (statt einer
+  verschachtelten Spalten-Flexbox, die WebKit zu schmal bemaß), Zahl und Einheit sind fest verbunden („5.000 €“, „50 %“,
+  „p. a.“). Geprüft bei 320 px: keine Einheit allein am Zeilenanfang. `household.test.cjs` erwartet dafür geschützte
+  Leerzeichen.
+
+`node --test .tests/` **351/351**, Audit **22/0**.
 
 **Persona-Simulation vom 14.10.2026** (`.docs/Onboarding Persona/Ergebnis_Simulation_2026-10-14.md`, 14 Personas,
 Befunde A1–A13, B1–B6, C1–C14). Umgesetzt in dieser Runde, kein Schemawechsel (weiter Version 17); Versionen

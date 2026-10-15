@@ -272,10 +272,14 @@ Rentenformeln im Überblick (Rechtsgrundlagen in 7.1):
 - **AV-Depot**: je Person und Jahr (`_avdYearAll`): Grundzulage 50 % auf die ersten 360 €, 25 % bis
   1.800 € (höchstens 540 €), Kinderzulage 100 % bis 300 € **je Kind** (jedes Kind bei einer Person),
   beides erst ab 120 € Eigenbeitrag; Bonus 200 € einmal je Person im ersten Beitragsjahr unter 25.
-  Verteilung auf die Depots nach Eigenbeitrag. Beiträge folgen den Phasen und der Person des Depots
-  (`_avdParams().factor` → `_pensionFactor`: eingetragener Anteil je Phase, sonst 100 %, solange sie arbeitet);
-  Kapital real verrentet bis 85, optional 30 % Teilauszahlung. Läuft die Auszahlung schon, wird das
-  heutige Guthaben bis 85 verrentet.
+  Verteilung auf die Depots nach Eigenbeitrag. Beiträge folgen den Phasen und der Person des Depots, **Monat für
+  Monat** (`_avdParams().months(y)` → `_pensionFactor`: eingetragener Anteil je Phase, sonst 100 %, solange sie
+  arbeitet); die Jahreszulage folgt aus der Summe der Monatsbeiträge eines Kalenderjahres und wird mit ihnen
+  gutgeschrieben (`_avdYearAll().mw`, Monatsgewichte). Kapital (`calcAvDepot`, seit 15.10.2026): Beitrag plus
+  Zulagenanteil jeden Monat, Rendite monatlich (`(1+r)^(1/12)`), bis zum Monat des Auszahlungsbeginns (Geburtsmonat
+  im Auszahlungsalter). Die Erklärung zeigt das Kapital nominal (`capNom`) und in heutiger Kaufkraft (`capReal` =
+  `capNom / (1+Inflation)^(Monate/12)`); verrentet wird `capReal`, real bis 85, optional 30 % Teilauszahlung. Läuft
+  die Auszahlung schon, wird das heutige Guthaben bis 85 verrentet.
 
 ---
 
@@ -464,7 +468,7 @@ Jeder Abschnitt ist ein ausklappbares `<details class="lp-sec">`; der Kopf zeigt
 
 Arbeitszeit ist der Anteil einer Vollzeitstelle (0–100), Altersvorsorge der Anteil der heutigen
 Beiträge (0–200; Betriebsrenten-Sparraten zählen zu dir, Altersvorsorgedepots zu ihrer Person). In ein
-Altersvorsorgedepot fließen Beiträge und Zulagen nur, solange die Person arbeitet (seit 15.10.2026, `_avdParams().factor`):
+Altersvorsorgedepot fließen Beiträge und Zulagen nur, solange die Person arbeitet (seit 15.10.2026, monatsgenau `_avdParams().months`):
 im Vorruhestand und danach nichts mehr, auch mit einem Vorsorge-Anteil für die Phase (der gilt dort nur für
 Vorsorge-Gruppen wie eine private Rentenversicherung); das Kapital verzinst sich bis zum Auszahlungsbeginn weiter. Unter
 den Arbeitsphasen steht, wie sich das Haushaltseinkommen ändert („Ab 50: Einkommen −2.500 €/Monat
