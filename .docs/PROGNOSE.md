@@ -266,11 +266,20 @@ Rentenformeln im Überblick (Rechtsgrundlagen in 7.1):
   bezogen auf persönliche Entgeltpunkte, kein garantierter Nettobetrag): beginnt die Altersrente
   höchstens 24 Monate nach dem Ende der EM-Rente, mindestens deren persönliche Entgeltpunkte (gesamt × Zugangsfaktor)
   × Rentenartfaktor 1 × Rentenwert, mit denselben Abzügen wie die Altersrente (`r.minimum`; ohne Bescheidwert aus dem
-  Zahlbetrag zurückgerechnet). **Geschätzte Altersrente** = der höhere Wert (`r.netto`, damit rechnet die Prognose).
-  Ergebniszeile, Erklärung und Zeile im Einkommen („Modellrechnung, Untergrenze ≈ …“) zeigen beides und kennzeichnen die
-  Altersrente nach einer EM-Rente als **vereinfachte Modellrechnung**: Die tatsächliche Bewertung der Zurechnungszeit und
-  späterer Beitragszeiten kann abweichen. Nicht berechnet und benannt: die Anrechnungszeit der EM-Bezugszeit in der
-  Altersrente (§ 58 Abs. 1 Satz 1 Nr. 5, § 71 Abs. 2).
+  Zahlbetrag zurückgerechnet). **Verwendete Prognose** = der höhere Wert (`r.netto`, damit rechnet die Prognose; nie die
+  Summe).
+  **Darstellung (15.10.2026, Rechnung unverändert):** Die Hauptzeile im Renten-Sheet zeigt nur die verwendete Prognose
+  („Altersrente ab 67 · vereinfachte Modellrechnung: ≈ …“), die Zeile im Einkommen „ab 67 · vereinfachte Modellrechnung“.
+  Die Aufschlüsselung (`_drvCalcHTML`) steht im Sheet eingeklappt unter „Berechnung“ und auf der Prognose-Seite in der
+  Erklärung: 1. **Vereinfachte Prognose aus Beitragszeiten** (`r.standalone`; bereits erworbene Punkte, zusätzliche Punkte
+  *bis Alter `r.ptsUntil`* laut Lebensphasen, Zugangsfaktoren, Rechnung) mit dem Hinweis, dass die rentenrechtliche
+  Bewertung der EM-Bezugszeit fehlt und der Betrag keine vollständige Altersrentenprognose ist; 2. **Rechnerische
+  Untergrenze** (`r.lowerBound`; Grundlage § 88, persönliche Entgeltpunkte, Umrechnung mit heutigem Rentenwert und den
+  eingetragenen Abzügen, kein garantierter künftiger Nettobetrag); 3. **Verwendete Prognose** mit dem maßgeblichen Weg
+  (`r.basis`: `lowerBound`, `standalone`, `equal` = beide auf 50 Cent gleich, die Untergrenze bestimmt das Ergebnis dann
+  ausdrücklich nicht, `none` = keine Untergrenze). Abschluss: § 77 Abs. 3 und § 88 vereinfacht modelliert, Modellwerte,
+  Abweichungen durch spätere Bewertung von Versicherungszeiten (Anrechnungszeit der EM-Bezugszeit, § 58 Abs. 1 Satz 1
+  Nr. 5, § 71 Abs. 2 – nicht berechnet), Gesetzesänderungen, Beiträge und Steuern.
 - **EM-Rente** (`calcEm`): Zahlbetrag laut Bescheid oder aus Entgeltpunkten laut Bescheid × Zugangsfaktor ×
   Rentenartfaktor × Rentenwert. Hinzuverdienstgrenze laut Bescheid bei beiden Arten, sonst gesetzlich 2026 (voll 20.763,75 €, teilweise
   41.527,50 €). 40 % des Überschusses mindern die Bruttorente; netto um die Abzüge verringert.

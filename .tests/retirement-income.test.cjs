@@ -52,12 +52,14 @@ test('income explanations show the calculation; the EM pension is never added to
   // The EM pension ends exactly when the old-age pension starts: no year has both.
   assert.equal(plan.em[0].until, plan.drv.age);
   const text = a.run('_explainDrv(buildPlan().drv)');
-  assert.match(text, /Rentenpunkte/);
+  assert.match(text, /Rentenpunkte aus einer früheren Version/);
   assert.match(text, /Rentenwert/);
   // seit 15.10.2026 mit Besitzschutz (§ 88 SGB VI) und dem Zugangsfaktor der EM-Rente für die alten Punkte (§ 77 Abs. 3)
+  // Sollwerte geändert (15.10.2026): Erklärung in drei Schritten; die Rentenpunkte stammen hier aus einer früheren Version
   assert.match(text, /Besitzschutz.*mindestens deren persönliche Entgeltpunkte/);
   // Schema 19: bei teilweiser EM gilt der Zugangsfaktor der EM-Rente nur für die Hälfte der Punkte (§ 77 Abs. 3 Satz 2)
-  assert.match(text, /20 Punkte × 0,946 Zugangsfaktor \(je zur Hälfte 0,892 der EM-Rente und 1 der Altersrente/);
+  assert.match(text, /\(20 × 0,946 \+ [\d,]+ × 1\) × 42,52 € Rentenwert/);
+  assert.match(text, /je zur Hälfte 0,892 der EM-Rente und 1 der Altersrente/);
   assert.match(a.run("_explainEm(buildPlan().drv,'',true)"), /nicht in der Summe/);
 });
 
