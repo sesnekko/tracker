@@ -126,3 +126,15 @@ test('Infobox: begrenzte Höhe, Text scrollt, Tabelle in eigenem Rahmen; Hinweis
   assert.match(html, /<div class="se-wrap"><table class="se-t">/);
   assert.match(html, /Ändern unter Prognose → Annahmen → Rendite &amp; Sparrate je Asset\./);
 });
+
+test('Phasenbalken: der Rentenbeginn ist immer beschriftet; eine zu nahe Marke davor entfällt', () => {
+  const a = ctx();
+  // 46,75 bis 95: 60, 65 (Arbeitsende) und 67 (Rente) – 65 und 67 liegen zu dicht beieinander
+  const own = a.run('_phaseBarHTML([46.75,60,65,67,95])');
+  assert.match(own, />60</); assert.match(own, />67</); assert.doesNotMatch(own, />65</);
+  assert.match(own, /class="last" style="left:100%">95</);
+  // weitere Person, geboren 1977: Vollzeit bis 65, Rente ab 67 – die 67 steht, die 65 weicht
+  a.run("appStorage.setItem('lt-drv-extra',JSON.stringify([{id:'p1',name:'Claudia',by:1977,until:65,points:20}]))");
+  const bar = a.run('_personBarHTML(getLifetimeSettings(),getDrvExtra()[0],95)');
+  assert.match(bar, />67</); assert.doesNotMatch(bar, />65</);
+});
