@@ -399,6 +399,9 @@ und externe Zuflüsse. Die Tests in `forecast-cashflow.test.cjs` prüfen das mit
     Polster allein reicht nicht“). Danach Bisektion bis max(1.000 €, 1 % des erwarteten Werts).
   - Ergebnis: **Ziel** = `avail50` im Etappenalter (real) − X, mindestens 0; **heute** = entnehmbare Töpfe heute,
     Balken und Prozent = heute ÷ Ziel; **erwartet** = `avail50` im Etappenalter; X < 0 → „es fehlen ≈ −X“ (rot).
+  - Darstellung: Prozent neben dem Balken, darunter **eine** Zeile („erwartet …“ bzw. „es fehlen …“); „heute … ·“
+    davor nur, wenn die Karte mindestens 520 px breit ist (Container-Abfrage). Die Kachel bekommt 2/3 der Breite,
+    „Sicher möglich ab“ den Rest, mindestens aber so viel, wie sein Text braucht.
   - Rechenzeit: je Schritt ein Monte-Carlo-Durchgang (Node: rund 65 ms, früher Abbruch oft schneller), meist 6–10
     Schritte. `_msSchedule` rechnet nach dem Zeichnen der Seite Schritt für Schritt per `setTimeout`, zeigt solange
     „wird berechnet“, speichert das Ergebnis in `_ltCalcCache.ms` und verwirft es, wenn sich der Stand inzwischen
@@ -490,15 +493,27 @@ gilt für die Sitzung (nicht gespeichert).
   Gruppe netto „nach Kredit“ zeigt, sieht man so die Tilgung. Erst alle Vermögenswerte, dann alle
   Verbindlichkeiten, je Block nach heutigem Betrag sortiert; die Reihenfolge bleibt beim Fahren gleich.
 - **Werte:** ohne Berührung der heutige Stand (`g.gross`, `−g.debt`). Beim Fahren der Wert im gewählten Alter:
-  bis heute aus den Monatsständen (`histGrossMaps`/`histDebtMaps`, wie die Historie des Charts), danach aus dem
-  **Erwartungspfad** `det.perGross`/`det.perDebt`, beides in heutiger Kaufkraft. Anteil = Anteil an der Summe der
+  bis heute aus den Monatsständen (`histGrossMaps`/`histDebtMaps`, erfasste Werte, dazu `histAgeMap` mit dem genauen
+  Alter des Monats), danach aus dem **Erwartungspfad** `det.perGross`/`det.perDebt`. Anteil = Anteil an der Summe der
   Vermögenswerte im gewählten Alter (Restschulden ohne Anteil). Die Pille zeigt die Veränderung gegenüber heute;
   bei Krediten heißt eine sinkende Restschuld „+“ (Beitrag zum Vermögen steigt). Der Kopf zeigt „heute“ bzw.
   „mit X (Jahr)“.
+- **Einheit** (`ltTlNominal`, Umschalter „Nominal | Kaufkraft“ unter dem Kopf, Start nominal, gilt für die Sitzung):
+  - **Nominal** (`valsN`): Vergangenheit wie erfasst (wie auf der Vermögen-Seite), Zukunft in Euro des jeweiligen
+    Jahres; eine Immobilie mit 2 % Rendite wächst also sichtbar.
+  - **Kaufkraft** (`vals`): alles in heutigen Euro wie Chart und Gesamtwert; Vergangenheit mit der angenommenen
+    Inflation hochgerechnet (gleich bleibende Einträge wirken nach hinten höher), 2 % Rendite bei 2 % Inflation
+    bleiben gleich.
+  - Chart und Gesamtwert oben bleiben immer in heutiger Kaufkraft; der Hinweis unter der Liste sagt das.
+- **Reihenfolge:** beim Fahren nach Größe im gewählten Alter (`_ltTlOrder`: erst Vermögenswerte, dann
+  Restschulden, je nach Betrag absteigend, bei Gleichstand stabil); umsortierte Zeilen gleiten an ihren Platz
+  (`_ltTlSort`). Loslassen zeigt wieder heute und die heutige Reihenfolge.
+- **Entnahmen** im Ruhestand kommen wie in der ganzen Simulation nur aus entnehmbaren Töpfen (anteilig nach Wert);
+  Immobilien und Fahrzeuge werden nicht automatisch verkauft, deshalb bleiben sie in der Liste unberührt.
 - `simulatePlan(…,{record:true})` liefert dafür zusätzlich `perGross` (Summe der Töpfe je Gruppe) und `perDebt`
   (Restschuld je Gruppe); es gilt `per = perGross − perDebt`. Ohne `record` (Monte-Carlo) bleiben beide `null`.
 - Die Summe der Zeilen ist der Erwartungspfad und kann vom Median (Hero) abweichen; der Hinweis unter der Liste
-  sagt „Erwarteter Verlauf ohne Kursschwankungen, in heutiger Kaufkraft“.
+  sagt „erwarteter Verlauf ohne Kursschwankungen“.
 
 ### 8.3 Einkommen im Ruhestand
 
@@ -647,7 +662,7 @@ Abgedeckt (`node --test .tests/`):
   Puffer + Toleranz nicht), nicht erreichbar, Ereignis im Etappenalter ohne Änderung des Plans, Kachel,
   Hintergrundrechnung mit Verwerfen veralteter Ergebnisse, Info-Text Deutsch/Englisch.
 - **Zeitverlauf** (`lt-timeline.test.cjs`): `per = perGross − perDebt`, Zeilen und Reihenfolge, Werte je
-  Alter (Prognose und Historie), Anteil und Veränderung, Liste wie auf der Vermögen-Seite, Knopf in der
+  Alter (Prognose und Historie, nominal und Kaufkraft), Umschalter, Sortierung beim Fahren, Anteil und Veränderung, Liste wie auf der Vermögen-Seite, Knopf in der
   Ergebnis-Karte (Zeile unter den Kennzahlen), Ansicht wechseln, Markup.
 - **Rentenregeln** (`pension-rules.test.cjs`): Zugangsfaktor und Beginn ab 63 (P3), Pension (P29),
   Zulagen je Person und Kind (P25), Partnergehalt in Simulation und Texten (P5), Einkommenskarte
