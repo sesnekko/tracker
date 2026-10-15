@@ -50,8 +50,9 @@ Lebensphasen mit weiteren Personen: je Person ein Phasenbalken auf derselben Zei
 Person; `_personBarHTML` seit 15.10.2026 in den Farben der Lebensphasen: Ansparen in Phase 1, danach Weiterarbeiten,
 solange sie arbeitet, ohne Arbeit bis zu ihrer Rente, Rente). **Planalter für alle Personen** (15.10.2026): „Planen bis
 Alter“ gilt für jede Person in ihrem eigenen Alter; die Prognose läuft, bis die jüngste es erreicht hat (`_planEndMain`,
-Beschriftung „bis 97 (Anna 95)“), Renten laufen bis zum Ende. Jeder Balken endet beim Planalter der Person und ist sonst
-auf der Zeitachse kürzer. Die Erklärung der
+Beschriftung „bis 97 (Anna 95)“), Renten laufen bis zum Ende. Alle Balken sind gleich lang und enden rechts beim
+Planalter der Person; wer älter ist als die jüngste Person, beginnt mit einem ausgegrauten Stück so lang wie der
+Altersabstand (`lp-past`, `_youngestNow`), „heute“ steht danach. Die Erklärung der
 Erfolgschance (`openSuccessExplain`) steht in einer Infobox mit begrenzter Höhe; der Text scrollt, Titel und „Schließen“
 bleiben stehen.
 

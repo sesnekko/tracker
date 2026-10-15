@@ -329,9 +329,11 @@ blockiert, auf Hintergrund und Titel blockiert. Nicht geprüft: echtes iPhone. `
 **Anmerkungen aus dem Test mit zwei Personen (15.10.2026)**
 - **Planalter für alle Personen** (offene Entscheidung 11): „Planen bis Alter“ gilt für jede Person in ihrem eigenen Alter.
   Die Prognose läuft, bis die jüngste Person es erreicht hat (`_planEndMain`, `plan.horizonAge`, `plan.horizonWho`); Renten
-  laufen bis zum Ende (entschieden, keine Kürzung beim Planalter einer älteren Person). Beschriftung „bis 97 (Anna 95)“. Jeder
-  Phasenbalken endet beim Planalter der Person; endet er vor dem Planende, ist er auf der gemeinsamen Zeitachse kürzer
-  (`_barPart`, `_ownBarHTML`). Folge für die Demo: Anna ist zwei Jahre jünger, die Prognose läuft bis 97 statt 95.
+  laufen bis zum Ende (entschieden, keine Kürzung beim Planalter einer älteren Person). Beschriftung „bis 97 (Anna 95)“.
+  Phasenbalken (Rückmeldung mit Bildschirmfoto): alle gleich lang, alle enden rechts beim Planalter; eine ältere Person
+  beginnt mit einem ausgegrauten Stück in der Länge des Altersabstands (`lp-past`, `_youngestNow`). Zuerst war der Balken
+  der älteren Person auf der Kalenderachse kürzer, „heute“ und die erste Marke überlappten. Folge für die Demo: Anna ist
+  zwei Jahre jünger, die Prognose läuft bis 97 statt 95.
 - **EM-Rente im Budget**: Eine Einnahme einer Person, die dem Namen nach eine EM-Rente ist (`_isEmName`, jetzt auch „EM
   Rente“), zählte als Gehalt: Arbeitszeit 45 % Gehalt + 45 % EM-Rente = 90 %, in späteren Phasen mit der Arbeitszeit gekürzt.
   Jetzt kein Gehalt (`_personSalaryItems`): keine Arbeitszeit, unverändert in allen Phasen; im Budget-Sheet statt
