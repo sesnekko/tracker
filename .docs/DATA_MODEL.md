@@ -5,11 +5,11 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `master_export_YYYY-MM-DD.json` (bis Oktober 2026 `vermoegen_YYYY-MM-DD.json`). Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 17
+## Struktur, Version 18
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `17`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `18`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
@@ -559,7 +559,7 @@ Wert aus dem Besitzschutz (mindestens die volle Erwerbsminderungsrente, bei teil
 also das Doppelte des Zahlbetrags) und der Hochrechnung aus Rentenpunkten plus Punkten
 aus dem Hinzuverdienst bis zum Ende der Arbeit. Rentenpunkte daher ohne Zurechnungszeit
 eintragen, sonst zählt sie doppelt. Endet die EM-Rente vorher, gilt die normale
-Hochrechnung.
+Hochrechnung. Seit Version 18 siehe „Zurechnungszeit, Zugangsfaktor und Besitzschutz“.
 
 ## Erwerbsminderungsrente weiterer Personen (Version 8)
 
@@ -649,6 +649,37 @@ Folgemonat (`nextYM()`, Entscheidung 14.10.2026: bleibt so) und friert ein, wenn
 diesen Monat wechselt. Historische Kurswerte rechnen deshalb mit dem Schlusskurs des Vormonats
 (VERMOEGEN.md, 4.6). Budget und Prognose leiten den Kalendermonat daraus ab (`_budgetYM()`,
 `latestKey`).
+
+## Zurechnungszeit, Zugangsfaktor und Besitzschutz (Version 18)
+
+Anforderung vom 15.10.2026: tatsächlich erworbene Entgeltpunkte und Zurechnungszeit getrennt erfassen, bei der Umwandlung
+in die Altersrente Zugangsfaktor, Rentenartfaktor und Besitzschutz berücksichtigen, individuelle Hinzuverdienstgrenzen
+ermöglichen.
+
+| Feld (seit Version 18) | Inhalt | Legacy |
+| --- | --- | --- |
+| `statutoryPension.disabilityCreditedPoints` | Entgeltpunkte aus der Zurechnungszeit laut Bescheid (≥ 0), getrennt von `points` (nur tatsächlich erworbene Punkte) | `lt-drv.emZz`, `lt-drv-extra[].emZz` |
+| `statutoryPension.disabilityAccessFactor` | Zugangsfaktor der EM-Rente laut Bescheid (> 0 bis 1; fehlt = 0,892) | `lt-drv.emZf`, `lt-drv-extra[].emZf` |
+
+Bei der eigenen Person und bei weiteren Personen. `earningsLimit` gilt seit Version 18 bei **beiden** Arten (Grenze laut
+Bescheid; fehlt = gesetzliche Grenze 2026: teilweise 41.527,50 €, voll 20.763,75 €). Vorher wurde sie bei voller EM
+verworfen und bei teilweiser mindestens auf die gesetzliche Grenze angehoben.
+
+Rechnung (`calcEm`, `calcDrvPension`):
+- **EM-Rente**: der Zahlbetrag laut Bescheid; fehlt er, aus Punkten: (Punkte + Zurechnungszeit) × Zugangsfaktor ×
+  Rentenartfaktor (teilweise 0,5, voll 1,0) × Rentenwert × (1 − Abzüge). Mit beiden Angaben vergleicht die App und weist
+  bei mehr als 15 % Abweichung darauf hin.
+- **Altersrente aus Punkten** (§ 77 Abs. 3 SGB VI): Punkte, die schon Grundlage der EM-Rente waren, behalten deren
+  Zugangsfaktor; neue Punkte aus Beschäftigung zählen mit dem Faktor der Altersrente (nach einer bis zur Regelaltersgrenze
+  laufenden EM-Rente 1,0). Die Zurechnungszeit zählt hier nicht mit.
+- **Besitzschutz** (§ 88 Abs. 1 Satz 2 SGB VI): Beginnt die Altersrente spätestens 24 Monate nach dem Ende der EM-Rente,
+  mindestens deren persönliche Entgeltpunkte mit Rentenartfaktor 1,0 (bei teilweiser EM das Doppelte des Zahlbetrags).
+  Angesetzt wird der höhere Wert.
+- Nicht abgebildet: die Erhöhung des Zugangsfaktors für Monate ohne EM-Bezug vor der Altersgrenze (§ 77 Abs. 3 Satz 3),
+  wenn die EM-Rente früh endet; dann rechnet die Altersrente mit dem normalen Zugangsfaktor.
+- Migration 17 → 18: keine Umwandlung (nur neue, optionale Felder). Ein Dokument mit Version 18 lehnt eine ältere App ab
+  (zum Beispiel die Mac-Kopie vor dem Update); Sicherungen deshalb erst importieren, wenn beide Geräte aktualisiert sind.
+- Tests: `.tests/em-conversion.test.cjs`.
 
 ## Altersvorsorge je Person und Arbeitszeit am Gehalt (Version 17)
 

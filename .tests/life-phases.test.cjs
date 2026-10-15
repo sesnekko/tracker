@@ -50,11 +50,12 @@ test('pension points and service years: full until the saving phase ends, then i
   const bv = a.json(`calcBeamtePension(getLifetimeSettings(),Object.assign({},BV_DEFAULTS,{pay:4000,years:10}))`);
   near(bv.years, 13.25 + 7 * 0.6);
   assert.equal(bv.age, 67);
-  // Altersvorsorgedepot contributions follow the phases: full while working, then the Vorruhestand share (default none).
+  // Altersvorsorgedepot contributions follow the phases while working; after the end of work none (15.10.2026: no
+  // contributions or subsidies in Vorruhestand, even with a pension share set for that phase).
   const factor = y => a.run(`_avdParams(getLifetimeSettings(),{contrib:100}).factor(${y})`);
   assert.deepEqual([factor(2030), factor(2046), factor(2047)], [1, 1, 0]);
   set(a, { 'lt-p2-pension': 50, 'lt-p3-pension': 25 });
-  assert.deepEqual([factor(2041), factor(2047)], [0.5, 0.25]);
+  assert.deepEqual([factor(2041), factor(2047)], [0.5, 0]);
 });
 
 test('simulation: phase 2 keeps the bAV by the pension share, private saving by its own share, and may draw on assets', () => {

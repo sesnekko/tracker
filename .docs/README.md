@@ -2,8 +2,9 @@
 
 Stand: 14.10.2026, Analyse auf Code-Stand `7504901` (Schema 12); Fehlerbehebung, Personenmodell und Lebensphasen
 in Commit `1b57aa8` (Schema 15). Danach Review-Runde P34–P38, Anmerkungen aus dem Test, Folge-Review P54, P55, P63 und
-Folge-Review 2 P64, P65 (Commit `b9f80d4`), danach die Persona-Befunde vom 14.10.2026 und die kompaktere Daten- und Prognose-Seite: Schema 17,
-Service-Worker-Cache `verm-v127`, `data-store.js?v=29`, `i18n-en.js?v=13`. Unabhängige Prüfberichte:
+Folge-Review 2 P64, P65 (Commit `b9f80d4`), die Persona-Befunde und die kompaktere Daten- und Prognose-Seite (Commit `50300cc`),
+danach EM-Rente mit Zurechnungszeit und Besitzschutz (15.10.2026): Schema 18, Service-Worker-Cache `verm-v128`,
+`data-store.js?v=30`, `i18n-en.js?v=14`. Unabhängige Prüfberichte:
 [REVIEW_2026-10.md](REVIEW_2026-10.md), [REVIEW_2026-10_FOLGE.md](REVIEW_2026-10_FOLGE.md),
 [REVIEW_2026-10_FOLGE2.md](REVIEW_2026-10_FOLGE2.md), [REVIEW_2026-10_FOLGE3.md](REVIEW_2026-10_FOLGE3.md).
 Status aller Befunde: [PROBLEME.md](PROBLEME.md), Abschnitt 0.
@@ -138,7 +139,7 @@ die alte Fassung, der zweite die neue.
 
 ### Tests
 
-- Aufruf: `node --test .tests/` – 30 Testdateien, 338 Tests, alle grün (14.10.2026 nach der Review-Runde
+- Aufruf: `node --test .tests/` – 31 Testdateien, 348 Tests, alle grün (14.10.2026 nach der Review-Runde
   P34–P38, den Anmerkungen aus dem Test, dem Folge-Review P54, P55, P63, dem Folge-Review 2 P64, P65 und den
   Persona-Befunden, `persona-fixes.test.cjs`;
   `data-safety.test.cjs` für Fenster, Migrationen und Originalsicherung, `writer-lifecycle.test.cjs` für Schreibrecht,

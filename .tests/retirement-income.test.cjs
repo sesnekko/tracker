@@ -54,7 +54,9 @@ test('income explanations show the calculation; the EM pension is never added to
   const text = a.run('_explainDrv(buildPlan().drv)');
   assert.match(text, /Rentenpunkte/);
   assert.match(text, /Rentenwert/);
-  assert.match(text, /mindestens die volle EM-Rente/);
+  // seit 15.10.2026 mit Besitzschutz (§ 88 SGB VI) und dem Zugangsfaktor der EM-Rente für die alten Punkte (§ 77 Abs. 3)
+  assert.match(text, /Besitzschutz.*mindestens deren persönliche Entgeltpunkte/);
+  assert.match(text, /20 Punkte × 0,892 Zugangsfaktor der EM-Rente/);
   assert.match(a.run("_explainEm(buildPlan().drv,'',true)"), /nicht in der Summe/);
 });
 
