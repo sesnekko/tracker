@@ -371,10 +371,10 @@ und externe Zuflüsse. Die Tests in `forecast-cashflow.test.cjs` prüfen das mit
   was jeden Monat passiert, wann ein Lauf scheitert, Tabelle der Annahmen je Anlage, „Sicher möglich ab“ und Grenzen –
   mit den aktuellen Zahlen aus `_ltState`.
 - **Hinweise in der Ergebnis-Karte** (`_v2LtNotes`): Sparraten über dem Budgetüberschuss
-  (Betrag der monatlichen Entnahme, P24), ein Startstand, der älter als der Vormonat ist (P28), und
-  Änderungen des Haushaltseinkommens, während du arbeitest (Phasenwechsel, Arbeitsende weiterer
-  Personen): „Ab 50 ist das Haushaltseinkommen 2.500 €/Monat niedriger als heute … (1.284 €/Monat)“
-  bzw. „… höher als heute. Die Prognose legt … zusätzlich an.“
+  (Betrag der monatlichen Entnahme, P24) und ein Startstand, der älter als der Vormonat ist (P28). Der Hinweis zu
+  Änderungen des Haushaltseinkommens während der Arbeit („Ab 50 ist das Haushaltseinkommen … niedriger/höher als
+  heute …“) ist seit 15.10.2026 entfernt; gerechnet wird unverändert (Lücke aus dem Vermögen, Mehreinkommen angelegt).
+  Das Phasen-Sheet nennt die Änderung weiter unter der jeweiligen Phase (`_phaseEffectTxt`).
 
 ### 7.1 Rechtsgrundlagen und Geltungsbereich
 
