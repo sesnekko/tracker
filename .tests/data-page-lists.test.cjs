@@ -163,3 +163,14 @@ test('Einnahmen & Ausgaben: automatische Posten als Zeilen, die zur Quelle führ
   a.run("_pvJump('pvMeDrv')"); assert.equal(a.run('_sheetCtx.pv.kind+":"+_sheetCtx.pv.id'), 'drv:me');
   a.run('_nsAvDepot()'); assert.equal(a.run("document.getElementById('dsTitle').textContent"), 'Neues Altersvorsorgedepot');
 });
+
+// 16.10.2026: Sondertilgungen im Kredit-Sheet: Termin und Betrag gleich breit und hoch nebeneinander, „Entfernen“ daneben
+test('Sondertilgung im Sheet: drei Spalten, Felder gleich groß', () => {
+  assert.match(html, /\.ds-sheet \.loan-extra-row\{display:grid;grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\) auto;align-items:end;gap:10px\}/);
+  assert.match(html, /\.ds-sheet \.loan-extra-row \.ds-in,\.ds-sheet \.loan-extra-row \.num-input\{width:100%;box-sizing:border-box;height:40px;min-height:40px;/);
+  const a = app(html);
+  const row = a.run("_loanExtraHTML('k1',{id:'e1',month:'2026-03',amount:1000})");
+  assert.match(row, /^<div class="loan-extra-row" data-extra-id="e1" data-extra-loan="k1"><label>Termin<button type="button" class="ds-in ds-date-btn"/);
+  assert.match(row, /<label>Betrag €<input class="num-input" type="text" data-extra-amount value="1\.000"/);
+  assert.match(row, /<button type="button" class="position-remove edit-only" data-extra-remove aria-label="Sondertilgung entfernen">Entfernen<\/button><\/div>$/);
+});
