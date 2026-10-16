@@ -198,14 +198,22 @@ test('C1: der erste Monat zeigt einen erklärten Leerzustand statt einer Fläche
   assert.match(html,/<p class="chart-start" id="chartNetStart" hidden><b>Dein Verlauf beginnt jetzt\.<\/b>/);
 });
 
-/* Kompakte Daten- und Prognose-Seite (14.10.2026) */
-test('UI: Annahmen stehen auf der Prognose-Seite, die Daten-Seite springt dorthin',()=>{
+/* Kompakte Daten- und Prognose-Seite (14.10.2026). Die Annahmen standen vom 14. bis 16.10.2026 auf der Prognose-Seite;
+   seit 16.10.2026 wieder auf der Daten-Seite, die Prognose-Seite verlinkt mit „Annahmen bearbeiten“. */
+test('UI: Annahmen stehen auf der Daten-Seite, die Prognose-Seite verlinkt dorthin',()=>{
   const lifetime=html.slice(html.indexOf('<div id="page-lifetime"'),html.indexOf('<!-- /page-lifetime -->'));
   const data=html.slice(html.indexOf('<div id="page-import"'),html.indexOf('<div id="page-lifetime"'));
-  assert.match(lifetime,/<section class="lt-assume" id="ltAssume">[\s\S]*id="v2-forecast-sec"[\s\S]*id="lt-events"[\s\S]*id="lt-asset-params-table"/);
-  assert.doesNotMatch(data,/id="v2-forecast-sec"/);
-  assert.match(data,/id="dsForecastJump"[\s\S]*_v2OpenForecastSettings\(\)/);
-  assert.match(html,/:is\(#page-import,#ltAssume\) \.input-group\{display:grid/,'gleiche Optik wie auf der Daten-Seite');
+  assert.match(data,/<details class="input-collapsible v2-live" data-mod="forecast" id="v2-forecast-sec">[\s\S]*id="lt-events"[\s\S]*id="lt-asset-params-table"/);
+  assert.doesNotMatch(lifetime,/id="v2-forecast-sec"|id="ltAssume"|id="lt-events"/);
+  assert.doesNotMatch(html,/dsForecastJump|ltAssume|lt-assume/);
+  assert.match(lifetime,/<button class="btn btn-ghost v2-wide" id="v2-lt-open">[\s\S]*?Annahmen bearbeiten<\/button>/);
+  assert.match(html,/document\.getElementById\('v2-lt-open'\)\.addEventListener\('click',\(\)=>_v2OpenForecastSettings\(\)\);/);
+  assert.match(html,/function _v2OpenForecastSettings\(folds\)\{[\s\S]*?navigateToPage\('import'\);/);
+  assert.match(html,/#page-import \.input-group\{display:grid/);
+  const a=context();
+  a.run("requestAnimationFrame=f=>0;globalThis.__nav=[];navigateToPage=p=>{__nav.push(p);};_v2OpenForecastSettings(['plan'])");
+  assert.deepEqual(a.json('__nav'),['import'],'Sprung auf die Daten-Seite');
+  assert.equal(a.el('v2-forecast-sec').open,true);
 });
 
 /* 15.10.2026: Altersvorsorge wie Vermögenswerte – je Art eine Liste, Eintrag antippen öffnet sein Sheet (vorher: Zeilen, die in

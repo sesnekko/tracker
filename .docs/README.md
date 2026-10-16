@@ -6,8 +6,8 @@ Folge-Review 2 P64, P65 (Commit `b9f80d4`), die Persona-Befunde und die kompakte
 danach EM-Rente mit Zurechnungszeit und Besitzschutz, das Altersvorsorgedepot Monat für Monat und die EM-Rente mit
 Entgeltpunkten laut Bescheid (15.10.2026): Schema 19; 16.10.2026 Konten im Geldfluss mit Prüfung der Daueraufträge:
 Schema 20. Danach der Zeitverlauf je Anlage und das Etappenziel
-auf der Prognose-Seite, Service-Worker-Cache `verm-v144`,
-`data-store.js?v=33`, `i18n-en.js?v=21`. Unabhängige Prüfberichte:
+auf der Prognose-Seite, „Prognose & Annahmen“ wieder auf der Daten-Seite, die bunte Partner-Story, Service-Worker-Cache `verm-v145`,
+`data-store.js?v=33`, `i18n-en.js?v=22`. Unabhängige Prüfberichte:
 [REVIEW_2026-10.md](REVIEW_2026-10.md), [REVIEW_2026-10_FOLGE.md](REVIEW_2026-10_FOLGE.md),
 [REVIEW_2026-10_FOLGE2.md](REVIEW_2026-10_FOLGE2.md), [REVIEW_2026-10_FOLGE3.md](REVIEW_2026-10_FOLGE3.md).
 Status aller Befunde: [PROBLEME.md](PROBLEME.md), Abschnitt 0.
@@ -142,7 +142,8 @@ die alte Fassung, der zweite die neue.
 
 ### Tests
 
-- Aufruf: `node --test .tests/` – 41 Testdateien, 434 Tests, alle grün (16.10.2026 nach den Konten im Geldfluss, Schema 20, `budget-accounts.test.cjs`,
+- Aufruf: `node --test .tests/` – 42 Testdateien, 442 Tests, alle grün (16.10.2026 nach der neuen Partner-Story, `partner-story.test.cjs`,
+  „Prognose & Annahmen“ wieder auf der Daten-Seite; davor nach den Konten im Geldfluss, Schema 20, `budget-accounts.test.cjs`,
   der Sparquote, `budget-savings-rate.test.cjs`;
   15.10.2026 nach der Abschreibung in der Prognose,
   `forecast-depreciation.test.cjs`, dem Etappenziel,

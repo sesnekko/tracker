@@ -201,3 +201,23 @@ test('Einnahmen & Ausgaben: Unterbereiche zugeklappt mit Anzahl und Ø, Zustand 
   a.run('_flowCheckOpen=true');
   assert.match(a.run('_moneyFlowHTML(loadBudgetData())'), /data-fold="orders" open/);
 });
+
+// 16.10.2026: Prognose & Annahmen (Daten-Seite) mit aufklappbaren Unterbereichen
+test('Annahmen: vier Unterbereiche aufklappbar mit Zusammenfassung; „Annahmen prüfen“ öffnet Lebensplanung und Rendite', () => {
+  const sec = html.slice(html.indexOf('id="v2-forecast-sec"'), html.indexOf('<!-- Einstellungen, Sicherung, Hilfe', html.indexOf('id="v2-forecast-sec"')));
+  assert.ok(sec.includes('id="lt-asset-params-table"'), 'ganzer Abschnitt');
+  const folds = [...sec.matchAll(/<details class="ds-fold as-fold" data-afold="([a-z]+)" ontoggle="_asFoldToggle\(this\)"><summary class="ds-list-t ds-list-sum ds-fold-h"><span>([^<]+)<\/span>/g)].map(m => [m[1], m[2]]);
+  assert.deepEqual(folds, [['plan', 'Lebensplanung'], ['phases', 'Lebensphasen'], ['events', 'Einmalige Ereignisse'], ['assets', 'Rendite &amp; Sparrate je Asset']]);
+  assert.ok(sec.indexOf('id="lt-life-expect"') > sec.indexOf('data-afold="plan"') && sec.indexOf('id="lt-life-expect"') < sec.indexOf('data-afold="phases"'), 'Felder im Unterbereich');
+  assert.match(sec, /<span class="as-i" data-info="lt-phases" role="button" tabindex="0" aria-label="Erklärung" onclick="event\.preventDefault\(\)"><\/span>/, 'Info ohne Auf-/Zuklappen');
+  assert.ok(sec.indexOf('id="v2-prev-pct"') < sec.indexOf('data-afold="plan"'), 'Erfolgschance bleibt oben sichtbar');
+  const a = app(html); a.csv(fs.readFileSync(path.join(__dirname, 'demo_export.csv'), 'utf8'));
+  a.run('_asFoldMeta()');
+  assert.match(a.el('as-meta-plan').textContent, /^bis \d+ · Inflation [\d,]+ %$/);
+  assert.match(a.el('as-meta-phases').textContent, /^(Vor)?[Rr]uhestand ab \d+/);
+  assert.match(a.el('as-meta-events').textContent, /^(\d+|keine)$/);
+  a.run("globalThis.__f={dataset:{afold:'assets'},open:true};_asFoldToggle(__f)");
+  assert.equal(a.json('appStorage.document()').preferences.expandedSections['ass-assets'], true);
+  assert.match(html, /run:\(\)=>_v2OpenForecastSettings\(\['plan','assets'\]\)/);
+  assert.match(html, /if\(meta\)meta\.textContent=plan\.groups\.length\+' · '\+fmt\(totalSaving\)\+L\(' \/ Monat',' \/ month'\);/);
+});

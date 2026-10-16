@@ -63,11 +63,11 @@ test('Prognose: Phasenbalken je Person auf derselben Zeitachse, Alter der Person
   assert.doesNotMatch(bar, />heute</, 'ohne „heute“ (15.10.2026)');
 });
 
-test('Infobox: begrenzte Höhe, Text scrollt, Tabelle in eigenem Rahmen; Hinweis auf die Annahmen der Prognose-Seite', () => {
+test('Infobox: begrenzte Höhe, Text scrollt, Tabelle in eigenem Rahmen; Hinweis auf die Annahmen (seit 16.10.2026 wieder auf der Daten-Seite)', () => {
   assert.match(html, /#infoPopup \.info-popup-text\{flex:1 1 auto;min-height:0;overflow-y:auto/);
   assert.match(html, /#infoPopup\.show\{display:flex;flex-direction:column;width:min\(520px,92vw\);max-height:min\(84vh,760px\)/);
   assert.match(html, /<div class="se-wrap"><table class="se-t">/);
-  assert.match(html, /Ändern unter Prognose → Annahmen → Rendite &amp; Sparrate je Asset\./);
+  assert.match(html, /Ändern unter Daten → Prognose &amp; Annahmen → Rendite &amp; Sparrate je Asset\./);
 });
 
 test('Phasenbalken: der Rentenbeginn ist immer beschriftet; eine zu nahe Marke davor entfällt', () => {
