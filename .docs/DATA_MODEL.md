@@ -885,8 +885,9 @@ Kindergeld und Kinderzulage leitet die App aus den Kindern ab.
 ## Partner-Story
 
 Am Ende der Prognose-Seite (`#psOpen`) erklärt eine Folge von Story-Seiten den ganzen Plan
-ohne Fachbegriffe: heutiges Vermögen, monatliches Sparen, die vier Lebensphasen, die
-Marktsimulation, große Ereignisse und ein Fazit. Alle Werte kommen aus `buildPlan()` und der
+ohne Fachbegriffe: heutiges Vermögen, monatliches Sparen, der Zinseszins, die vier Lebensphasen, die
+Marktsimulation, große Ereignisse, eine Einschätzung (Stufe, Tacho, bis zu drei Punkte; keine Anlageberatung) und
+ein Fazit; seit 16.10.2026 bunt mit Bildern und Witzen. Alle Werte kommen aus `buildPlan()` und der
 Monte-Carlo-Simulation, in heutiger Kaufkraft. Bedienung: Tippen rechts/links, Halten pausiert,
 nach unten wischen, Esc oder × schließt. Es werden keine Daten gespeichert.
 

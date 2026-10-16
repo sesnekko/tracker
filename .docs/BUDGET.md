@@ -21,7 +21,8 @@ Posten, Januar bis Dezember. Die Seite (`#page-budget`) zeigt:
 Das Budget liefert außerdem Werte an andere Bereiche:
 
 - **Prognose**: Sparraten-Vorschlag (`deriveSavingsFromBudget`), Einnahmen im Ruhestand
-  (`retirementIncome`), Partner-Story (Einnahmen, Vermögensaufbau).
+  (`retirementIncome`), Partner-Story (Einnahmen, Ersparnis und Sparquote wie auf der Budget-Seite, Ausgaben für den
+  Notgroschen).
 - **Vermögen**: Notgroschen = Cash ÷ Ø Ausgaben.
 
 ---

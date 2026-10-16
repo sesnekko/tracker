@@ -40,11 +40,11 @@ Von oben nach unten:
 | Zeitraum 5 J / 10 J / 25 J / Alle, Flächen, Log | `[data-lt-range]`, `#ltAssetsToggleBtn`, `#ltLogToggleBtn` | Zustand `ltRange`, `ltShowAssets`, `ltUseLog` (Z. ≈2625, Standard aus „Darstellung der Charts“) | ja |
 | Ergebnis-Karte „Vorruhestand/Ruhestand mit X“ | `#v2-lt-summary` | `_v2LtSummary()`: Erfolgschance mit Ziel in einer Zeile („Was bedeutet das? ›“ → `openSuccessExplain`), ein Satz, zwei Kacheln (Etappenziel „Ziel mit X · liquide“, seit 15.10.2026 statt „Verfügbar mit X“; Sicher möglich ab), darunter die Zeile „Zeitverlauf“ (8.2a); die Skala entfällt. Die Kennzahlen Vermögen am Horizont, Ø Rendite und Schuldenfrei sind seit 15.10.2026 entfernt | ja |
 | Lebensphasen-Karte | `#v2-lt-phases` | `_v2LtPhases()`: je Phase **eine Zeile** (Name, Zeitraum, Wert); Antippen klappt die Beschreibung auf (`_v2Fold`), dort „Phase bearbeiten ›“ → `openPhasesSheet(i)`. Weitere Personen nur als eigener Phasenbalken (die Zeilen „Weitere Personen“ sind seit 15.10.2026 entfernt: Balken, „Einkommen im Ruhestand“ und „Bearbeiten“ zeigen dasselbe). Unter jedem Balken ist der Rentenbeginn immer beschriftet (`_ticksHTML`); eine zu nahe Marke davor entfällt | ja |
-| „Annahmen bearbeiten“ | `#v2-lt-open` | klappt den Abschnitt „Annahmen“ unten auf dieser Seite auf und scrollt hin (`_v2OpenForecastSettings`) | ja |
+| „Annahmen bearbeiten“ | `#v2-lt-open` | der einzige Weg zu den Annahmen auf dieser Seite: wechselt auf die Daten-Seite, klappt „Prognose & Annahmen“ auf und scrollt hin (`_v2OpenForecastSettings`; vom 14. bis 16.10.2026 standen die Annahmen unten auf dieser Seite) | ja |
 | 4 KPI-Kacheln (Ziel, Erfolgschance, Rente möglich ab, Bei Rentenbeginn) | `.kpi-grid`, `#lt-target-real` … | `renderLifetimePageCalcs()` | **nein** (CSS Z. ≈1516) |
 | Einkommen im Ruhestand | `#lt-more-list` | `renderLifetimePageCalcs()`: Summe, Deckung, mit mehreren Personen je Person eine aufklappbare Zwischensumme (`.v2-inc-grp`), sonst die Einzelzeilen; Fußnote nur mit weiteren Personen oder EM-Rente | ja |
 | „So wird gerechnet“, Partner-Story | `.v2-lt-links`: `[data-info=lt-method]` (`INFO['lt-method']`), `#psOpen` → `openPartnerStory()` | zwei Zeilen in einer Karte | Partner-Story nur mit weiterer erwachsener Person |
-| Annahmen | `#ltAssume` > `#v2-forecast-sec` (Lebensplanung, Lebensphasen, Ereignisse, Rendite & Sparrate je Asset) | `updateLifetimeInputs()`, `renderEventEditor()`, `buildAssetParamsTable()`; speichert sofort (`v2-live`). Seit 14.10.2026 hier statt auf der Daten-Seite; die Optik kommt aus denselben Regeln (`:is(#page-import,#ltAssume)`) | ja, zugeklappt |
+| Annahmen | stehen seit 16.10.2026 wieder auf der Daten-Seite (DATEN.md, „Prognose & Annahmen“); hier nur „Annahmen bearbeiten“ | – | – |
 
 Lebensphasen mit weiteren Personen: je Person ein Phasenbalken auf derselben Zeitachse (heute bis zum Planende, Alter der
 Person; `_personBarHTML` seit 15.10.2026 in den Farben der Lebensphasen: Ansparen in Phase 1, danach Weiterarbeiten,
@@ -57,11 +57,10 @@ Altersabstand (`lp-past`, `_youngestNow`). Unter den Balken stehen nur die Phase
 Erfolgschance (`openSuccessExplain`) steht in einer Infobox mit begrenzter Höhe; der Text scrollt, Titel und „Schließen“
 bleiben stehen.
 
-Auf dem Mac (≥1280 px) liegt alles ab der Ergebnis-Karte in der rechten Spalte `.desk-rail`; die Annahmen stehen
-darunter (Bereich `assume`, höchstens 860 px breit).
+Auf dem Mac (≥1280 px) liegt alles ab der Ergebnis-Karte in der rechten Spalte `.desk-rail`.
 
-Eingaben, die auf der Prognose wirken, liegen auf der Daten-Seite (Bereiche „Haushalt“ und „Altersvorsorge“), unten auf
-dieser Seite (Annahmen) und im Phasen-Sheet. Alle Lebensphasen-Parameter
+Eingaben, die auf der Prognose wirken, liegen auf der Daten-Seite (Bereiche „Haushalt“, „Altersvorsorge“ und „Prognose &
+Annahmen“) und im Phasen-Sheet. Alle Lebensphasen-Parameter
 (Phasengrenzen, Bedarf, Sparen, Entnahme, Arbeitszeit und Altersvorsorge je Person, Arbeitsende und
 Rentenbeginn weiterer Personen) stehen nur im Phasen-Sheet (8.4), das von dieser Seite aus geöffnet wird.
 
@@ -491,8 +490,8 @@ Zeile „Zeitverlauf · Anlagen und Kredite über die Jahre ›“ (Stil wie „
 Kachel zwischen den beiden Kennzahlen passte optisch nicht und wurde verworfen. Ist die Karte mindestens 560 px
 breit (iPad, schmales Mac-Fenster; Container-Abfrage auf `.v2-ret`), steht die Zeile oben rechts unter „Abgesichert“
 neben der Erfolgschance; auf dem iPhone und in der rechten Mac-Spalte bleibt sie unter den Kennzahlen. Die Zeile wechselt in eine eigene Ansicht
-(`#page-lifetime.lt-tl-on`): Unter dem Chart (Mac: rechte Spalte) stehen dann statt Ergebnis, Phasen,
-Kennzahlen und Annahmen nur die Liste und oben „Zurück zur Prognose“, das die normale Ansicht wiederherstellt.
+(`#page-lifetime.lt-tl-on`): Unter dem Chart (Mac: rechte Spalte) stehen dann statt Ergebnis, Phasen
+und Kennzahlen nur die Liste und oben „Zurück zur Prognose“, das die normale Ansicht wiederherstellt.
 Auf dem iPhone rollt die Seite beim Öffnen zum Chart und beim Schließen zurück zur Ergebnis-Karte. Der Zustand
 gilt für die Sitzung (nicht gespeichert).
 
@@ -610,8 +609,19 @@ Steht auf der Daten-Seite unter „Prognose & Annahmen“.
 ### 8.6 Partner-Story
 
 `_psData()` nutzt `_ltState` (dieselben Zahlen wie die Seite): Median je Phasenende, Renten je
-Alter, Budget-Einnahmen und Vermögensaufbau, Ereignisse ab heute, spätestes Tilgungsende.
-`_psSlides()` baut bis zu zehn Folien; Phasen mit Dauer 0 entfallen. Arbeitet eine weitere Person
+Alter, Budget im Jahresmittel (Einnahmen, Ausgaben, Ersparnis; Sparquote wie auf der Budget-Seite), Konten (`cash`) für
+den Notgroschen, Rendite der entnehmbaren Anlagen nach Inflation (gewichtet mit Wert und Sparrate eines Jahres),
+Ereignisse ab heute, spätestes Tilgungsende.
+`_psSlides()` baut bis zu zwölf Folien; Phasen mit Dauer 0 entfallen. Seit 16.10.2026 für Menschen ohne
+Finanzinteresse: kräftige Farbverläufe mit zwei weichen Lichtflecken, je Story ein Bild (Emoji, schwebt), eine
+kurze Erklärung und meist ein Witz (`joke`, Sprechblase); Balken, Schneebälle und Tacho wachsen beim Einblenden.
+Folgen: Start, Heute (Eis-Vergleich), Jeden Monat, **Der Trick mit dem Zinseszins** (aus 1 € bis zum Jahr des
+Arbeitsendes, vier Schneebälle; entfällt unter drei Jahren oder unter 0,5 % Rendite), Phase 1–4, Börse (100 Punkte),
+Große Momente (Bild nach dem Namen des Ereignisses, `_psEventEmo`), **Unsere Einschätzung** und Kurz gesagt.
+Einschätzung (`_psVerdict`): „Sehr entspannt“ ab Ziel + 8 (höchstens 98), „Auf Kurs“ ab Ziel, „Knapp dran“ bis
+15 Punkte darunter, sonst „Da geht noch was“; Tacho mit Ziel-Marke (`_psGauge`) und bis zu drei Punkte (Aufhören
+gegen „Sicher möglich ab“, Sparquote ab 15 % stark, Notgroschen ab 3 Monatsausgaben, Schuldenfrei), darunter
+„Keine Anlageberatung – nur eine Rechnung mit euren Zahlen.“ Zinseszins 9 s, Einschätzung 12 s, sonst 7 s je Story. Arbeitet eine weitere Person
 über dein Arbeitsende hinaus, nennen Vorruhestand und Rente ihr Gehalt getrennt von den Renten
 („Ab 2045 ist für einen von euch Schluss mit Arbeit. Anna arbeitet bis 2054 weiter: …“, P5).
 Es werden keine Daten gespeichert. Details in DATA_MODEL.md, Abschnitt „Partner-Story“.

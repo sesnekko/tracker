@@ -143,7 +143,7 @@ test('Ansicht wechseln: Liste ein, Ergebnis aus; zurück stellt die Prognose wie
 test('Markup und Darstellung: Platz in der rechten Spalte, Fahren über den Chart, Liste im Stil der Vermögen-Seite', () => {
   assert.match(html, /<div class="desk-rail">\n<div class="lt-tl" id="lt-timeline"><\/div>/);
   assert.doesNotMatch(html, /ltListToggleBtn|lt-groups/, 'kein Knopf in der Chart-Leiste mehr');
-  assert.match(html, /#page-lifetime\.lt-tl-on \.desk-rail>:not\(\.lt-tl\),#page-lifetime\.lt-tl-on \.lt-assume\{display:none!important\}/);
+  assert.match(html, /#page-lifetime\.lt-tl-on \.desk-rail>:not\(\.lt-tl\)\{display:none!important\}/);
   assert.match(html, /#legendAssets \.legend-row,#legendAssets-ipad \.legend-row,#ltLegend \.legend-row\{/);
   assert.match(html, /_ltTimelineAt\(idx\);\n    showCross\(idx\);/, 'Fahren über den Chart aktualisiert die Liste');
   assert.match(html, /_ltTimelineAt\(null\);\n  \}\n  let active=false;/, 'Loslassen zeigt wieder heute');

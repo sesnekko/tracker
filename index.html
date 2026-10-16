@@ -437,8 +437,8 @@ details.lt-settings-panel[open]>.lt-settings-toggle::before{transform:rotate(45d
 /* ── Prognose: Panels, Listen, Asset-Parameter ── */
 .lt-panel{border:none;padding:0 14px 14px;margin:0;background:transparent}
 /* Beschriftungen mit Info dürfen umbrechen; Eingabefelder bleiben unten bündig */
-.lt-panel .input-group, :is(#page-import,#ltAssume) .input-group{justify-content:flex-end}
-.lt-panel .input-group label, :is(#page-import,#ltAssume) .input-group label[data-info]{white-space:normal;line-height:1.3}
+.lt-panel .input-group, #page-import .input-group{justify-content:flex-end}
+.lt-panel .input-group label, #page-import .input-group label[data-info]{white-space:normal;line-height:1.3}
 .lt-table-hint{font-size:11px;color:var(--muted);margin-top:6px}
 @media (max-width:767px){ th[data-info]::after{display:none} }
 @media (min-width:768px){ .lt-table-hint{display:none} }
@@ -454,7 +454,7 @@ details.lt-settings-panel[open]>.lt-settings-toggle::before{transform:rotate(45d
 .plan-row .input-group{min-width:0}
 .plan-row .input-group[hidden]{display:none!important}
 /* Altersvorsorgedepot: Felder mit Standardwert nur beim Bearbeiten zeigen */
-body:not(.v2-editing) :is(#page-import,#ltAssume) .plan-row.avd .avd-default{display:none}/* sonst gewinnt :is(#page-import,#ltAssume) .input-group{display:grid} */
+body:not(.v2-editing) #page-import .plan-row.avd .avd-default{display:none}/* sonst gewinnt #page-import .input-group{display:grid} */
 .plan-del{background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;height:36px;padding:0}
 .plan-row.ev{grid-template-columns:1.3fr .7fr 1fr 24px;grid-template-areas:"name year amount del" "from from to to";padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid color-mix(in srgb,var(--border) 40%,transparent)}
 .plan-row.ev .pc-name{grid-area:name}.plan-row.ev .pc-year{grid-area:year}.plan-row.ev .pc-amount{grid-area:amount}
@@ -883,12 +883,12 @@ body.dark .sankey-accent-left { background:rgba(140,110,90,0.7); }
   .import-section > div { font-size: 15px; }
 
   /* Data entry: slightly denser on desktop */
-  :is(#page-import,#ltAssume) .section-title { font-size: 13px; }
-  :is(#page-import,#ltAssume) .input-group label { font-size: 10px; }
-  :is(#page-import,#ltAssume) .num-input { font-size: 14px; padding: 8px 10px; min-height: 36px; }
-  :is(#page-import,#ltAssume) .input-units-label { font-size: 8px; }
-  :is(#page-import,#ltAssume) .num-input-units { font-size: 11px; padding: 3px 7px; min-height: 24px; }
-  :is(#page-import,#ltAssume) #newFieldLabel, :is(#page-import,#ltAssume) #newFieldCategory { font-size: 12px; padding: 7px 10px; }
+  #page-import .section-title { font-size: 13px; }
+  #page-import .input-group label { font-size: 10px; }
+  #page-import .num-input { font-size: 14px; padding: 8px 10px; min-height: 36px; }
+  #page-import .input-units-label { font-size: 8px; }
+  #page-import .num-input-units { font-size: 11px; padding: 3px 7px; min-height: 24px; }
+  #page-import #newFieldLabel, #page-import #newFieldCategory { font-size: 12px; padding: 7px 10px; }
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -1099,16 +1099,16 @@ body.iso-mode .hero-label::before{display:none}
 .nav-btn svg{width:24px;height:24px}
 
 /* Eingaben als Listenzeilen: Bezeichnung links, Wert in fester Spalte rechts */
-:is(#page-import,#ltAssume) .input-grid{display:block;margin:0}
-:is(#page-import,#ltAssume) .input-group{display:grid;grid-template-columns:minmax(0,1fr) 132px;align-items:center;column-gap:12px;row-gap:0;padding:7px 0;min-height:50px;position:relative}
-:is(#page-import,#ltAssume) .input-group+.input-group{box-shadow:inset 0 .5px 0 var(--sep)}
-:is(#page-import,#ltAssume) .input-group>label,:is(#page-import,#ltAssume) .input-group>label[data-info]{grid-column:1;min-width:0;text-transform:none;letter-spacing:0;font-size:15px;color:var(--ink);white-space:normal;line-height:1.3;overflow:visible}
-:is(#page-import,#ltAssume) .input-group>.num-input,:is(#page-import,#ltAssume) .input-group>select{grid-column:2;width:100%;max-width:none}
+#page-import .input-grid{display:block;margin:0}
+#page-import .input-group{display:grid;grid-template-columns:minmax(0,1fr) 132px;align-items:center;column-gap:12px;row-gap:0;padding:7px 0;min-height:50px;position:relative}
+#page-import .input-group+.input-group{box-shadow:inset 0 .5px 0 var(--sep)}
+#page-import .input-group>label,#page-import .input-group>label[data-info]{grid-column:1;min-width:0;text-transform:none;letter-spacing:0;font-size:15px;color:var(--ink);white-space:normal;line-height:1.3;overflow:visible}
+#page-import .input-group>.num-input,#page-import .input-group>select{grid-column:2;width:100%;max-width:none}
 .num-input{border:none;background:transparent;text-align:right;font-size:16px;color:var(--ink);border-radius:9px;min-height:36px;padding:6px 10px;font-variant-numeric:tabular-nums}
-:is(#page-import,#ltAssume) .num-input{opacity:1!important}
-:is(#page-import,#ltAssume) .num-input[readonly]{background:transparent;color:var(--ink)}
-:is(#page-import,#ltAssume) .num-input:not([readonly]){background:var(--fill)}
-:is(#page-import,#ltAssume) select.num-input:disabled{opacity:1!important;color:var(--ink);background:transparent;-webkit-appearance:none;appearance:none;text-align:right;text-align-last:right}
+#page-import .num-input{opacity:1!important}
+#page-import .num-input[readonly]{background:transparent;color:var(--ink)}
+#page-import .num-input:not([readonly]){background:var(--fill)}
+#page-import select.num-input:disabled{opacity:1!important;color:var(--ink);background:transparent;-webkit-appearance:none;appearance:none;text-align:right;text-align-last:right}
 .num-input:focus{box-shadow:0 0 0 1.5px var(--ink)!important;border-color:transparent}
 .num-input[type=number]{-moz-appearance:textfield}
 input[aria-invalid="true"]{border-color:var(--red)!important;box-shadow:0 0 0 1px var(--red)}
@@ -1121,10 +1121,10 @@ input[aria-invalid="true"]{border-color:var(--red)!important;box-shadow:0 0 0 1p
 .hh-ctx div+div{margin-top:3px}.hh-ctx b{font-weight:500;color:var(--ink)}
 .hh-card{background:var(--fill);border-radius:12px;padding:2px 12px;margin:8px 0}
 .hh-val{grid-column:2;text-align:right;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
-:is(#page-import,#ltAssume) .hh-person .drvx-res{margin:0;padding:8px 0}
-body:not(.v2-editing) :is(#page-import,#ltAssume) .hh-person .pc-name{display:none}/* Name steht im Kopf */
+#page-import .hh-person .drvx-res{margin:0;padding:8px 0}
+body:not(.v2-editing) #page-import .hh-person .pc-name{display:none}/* Name steht im Kopf */
 .pv-row .plan-del{display:none!important}.plan-row[hidden]{display:none!important}
-body:not(.v2-editing) :is(#page-import,#ltAssume) .pv-row.pv-empty,body:not(.v2-editing) :is(#page-import,#ltAssume) .pv-card.pv-empty{display:none}
+body:not(.v2-editing) #page-import .pv-row.pv-empty,body:not(.v2-editing) #page-import .pv-card.pv-empty{display:none}
 .drv-params{margin:4px 0 0}.drv-params>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:10px 0;font-size:13px;color:var(--muted)}
 .drv-params>summary::-webkit-details-marker{display:none}.drv-params>summary::after{content:'›';transition:transform .2s}.drv-params[open]>summary::after{transform:rotate(90deg)}
 .drv-params>summary small{margin-left:auto;font-size:12px;font-variant-numeric:tabular-nums}
@@ -1163,21 +1163,21 @@ button.v2-ret-main{display:flex;align-items:flex-end;gap:10px;background:none;bo
 .hh-time .lp-bar{margin-top:10px}.hh-tl{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.4}
 .num-input::-webkit-inner-spin-button,.num-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 select.num-input{text-align:left;font-size:15px}
-:is(#page-import,#ltAssume) .input-units-label{grid-column:1;font-size:13px;letter-spacing:0;text-transform:none;opacity:1;margin:0;color:var(--muted);display:block}
-:is(#page-import,#ltAssume) .num-input-units{grid-column:2;width:100%;max-width:none;min-height:30px;padding:3px 10px;font-size:14px;color:var(--muted);border:none;border-style:none}
+#page-import .input-units-label{grid-column:1;font-size:13px;letter-spacing:0;text-transform:none;opacity:1;margin:0;color:var(--muted);display:block}
+#page-import .num-input-units{grid-column:2;width:100%;max-width:none;min-height:30px;padding:3px 10px;font-size:14px;color:var(--muted);border:none;border-style:none}
 .lt-block-label{text-transform:none;letter-spacing:0;font-size:13px;color:var(--muted);margin:16px 0 2px}
 .lt-result{font-size:13px;color:var(--muted);margin:6px 0 8px;line-height:1.45}
 .plan-row,.plan-row.ev{display:block;background:var(--fill);border-radius:12px;padding:2px 12px 4px;margin:8px 0;position:relative;border:none}
-:is(#page-import,#ltAssume) .plan-row .input-group{min-height:46px}
-:is(#page-import,#ltAssume) .plan-row .pc-name{grid-template-columns:auto minmax(0,1fr)}
-:is(#page-import,#ltAssume) .plan-row .pc-name>.num-input{text-align:right}
+#page-import .plan-row .input-group{min-height:46px}
+#page-import .plan-row .pc-name{grid-template-columns:auto minmax(0,1fr)}
+#page-import .plan-row .pc-name>.num-input{text-align:right}
 .plan-del{position:static;display:block;width:auto;height:auto;margin:2px 0 4px auto;padding:4px 0;background:none;border:none;color:var(--red);font-size:0;cursor:pointer}
 .plan-del::after{content:'Entfernen';font-size:14px}
 .plan-add{width:100%;margin-top:6px}
 .loan-summary{display:block;padding:8px 0 6px;font-size:13px;color:var(--muted)}
 .loan-card{border-radius:12px;background:var(--fill);padding:4px 14px 14px;margin:14px 0}
 .loan-card-heading{display:flex;align-items:center;gap:12px;min-height:48px;color:var(--ink);font-size:15px;font-weight:500}
-:is(#page-import,#ltAssume) .loan-card .input-group{grid-template-columns:minmax(0,1fr) minmax(132px,40%)}
+#page-import .loan-card .input-group{grid-template-columns:minmax(0,1fr) minmax(132px,40%)}
 .loan-card label small{display:block;color:var(--muted);font-size:12px;font-weight:400;margin-top:3px}
 .loan-hint,.loan-plan p,.loan-budget p{font-size:12.5px;color:var(--muted);line-height:1.5;margin:8px 0 12px}
 .loan-extras h4,.loan-budget h4{font-size:14px;font-weight:500;color:var(--ink);margin:14px 0 8px}
@@ -1195,7 +1195,7 @@ select.num-input{text-align:left;font-size:15px}
 .loan-plan tr.selected{background:var(--card)}
 .loan-budget{padding:4px 12px;background:var(--fill);border-radius:12px;margin:12px 0}
 .loan-budget>div{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;color:var(--ink)}
-@media(max-width:480px){:is(#page-import,#ltAssume) .loan-card .input-group{grid-template-columns:minmax(0,1fr) 132px}.loan-extra-row{flex-wrap:wrap}.loan-extra-row .position-remove{margin-left:auto}.loan-card{padding-left:10px;padding-right:10px}}
+@media(max-width:480px){#page-import .loan-card .input-group{grid-template-columns:minmax(0,1fr) 132px}.loan-extra-row{flex-wrap:wrap}.loan-extra-row .position-remove{margin-left:auto}.loan-card{padding-left:10px;padding-right:10px}}
 .position-add-bar{display:flex;justify-content:flex-end;padding:12px 0 4px}
 .position-add-bar .btn{font-size:14px;min-height:44px}
 .position-editor{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;margin:8px 0 16px}
@@ -1221,21 +1221,21 @@ select.num-input{text-align:left;font-size:15px}
 .position-editor-fields .btn{min-height:46px;white-space:nowrap}
 .position-label{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .position-remove{border:0;background:none;color:var(--red);font:inherit;font-size:12px;cursor:pointer;padding:8px 0;min-height:44px;margin-left:auto}
-:is(#page-import,#ltAssume) #dynamicLiabForm .cat-label{display:flex;align-items:center;gap:10px}
+#page-import #dynamicLiabForm .cat-label{display:flex;align-items:center;gap:10px}
 @media(max-width:480px){.position-editor-fields{flex-direction:column;align-items:stretch}.position-editor-fields label{min-width:0}.position-label{align-items:flex-start;flex-direction:column;gap:0}.position-remove{margin-left:0;min-height:32px;padding:4px 0}}
 
 /* Daten-Seite */
 .import-page{padding:8px 0}
-:is(#page-import,#ltAssume) .input-panel{background:none;padding:0;margin:0;border-radius:0;overflow:visible}/* sonst klebt die Bearbeiten-Leiste nicht */
-:is(#page-import,#ltAssume) .input-panel>.divider{display:none}
+#page-import .input-panel{background:none;padding:0;margin:0;border-radius:0;overflow:visible}/* sonst klebt die Bearbeiten-Leiste nicht */
+#page-import .input-panel>.divider{display:none}
 /* Bearbeiten-Leiste: schwebt beim Scrollen durch die Kategorien oben mit */
 .v2-form-head{position:sticky;top:max(8px,env(safe-area-inset-top));z-index:30;display:flex;align-items:center;gap:10px;margin:10px 0 10px;padding:8px 8px 8px 16px;min-height:50px;border-radius:14px;
   background:color-mix(in srgb,var(--bg2) 82%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 4px 18px rgba(0,0,0,.12)}
 body.dark .v2-form-head{box-shadow:0 4px 18px rgba(0,0,0,.4)}
 .v2-form-head>span:first-child{font-size:14px;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-:is(#page-import,#ltAssume) .v2-form-head .save-msg:not(.show){display:none}
+#page-import .v2-form-head .save-msg:not(.show){display:none}
 .v2-form-head:has(.save-msg.show)>span:first-child{display:none}
-:is(#page-import,#ltAssume) .v2-form-head .save-msg.show{flex:1;font-size:14px}
+#page-import .v2-form-head .save-msg.show{flex:1;font-size:14px}
 .v2-form-btns{display:flex;gap:6px}
 .v2-textbtn{border:none;background:var(--fill);font:inherit;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;padding:7px 16px;border-radius:999px;white-space:nowrap}
 .v2-textbtn:active{opacity:.75}
@@ -1243,35 +1243,35 @@ body.dark .v2-form-head{box-shadow:0 4px 18px rgba(0,0,0,.4)}
 .v2-textbtn.v2-strong{background:var(--green);color:var(--bg);font-weight:600}
 /* Im Bearbeiten-Modus: Hinweis statt Monat */
 body.v2-editing .v2-form-head>span:first-child{color:var(--ink)}
-:is(#page-import,#ltAssume) .save-msg{font-size:13px;color:var(--green)}
-:is(#page-import,#ltAssume) details.input-collapsible{background:var(--card);border-radius:16px;margin-bottom:10px;overflow:hidden;overflow:clip}/* clip statt hidden: so kann „Bearbeiten“ darin mitlaufen (sticky) */
-:is(#page-import,#ltAssume) .input-collapsible-summary{padding:12px 16px;min-height:62px;gap:12px}
-:is(#page-import,#ltAssume) .input-collapsible-summary::before{display:none}
-:is(#page-import,#ltAssume) .input-collapsible-summary::after{content:'';flex-shrink:0;width:8px;height:8px;margin-left:4px;border-right:1.8px solid var(--muted);border-bottom:1.8px solid var(--muted);transform:rotate(-45deg);opacity:.6;transition:transform .2s,opacity .2s}
-:is(#page-import,#ltAssume) details[open]>.input-collapsible-summary::after{transform:rotate(45deg)}
+#page-import .save-msg{font-size:13px;color:var(--green)}
+#page-import details.input-collapsible{background:var(--card);border-radius:16px;margin-bottom:10px;overflow:hidden;overflow:clip}/* clip statt hidden: so kann „Bearbeiten“ darin mitlaufen (sticky) */
+#page-import .input-collapsible-summary{padding:12px 16px;min-height:62px;gap:12px}
+#page-import .input-collapsible-summary::before{display:none}
+#page-import .input-collapsible-summary::after{content:'';flex-shrink:0;width:8px;height:8px;margin-left:4px;border-right:1.8px solid var(--muted);border-bottom:1.8px solid var(--muted);transform:rotate(-45deg);opacity:.6;transition:transform .2s,opacity .2s}
+#page-import details[open]>.input-collapsible-summary::after{transform:rotate(45deg)}
 .v2-sum-t{flex:1;min-width:0;display:flex;flex-direction:column}
-:is(#page-import,#ltAssume) .section-title{text-transform:none;letter-spacing:0;font-size:16px;font-weight:400;margin:0;border:none;padding:0;color:var(--ink)}
+#page-import .section-title{text-transform:none;letter-spacing:0;font-size:16px;font-weight:400;margin:0;border:none;padding:0;color:var(--ink)}
 .v2-sum-sub{font-size:13px;color:var(--muted);margin-top:1px;line-height:1.35;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}/* C9: zwei Zeilen statt abgeschnitten */
 .v2-sum-sub:empty{display:none}
-:is(#page-import,#ltAssume) details.v2-off .section-title{color:var(--muted)}
-:is(#page-import,#ltAssume) details.v2-off>.input-collapsible-summary::after{opacity:0}
-:is(#page-import,#ltAssume) details.v2-off>:not(summary){display:none}
+#page-import details.v2-off .section-title{color:var(--muted)}
+#page-import details.v2-off>.input-collapsible-summary::after{opacity:0}
+#page-import details.v2-off>:not(summary){display:none}
 .v2-switch{position:relative;flex:0 0 auto;width:48px;height:29px;border-radius:15px;background:color-mix(in srgb,var(--muted) 40%,transparent);transition:background .2s;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .v2-switch i{position:absolute;top:2px;left:2px;width:25px;height:25px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .25s cubic-bezier(.3,.7,.3,1)}
 .v2-switch[aria-checked="true"]{background:var(--green)}
 .v2-switch[aria-checked="true"] i{transform:translateX(19px)}
 .v2-switch:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-:is(#page-import,#ltAssume) .input-collapsible-body{padding:16px 16px 14px;box-shadow:inset 0 .5px 0 var(--sep)}
+#page-import .input-collapsible-body{padding:16px 16px 14px;box-shadow:inset 0 .5px 0 var(--sep)}
 /* Gleicher Abstand unter der Überschrift in jedem Bereich, egal ob zuerst eine Box, eine Liste oder ein Titel folgt */
-:is(#page-import,#ltAssume) .input-collapsible-body>:first-child,:is(#page-import,#ltAssume) .input-collapsible-body>.ds-anchor:first-child+*,:is(#page-import,#ltAssume) .input-collapsible-body>.ds-anchor:first-child+.ds-anchor+*,
-body.v2-editing :is(#page-import,#ltAssume) .input-collapsible-body>.ds-sec-actions:first-child+*{margin-top:0}
-:is(#page-import,#ltAssume) .input-collapsible-body>.ds-sec-actions:first-child{padding-top:0}
-:is(#page-import,#ltAssume) .input-collapsible-body>.ds-list-t:first-child,:is(#page-import,#ltAssume) .input-collapsible-body>.ds-anchor:first-child+.ds-list-t{padding-top:0}
-:is(#page-import,#ltAssume) .cat-grid{display:block}
-:is(#page-import,#ltAssume) .cat-label{display:block;writing-mode:horizontal-tb;background:none;color:var(--muted);font-size:13px;font-weight:400;letter-spacing:0;text-transform:none;padding:16px 0 2px;margin:0!important;border-radius:0}
-:is(#page-import,#ltAssume) .cat-label.red{color:var(--red)}
-:is(#page-import,#ltAssume) .cat-grid>.input-grid{margin:0!important}
-:is(#page-import,#ltAssume) .lt-panel{background:none;border:none;padding:0;margin:0}
+#page-import .input-collapsible-body>:first-child,#page-import .input-collapsible-body>.ds-anchor:first-child+*,#page-import .input-collapsible-body>.ds-anchor:first-child+.ds-anchor+*,
+body.v2-editing #page-import .input-collapsible-body>.ds-sec-actions:first-child+*{margin-top:0}
+#page-import .input-collapsible-body>.ds-sec-actions:first-child{padding-top:0}
+#page-import .input-collapsible-body>.ds-list-t:first-child,#page-import .input-collapsible-body>.ds-anchor:first-child+.ds-list-t{padding-top:0}
+#page-import .cat-grid{display:block}
+#page-import .cat-label{display:block;writing-mode:horizontal-tb;background:none;color:var(--muted);font-size:13px;font-weight:400;letter-spacing:0;text-transform:none;padding:16px 0 2px;margin:0!important;border-radius:0}
+#page-import .cat-label.red{color:var(--red)}
+#page-import .cat-grid>.input-grid{margin:0!important}
+#page-import .lt-panel{background:none;border:none;padding:0;margin:0}
 .v2-preview{display:flex;align-items:center;gap:14px;background:var(--fill);border-radius:12px;padding:12px 14px;margin-top:14px}
 .v2-preview b{font-size:26px;font-weight:400;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
 .v2-preview>span{font-size:13px;color:var(--muted);line-height:1.4}
@@ -1285,46 +1285,46 @@ details.tut-section[open]>.tut-toggle::after{transform:rotate(45deg)}
 .tut-body .tut-toggle{font-size:14.5px;min-height:44px;padding:11px 14px}
 .csv-msg{text-align:center;margin:8px 0}
 /* Daten-Seite: jedes Objekt (Kategorie, Kredit, Rente, Budget-Gruppe, Lebensplanung, Asset) als eigene Fläche */
-:is(#page-import,#ltAssume) .input-collapsible-body .input-grid{background:var(--fill);border-radius:12px;padding:2px 12px;margin:0}
-:is(#page-import,#ltAssume) .input-collapsible-body .input-grid+.input-grid{margin-top:8px}
-:is(#page-import,#ltAssume) .cat-label{padding:18px 2px 7px}
-:is(#page-import,#ltAssume) .lt-block-label{margin:18px 2px 7px}
-:is(#page-import,#ltAssume) .lt-result{margin:8px 2px 0}
-:is(#page-import,#ltAssume) .loan-summary{padding:8px 0 10px;box-shadow:inset 0 .5px 0 var(--sep)}
-:is(#page-import,#ltAssume) .plan-row{padding:2px 12px 2px}
-:is(#page-import,#ltAssume) .plan-row+.plan-row{margin-top:8px}
-:is(#page-import,#ltAssume) .plan-rows .plan-row:first-child,:is(#page-import,#ltAssume) #dpPensions .plan-row:first-child{margin-top:0}
-:is(#page-import,#ltAssume) .v2-ap-list{margin:0;box-shadow:none;display:flex;flex-direction:column;gap:8px}
-:is(#page-import,#ltAssume) .v2-ap{background:var(--fill);border-radius:12px;overflow:hidden}
-:is(#page-import,#ltAssume) .v2-ap+.v2-ap{box-shadow:none}
-:is(#page-import,#ltAssume) .v2-ap-head{padding:11px 12px}
-:is(#page-import,#ltAssume) .v2-ap-body{background:transparent;padding:0 12px 6px;box-shadow:inset 0 .5px 0 var(--sep)}
-:is(#page-import,#ltAssume) .v2-preview{margin-top:0}
-:is(#page-import,#ltAssume) .plan-row .pc-from,:is(#page-import,#ltAssume) .plan-row .pc-to{grid-template-columns:auto minmax(0,1fr)}
-:is(#page-import,#ltAssume) .plan-row select.num-input{text-align:right;text-align-last:right}
+#page-import .input-collapsible-body .input-grid{background:var(--fill);border-radius:12px;padding:2px 12px;margin:0}
+#page-import .input-collapsible-body .input-grid+.input-grid{margin-top:8px}
+#page-import .cat-label{padding:18px 2px 7px}
+#page-import .lt-block-label{margin:18px 2px 7px}
+#page-import .lt-result{margin:8px 2px 0}
+#page-import .loan-summary{padding:8px 0 10px;box-shadow:inset 0 .5px 0 var(--sep)}
+#page-import .plan-row{padding:2px 12px 2px}
+#page-import .plan-row+.plan-row{margin-top:8px}
+#page-import .plan-rows .plan-row:first-child,#page-import #dpPensions .plan-row:first-child{margin-top:0}
+#page-import .v2-ap-list{margin:0;box-shadow:none;display:flex;flex-direction:column;gap:8px}
+#page-import .v2-ap{background:var(--fill);border-radius:12px;overflow:hidden}
+#page-import .v2-ap+.v2-ap{box-shadow:none}
+#page-import .v2-ap-head{padding:11px 12px}
+#page-import .v2-ap-body{background:transparent;padding:0 12px 6px;box-shadow:inset 0 .5px 0 var(--sep)}
+#page-import .v2-preview{margin-top:0}
+#page-import .plan-row .pc-from,#page-import .plan-row .pc-to{grid-template-columns:auto minmax(0,1fr)}
+#page-import .plan-row select.num-input{text-align:right;text-align-last:right}
 .v2-empty-state{background:var(--card);border-radius:16px;padding:18px 16px;margin-top:12px;text-align:center}
 .v2-empty-state .v2-t2{margin:4px 0 0;line-height:1.45}
 .ob-title{font-weight:400;font-size:28px}
 .ob-actions .btn{min-height:50px}
 
 /* Daten-Seite: Abschnitte mit Icons, Schalter gesammelt unter „Bereiche“ */
-:is(#page-import,#ltAssume) details.v2-off .ds-sec-ico{opacity:.45}
-:is(#page-import,#ltAssume) details.input-collapsible{margin-bottom:8px}
-:is(#page-import,#ltAssume) .input-collapsible-summary{min-height:60px;padding:10px 14px 10px 12px}
+#page-import details.v2-off .ds-sec-ico{opacity:.45}
+#page-import details.input-collapsible{margin-bottom:8px}
+#page-import .input-collapsible-summary{min-height:60px;padding:10px 14px 10px 12px}
 .ds-sec-ico{width:34px;height:34px;border-radius:10px}
 .ds-sec-ico svg{width:19px;height:19px}
-:is(#page-import,#ltAssume) .sec-h{margin:24px 4px 8px}
-:is(#page-import,#ltAssume) .ds-month+.sec-h{margin-top:22px}
+#page-import .sec-h{margin:24px 4px 8px}
+#page-import .ds-month+.sec-h{margin-top:22px}
 .ds-row-danger .v2-t1,.ds-row-danger .ds-sec-ico{color:var(--red)}
-:is(#page-import,#ltAssume) .v2-list .v2-row{gap:12px;padding-left:12px;min-height:60px}
-:is(#page-import,#ltAssume) .v2-row-action .v2-t1{font-weight:400}
-:is(#page-import,#ltAssume) .v2-list .v2-t2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-:is(#page-import,#ltAssume) .v2-list .v2-row+.v2-row{box-shadow:none}
-:is(#page-import,#ltAssume) .v2-list .v2-row+.v2-row::before{content:'';position:absolute;top:0;left:58px;right:0;height:.5px;background:var(--sep)}
+#page-import .v2-list .v2-row{gap:12px;padding-left:12px;min-height:60px}
+#page-import .v2-row-action .v2-t1{font-weight:400}
+#page-import .v2-list .v2-t2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#page-import .v2-list .v2-row+.v2-row{box-shadow:none}
+#page-import .v2-list .v2-row+.v2-row::before{content:'';position:absolute;top:0;left:58px;right:0;height:.5px;background:var(--sep)}
 
 
 /* Daten-Seite: Positionen als Liste, Bearbeiten je Position im Sheet */
-body:not(.v2-editing) :is(#page-import,#ltAssume) .v2-form-head{display:none}
+body:not(.v2-editing) #page-import .v2-form-head{display:none}
 .ds-month{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;padding:14px 12px 14px 16px;margin:10px 0}
 .ds-month-l{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start}
 .ds-month-t{border:none;background:none;padding:0;font:inherit;font-size:17px;font-weight:500;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:7px}
@@ -1469,11 +1469,15 @@ body.dark .ds-seg button.on{background:var(--bg3)}
 .ds-fold>summary{list-style:none;cursor:pointer;-webkit-tap-highlight-color:transparent;justify-content:flex-start;align-items:center;padding:14px 2px}
 .ds-fold>summary::-webkit-details-marker{display:none}
 .ds-fold>summary>span:first-child{font-size:15px;color:var(--ink)}
-.ds-fold>summary>span:last-child{margin-left:auto}
+.ds-fold>summary>span:last-child{margin-left:auto;white-space:nowrap;flex-shrink:0}
+.ds-fold>summary>span:first-child{min-width:0}
 .ds-fold>summary::after{content:'';flex:0 0 auto;width:7px;height:7px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:rotate(45deg);margin:-4px 2px 0 4px;opacity:.7;transition:transform .2s}
 .ds-fold[open]>summary::after{transform:rotate(-135deg);margin-top:4px}
 .ds-fold-b{padding-bottom:12px}
 .ds-fold-b>.ds-list:first-child{margin-top:0}
+.as-i{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin-left:2px;cursor:pointer}
+.as-i::before{content:'i';display:inline-flex;align-items:center;justify-content:center;width:11px;height:11px;border:1px solid var(--muted);border-radius:50%;font-size:8px;line-height:1;font-weight:500;color:var(--muted);opacity:.8}
+#page-import .as-fold .ds-fold-b>.lt-panel:first-child,#page-import .as-fold .ds-fold-b>.lp-edit:first-child{margin-top:0}
 .ds-list-sum span:last-child{font-variant-numeric:tabular-nums}
 #b-customFields[hidden]{display:none}
 .budget-hint{background:var(--card);border-radius:16px;padding:20px 18px;margin:8px 0;text-align:center}
@@ -1609,44 +1613,95 @@ body.dark{--lp1:#7aaa82;--lp2:#a9c3ad;--lp3:#c07058;--lp4:#8d887c}
 .ps-brand img{width:22px;height:22px;border-radius:6px}
 .ps-close{width:40px;height:40px;border:none;background:none;color:#f6f2ec;font-size:28px;line-height:1;cursor:pointer;opacity:.9}
 .ps-slides{position:absolute;inset:0}
-.ps-s{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:96px 28px calc(64px + env(safe-area-inset-bottom));
-  background:radial-gradient(120% 80% at 20% 10%,var(--c2),var(--c1) 70%);opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
+.ps-s{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:96px 28px calc(64px + env(safe-area-inset-bottom));isolation:isolate;overflow:hidden;
+  background:radial-gradient(120% 80% at 20% 10%,var(--c2),var(--c1) 70%);opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s;text-shadow:0 1px 14px rgba(0,0,0,.14)}
+/* 16.10.2026: bunter – zwei weiche Lichtflecken je Story, ein Bild (Emoji) und eine Witz-Zeile */
+.ps-s::before,.ps-s::after{content:'';position:absolute;z-index:-1;aspect-ratio:1;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.26),rgba(255,255,255,0) 66%)}
+.ps-s::before{width:80%;top:-14%;right:-26%}
+.ps-s::after{width:62%;bottom:-12%;left:-22%;opacity:.65}
+.ps-s.on::before{animation:psBlob 9s ease-in-out infinite alternate}
+.ps-s.on::after{animation:psBlob 11s ease-in-out infinite alternate-reverse}
+@keyframes psBlob{to{transform:translate(-9%,11%) scale(1.18)}}
+.ps-emo{align-self:flex-start;font-size:58px;line-height:1;margin:0 0 16px;text-shadow:none;filter:drop-shadow(0 10px 16px rgba(0,0,0,.22))}
+.ps-s.on .ps-emo{animation:psPop .6s cubic-bezier(.2,1.6,.4,1) both,psFloat 3.4s ease-in-out .6s infinite}
+@keyframes psPop{from{opacity:0;transform:scale(.3) rotate(-14deg)}}
+@keyframes psFloat{50%{transform:translateY(-8px) rotate(4deg)}}
+.ps-inl{display:inline-block;text-shadow:none}
+.ps-joke{align-self:flex-start;margin:16px 0 0;padding:9px 13px;border-radius:14px 14px 14px 4px;background:rgba(255,255,255,.17);font-size:14.5px;line-height:1.42;max-width:30em;text-shadow:none}
 .ps-s.on{opacity:1;visibility:visible}
 .ps-k{font-size:14px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;opacity:.8;margin:0}
 .ps-big{font-size:clamp(40px,12vw,60px);font-weight:300;line-height:1.08;letter-spacing:-.02em;margin:12px 0 0;font-variant-numeric:tabular-nums}
 .ps-t{font-size:18px;line-height:1.45;margin:18px 0 0;opacity:.92;max-width:30em}
 .ps-viz{margin-top:28px}
-.ps-s.on .ps-k,.ps-s.on .ps-big,.ps-s.on .ps-t,.ps-s.on .ps-viz{animation:psIn .6s cubic-bezier(.2,.7,.2,1) both}
-.ps-s.on .ps-big{animation-delay:.08s}.ps-s.on .ps-t{animation-delay:.18s}.ps-s.on .ps-viz{animation-delay:.3s}
+.ps-s.on .ps-k,.ps-s.on .ps-big,.ps-s.on .ps-t,.ps-s.on .ps-joke,.ps-s.on .ps-viz{animation:psIn .6s cubic-bezier(.2,.7,.2,1) both}
+.ps-s.on .ps-big{animation-delay:.08s}.ps-s.on .ps-t{animation-delay:.18s}.ps-s.on .ps-joke{animation-delay:.6s}.ps-s.on .ps-viz{animation-delay:.3s}
 @keyframes psIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .ps-hint{position:absolute;z-index:3;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));text-align:center;font-size:12px;opacity:.55;margin:0}
 .ps-logo{width:120px;height:auto;filter:drop-shadow(0 14px 22px rgba(0,0,0,.35))}
+.ps-hero{position:relative;display:inline-block;padding:10px 70px 10px 0}
+.ps-stk i{position:absolute;font-style:normal;font-size:30px;text-shadow:none}
+.ps-stk i:nth-child(1){left:118px;top:-6px}.ps-stk i:nth-child(2){left:150px;top:44px}.ps-stk i:nth-child(3){left:96px;top:96px}.ps-stk i:nth-child(4){left:-14px;top:84px}
+.ps-s.on .ps-stk i{animation:psPop .5s cubic-bezier(.2,1.6,.4,1) both,psFloat 3s ease-in-out infinite}
+.ps-s.on .ps-stk i:nth-child(1){animation-delay:.5s,1s}.ps-s.on .ps-stk i:nth-child(2){animation-delay:.65s,1.5s}.ps-s.on .ps-stk i:nth-child(3){animation-delay:.8s,.7s}.ps-s.on .ps-stk i:nth-child(4){animation-delay:.95s,1.2s}
 .ps-bars{display:flex;flex-direction:column;gap:12px}
 .ps-bar{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:15px}
-.ps-bar i{grid-column:1/-1;height:10px;border-radius:5px;background:rgba(246,242,236,.85);order:3}
+.ps-bar i{grid-column:1/-1;height:12px;border-radius:6px;background:rgba(246,242,236,.85);order:3;transform-origin:left}
+.ps-bar em{font-style:normal;margin-right:8px;text-shadow:none}
+.ps-c0 i{background:#ffe066}.ps-c1 i{background:#ff9ec4}.ps-c2 i{background:#a8dcff}
+.ps-s.on .ps-bar i{animation:psGrow .9s cubic-bezier(.2,.7,.2,1) both}.ps-s.on .ps-c0 i{animation-delay:.35s}.ps-s.on .ps-c1 i{animation-delay:.5s}.ps-s.on .ps-c2 i{animation-delay:.65s}
+@keyframes psGrow{from{transform:scaleX(0)}}
 .ps-bar b{font-weight:400;font-variant-numeric:tabular-nums}
 .ps-ring{width:130px;height:130px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#f6f2ec calc(var(--p)*1%),rgba(255,255,255,.18) 0)}
 .ps-ring b{width:100px;height:100px;border-radius:50%;display:grid;place-items:center;background:var(--c1);font-weight:400;font-size:24px}
 .ps-time .lp-bar{height:14px;gap:4px}
-.ps-time .lp-bar i{opacity:.35}
+.ps-time .lp-bar i{opacity:1;background:rgba(255,255,255,.26)!important}
 .ps-time .lp-ticks{color:rgba(246,242,236,.75);font-size:13px}
-.ps-hl-1 i:nth-child(1),.ps-hl-2 i:nth-child(2),.ps-hl-3 i:nth-child(3),.ps-hl-4 i:nth-child(4){opacity:1!important;box-shadow:0 0 0 2px rgba(246,242,236,.9)}
+.ps-hl-1 i:nth-child(1),.ps-hl-2 i:nth-child(2),.ps-hl-3 i:nth-child(3),.ps-hl-4 i:nth-child(4){opacity:1!important;background:#fff!important;box-shadow:0 0 0 3px rgba(255,255,255,.35)}
 .ps-split{display:flex;height:18px;border-radius:9px;overflow:hidden;gap:3px}
 .ps-split i{background:#f6f2ec}.ps-split b{background:rgba(246,242,236,.32)}
 .ps-legend{display:flex;gap:18px;margin-top:10px;font-size:14px;opacity:.9}
 .ps-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .ps-legend i.a{background:#f6f2ec}.ps-legend i.b{background:rgba(246,242,236,.32)}
-.ps-dots{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;max-width:260px}
+.ps-legend i.y{background:#8dffb8}.ps-legend i.n{background:rgba(246,242,236,.24)}
+.ps-dots{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;max-width:200px}
 .ps-dots i{aspect-ratio:1;border-radius:50%;background:rgba(246,242,236,.2)}
-.ps-dots i.y{background:#f6f2ec}
+.ps-dots i.y{background:#8dffb8;box-shadow:0 0 8px rgba(141,255,184,.45)}
+.ps-dots+.ps-legend{margin-top:14px}
 .ps-s.on .ps-dots i{animation:psDot .35s ease both;animation-delay:calc(.3s + var(--i)*12ms)}
 @keyframes psDot{from{transform:scale(0)}to{transform:none}}
 .ps-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px}
-.ps-list li{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline;font-size:17px;padding-bottom:10px;border-bottom:1px solid rgba(246,242,236,.18)}
+.ps-list li{display:grid;grid-template-columns:auto auto 1fr auto;gap:12px;align-items:baseline;font-size:17px;padding-bottom:10px;border-bottom:1px solid rgba(246,242,236,.18)}
+.ps-emo-s{font-size:20px;text-shadow:none}
+.ps-s.on .ps-list li{animation:psIn .5s cubic-bezier(.2,.7,.2,1) both}.ps-s.on .ps-list li:nth-child(2){animation-delay:.45s}.ps-s.on .ps-list li:nth-child(3){animation-delay:.6s}.ps-s.on .ps-list li:nth-child(4){animation-delay:.75s}.ps-s.on .ps-list li:nth-child(5){animation-delay:.9s}
+/* Zinseszins: vier Schneebälle von heute bis zum Arbeitsende */
+.ps-snow{display:flex;align-items:flex-end;gap:14px}
+.ps-snow div{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:56px}
+.ps-snow i{display:block;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#dff4ff 55%,#b8def5);box-shadow:0 8px 18px rgba(0,0,0,.18)}
+.ps-snow b{font-weight:500;font-size:14px;font-variant-numeric:tabular-nums}
+.ps-snow small{font-size:12.5px;opacity:.8}
+.ps-s.on .ps-snow div{animation:psPop .55s cubic-bezier(.2,1.6,.4,1) both;animation-delay:calc(.35s + var(--i)*.2s)}
+/* Einschätzung: Tacho mit Ziel-Marke, Punkte, Hinweis */
+.ps-gauge{display:block;width:170px;height:auto;overflow:visible}
+.ps-gauge path{fill:none;stroke-width:14;stroke-linecap:round}
+.ps-gauge .bg{stroke:rgba(255,255,255,.22)}
+.ps-gauge .fg{stroke:#fff}
+.ps-s.on .ps-gauge .fg{animation:psArc 1.2s cubic-bezier(.2,.7,.2,1) .3s both}
+@keyframes psArc{from{stroke-dasharray:0 100}}
+.ps-gauge line{stroke:#ffe066;stroke-width:3.5;stroke-linecap:round}
+.ps-gauge text{fill:#fff;font-size:30px;font-weight:300;text-anchor:middle;font-variant-numeric:tabular-nums}
+.ps-gl{margin:2px 0 0;font-size:12.5px;opacity:.85}
+.ps-gl::before{content:'';display:inline-block;width:10px;height:3px;border-radius:2px;background:#ffe066;margin-right:6px;vertical-align:3px}
+.ps-tips{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-direction:column;gap:8px}
+.ps-tips li{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.38;padding:8px 11px;border-radius:12px;background:rgba(255,255,255,.14)}
+.ps-tips i{flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:13px;font-weight:600;text-shadow:none;background:#fff;color:var(--c1)}
+.ps-tips li.todo i{background:#ffe066;color:#3a2a00}
+.ps-s.on .ps-tips li{animation:psIn .5s cubic-bezier(.2,.7,.2,1) both}.ps-s.on .ps-tips li:nth-child(1){animation-delay:.7s}.ps-s.on .ps-tips li:nth-child(2){animation-delay:.9s}.ps-s.on .ps-tips li:nth-child(3){animation-delay:1.1s}
+.ps-fine{margin:12px 0 0;font-size:12px;opacity:.75}
+@media (max-height:720px){.ps-s{padding-top:84px}.ps-emo{font-size:46px;margin-bottom:10px}.ps-big{font-size:clamp(34px,10vw,48px)}.ps-t{font-size:16px;margin-top:12px}.ps-joke{font-size:13.5px;margin-top:12px}.ps-viz{margin-top:20px}.ps-gauge{width:140px}.ps-tips li{font-size:14px;padding:6px 10px}.ps-dots{max-width:160px;gap:4px}.ps-snow{transform:scale(.85);transform-origin:left bottom}}
 .ps-list b{font-weight:500;font-variant-numeric:tabular-nums}
 .ps-list em{font-style:normal;opacity:.85;font-variant-numeric:tabular-nums}
 .ps-again{border:none;border-radius:999px;padding:12px 20px;font:inherit;font-size:15px;font-weight:500;background:#f6f2ec;color:#121211;cursor:pointer}
-@media (prefers-reduced-motion:reduce){.ps-s.on .ps-k,.ps-s.on .ps-big,.ps-s.on .ps-t,.ps-s.on .ps-viz,.ps-s.on .ps-dots i{animation:none}}
+@media (prefers-reduced-motion:reduce){.ps-s.on .ps-k,.ps-s.on .ps-big,.ps-s.on .ps-t,.ps-s.on .ps-joke,.ps-s.on .ps-viz,.ps-s.on .ps-dots i,.ps-s.on .ps-emo,.ps-s.on .ps-stk i,.ps-s.on .ps-bar i,.ps-s.on .ps-list li,.ps-s.on .ps-snow div,.ps-s.on .ps-gauge .fg,.ps-s.on .ps-tips li,.ps-s.on::before,.ps-s.on::after{animation:none}}
 
 /* Prognose */
 #page-lifetime>.app-content{display:block}
@@ -1721,10 +1776,10 @@ button.v2-inc-row:active{opacity:.7}
   .v2-ret-in>.v2-ret-main{grid-column:1;grid-row:2}
   .v2-ret-in>.v2-lt-link.v2-tl-row{grid-column:2;grid-row:2;justify-self:end;width:auto;margin-top:12px;padding:0;box-shadow:none}
 }
-/* Zeitverlauf-Ansicht: ersetzt Ergebnis, Phasen und Annahmen unter dem Chart bzw. in der rechten Spalte */
+/* Zeitverlauf-Ansicht: ersetzt Ergebnis, Phasen und Kennzahlen unter dem Chart bzw. in der rechten Spalte */
 .lt-tl{display:none;margin-top:18px}
 #page-lifetime.lt-tl-on .lt-tl{display:block}
-#page-lifetime.lt-tl-on .desk-rail>:not(.lt-tl),#page-lifetime.lt-tl-on .lt-assume{display:none!important}
+#page-lifetime.lt-tl-on .desk-rail>:not(.lt-tl){display:none!important}
 .lt-tl .v2-lp-head{margin:0 2px 10px}
 .lt-tl-age{display:block;font-size:13px;font-weight:400;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:1px}
 .lt-tl-exit{display:inline-flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap}
@@ -2133,8 +2188,7 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
   #page-home .structure-section-mobile{display:none}
 
   /* Prognose: Ergebnis, Annahmen und Kennzahlen rechts neben dem Chart */
-  #page-lifetime .app-content{grid-template-areas:"hero rail" "chart rail" "range rail" "assume assume"}
-  #page-lifetime .lt-assume{grid-area:assume;margin-top:28px;max-width:860px}
+  #page-lifetime .app-content{grid-template-areas:"hero rail" "chart rail" "range rail"}
   #page-lifetime .hero{grid-area:hero}
   #page-lifetime .chart-section{grid-area:chart}
   #page-lifetime .range-bar{grid-area:range}
@@ -2154,8 +2208,8 @@ body.dark .ob-welcome-waves .wd{fill:#f2efe9;fill-opacity:.85}
   .sankey-node-card{height:108px}
 
   /* Daten: eine ruhige Spalte */
-  :is(#page-import,#ltAssume) .app-content{max-width:780px}
-  :is(#page-import,#ltAssume) .input-grid{grid-template-columns:repeat(4,1fr);gap:10px 16px}
+  #page-import .app-content{max-width:780px}
+  #page-import .input-grid{grid-template-columns:repeat(4,1fr);gap:10px 16px}
 
   @media (hover:hover) and (pointer:fine){
     .sidebar-item:hover{color:var(--ink);background:color-mix(in srgb,var(--ink) 5%,transparent)}
@@ -2197,7 +2251,6 @@ button.v2-inc-g{width:100%;border:0;background:none;font:inherit;text-align:left
 .v2-lt-link .ps-open-i svg{width:13px;height:13px}
 .v2-lt-link .v2-lt-ico{background:var(--fill)}
 .v2-lt-link .v2-lt-ico svg{width:17px;height:17px;fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;margin:0}
-.lt-assume{margin-top:12px}
 /* ── Kompakte Daten-Seite (14.10.2026) ── */
 .ns-short .ns-main{padding:10px 0 10px 16px}
 #page-import .hh-time .lp-bar,#page-import .hh-time .lp-ticks{display:none}
@@ -2423,9 +2476,32 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
 <input type="file" accept=".json,.csv,application/json,text/csv" id="csvInput" style="display:none">
 <div class="csv-msg" id="csvMsg"></div>
 
-<!-- Prognose & Annahmen stehen seit 14.10.2026 auf der Prognose-Seite; hier nur der Sprung dorthin -->
-<details class="input-collapsible ds-jump" data-mod="forecast" id="dsForecastJump">
-  <summary class="input-collapsible-summary" onclick="event.preventDefault();_v2OpenForecastSettings()"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="v2-sum-t"><span class="section-title">Prognose &amp; Annahmen</span><span class="v2-sum-sub" data-sub="forecast"></span></span></summary>
+<!-- Annahmen der Prognose: werden sofort gespeichert. 14.–16.10.2026 auf der Prognose-Seite, seit 16.10.2026 wieder hier; die Prognose-Seite verlinkt mit „Annahmen bearbeiten“ -->
+<details class="input-collapsible v2-live" data-mod="forecast" id="v2-forecast-sec">
+  <summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="v2-sum-t"><span class="section-title">Prognose &amp; Annahmen</span><span class="v2-sum-sub" data-sub="forecast"></span></span></summary>
+  <div class="input-collapsible-body">
+    <div class="v2-preview"><b id="v2-prev-pct">—</b><span><span id="v2-prev-txt">Erfolgschance</span><br>Änderungen werden sofort übernommen</span></div>
+    <!-- Unterbereiche auf- und zuklappbar (16.10.2026), Zustand im Dokument (ui-open-ass-<key>) -->
+    <details class="ds-fold as-fold" data-afold="plan" ontoggle="_asFoldToggle(this)"><summary class="ds-list-t ds-list-sum ds-fold-h"><span>Lebensplanung</span><span id="as-meta-plan"></span></summary><div class="ds-fold-b">
+    <div class="lt-panel">
+    <div class="input-grid">
+      <div class="input-group"><label data-info="lt-life-expect">Lebenserwartung</label><input class="num-input lt-set" type="number" id="lt-life-expect" min="50" max="120" placeholder="85"></div>
+      <div class="input-group"><label data-info="lt-plan-horizon">Planen bis Alter</label><input class="num-input lt-set" type="number" id="lt-plan-horizon" min="60" max="120" placeholder="95"></div>
+      <div class="input-group"><label data-info="lt-inflation">Inflation %</label><input class="num-input lt-set" type="text" inputmode="decimal" id="lt-inflation" placeholder="2"></div>
+      <div class="input-group"><label data-info="lt-safety">Sicherheit %</label><input class="num-input lt-set" type="number" id="lt-safety" min="50" max="99" placeholder="85"></div>
+    </div>
+    </div>
+    </div></details>
+    <details class="ds-fold as-fold" data-afold="phases" ontoggle="_asFoldToggle(this)"><summary class="ds-list-t ds-list-sum ds-fold-h"><span>Lebensphasen</span><span class="as-i" data-info="lt-phases" role="button" tabindex="0" aria-label="Erklärung" onclick="event.preventDefault()"></span><span id="as-meta-phases"></span></summary><div class="ds-fold-b">
+    <button type="button" class="lp-edit" id="ltPhasesEdit" onclick="openPhasesSheet()"></button>
+    </div></details>
+    <details class="ds-fold as-fold" data-afold="events" ontoggle="_asFoldToggle(this)"><summary class="ds-list-t ds-list-sum ds-fold-h"><span>Einmalige Ereignisse</span><span id="as-meta-events"></span></summary><div class="ds-fold-b">
+    <div class="lt-panel" id="lt-events"></div>
+    </div></details>
+    <details class="ds-fold as-fold" data-afold="assets" ontoggle="_asFoldToggle(this)"><summary class="ds-list-t ds-list-sum ds-fold-h"><span>Rendite &amp; Sparrate je Asset</span><span id="as-meta-assets"></span></summary><div class="ds-fold-b">
+    <div id="lt-asset-params-table"></div>
+    </div></details>
+  </div>
 </details>
 
 
@@ -2689,30 +2765,6 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
 </div>
 </div>
 
-<section class="lt-assume" id="ltAssume">
-<!-- Annahmen der Prognose (seit 14.10.2026 hier statt auf der Daten-Seite): werden sofort gespeichert -->
-<details class="input-collapsible v2-live" id="v2-forecast-sec">
-  <summary class="input-collapsible-summary"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="v2-sum-t"><span class="section-title">Annahmen</span><span class="v2-sum-sub">Lebensplanung, Ereignisse, Rendite je Anlage</span></span></summary>
-  <div class="input-collapsible-body">
-    <div class="v2-preview"><b id="v2-prev-pct">—</b><span><span id="v2-prev-txt">Erfolgschance</span><br>Änderungen werden sofort übernommen</span></div>
-    <span class="cat-label">Lebensplanung</span>
-    <div class="lt-panel">
-    <div class="input-grid">
-      <div class="input-group"><label data-info="lt-life-expect">Lebenserwartung</label><input class="num-input lt-set" type="number" id="lt-life-expect" min="50" max="120" placeholder="85"></div>
-      <div class="input-group"><label data-info="lt-plan-horizon">Planen bis Alter</label><input class="num-input lt-set" type="number" id="lt-plan-horizon" min="60" max="120" placeholder="95"></div>
-      <div class="input-group"><label data-info="lt-inflation">Inflation %</label><input class="num-input lt-set" type="text" inputmode="decimal" id="lt-inflation" placeholder="2"></div>
-      <div class="input-group"><label data-info="lt-safety">Sicherheit %</label><input class="num-input lt-set" type="number" id="lt-safety" min="50" max="99" placeholder="85"></div>
-    </div>
-    </div>
-    <span class="cat-label" data-info="lt-phases">Lebensphasen</span>
-    <button type="button" class="lp-edit" id="ltPhasesEdit" onclick="openPhasesSheet()"></button>
-    <span class="cat-label">Einmalige Ereignisse</span>
-    <div class="lt-panel" id="lt-events"></div>
-    <span class="cat-label">Rendite &amp; Sparrate je Asset</span>
-    <div id="lt-asset-params-table"></div>
-  </div>
-</details>
-</section>
 
 </div><!-- /app-content -->
 </div><!-- /page-lifetime -->
@@ -2796,7 +2848,7 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="i18n-en.js?v=21"></script>
+<script src="i18n-en.js?v=22"></script>
 <script src="data-store.js?v=33"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
@@ -3070,7 +3122,7 @@ const INFO={
   'drvx-name':['Name','<p>Name der Person, z. B. deiner Partnerin oder deines Partners. Unter diesem Namen ordnest du ihr Gehalt im Budget und ihre Renten zu.</p>'],
   'avd-name':['Altersvorsorgedepot','<p>Das geförderte Depot ab 2027 (Nachfolger der Riester-Rente). Angelegt wird z. B. in ETFs, ohne Beitragsgarantie.</p><p>Der Staat legt auf deine Beiträge Zulagen obendrauf: 50 % auf die ersten 360 € im Jahr, 25 % auf weitere Beiträge bis 1.800 € – höchstens 540 €. Dazu kommen bis zu 300 € je Kind.</p><p>Jede Person braucht ein eigenes Depot. Du kannst mehrere anlegen, z. B. für dich und deine Partnerin oder deinen Partner.</p>'],
   'avd-person':['Für','<p>Wem das Depot gehört. Bestimmt das Alter für Auszahlung und Berufseinsteigerbonus. Weitere Personen legst du oben unter „Weitere Personen“ an.</p>'],
-  'avd-contrib':['Beitrag pro Monat','<p>Dein eigener Beitrag ohne Zulagen. Gezahlt wird ab dem Beginn bis zum Ende der Arbeit (in den Lebensphasen mit dem Anteil für Altersvorsorge) bzw. bis „Arbeiten bis Alter“ einer weiteren Person.</p><p>Volle Grundzulage ab 150 € im Monat (1.800 € im Jahr). Mehr darfst du einzahlen, dafür gibt es aber keine Zulage.</p><p>Kommt der Beitrag aus deiner bisherigen Sparrate, senke diese unter Prognose → Annahmen, sonst zählt er doppelt.</p>'],
+  'avd-contrib':['Beitrag pro Monat','<p>Dein eigener Beitrag ohne Zulagen. Gezahlt wird ab dem Beginn bis zum Ende der Arbeit (in den Lebensphasen mit dem Anteil für Altersvorsorge) bzw. bis „Arbeiten bis Alter“ einer weiteren Person.</p><p>Volle Grundzulage ab 150 € im Monat (1.800 € im Jahr). Mehr darfst du einzahlen, dafür gibt es aber keine Zulage.</p><p>Kommt der Beitrag aus deiner bisherigen Sparrate, senke diese unter Daten → Prognose &amp; Annahmen, sonst zählt er doppelt.</p>'],
   'avd-balance':['Guthaben heute','<p>Aktueller Depotwert, z. B. nach einem Wechsel aus einem Riester-Vertrag oder ab 2027 der Stand laut Depotauszug. Leer = Start bei 0 €.</p>'],
   'avd-start':['Beginn','<p>Ab welchem Jahr du einzahlst. Leer = 2027, früher geht es nicht.</p>'],
   'avd-ret':['Rendite','<p>Erwartete Rendite pro Jahr nach Kosten. Leer = 5 % (breiter Aktien-ETF abzüglich Depotkosten).</p>'],
@@ -8590,7 +8642,7 @@ function _offerQuoteHistory(id,before){
 function openAddAssetSheet(){
   const ym=selectedMonth;
   const body=_assetSheetHTML('newAsset',{category:'cash',label:''},{valueTitle:_monthTitle(ym),valueId:'newAsset-value',qtyId:'newAsset-quantity',value:'',qty:'',valueHint:''})
-    +`<p class="ds-help">Mit „Im Besitz seit“ wird der Wert ab diesem Monat in den Verlauf übernommen, damit der Chart die Entwicklung zeigt. Einzelne Monate kannst du später über „Aktualisieren“ anpassen. Neue Werte bekommen keine Sparrate; die kannst du unter Prognose → Annahmen ergänzen.</p>`;
+    +`<p class="ds-help">Mit „Im Besitz seit“ wird der Wert ab diesem Monat in den Verlauf übernommen, damit der Chart die Entwicklung zeigt. Einzelne Monate kannst du später über „Aktualisieren“ anpassen. Neue Werte bekommen keine Sparrate; die kannst du unter Daten → Prognose &amp; Annahmen ergänzen.</p>`;
   if(!_openSheet('Vermögenswert',body,_saveNewAsset,'Anlegen',openAddAssetSheet))return;
   _assetMetadataChanged('newAsset','valuation');_assetSheetRows('newAsset');
 }
@@ -11443,7 +11495,7 @@ function updateLifetimeInputs(){
   renderDrvEditor();
   renderPensionEditor();
   renderEventEditor();
-  _renderPhaseSummary();
+  _renderPhaseSummary();_asFoldMeta();
 }
 function initLifetimePage(){
   migrateLoanParams();
@@ -12253,6 +12305,7 @@ function renderPensionEditor(){
   _planListEditor('lt-pensions','lt-pensions',getLifetimeSettings().pensions,PENSION_COLS,'Rente / Einkommen',()=>({id:_newRowId('income-'),name:'',amount:0,from:65}),'Weitere Renten & Einkünfte',undefined,()=>getLifetimeSettings().pensions);
 }
 function renderEventEditor(){
+  setTimeout(_asFoldMeta,0);
   _planListEditor('lt-events','lt-events',getLifetimeSettings().events.map(_normEvent),EVENT_COLS,'Ereignis',()=>({id:_newRowId('event-'),name:'',year:new Date().getFullYear()+5,amount:'',from:'*',to:''}),null,'ev',()=>getLifetimeSettings().events.map(_normEvent));
 }
 
@@ -12299,7 +12352,8 @@ function buildAssetParamsTable(force){
   /* Während einer Eingabe nicht neu aufbauen (Fokus und Eingabe gingen verloren) */
   if(!force&&wrap.contains(document.activeElement)&&document.activeElement.tagName==='INPUT')return;
   const plan=buildPlan();
-  if(!plan||!plan.groups.length){wrap.innerHTML='<div class="v2-empty">Keine Daten vorhanden</div>';return;}
+  const meta=document.getElementById('as-meta-assets');
+  if(!plan||!plan.groups.length){wrap.innerHTML='<div class="v2-empty">Keine Daten vorhanden</div>';if(meta)meta.textContent='';return;}
   const ap=plan.s.assetParams;
   const esc=v=>String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   const pc=v=>_numStr(v)||'0';
@@ -12337,6 +12391,7 @@ function buildAssetParamsTable(force){
   html+='</div>';
   const bud=deriveSavingsFromBudget(plan);
   const totalSaving=plan.groups.reduce((a,g)=>a+(g.hasLoanModel?0:g.saving),0);
+  if(meta)meta.textContent=plan.groups.length+' · '+fmt(totalSaving)+L(' / Monat',' / month');
   html+=`<div class="v2-ap-foot">Sparraten gesamt ${fmt(totalSaving)}${bud&&bud.total>0?' · Budget '+fmt(bud.comparable):''}</div>`;
   if(bud&&bud.total>0)html+=`<button class="btn btn-ghost v2-wide" id="apFromBudget">Sparraten aus Budget übernehmen</button>`;
   wrap.innerHTML=html;
@@ -12738,7 +12793,7 @@ function openSuccessExplain(){
   const rows=groups.map(g=>`<tr><td>${escHTML(g.key)}</td>${g.depShare>=0.999?`<td colspan="2">${L('laut Abschreibung','per depreciation')}</td>`:`<td>${pc(g.ret)}</td><td>${pc(g.vol)}</td>`}<td>${g.saving>0?fmt(Math.round(g.saving)):'–'}</td><td>${g.avail>=120?L('nicht (gebunden)','no (tied up)'):g.avail>0?L('ab ','from ')+_ageTxt(g.avail):L('sofort','now')}</td></tr>`).join('');
   const need3=fmt(Math.round(s.monthlyWithdraw)),need4=fmt(Math.round(s.pensionSpending));
   const h=L(
-`<p><strong>${pct} %</strong> heißt: In <strong>${ok} von ${runs}</strong> simulierten Zukünften reicht dein Geld bis zum Alter ${escHTML(_horizonTxt(plan))}${plan.horizonWho?' – so lange, bis auch die jüngste Person das Planalter erreicht hat':''}. „Reicht“ bedeutet: In jedem Monat bis dahin decken Einkommen und entnehmbares Vermögen deinen Bedarf. Dein Ziel liegt bei ${safety} % (Sicherheit, einstellbar unter Prognose → Annahmen)${mc.success>=s.safety/100?' – das ist erreicht.':' – das ist noch nicht erreicht.'}</p>
+`<p><strong>${pct} %</strong> heißt: In <strong>${ok} von ${runs}</strong> simulierten Zukünften reicht dein Geld bis zum Alter ${escHTML(_horizonTxt(plan))}${plan.horizonWho?' – so lange, bis auch die jüngste Person das Planalter erreicht hat':''}. „Reicht“ bedeutet: In jedem Monat bis dahin decken Einkommen und entnehmbares Vermögen deinen Bedarf. Dein Ziel liegt bei ${safety} % (Sicherheit, einstellbar unter Daten → Prognose &amp; Annahmen)${mc.success>=s.safety/100?' – das ist erreicht.':' – das ist noch nicht erreicht.'}</p>
 <p>Gerechnet ist mit ${early?'dem Vorruhestand ab '+_ageTxt(R)+' und der Rente ab '+_ageTxt(s.phase4From):'dem Ruhestand ab '+_ageTxt(R)}, so wie unter Lebensphasen eingestellt.</p>
 <h3>Wie simuliert wird</h3>
 <p>Die Prognose ist eine Monte-Carlo-Simulation: ${runs} Durchläufe, jeder Monat für Monat von heute bis ${plan.horizonAge}. In jedem Durchlauf bekommt jede Anlagegruppe je Lebensjahr eine zufällige Rendite aus ihrer erwarteten Rendite und Schwankung (Tabelle unten). Die Gruppen hängen zu 30 % an einem gemeinsamen Markt (Korrelation 0,3): Ein schlechtes Börsenjahr trifft meist mehrere Anlagen. Die Jahresrendite verteilt sich gleichmäßig auf die zwölf Monate. Die Zufallszahlen sind fest, damit sich zwei Einstellungen fair vergleichen lassen.</p>
@@ -12751,12 +12806,12 @@ function openSuccessExplain(){
 <p>Sobald in einem Monat der Bedarf nicht mehr gedeckt ist, weil das entnehmbare Vermögen aufgebraucht ist. Gebundene Werte wie Immobilien, Fahrzeuge oder Betriebsrenten vor ihrer Freigabe werden nicht verkauft.${fail!=null?` In der Hälfte der Durchläufe gab es spätestens mit ${fail} einen ersten Fehlbetrag.`:''}</p>
 <h3>Annahmen je Anlage</h3>
 <div class="se-wrap"><table class="se-t"><tr><th>Gruppe</th><th>Rendite</th><th>Schwankung</th><th>Sparrate</th><th>Entnehmbar</th></tr>${rows}</table></div>
-<p>Ändern unter Prognose → Annahmen → Rendite &amp; Sparrate je Asset.</p>
+<p>Ändern unter Daten → Prognose &amp; Annahmen → Rendite &amp; Sparrate je Asset.</p>
 <h3>„Sicher möglich ab“</h3>
 <p>${retireAge==null?'Bis '+plan.horizonAge+' gibt es kein Alter mit mindestens '+safety+' % Erfolgschance.':'Das früheste ganze Alter, ab dem mindestens '+safety+' % der Durchläufe reichen: <strong>'+(retireAge<=Math.ceil(plan.currentAge)?'sofort':retireAge)+'</strong>.'} Für jedes geprüfte Alter rechnet die App einen eigenen Plan: Rentenpunkte, Dienstjahre, Depotbeiträge und Phasen passen dann zu diesem Arbeitsende.</p>
 <h3>Was das Modell nicht abbildet</h3>
 <p>Steuern und Sozialabgaben nur pauschal, kein Umschichten zwischen Anlagen, keine Pflege- oder Krankheitskosten, keine Änderungen von Gesetzen. Die Prognose ist eine Modellrechnung und keine Anlageberatung.</p>`,
-`<p><strong>${pct} %</strong> means: in <strong>${ok} of ${runs}</strong> simulated futures your money lasts until age ${escHTML(_horizonTxt(plan))}${plan.horizonWho?' – until the youngest person has also reached the planning age':''}. "Lasts" means: in every month until then income and withdrawable wealth cover your need. Your target is ${safety} % (safety, adjustable under Forecast → Assumptions)${mc.success>=s.safety/100?' – it is reached.':' – it is not reached yet.'}</p>
+`<p><strong>${pct} %</strong> means: in <strong>${ok} of ${runs}</strong> simulated futures your money lasts until age ${escHTML(_horizonTxt(plan))}${plan.horizonWho?' – until the youngest person has also reached the planning age':''}. "Lasts" means: in every month until then income and withdrawable wealth cover your need. Your target is ${safety} % (safety, adjustable under Data → Forecast &amp; assumptions)${mc.success>=s.safety/100?' – it is reached.':' – it is not reached yet.'}</p>
 <p>Calculated with ${early?'early retirement from '+_ageTxt(R)+' and the pension from '+_ageTxt(s.phase4From):'retirement from '+_ageTxt(R)}, as set under life phases.</p>
 <h3>How it is simulated</h3>
 <p>The forecast is a Monte Carlo simulation: ${runs} runs, each month by month from today until ${plan.horizonAge}. In each run every asset group gets a random return per year of life from its expected return and volatility (table below). The groups depend 30 % on a common market (correlation 0.3): a bad stock market year usually hits several assets. The annual return is spread evenly over the twelve months. The random numbers are fixed so that two settings can be compared fairly.</p>
@@ -12769,7 +12824,7 @@ function openSuccessExplain(){
 <p>As soon as in one month the need is no longer covered because withdrawable wealth is used up. Tied-up values such as real estate, vehicles or company pensions before release are not sold.${fail!=null?` In half of the runs a first shortfall occurred by ${fail} at the latest.`:''}</p>
 <h3>Assumptions per investment</h3>
 <div class="se-wrap"><table class="se-t"><tr><th>Group</th><th>Return</th><th>Volatility</th><th>Saving</th><th>Withdrawable</th></tr>${rows}</table></div>
-<p>Change under Forecast → Assumptions → Return &amp; saving per asset.</p>
+<p>Change under Data → Forecast &amp; assumptions → Return &amp; saving per asset.</p>
 <h3>"Safely possible from"</h3>
 <p>${retireAge==null?'Until '+plan.horizonAge+' there is no age with at least '+safety+' % probability of success.':'The earliest whole age from which at least '+safety+' % of runs last: <strong>'+(retireAge<=Math.ceil(plan.currentAge)?'now':retireAge)+'</strong>.'} For every age checked the app calculates its own plan: pension points, service years, depot contributions and phases then match that end of work.</p>
 <h3>What the model does not cover</h3>
@@ -12802,7 +12857,10 @@ const _ltMarkerPlugin={
 };
 
 /* ══ Partner-Story: der Lebensplan als Folge kurzer Stories (wie ein Jahresrückblick), für jemanden ohne Finanzwissen ══
-   Tippen rechts = weiter, links = zurück, gedrückt halten = Pause, nach unten wischen oder × = schließen. */
+   Tippen rechts = weiter, links = zurück, gedrückt halten = Pause, nach unten wischen oder × = schließen.
+   16.10.2026: bunter und einfacher. Je Story ein Bild (Emoji), eine kurze Erklärung und ab und zu ein Witz (joke);
+   neu „Der Trick mit dem Zinseszins“ und „Unsere Einschätzung“ (Stufe aus Erfolgschance und Sicherheitsziel, Tacho,
+   bis zu drei Punkte: Aufhören, Sparquote, Notgroschen, Schuldenfrei). Keine Anlageberatung, nur eine Rechnung. */
 const PS_DUR=7000;
 let _ps=null;
 function _psData(){
@@ -12813,78 +12871,142 @@ function _psData(){
   const b=_phaseBounds(s,currentAge,plan.horizonAge);
   const yearAt=a=>Math.round(s.birthYear+a);
   const bd=_mod('budget')?loadBudgetData():null;
-  const income=bd?_avgBudget(bd,'einnahmen'):0,build=bd?_avgBudget(bd,'aufbau'):0;
-  const save=build>0?build:_phaseSaving(plan);
-  const data=plan.data[plan.latestKey]||{},c=calc(data);
+  /* Budget im Jahresmittel wie auf der Budget-Seite: Sparquote = (Einnahmen − Ausgaben) ÷ Einnahmen */
+  let ein=0,out=0,kept=0,n=0;
+  if(bd)for(let m=0;m<12;m++){const c=calcBudgetMonth(bd,m);if(!c)continue;ein+=c.einnahmen;out+=c.fixkosten+c.variable;kept+=c.ersparnis;n++;}
+  const income=n&&ein>0?ein/n:0,spend=n?out/n:0,rate=ein>0?kept/ein:null;
+  const save=rate>0?kept/n:_phaseSaving(plan);
+  const data=plan.data[plan.latestKey]||{},c=calc(data),det=data._details||{};
   /* größte Bausteine des Vermögens */
-  const parts=plan.groups.map(g=>({name:g.key,v:g.gross})).filter(x=>x.v>0).sort((x,y)=>y.v-x.v);
+  const parts=plan.groups.map(g=>({name:g.key,cat:g.cat,v:g.gross})).filter(x=>x.v>0).sort((x,y)=>y.v-x.v);
   const events=(s.events||[]).map(_normEvent).filter(e=>+e.year>=new Date().getFullYear()&&e.amount>0).sort((x,y)=>x.year-y.year).slice(0,4);
-  let payoff=null;const lpAll=getLoanParams(),det=data._details||{};
+  let payoff=null;const lpAll=getLoanParams();
   _vf().filter(f=>f.category==='liab').forEach(f=>{const v=+det[f.id]||0;if(v<=0||!hasLoanModel(lpAll[f.id]))return;const st=loanStatus(v,lpAll[f.id]);if(st.payoff&&(!payoff||st.payoff>payoff))payoff=st.payoff;});
+  const cash=_vf().filter(f=>f.category==='cash').reduce((x,f)=>x+Math.max(0,+det[f.id]||0),0);
+  /* Zinseszins: erwartete Rendite der entnehmbaren Anlagen (gewichtet mit Wert und Sparrate eines Jahres), nach Inflation */
+  let w=0,r=0;
+  plan.groups.forEach(g=>{if(!g.withdrawable||g.depShare>=0.999)return;const x=Math.max(0,g.gross)+12*Math.max(0,g.saving);w+=x;r+=x*g.ret;});
+  const rReal=w>0?(1+r/w)/(1+infl)-1:0;
   /* Alter, bis zu dem die Hälfte der Läufe einen Fehlbetrag hatte (null: in den meisten Läufen keiner, P27) */
   const empty=isFinite(mc.failAge50)?Math.floor(mc.failAge50):null;
-  return{s,plan,mc,b,real,yearAt,income,save,net:plan.latestNet,liab:c.liab||0,parts,events,payoff,empty,
+  return{s,plan,mc,b,real,yearAt,currentAge,income,spend,rate,save,cash,rReal,net:plan.latestNet,liab:c.liab||0,parts,events,payoff,empty,
     retireAge:_ltCalcCache?_ltCalcCache.retireAge:null,pct:Math.round(mc.success*100)};
+}
+const PS_CAT_EMO={cash:'🏦',etf:'📈',stock:'📈',bitcoin:'🪙',crypto:'🪙',metal:'🥇',realEstate:'🏠',vehicle:'🚗',bav:'🛡️',illiquid:'📦',other:'📦'};
+function _psEventEmo(e){
+  const n=String(e.name||'').toLowerCase();
+  const hit=[[/auto|wagen|fahrzeug|\bcar\b/,'🚗'],[/urlaub|reise|travel|trip|holiday/,'✈️'],[/hochzeit|wedding/,'💍'],[/haus|wohnung|immobil|umbau|renovier|küche|dach|garten|house|home|flat/,'🏠'],
+    [/studium|schule|ausbildung|\buni|study|college/,'🎓'],[/kind|baby|child/,'👶'],[/erb|schenkung|inherit|gift/,'🎁'],[/abfindung|bonus|verkauf|sale/,'💼']].find(([re])=>re.test(n));
+  return hit?hit[1]:e.from===''?'🎁':'✨';
+}
+/* Einschätzung: 0 sehr entspannt, 1 auf Kurs, 2 knapp dran, 3 da geht noch was */
+function _psVerdict(pct,target){return pct>=Math.min(98,target+8)?0:pct>=target?1:pct>=target-15?2:3;}
+function _psGauge(pct,target){
+  const a=Math.PI*(1-target/100),p=(r,k)=>(k?96-r*Math.sin(a):100+r*Math.cos(a)).toFixed(1);
+  return `<svg class="ps-gauge" viewBox="0 -8 200 112" aria-hidden="true"><path class="bg" d="M12 96A88 88 0 0 1 188 96" pathLength="100"/><path class="fg" d="M12 96A88 88 0 0 1 188 96" pathLength="100" style="stroke-dasharray:${Math.max(0,Math.min(100,pct))} 100"/>`
+    +`<line x1="${p(76,0)}" y1="${p(76,1)}" x2="${p(102,0)}" y2="${p(102,1)}"/><text x="100" y="90">${pct} %</text></svg>`;
 }
 function _psSlides(){
   const d=_psData();if(!d)return[];
   /* Beträge nicht umbrechen (geschützte Leerzeichen) */
-  const{s,plan,b,real,yearAt}=d,nb=t=>String(t).replace(/ /g,'\u00a0'),fm=v=>nb(fmt(Math.round(v))),fc=v=>nb(fmtCompact(v)),ag=_ageTxt;
+  const{s,plan,b,real,yearAt}=d,nb=t=>String(t).replace(/ /g,' '),fm=v=>nb(fmt(Math.round(v))),fc=v=>nb(fmtCompact(v)),ag=_ageTxt;
+  const num=(v,dg=0)=>v.toLocaleString('de-DE',{minimumFractionDigits:dg,maximumFractionDigits:dg});
   const off=i=>b[i+1]-b[i]<=0.01;
   const bar=hl=>`<div class="ps-time">${_phaseBarHTML(b).replace('class="lp-bar"','class="lp-bar ps-hl-'+hl+'"')}</div>`;
+  const ok=d.mc.success>=s.safety/100;
   const slides=[];
-  slides.push({bg:['#16301f','#3a5e42'],kicker:L('Partner-Story','Partner story'),big:L('Euer Plan bis ','Your plan until ')+plan.horizonAge,
-    text:L('In ein paar Bildern: wo ihr heute steht, wie es weitergeht und warum das Geld reicht. Ohne Fachbegriffe – alle Beträge in heutigem Geld.','In a few pictures: where you stand today, what comes next and why the money lasts. No jargon – all amounts in today\'s money.'),
-    viz:`<img class="ps-logo" src="logo-a.png?v=1" alt="">`});
+  slides.push({bg:['#4a23b8','#ff4f9a'],kicker:L('Partner-Story','Partner story'),big:L('Euer Plan bis ','Your plan until ')+plan.horizonAge,
+    text:L('In ein paar Bildern: wo ihr heute steht, wie es weitergeht und ob das Geld reicht. Alle Beträge in heutiger Kaufkraft – so, wie sich 1 € heute anfühlt.','In a few pictures: where you stand today, what comes next and whether the money lasts. All amounts in today\'s money – what 1 € feels like now.'),
+    joke:L('Versprochen: keine Fachbegriffe, keine Formeln, kein Quiz am Ende.','Promise: no jargon, no formulas, no quiz at the end.'),
+    viz:`<div class="ps-hero"><img class="ps-logo" src="logo-a.png?v=1" alt=""><span class="ps-stk" aria-hidden="true"><i>💶</i><i>🏡</i><i>🌴</i><i>☕</i></span></div>`});
   const top=d.parts.slice(0,3),max=Math.max(1,...top.map(x=>x.v));
-  slides.push({bg:['#24201b','#5a4c3a'],kicker:L('Heute','Today'),big:`<span data-ps-count="${Math.round(d.net)}"></span>`,
-    text:L('So viel gehört euch heute: Konten, Depots, Immobilien und alles andere'+(d.liab>0?' – abzüglich '+fm(d.liab)+' Kredite.':'.'),'This is what you own today: accounts, investments, property and everything else'+(d.liab>0?' – minus '+fm(d.liab)+' in loans.':'.')),
-    viz:top.length?`<div class="ps-bars">${top.map(x=>`<div class="ps-bar"><span>${escHTML(x.name)}</span><i style="width:${(x.v/max*100).toFixed(1)}%"></i><b>${fc(x.v)}</b></div>`).join('')}</div>`:''});
+  slides.push({bg:['#08715f','#2fd39a'],emo:'💰',kicker:L('Heute','Today'),big:`<span data-ps-count="${Math.round(d.net)}"></span>`,
+    text:L('So viel gehört euch heute: Konten, Depots, Wohnung und alles andere'+(d.liab>0?' – Kredite ('+fm(d.liab)+') schon abgezogen.':'.'),'This is what you own today: accounts, investments, home and everything else'+(d.liab>0?' – loans ('+fm(d.liab)+') already subtracted.':'.')),
+    joke:d.net>=2000?L(`Das sind rund ${num(Math.round(d.net/2))} Kugeln Eis 🍦 – bitte nicht alle auf einmal.`,`That's about ${num(Math.round(d.net/2))} scoops of ice cream 🍦 – please not all at once.`):'',
+    viz:top.length?`<div class="ps-bars">${top.map((x,i)=>`<div class="ps-bar ps-c${i}"><span><em aria-hidden="true">${PS_CAT_EMO[x.cat]||'📦'}</em>${escHTML(x.name)}</span><i style="width:${(x.v/max*100).toFixed(1)}%"></i><b>${fc(x.v)}</b></div>`).join('')}</div>`:''});
   if(d.save>0){
-    const q=d.income>0?Math.round(d.save/d.income*100):null;
-    slides.push({bg:['#1b2b2f','#3f6b6f'],kicker:L('Jeden Monat','Every month'),big:`<span data-ps-count="${Math.round(d.save)}"></span>`,
+    const q=d.rate>0&&d.income>0?Math.round(d.rate*100):null;
+    slides.push({bg:['#d2461b','#ffb02e'],emo:'🐷',kicker:L('Jeden Monat','Every month'),big:`<span data-ps-count="${Math.round(d.save)}"></span>`,
       text:L('legt ihr zur Seite'+(q!=null?' – '+q+' % von '+fm(d.income)+' Einnahmen':'')+'. Das ist der Motor für alles, was jetzt kommt.','is what you put aside'+(q!=null?' – '+q+' % of '+fm(d.income)+' income':'')+'. This is the engine for everything that follows.'),
+      joke:L('Sparen ist wie Zähneputzen: unspektakulär, aber die Zukunft lächelt zurück. 😁','Saving is like brushing your teeth: unspectacular, but your future smiles back. 😁'),
       viz:q!=null?`<div class="ps-ring" style="--p:${Math.min(100,q)}"><b>${q} %</b></div>`:''});
   }
+  /* Zinseszins bis zum Arbeitsende (mindestens drei Jahre, spürbare Rendite nach Inflation) */
+  {const y0=new Date().getFullYear(),ny=yearAt(b[2])-y0,r=d.rReal;
+    if(ny>=3&&r>=0.005){
+      const F=Math.pow(1+r,ny),pts=[0,1,2,3].map(k=>{const yrs=Math.round(ny*k/3);return{y:y0+yrs,v:Math.pow(1+r,yrs)};});
+      const sz=v=>Math.round(28+68*(Math.sqrt(v)-1)/Math.max(1e-9,Math.sqrt(F)-1));
+      slides.push({bg:['#1640b8','#2fc6ea'],emo:'⛄',kicker:L('Der Trick mit dem Zinseszins','The compound interest trick'),big:nb(`1 € → ${num(F,2)} €`),
+        text:L(`Angelegtes Geld bringt Erträge – und die bringen wieder Erträge. Bei rund ${num(r*100,1)} % im Jahr (nach Inflation) wird aus 1 € bis ${yearAt(b[2])} etwa ${nb(num(F,2)+' €')}. Wie ein Schneeball, der bergab rollt.`,`Invested money earns returns – and those earn returns again. At about ${num(r*100,1)} % a year (after inflation) 1 € grows to about ${nb(num(F,2)+' €')} by ${yearAt(b[2])}. Like a snowball rolling downhill.`),
+        joke:L('Einstein soll den Zinseszins das achte Weltwunder genannt haben. Belegt ist das Zitat nicht – der Effekt schon.','Einstein supposedly called compound interest the eighth wonder of the world. The quote is unproven – the effect is not.'),
+        viz:`<div class="ps-snow">${pts.map((p,i)=>`<div style="--i:${i}"><i style="width:${sz(p.v)}px;height:${sz(p.v)}px"></i><b>${nb(num(p.v,2)+' €')}</b><small>${p.y}</small></div>`).join('')}</div>`,dur:9000});
+    }}
   if(!off(0)){const v=real(d.mc.p50,b[1]);
-    slides.push({bg:['#16301f','#4f7a58'],kicker:L('Phase 1 · Ansparen','Phase 1 · Saving'),big:L('bis ','until ')+yearAt(b[1]),
-      text:L(`Bis ${yearAt(b[1])} (mit ${ag(b[1])}) wird gearbeitet und gespart wie heute.`+(v!=null?` So wächst das Vermögen auf etwa ${fc(v)}.`:''),`Until ${yearAt(b[1])} (at ${ag(b[1])}) life goes on with work and saving as today.`+(v!=null?` That grows your wealth to about ${fc(v)}.`:'')),viz:bar(1)});}
+    slides.push({bg:['#116b38','#5ad68a'],emo:'💼',kicker:L('Phase 1 · Ansparen','Phase 1 · Saving'),big:L('bis ','until ')+yearAt(b[1]),
+      text:L(`Bis ${yearAt(b[1])} (mit ${ag(b[1])}) wird gearbeitet und gespart wie heute.`+(v!=null?` So wächst das Vermögen auf etwa ${fc(v)}.`:''),`Until ${yearAt(b[1])} (at ${ag(b[1])}) life goes on with work and saving as today.`+(v!=null?` That grows your wealth to about ${fc(v)}.`:'')),
+      joke:L('Der Wecker klingelt noch – aber jeder Monat zahlt in die Zukunft ein. ⏰','The alarm still rings – but every month pays into the future. ⏰'),viz:bar(1)});}
   if(!off(1)){const v=real(d.mc.p50,b[2]);
     const work=s.p2Work<1?L(`in Teilzeit (${Math.round(s.p2Work*100)} %)`,`part-time (${Math.round(s.p2Work*100)} %)`):L('weiter in Vollzeit','still full-time');
     const sav=s.p2Saving>0?L(`Gespart wird noch ${Math.round(s.p2Saving*100)} % von heute`,`Saving continues at ${Math.round(s.p2Saving*100)} % of today`):L('Extra gespart wird nicht mehr','No more extra saving');
-    slides.push({bg:['#26352a','#84a088'],kicker:L('Phase 2 · Weiterarbeiten','Phase 2 · Working on'),big:`${yearAt(b[1])}–${yearAt(b[2])}`,
-      text:L(`Ab ${yearAt(b[1])} wird ${work} gearbeitet. ${sav}, die Altersvorsorge läuft weiter.`+(v!=null?` Mit ${ag(b[2])} sind es etwa ${fc(v)}.`:''),`From ${yearAt(b[1])} work continues ${work}. ${sav}; pension savings continue.`+(v!=null?` At ${ag(b[2])} that's about ${fc(v)}.`:'')),viz:bar(2)});}
+    slides.push({bg:['#3d6610','#b9e04e'],emo:'🌤️',kicker:L('Phase 2 · Weiterarbeiten','Phase 2 · Working on'),big:`${yearAt(b[1])}–${yearAt(b[2])}`,
+      text:L(`Ab ${yearAt(b[1])} wird ${work} gearbeitet. ${sav}, die Altersvorsorge läuft weiter.`+(v!=null?` Mit ${ag(b[2])} sind es etwa ${fc(v)}.`:''),`From ${yearAt(b[1])} work continues ${work}. ${sav}; pension savings continue.`+(v!=null?` At ${ag(b[2])} that's about ${fc(v)}.`:'')),
+      joke:s.p2Work<1?L('Weniger Arbeit, mehr Leben – der Kalender wird es verkraften.','Less work, more life – the calendar will cope.'):L('Noch ein paar Runden im Hamsterrad – aber mit Ziel vor Augen. 🐹','A few more laps in the hamster wheel – with the finish line in sight. 🐹'),viz:bar(2)});}
   /* weitere Personen, die über dein Arbeitsende hinaus arbeiten (P5) */
   const workers=w=>w.list.map(p=>({name:p.person||L('Partner','Partner'),year:yearAt(p.end??p.until)}));
   const stillTxt=ws=>ws.length===1?L(`${escHTML(ws[0].name)} arbeitet bis ${ws[0].year} weiter`,`${escHTML(ws[0].name)} keeps working until ${ws[0].year}`)
     :L(ws.map(x=>escHTML(x.name)+' bis '+x.year).join(' und ')+' arbeiten weiter',ws.map(x=>escHTML(x.name)+' until '+x.year).join(' and ')+' keep working');
   if(!off(2)){const v=real(d.mc.p50,b[3]),pens=_pensionsAt(plan,b[2]),w=_workAt(plan,b[2]);
     const draw3=Math.max(0,s.monthlyWithdraw-pens-w.sum);
-    slides.push({bg:['#3b1d16','#a3624f'],kicker:L('Phase 3 · Vorruhestand','Phase 3 · Early retirement'),big:`${yearAt(b[2])}–${yearAt(b[3])}`,
+    slides.push({bg:['#b0361f','#ff9d5c'],emo:'🏖️',kicker:L('Phase 3 · Vorruhestand','Phase 3 · Early retirement'),big:`${yearAt(b[2])}–${yearAt(b[3])}`,
       text:w.sum>0?L(`Ab ${yearAt(b[2])} ist für einen von euch Schluss mit Arbeit. ${stillTxt(workers(w))}: ${fm(w.sum)} im Monat aus dem Gehalt`+(pens>0?`, ${fm(pens)} aus Renten`:'')+`, ${fm(draw3)} aus dem Ersparten.`+(v!=null?` Mit ${ag(b[3])} sind noch etwa ${fc(v)} da.`:''),`From ${yearAt(b[2])} one of you stops working. ${stillTxt(workers(w))}: ${fm(w.sum)} a month from salary`+(pens>0?`, ${fm(pens)} from pensions`:'')+`, ${fm(draw3)} from savings.`+(v!=null?` At ${ag(b[3])} about ${fc(v)} is left.`:''))
-      :L(`Ab ${yearAt(b[2])} ist Schluss mit Arbeit. Ihr lebt von eurem Ersparten: ${fm(s.monthlyWithdraw)} im Monat`+(pens>0?`, davon ${fm(pens)} aus Renten`:'')+'.'+(v!=null?` Mit ${ag(b[3])} sind noch etwa ${fc(v)} da.`:''),`From ${yearAt(b[2])} work stops. You live on your savings: ${fm(s.monthlyWithdraw)} a month`+(pens>0?`, ${fm(pens)} of it from pensions`:'')+'.'+(v!=null?` At ${ag(b[3])} about ${fc(v)} is still there.`:'')),viz:bar(3)});}
+      :L(`Ab ${yearAt(b[2])} ist Schluss mit Arbeit. Ihr lebt von eurem Ersparten: ${fm(s.monthlyWithdraw)} im Monat`+(pens>0?`, davon ${fm(pens)} aus Renten`:'')+'.'+(v!=null?` Mit ${ag(b[3])} sind noch etwa ${fc(v)} da.`:''),`From ${yearAt(b[2])} work stops. You live on your savings: ${fm(s.monthlyWithdraw)} a month`+(pens>0?`, ${fm(pens)} of it from pensions`:'')+'.'+(v!=null?` At ${ag(b[3])} about ${fc(v)} is still there.`:'')),
+      joke:L('Ab jetzt ist fast jeder Tag Samstag. Der Wecker geht als Erster in Rente.','From now on almost every day is Saturday. The alarm clock retires first.'),viz:bar(3)});}
   {const pens=_pensionsAt(plan,b[3]),w=_workAt(plan,b[3]),need=s.pensionSpending,draw=Math.max(0,need-pens-w.sum),pPct=need>0?Math.min(100,(pens+w.sum)/need*100):0;
     const wTxt=w.sum>0?L(` Dazu ${fm(w.sum)} Gehalt, ${stillTxt(workers(w)).replace(/ weiter$/,'')}.`,` Plus ${fm(w.sum)} salary, ${stillTxt(workers(w))}.`):'';
-    slides.push({bg:['#1f2326','#5d656b'],kicker:L('Phase 4 · Rente','Phase 4 · Retirement'),big:L('ab ','from ')+yearAt(b[3]),
+    slides.push({bg:['#1a55b5','#7cc8ff'],emo:'🌴',kicker:L('Phase 4 · Rente','Phase 4 · Retirement'),big:L('ab ','from ')+yearAt(b[3]),
       text:pens>0?L(`Dann kommen die Renten: ${fm(pens)} im Monat.`+wTxt+(draw>0?` Den Rest von ${fm(draw)} nehmt ihr aus dem Vermögen.`:w.sum>0?' Zusammen deckt das euren Bedarf.':' Sie decken euren Bedarf.'),`Then the pensions start: ${fm(pens)} a month.`+wTxt+(draw>0?` The remaining ${fm(draw)} comes from your savings.`:w.sum>0?' Together that covers what you need.':' They cover what you need.'))
         :w.sum>0?L(`${fm(w.sum)} im Monat kommen aus dem Gehalt.`+wTxt.replace(/^ Dazu [^,]+, /,' ')+(draw>0?` Den Rest von ${fm(draw)} nehmt ihr aus dem Vermögen.`:''),`${fm(w.sum)} a month comes from salary.`+(draw>0?` The remaining ${fm(draw)} comes from your savings.`:''))
         :L(`Ihr lebt weiter von eurem Vermögen: ${fm(need)} im Monat.`,`You keep living on your savings: ${fm(need)} a month.`),
+      joke:pens>0?L('Die Rente kommt jeden Monat – zuverlässiger als jeder Paketbote. 📦','The pension arrives every month – more reliably than any parcel service. 📦'):'',
       viz:pens+w.sum>0?`<div class="ps-split"><i style="width:${pPct.toFixed(1)}%"></i><b style="width:${(100-pPct).toFixed(1)}%"></b></div><div class="ps-legend"><span><i class="a"></i>${w.sum>0?L('Renten und Gehalt','Pensions and salary'):L('Renten','Pensions')}</span><span><i class="b"></i>${L('aus dem Vermögen','from savings')}</span></div>`:''});}
-  {const ok=d.mc.success>=s.safety/100;
-    const dots=Array.from({length:100},(_,i)=>`<i class="${i<d.pct?'y':'n'}" style="--i:${i}"></i>`).join('');
-    slides.push({bg:ok?['#14261b','#2f5a3c']:['#2e1712','#7a3d2f'],kicker:L('Und wenn die Börse schwächelt?','And if markets stumble?'),big:`<span data-ps-count="${d.pct}" data-ps-unit="%"></span>`,
-      text:L(`Wir haben 500 mögliche Zukünfte durchgespielt – mit guten und schlechten Börsenjahren. In ${d.pct} von 100 reicht das Geld bis ${plan.horizonAge}.`,`We played through 500 possible futures – with good and bad market years. In ${d.pct} out of 100 the money lasts until ${plan.horizonAge}.`),
-      viz:`<div class="ps-dots">${dots}</div>`});}
-  const moments=d.events.map(e=>`<li><b>${e.year}</b><span>${escHTML(e.name||L('Ereignis','Event'))}</span><em>${e.from===''?'+':'−'}${fc(e.amount)}</em></li>`);
-  if(d.payoff)moments.push(`<li><b>${d.payoff.slice(0,4)}</b><span>${L('Schuldenfrei','Debt-free')}</span><em>✓</em></li>`);
-  if(moments.length)slides.push({bg:['#2b2617','#6b6438'],kicker:L('Große Momente','Big moments'),big:L('Schon eingeplant','Already planned'),
-    text:L('Diese Dinge sind im Plan berücksichtigt:','These things are already part of the plan:'),viz:`<ul class="ps-list">${moments.join('')}</ul>`});
-  {const ok=d.mc.success>=s.safety/100,early=b[3]>b[2]+0.01;
-    slides.push({bg:['#121211','#2c2b27'],kicker:L('Kurz gesagt','In short'),
+  {const dots=Array.from({length:100},(_,i)=>`<i class="${i<d.pct?'y':'n'}" style="--i:${i}"></i>`).join('');
+    slides.push({bg:ok?['#1c1a66','#8150ff']:['#4d1431','#e8467f'],emo:'🎲',kicker:L('Und wenn die Börse schwächelt?','And if markets stumble?'),big:`<span data-ps-count="${d.pct}" data-ps-unit="%"></span>`,
+      text:L(`Niemand kennt die Zukunft. Darum haben wir ${MC_RUNS} Zukünfte durchgespielt, mit guten und schlechten Börsenjahren. In ${d.pct} von 100 reicht das Geld bis ${plan.horizonAge}.`,`Nobody knows the future. So we played through ${MC_RUNS} futures, with good and bad market years. In ${d.pct} out of 100 the money lasts until ${plan.horizonAge}.`),
+      joke:ok?L(`${MC_RUNS} Paralleluniversen – und in den meisten geht es euch gut. 🪐`,`${MC_RUNS} parallel universes – and in most of them you're doing fine. 🪐`):L(`${MC_RUNS} Paralleluniversen – in zu vielen wird es eng. Gut, dass man das heute schon weiß.`,`${MC_RUNS} parallel universes – too many get tight. Good to know that today.`),
+      viz:`<div class="ps-dots">${dots}</div><div class="ps-legend"><span><i class="y"></i>${L('Geld reicht','Money lasts')}</span><span><i class="n"></i>${L('wird knapp','gets tight')}</span></div>`,dur:8000});}
+  const moments=d.events.map(e=>`<li><span class="ps-emo-s" aria-hidden="true">${_psEventEmo(e)}</span><b>${e.year}</b><span>${escHTML(e.name||L('Ereignis','Event'))}</span><em>${e.from===''?'+':'−'}${fc(e.amount)}</em></li>`);
+  if(d.payoff)moments.push(`<li><span class="ps-emo-s" aria-hidden="true">🎉</span><b>${d.payoff.slice(0,4)}</b><span>${L('Schuldenfrei','Debt-free')}</span><em>✓</em></li>`);
+  if(moments.length)slides.push({bg:['#8a1760','#ff70b6'],emo:'✨',kicker:L('Große Momente','Big moments'),big:L('Schon eingeplant','Already planned'),
+    text:L('Diese Dinge sind im Plan schon drin:','These things are already part of the plan:'),
+    joke:L('Geplante Ausgaben tun nur halb so weh. Ungeplante doppelt.','Planned expenses hurt half as much. Unplanned ones twice.'),viz:`<ul class="ps-list">${moments.join('')}</ul>`});
+  /* Einschätzung: Stufe, Tacho mit Ziel-Marke, bis zu drei Punkte */
+  {const tgt=Math.round(s.safety),tier=_psVerdict(d.pct,tgt),R=s.withdrawFrom,tips=[];
+    const V=[[['#0b683a','#3fd889'],'😎',L('Sehr entspannt','Very relaxed'),L(`Der Plan hat ordentlich Luft: In ${d.pct} von 100 Zukünften reicht das Geld, euer Ziel sind ${tgt}.`,`The plan has plenty of room: the money lasts in ${d.pct} out of 100 futures, your target is ${tgt}.`)],
+      [['#0a5877','#36c6cf'],'👍',L('Auf Kurs','On track'),L(`Der Plan schafft euer Sicherheitsziel von ${tgt} %. Einmal im Jahr draufschauen reicht.`,`The plan meets your safety target of ${tgt} %. Checking once a year is enough.`)],
+      [['#924c00','#ffb23e'],'🤏',L('Knapp dran','Almost there'),L(`${d.pct} von 100 statt ${tgt}: Schon kleine Stellschrauben bringen den Plan ins Ziel.`,`${d.pct} out of 100 instead of ${tgt}: small tweaks get the plan there.`)],
+      [['#8e2727','#ff7a59'],'🛠️',L('Da geht noch was','Room to improve'),L('So reicht das Geld noch nicht sicher genug. Gut, dass ihr es jetzt wisst – genau dafür ist der Plan da.','As planned, the money is not safe enough yet. Good that you know now – that is exactly what the plan is for.')]][tier];
+    if(d.retireAge!=null){
+      if(d.retireAge<=Math.round(R))tips.push({ok:true,t:d.retireAge<Math.round(R)?L(`Aufhören mit ${ag(R)} passt – sicher ginge es sogar ab ${d.retireAge}.`,`Stopping at ${ag(R)} works – it would even be safe from ${d.retireAge}.`):L(`Aufhören mit ${ag(R)} passt.`,`Stopping at ${ag(R)} works.`)});
+      else tips.push({ok:false,t:L(`Sicher klappt das Aufhören ab ${d.retireAge}. Früher geht mit mehr Sparen oder weniger Ausgaben.`,`Stopping is safe from ${d.retireAge}. Earlier works with more saving or less spending.`)});
+    }else tips.push({ok:false,t:L(`Bis ${plan.horizonAge} gibt es kein sicheres Alter zum Aufhören – Ausgaben und Sparen gemeinsam anschauen.`,`Until ${plan.horizonAge} there is no safe age to stop – look at spending and saving together.`)});
+    if(d.rate!=null){const q=Math.round(d.rate*100);
+      tips.push(q>=15?{ok:true,t:L(`Sparquote ${q} % – richtig stark.`,`Savings rate ${q} % – really strong.`)}
+        :q>0?{ok:false,t:L(`Sparquote ${q} %. Schon 50 € mehr im Monat machen über die Jahre einen Unterschied.`,`Savings rate ${q} %. Even 50 € more a month adds up over the years.`)}
+        :{ok:false,t:L('Im Budget bleibt gerade nichts übrig – zuerst die Ausgaben anschauen.','Nothing is left in the budget right now – look at spending first.')});}
+    if(d.spend>0){const mo=d.cash/d.spend,m=mo>=10?num(mo):num(mo,1);
+      tips.push(mo>=3?{ok:true,t:L(`Notgroschen: ${m} Monatsausgaben auf dem Konto. Waschmaschine kaputt? Kein Drama.`,`Emergency fund: ${m} months of spending in the account. Washing machine broken? No drama.`)}
+        :{ok:false,t:L(`Notgroschen: ${m} Monatsausgaben auf dem Konto – 3 bis 6 wären entspannter.`,`Emergency fund: ${m} months of spending in the account – 3 to 6 would be more relaxed.`)});}
+    if(d.payoff)tips.push({ok:true,t:L(`Schuldenfrei ab ${d.payoff.slice(0,4)}.`,`Debt-free from ${d.payoff.slice(0,4)}.`)});
+    slides.push({bg:V[0],kicker:L('Unsere Einschätzung','Our take'),big:`${V[2]} <span class="ps-inl" aria-hidden="true">${V[1]}</span>`,text:V[3],
+      viz:`<div class="ps-verdict">${_psGauge(d.pct,tgt)}<p class="ps-gl">${L('Ziel','Target')} ${tgt} %</p><ul class="ps-tips">${tips.slice(0,3).map(x=>`<li class="${x.ok?'ok':'todo'}"><i aria-hidden="true">${x.ok?'✓':'→'}</i><span>${x.t}</span></li>`).join('')}</ul>`
+        +`<p class="ps-fine">${L('Keine Anlageberatung – nur eine Rechnung mit euren Zahlen.','Not investment advice – just a calculation with your numbers.')}</p></div>`,dur:12000});}
+  {const early=b[3]>b[2]+0.01;
+    slides.push({bg:['#2b1866','#d8408f'],emo:'☕',kicker:L('Kurz gesagt','In short'),
       big:ok?L(`Mit ${ag(b[2])} aufhören – und es reicht bis ${plan.horizonAge}.`,`Stop working at ${ag(b[2])} – and it lasts until ${plan.horizonAge}.`)
         :L('Der Plan braucht noch etwas Feinschliff.','The plan still needs some fine-tuning.'),
       text:ok?L((early?'Erst Vorruhestand, dann Rente. ':'')+'Wenn ihr Fragen habt: einfach zusammen anschauen.',(early?'First early retirement, then the pension. ':'')+'Questions? Just look at it together.')
         :L('Sicher möglich wäre es '+(d.retireAge?'ab '+d.retireAge:'später')+'. Schaut euch gemeinsam an, welche Stellschraube passt: etwas länger arbeiten, mehr sparen oder weniger ausgeben.','It would be safe '+(d.retireAge?'from '+d.retireAge:'later')+'. Look together at which lever fits: work a little longer, save more or spend less.'),
+      joke:ok?L('Zeit für einen Kaffee – den habt ihr euch verdient.','Time for a coffee – you have earned it.'):L('Erst Kaffee, dann gemeinsam an den Stellschrauben drehen.','Coffee first, then tweak the plan together.'),
       viz:`<button type="button" class="ps-again" data-ps-again>${L('Nochmal ansehen','Watch again')}</button>`});}
   return slides;
 }
@@ -12895,10 +13017,10 @@ function openPartnerStory(){
   el.className='ps';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label',L('Partner-Story','Partner story'));
   el.innerHTML=`<div class="ps-frame"><div class="ps-prog">${slides.map(()=>'<i><b></b></i>').join('')}</div>
     <div class="ps-top"><span class="ps-brand"><img src="icon-192.png?v=2" alt="">${L('Euer Plan','Your plan')}</span><button type="button" class="ps-close" aria-label="${L('Schließen','Close')}">×</button></div>
-    <div class="ps-slides">${slides.map((x,i)=>`<section class="ps-s" style="--c1:${x.bg[0]};--c2:${x.bg[1]}" aria-hidden="true"><p class="ps-k">${x.kicker}</p><h2 class="ps-big">${x.big}</h2><p class="ps-t">${x.text}</p>${x.viz?`<div class="ps-viz">${x.viz}</div>`:''}</section>`).join('')}</div>
+    <div class="ps-slides">${slides.map((x,i)=>`<section class="ps-s" style="--c1:${x.bg[0]};--c2:${x.bg[1]}" aria-hidden="true">${x.emo?`<span class="ps-emo" aria-hidden="true">${x.emo}</span>`:''}<p class="ps-k">${x.kicker}</p><h2 class="ps-big">${x.big}</h2><p class="ps-t">${x.text}</p>${x.joke?`<p class="ps-joke">${x.joke}</p>`:''}${x.viz?`<div class="ps-viz">${x.viz}</div>`:''}</section>`).join('')}</div>
     <p class="ps-hint">${L('Tippen: weiter · links: zurück · halten: Pause','Tap: next · left: back · hold: pause')}</p></div>`;
   document.body.appendChild(el);lockBodyScroll();
-  _ps={el,i:-1,n:slides.length,paused:false,down:null,hold:null};
+  _ps={el,i:-1,n:slides.length,dur:slides.map(x=>x.dur||PS_DUR),paused:false,down:null,hold:null};
   const frame=el.querySelector('.ps-frame');
   el.querySelector('.ps-close').addEventListener('click',e=>{e.stopPropagation();closePartnerStory();});
   el.addEventListener('click',e=>{if(e.target===el)closePartnerStory();});
@@ -12934,7 +13056,7 @@ function _psGo(i){
   bars.forEach((b,k)=>{b.className=k<i?'done':k===i?'run':'';});
   /* Story-Dauer neu starten */
   const cur=bars[i].querySelector('b');cur.style.animation='none';void cur.offsetWidth;cur.style.animation='';
-  if(i===_ps.n-1)cur.style.animationDuration=PS_DUR+'ms';
+  cur.style.animationDuration=_ps.dur[i]+'ms';/* längere Stories (Zinseszins, Einschätzung) brauchen mehr Zeit */
   /* Zahlen zählen hoch */
   secs[i].querySelectorAll('[data-ps-count]').forEach(el=>{
     const to=+el.dataset.psCount,unit=el.dataset.psUnit,t0=performance.now(),dur=1100;
@@ -13131,7 +13253,7 @@ function openPhasesSheet(focus){
     sec(4,`4 · ${LT_PHASE_NAMES[3]}`,'<i class="lp-p4"></i>',
       row('lp-need4','Bedarf €/Monat','',storedN4?_moneyInput(s.pensionSpending):'','wie im Vorruhestand',true)+
       work(4)+pens(4,L('solange die Person noch arbeitet','while the person still works')))+
-    `<p class="ds-help">Beträge in heutiger Kaufkraft. Gesetzliche Rente, Betriebsrente und Altersvorsorgedepots pflegst du unter Daten → Altersvorsorge, Renditen und Sparraten je Anlage unter Prognose → Annahmen.</p>`;
+    `<p class="ds-help">Beträge in heutiger Kaufkraft. Gesetzliche Rente, Betriebsrente und Altersvorsorgedepots pflegst du unter Daten → Altersvorsorge, Renditen und Sparraten je Anlage unter Daten → Prognose &amp; Annahmen.</p>`;
   if(!_openSheet('Lebensphasen',body,_savePhasesSheet,'Sichern',()=>openPhasesSheet(focus)))return;
   _sheetCtx={phases:{base:null,drvAge:drv.age,oldA4:s.pensionAge,rag,bvFrom:getBeamte().from,people:people.map(p=>p.id)}};
   _phasesPreview();
@@ -13373,13 +13495,26 @@ function _v2SetMod(k,on){
   _v2ApplyModules();
   _v2SyncSwitches();
 }
-function _v2OpenForecastSettings(){
-  /* auf der Prognose-Seite nur aufklappen und hinscrollen (kein Neuaufbau, aufgeklappte Zeilen bleiben) */
-  const pg=document.getElementById('page-lifetime');
-  if(!(pg&&pg.classList.contains('active')))navigateToPage('lifetime');
+/* Prognose & Annahmen (Daten-Seite): Unterbereiche auf- und zuklappbar (16.10.2026). Zustand je Unterbereich im Dokument
+   (ui-open-ass-<key>, Standard zu); die Köpfe zeigen eine kurze Zusammenfassung (_asFoldMeta). */
+function _asFoldToggle(el){const k='ass-'+el.dataset.afold;if(el.open!==_uiOpen(k))_uiSetOpen(k,el.open);}
+let _asFoldReady=false;
+function _asFoldMeta(){
+  if(!_asFoldReady&&document.querySelector('#v2-forecast-sec details.as-fold')){_asFoldReady=true;document.querySelectorAll('#v2-forecast-sec details.as-fold').forEach(d=>{d.open=_uiOpen('ass-'+d.dataset.afold);});}
+  const s=getLifetimeSettings(),set=(id,t)=>{const el=document.getElementById(id);if(el)el.textContent=t;};
+  set('as-meta-plan',L('bis ','to ')+s.planHorizon+' · '+L('Inflation ','inflation ')+_numStr(s.inflation)+' %');
+  set('as-meta-phases',(s.phase4From>s.workEnd+0.01?L('Vorruhestand ab ','Early retirement at '):L('Ruhestand ab ','Retirement at '))+_ageTxt(s.withdrawFrom));
+  const n=(s.events||[]).length;set('as-meta-events',n?String(n):L('keine','none'));
+}
+function _v2OpenForecastSettings(folds){
+  /* Annahmen stehen auf der Daten-Seite (seit 16.10.2026 wieder, vorher kurz auf der Prognose-Seite): hinwechseln,
+     aufklappen und hinscrollen; folds öffnet zusätzlich Unterbereiche (z. B. ['plan','assets']) */
+  navigateToPage('import');
   const d=document.getElementById('v2-forecast-sec');
   if(!d)return;
+  if(d.classList.contains('v2-off'))return;
   d.open=true;
+  _asFoldMeta();(Array.isArray(folds)?folds:[]).forEach(k=>{const f=d.querySelector(`details.as-fold[data-afold="${k}"]`);if(f)f.open=true;});
   requestAnimationFrame(()=>d.scrollIntoView({behavior:'smooth',block:'start'}));
 }
 function _v2InitModules(){
@@ -13399,7 +13534,7 @@ function _v2InitModules(){
     const sw=e.target.closest&&e.target.closest('.v2-switch');
     if(sw&&(e.key===' '||e.key==='Enter')){e.preventDefault();flip(sw);}
   });
-  document.getElementById('v2-lt-open').addEventListener('click',_v2OpenForecastSettings);
+  document.getElementById('v2-lt-open').addEventListener('click',()=>_v2OpenForecastSettings());
   _v2SyncSwitches();
   _v2ApplyModules();
 }
@@ -14820,7 +14955,7 @@ function _setupAssumptionHTML(s){
   if(!cats.length)return '';
   const pc=v=>v.toLocaleString('de-DE')+' %';
   const list=cats.map(c=>escHTML(CATEGORY_GROUPS[c]||c)+' '+pc(LT_CAT_DEFAULTS[c].ret)+(LT_CAT_DEFAULTS[c].vol>=40?' (stark schwankend)':'')).join(', ');
-  return `<p class="ob-hint">Die Prognose rechnet mit typischem Wachstum pro Jahr: ${list}. Das ist keine Zusage. Ändern kannst du es unter Prognose → Annahmen.</p>`;
+  return `<p class="ob-hint">Die Prognose rechnet mit typischem Wachstum pro Jahr: ${list}. Das ist keine Zusage. Ändern kannst du es unter Daten → Prognose &amp; Annahmen.</p>`;
 }
 function _setupView(key,s){
   if(key==='household')return _setupHouseholdView(s);
@@ -14987,7 +15122,7 @@ function _nextSteps(){
   if(m.budget&&items.some(r=>/^setup-(fixed|living)/.test(r.id)))out.push({id:'budget-split',title:'Budget genauer aufteilen',text:'Ersetze Fixkosten und Lebenshaltung nach und nach durch Posten wie Miete oder Versicherungen.',run:()=>_openDataSection('budget','ds-budget-items')});
   const fs=doc.forecast.settings;
   if(assets.length&&m.forecast&&!['pensionStartAge','phase2WorkPercent','phase2SavingPercent','pensionSpending'].some(k=>k in fs))out.push({id:'phases',title:'Lebensphasen planen',text:'Ansparen, Weiterarbeiten, Vorruhestand und Rente – jede Phase mit eigenen Annahmen.',run:()=>openPhasesSheet()});
-  if(assets.length&&m.forecast)out.push({id:'assumptions',title:'Annahmen prüfen',text:'Rendite je Anlage, Inflation und Sicherheit findest du unter Prognose → Annahmen.',run:()=>_v2OpenForecastSettings()});
+  if(assets.length&&m.forecast)out.push({id:'assumptions',title:'Annahmen prüfen',text:'Rendite je Anlage, Inflation und Sicherheit findest du unter Daten → Prognose & Annahmen.',run:()=>_v2OpenForecastSettings(['plan','assets'])});
   if(assets.length&&!_lastBackup())out.push({id:'backup',title:'Erste Sicherung erstellen',text:'Deine Daten liegen nur auf diesem Gerät. Eine Datei genügt für den Umzug.',run:()=>exportBackup()});
   const hidden=new Set(_tipsDismissed());
   return out.filter(t=>!hidden.has(t.id)).slice(0,3);
