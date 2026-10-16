@@ -85,3 +85,20 @@ test('Annahmen und Erklärung: Hinweis statt Rendite, wenn die Gruppe ganz abges
   assert.match(html, /if\(!depAll\)\{\n      html\+=field\(g,'ret','Rendite'/);
   assert.match(html, /g\.depShare>=0\.999\?`<td colspan="2">\$\{L\('laut Abschreibung','per depreciation'\)\}<\/td>`/);
 });
+
+test('Startbestand aus einem anderen Monat (Live-Monat voraus bzw. veralteter Stand): Wert danach genau laut Plan', () => {
+  const dep = { method: 'percent', amount: 1, interval: 'month', startMonth: '2025-01', startValue: 28000 };
+  const Asset = require('../asset-model.js');
+  for (const month of ['2026-11', '2026-08']) {
+    const d = Data.empty();
+    d.groups = [{ id: 'g1', name: 'Cash', assumptions: {} }, { id: 'g2', name: 'Fahrzeuge', assumptions: {} }];
+    d.positions = [
+      { id: 'konto', name: 'Girokonto', category: 'cash', groupId: 'g1', archived: false, custom: false, ticker: null, unit: null },
+      { id: 'auto', name: 'Auto', category: 'vehicle', groupId: 'g2', archived: false, custom: true, ticker: null, unit: null, liquidity: 'illiquid', valuation: 'manual', depreciation: dep }
+    ];
+    d.snapshots = [{ month, positions: [{ positionId: 'konto', value: 50000 }, { positionId: 'auto', value: Asset.depreciatedValue(dep, month) }] }];
+    const a = app(html, new MemoryStorage({ [Data.KEY]: JSON.stringify(d) }));
+    assert.equal(a.run('buildPlan().latestKey'), month);
+    pathOf(a, 'Fahrzeuge', ['auto']).forEach(r => assert.ok(Math.abs(r.sim - r.plan) < 1, `${month}, Jahr ${r.y}: ${r.sim} ≠ ${r.plan}`));
+  }
+});

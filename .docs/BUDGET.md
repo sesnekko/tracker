@@ -14,7 +14,7 @@ Das Budget ist ein **wiederkehrender Jahresplan ohne Jahresbezug**: zwölf Monat
 Posten, Januar bis Dezember. Die Seite (`#page-budget`) zeigt:
 
 - Ø Monatseinnahmen,
-- Fixkosten, Lebenshaltung und Sparquote,
+- Fixkosten, Lebenshaltung und Sparquote (auf dem iPhone seit 16.10.2026 nur Einnahmen und Sparquote),
 - eine Aufschlüsselung des gewählten Monats,
 - den Geldfluss zwischen Konten aus den Daueraufträgen.
 
@@ -111,8 +111,15 @@ Das Jahr bestimmt automatische Kreditraten, Depotbeiträge und einmalige Zahlung
 ausgaben  = fixkosten + variable
 aufbau    = sparplaene + tilgung          (Vermögensaufbau)
 frei      = einnahmen − ausgaben − aufbau
-sparquote = aufbau ÷ einnahmen
+ersparnis = einnahmen − ausgaben          (= aufbau + frei)
+sparquote = ersparnis ÷ einnahmen
 ```
+
+**Sparquote** (seit 16.10.2026): Anteil der Einnahmen, der nicht ausgegeben wird – Sparpläne, Tilgung und der Rest,
+der nach allen Ausgaben übrig bleibt (die Prognose legt ihn als Guthaben an). Kreditzinsen zählen als Ausgabe, die
+Tilgung als Sparen. Vorher war sie `aufbau ÷ einnahmen`: Der Rest fehlte (Demo: 39 % statt 53 %), und eine
+Sondertilgung über dem Monatsüberschuss zählte als neue Ersparnis, obwohl sie aus vorhandenem Guthaben kommt (Demo
+August: 2.500 € Sondertilgung, Monat −1.452 €).
 
 **Durchschnitt** (`_avgBudget(bd, feld)`): über die zwölf Planmonate. Ausnahme: Für
 `einnahmen` zählen **nur Monate mit Einnahmen** (siehe Befund BU2). Einmalige Zahlungen
@@ -126,9 +133,9 @@ zählen nie in den Durchschnitt.
 | --- | --- |
 | Hero „Ø Monatseinnahmen“ | `_avgBudget('einnahmen')`; darunter Minimum und Maximum der Monatseinnahmen (auch wenn beide gleich sind: „↓ 5.375 € • ↑ 5.375 €“) |
 | Kachel Einnahmen | Einnahmen **des Planmonats** („Plan Nov“) |
-| Kachel Fixkosten | Ø Fixkosten, % der Ø Einnahmen |
-| Kachel Lebenshaltung | Ø variable Ausgaben, % der Ø Einnahmen |
-| Kachel Sparquote | Ø Vermögensaufbau ÷ Ø Einnahmen |
+| Kachel Fixkosten | Ø Fixkosten; Quote = Σ Fixkosten ÷ Σ Einnahmen der Planmonate (`_budgetQuotes`). Nur ab iPad (`kpi-wide-only`) |
+| Kachel Lebenshaltung | Ø variable Ausgaben; Quote = Σ ÷ Σ Einnahmen. Nur ab iPad |
+| Kachel Sparquote | Σ Ersparnis ÷ Σ Einnahmen der Planmonate, darunter Ø Ersparnis je Monat. Fix + Lebenshaltung + Sparquote = 100 % |
 | Aufschlüsselung (`renderBudgetBreakdown`) | gewählter Monat inkl. einmaliger Zahlungen (siehe unten) |
 | Geldfluss (`renderBudgetSankey`) | Daueraufträge (siehe unten) |
 
@@ -230,7 +237,7 @@ Schlagwortliste:
 | # | Schwere | Befund |
 | --- | --- | --- |
 | BU1 | mittel | Budget zeigt standardmäßig den Plan des Folgemonats – **behoben** (P7) |
-| BU2 | niedrig | Ø Einnahmen und Ø Ausgaben haben verschiedene Basen |
+| BU2 | niedrig | Ø Einnahmen und Ø Ausgaben haben verschiedene Basen – **für die Quoten behoben** (16.10.2026, `_budgetQuotes`); Hero und Ø-Beträge unverändert |
 | BU3 | niedrig | Schlagwörter treffen Teilwörter |
 | BU4 | niedrig | Geldfluss nur einstufig, „Kindergeld“ fest im Code, kein Abgleich mit dem Plan |
 | BU5 | niedrig | Zinsanteil ohne Vertrag bleibt das ganze Jahr gleich |

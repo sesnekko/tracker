@@ -1414,6 +1414,12 @@ select.ds-in{padding-right:28px;text-align:left;background-image:linear-gradient
 .ds-sheet .loan-extra-row{padding:8px 14px}
 .ds-sheet .loan-extra-row+.loan-extra-row{box-shadow:inset 0 .5px 0 var(--sep)}
 .ds-sheet .loan-extra-row .num-input{font-size:16px;background:var(--fill);border:none;border-radius:9px;min-height:38px}
+/* Sondertilgung im Sheet (16.10.2026): drei Spalten Termin | Betrag | Entfernen; beide Felder gleich breit und hoch, sonst
+   ragte der Termin (.ds-in, 148 px) in den Betrag und die Beschriftungen standen versetzt */
+.ds-sheet .loan-extra-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;align-items:end;gap:10px}
+.ds-sheet .loan-extra-row label{gap:6px}
+.ds-sheet .loan-extra-row .ds-in,.ds-sheet .loan-extra-row .num-input{width:100%;box-sizing:border-box;height:40px;min-height:40px;padding:8px 11px;font-size:16px;line-height:1.2}
+.ds-sheet .loan-extra-row .position-remove{height:40px;display:flex;align-items:center;margin:0}
 .ds-sheet .loan-plan{margin:12px 4px 0}
 .ds-danger{display:block;width:100%;margin-top:26px;min-height:48px;border:none;border-radius:12px;background:var(--card);color:var(--red);font:inherit;font-size:15px;cursor:pointer}
 .ds-danger:active{opacity:.75}
@@ -1486,6 +1492,8 @@ body.dark .ask{background:var(--bg2);box-shadow:0 0 0 .5px var(--border),0 18px 
 
 /* Budget */
 #page-budget .kpi-item{height:112px}
+/* iPhone (16.10.2026): nur Einnahmen und Sparquote; Fixkosten und Lebenshaltung stehen in der Aufschlüsselung darunter */
+@media (max-width:767px){#page-budget .kpi-item.kpi-wide-only{display:none}}
 /* Geldfluss: Überschrift mittig, ein Trennstrich zwischen Überschrift und Einnahmen/Ausgaben */
 .v2-sankey{margin-top:22px;padding-top:22px;border-top:1px solid var(--border)}
 .v2-sankey-head{display:flex;justify-content:center;cursor:pointer;-webkit-user-select:none;user-select:none}
@@ -2459,7 +2467,7 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
       </div>
     </div>
   </div>
-  <div class="kpi-item">
+  <div class="kpi-item kpi-wide-only">
     <div class="kpi-flip-inner">
       <div class="kpi-face-front">
         <div class="kpi-label">Fixkosten</div>
@@ -2472,7 +2480,7 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
       </div>
     </div>
   </div>
-  <div class="kpi-item">
+  <div class="kpi-item kpi-wide-only">
     <div class="kpi-flip-inner">
       <div class="kpi-face-front">
         <div class="kpi-label">Lebenshaltung</div>
@@ -2494,7 +2502,7 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
       </div>
       <div class="kpi-face-back">
         <div class="kpi-back-label">Sparquote</div>
-        <div class="kpi-back-text">Vermögensaufbau (Sparpläne + Tilgung) im Verhältnis zu den Ø Monatseinnahmen</div>
+        <div class="kpi-back-text">Anteil der Einnahmen, der nicht ausgegeben wird: Sparpläne, Tilgung und was nach allen Ausgaben übrig bleibt. Kreditzinsen zählen als Ausgabe. Über alle Planmonate.</div>
       </div>
     </div>
   </div>
@@ -2758,7 +2766,7 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="i18n-en.js?v=19"></script>
+<script src="i18n-en.js?v=20"></script>
 <script src="data-store.js?v=32"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
@@ -6017,8 +6025,11 @@ function calcBudgetMonth(bd,monthIdx,includeOnce=false,ymIn){
   const ausgaben=fixkosten+variable;
   const aufbau=sparplaene+tilgung;
   const frei=einnahmen-ausgaben-aufbau;
-  const sparquote=einnahmen>0?Math.round(aufbau/einnahmen*100):0;
-  return{einnahmen,fixkosten,variable,sparplaene,tilgung,aufbau,ausgaben,frei,netto:frei,sparquote,einItems,fixItems,varItems,sparItems,tilgItems};
+  /* Ersparnis (16.10.2026) = Einnahmen − Ausgaben = Vermögensaufbau + Rest; Kreditzinsen sind Ausgabe, Tilgung ist Sparen.
+     Eine Sondertilgung über dem Monatsüberschuss kommt aus vorhandenem Guthaben und ist keine neue Ersparnis. */
+  const ersparnis=einnahmen-ausgaben;
+  const sparquote=einnahmen>0?Math.round(ersparnis/einnahmen*100):0;
+  return{einnahmen,fixkosten,variable,sparplaene,tilgung,aufbau,ausgaben,frei,netto:frei,ersparnis,sparquote,einItems,fixItems,varItems,sparItems,tilgItems};
 }
 /* Ø eines Budget-Werts über die Monate (Einnahmen: nur Monate mit Einnahmen) */
 function _avgBudget(bd,field){
@@ -6032,6 +6043,18 @@ function _avgBudget(bd,field){
   return count>0?Math.round(sum/count):0;
 }
 function calcAvgHaushaltsnetto(bd){return _avgBudget(bd,'einnahmen');}
+/* Quoten über alle Planmonate (16.10.2026): Summe ÷ Summe der Einnahmen derselben Monate, damit Einnahmen und Ausgaben
+   dieselbe Basis haben (BU2). Sparquote = Ersparnis ÷ Einnahmen (Sparpläne, Tilgung und der Rest nach allen Ausgaben;
+   die Prognose legt den Rest als Guthaben an). planned = nur Sparpläne und Tilgung. */
+function _budgetQuotes(bd){
+  let ein=0,fix=0,vari=0,save=0,build=0,n=0;
+  for(let m=0;m<12;m++){
+    const c=calcBudgetMonth(bd,m);if(!c)continue;
+    ein+=c.einnahmen;fix+=c.fixkosten;vari+=c.variable;save+=c.ersparnis;build+=c.aufbau;n++;
+  }
+  if(!(ein>0)||!n)return null;
+  return{fix:fix/ein,variable:vari/ein,savings:save/ein,planned:build/ein,saveAvg:save/n};
+}
 
 function renderBudgetPage(){
   const bd=loadBudgetData();
@@ -6069,16 +6092,16 @@ function renderBudgetPage(){
   
   if(c){
     einEl.textContent=c.einnahmen>0?c.einnahmen.toLocaleString('de-DE'):'—';
-    const avgFix=_avgBudget(bd,'fixkosten'),avgVar=_avgBudget(bd,'variable'),avgAufbau=_avgBudget(bd,'aufbau');
-    /* Quoten auf Basis der Ø-Einnahmen (gleiche Basis wie die Ø-Werte) */
-    const q=v=>avgEinnahmen>0?Math.round(v/avgEinnahmen*100):0;
+    const avgFix=_avgBudget(bd,'fixkosten'),avgVar=_avgBudget(bd,'variable'),Q=_budgetQuotes(bd);
+    /* Quoten über alle Planmonate mit derselben Basis (_budgetQuotes) */
+    const q=v=>Math.round(v*100),pctTxt=v=>(v<0?'−':'')+Math.abs(q(v))+'%';
     fixEl.textContent=avgFix>0?avgFix.toLocaleString('de-DE'):'—';
     varEl.textContent=avgVar>0?avgVar.toLocaleString('de-DE'):'—';
-    sqEl.textContent=avgAufbau>0?q(avgAufbau)+'%':'—';
+    sqEl.textContent=Q?pctTxt(Q.savings):'—';
     if(subs[0])subs[0].textContent='Plan '+MONTH_NAMES[monthIdx];
-    if(subs[1])subs[1].textContent=avgEinnahmen>0?q(avgFix)+'% der Einnahmen':'';
-    if(subs[2])subs[2].textContent=avgEinnahmen>0?q(avgVar)+'% der Einnahmen':'';
-    if(subs[3])subs[3].textContent=avgAufbau>0?'Ø '+avgAufbau.toLocaleString('de-DE')+' € / Monat':'';
+    if(subs[1])subs[1].textContent=Q?q(Q.fix)+'% der Einnahmen':'';
+    if(subs[2])subs[2].textContent=Q?q(Q.variable)+'% der Einnahmen':'';
+    if(subs[3])subs[3].textContent=Q?'Ø '+Math.round(Q.saveAvg).toLocaleString('de-DE')+' € / Monat':'';
   }else{
     einEl.textContent='—';fixEl.textContent='—';varEl.textContent='—';sqEl.textContent='—';
     subs.forEach(el=>{if(el)el.textContent='';});
@@ -10630,11 +10653,13 @@ function buildPlan(sIn,opt={}){
   /* eigenes Nettogehalt (Budget-Einnahmen, die dir zugeordnet sind): ändert sich mit deiner Arbeitszeit je Phase */
   const ownNet=_personSalary(_ownPersonId()),ownWork=_ownWork(s);
   /* Abschreibung je Topf: Faktor je Simulationsmonat k (Kalendermonat ym0 + k) = Wert im Folgemonat ÷ Wert im Monat laut
-     Plan; vor dem Kaufmonat 1, ab Wert 0 bleibt es 0. Nominal wie die Simulation; Schwankung wirkt hier nicht. */
+     Plan; vor dem Kaufmonat 1, ab Wert 0 bleibt es 0. Nominal wie die Simulation; Schwankung wirkt hier nicht. Der erste
+     Schritt geht vom Monat des Startbestands aus (latestKey, kann vor oder nach ym0 liegen), damit der Wert danach genau
+     dem Plan im Kalendermonat entspricht. */
   const depF=buckets.map(b=>{
     if(!b.dep)return null;
     const v=k=>AssetModel.depreciatedValue(b.dep,LoanModel.addMonths(ym0,k)),f=new Float64Array(nMonths);
-    let cur=v(0);
+    let cur=AssetModel.depreciatedValue(b.dep,latestKey);
     for(let k=0;k<nMonths;k++){const nx=v(k+1);f[k]=cur==null||nx==null?1:cur>0?nx/cur:0;cur=nx;}
     return f;
   });

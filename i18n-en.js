@@ -108,7 +108,7 @@
     'Geplante Einnahmen im gewählten Monat. Manuelle Budgetposten wiederholen sich jährlich; Kreditraten werden für das gewählte Kalenderjahr berechnet.': 'Planned income in the selected month. Manual budget items repeat every year; loan payments are calculated for the selected calendar year.',
     'Ø Wohnen, Versicherungen, Verträge, Kreditzinsen – der Tilgungsanteil zählt zum Vermögensaufbau': 'Avg housing, insurance, contracts, loan interest – the repayment share counts as wealth building',
     'Ø variable Ausgaben ohne Sparpläne': 'Avg variable spending without savings plans',
-    'Vermögensaufbau (Sparpläne + Tilgung) im Verhältnis zu den Ø Monatseinnahmen': 'Wealth building (savings plans + repayment) relative to avg monthly income',
+    'Anteil der Einnahmen, der nicht ausgegeben wird: Sparpläne, Tilgung und was nach allen Ausgaben übrig bleibt. Kreditzinsen zählen als Ausgabe. Über alle Planmonate.': 'Share of income that is not spent: savings plans, repayment and whatever is left after all expenses. Loan interest counts as an expense. Across all plan months.',
     'Ausgaben': 'Spending', 'Vermögensaufbau': 'Wealth building', 'Nicht verplant': 'Unallocated', 'Fixe Ausgaben': 'Fixed spending', 'Variable Ausgaben': 'Variable spending',
     'Geldfluss': 'Money flow', 'Sobald du deine Einnahmen einträgst, siehst du hier, was übrig bleibt.': 'Once you enter your income, you see here what is left over.',
     'Haus': 'House', 'Betreuung': 'Childcare', 'Versicherungen': 'Insurance', 'Verträge': 'Contracts', 'Autos': 'Cars', 'Sonstiges': 'Other', 'Lebensmittel': 'Groceries',

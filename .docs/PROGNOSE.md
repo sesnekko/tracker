@@ -187,7 +187,8 @@ Positionen werden zu Gruppen zusammengefasst (Gruppe = `displayGroup`, sonst Kat
 - **Abschreibung** (seit 15.10.2026): Jede Position mit gültiger Abschreibung (Daten → Vermögenswerte → Position,
   `AssetModel.depreciatedValue`) bekommt einen eigenen Topf (`dep`). `plan.depF` enthält dafür je Simulationsmonat `k`
   (Kalendermonat `ym0 + k`) den Faktor Wert im Folgemonat ÷ Wert im Monat laut Plan; vor dem Kaufmonat 1, ab Wert 0
-  bleibt es 0. Der Topf folgt damit genau dem Abschreibungsplan statt der Rendite der Gruppe (vorher z. B. pauschal
+  bleibt es 0. Der erste Schritt geht vom Monat des Startbestands (`latestKey`) aus, der vor oder nach `ym0` liegen kann
+  (z. B. Live-Monat schon erfasst); danach entspricht der Wert genau dem Plan im Kalendermonat (16.10.2026). Der Topf folgt damit genau dem Abschreibungsplan statt der Rendite der Gruppe (vorher z. B. pauschal
   −5 % für Fahrzeuge); Schwankung wirkt dort nicht. Ein Verkauf per Ereignis senkt den Topf anteilig, danach läuft
   der Plan weiter. `g.depShare` = Anteil des Gruppenwerts mit Abschreibung (1 = Rendite und Schwankung der Gruppe
   wirken nicht). Sparraten gehen bevorzugt in einen Topf ohne Abschreibung. Die Abschreibung kennt keinen Restwert:

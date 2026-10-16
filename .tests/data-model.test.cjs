@@ -39,8 +39,12 @@ test('migration retains every month, value, quantity, budget and forecast result
   assert.deepEqual(totals(a), totals(legacyApp));
   assert.deepEqual(a.json('loadData()'), legacyApp.json('loadData()'));
   for (let m = 0; m < 12; m++) {
-    const stripMetadata = c => JSON.parse(JSON.stringify(c, (k, v) => ['id', 'targetGroup', 'explicitTarget'].includes(k) ? undefined : v));
-    assert.deepEqual(stripMetadata(a.json(`calcBudgetMonth(loadBudgetData(),${m})`)), stripMetadata(legacyApp.json(`calcBudgetMonth(loadBudgetData(),${m})`)));
+    /* Sparquote seit 16.10.2026 = Ersparnis (Einnahmen − Ausgaben) ÷ Einnahmen statt Vermögensaufbau ÷ Einnahmen: beide
+       Felder sind abgeleitet und gehören nicht zum Vergleich mit dem Altmodell; alle Beträge bleiben gleich. */
+    const stripMetadata = c => JSON.parse(JSON.stringify(c, (k, v) => ['id', 'targetGroup', 'explicitTarget', 'ersparnis', 'sparquote'].includes(k) ? undefined : v));
+    const cur = a.json(`calcBudgetMonth(loadBudgetData(),${m})`);
+    assert.deepEqual(stripMetadata(cur), stripMetadata(legacyApp.json(`calcBudgetMonth(loadBudgetData(),${m})`)));
+    assert.ok(Math.abs(cur.ersparnis - (cur.einnahmen - cur.ausgaben)) < 1e-9 && Math.abs(cur.ersparnis - (cur.aufbau + cur.frei)) < 1e-9);
   }
   // IDs are metadata; all simulation inputs remain numerically equal to the old model, results equal a fresh import.
   const stripIds = x => JSON.parse(JSON.stringify(x, (k, v) => k === 'id' ? undefined : v));
