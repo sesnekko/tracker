@@ -6,7 +6,7 @@
   // Stand vor dem letzten Update (Rohtext), geschrieben direkt vor dem ersten Speichern eines migrierten Dokuments (P37).
   const BACKUP_KEY = 'vermoegen-data-v1-before-update';
   const FORMAT = 'vermoegen-backup';
-  const VERSION = 19;
+  const VERSION = 20;
   const CATEGORIES = ['cash', 'etf', 'stock', 'bitcoin', 'crypto', 'metal', 'realEstate', 'vehicle', 'other', 'bav', 'illiquid', 'liab'];
   const BUDGET_CATEGORIES = ['einkommen', 'fixe', 'variable', 'sparen'];
   const MODULES = ['assets', 'liab', 'pension', 'budget', 'forecast'];
@@ -166,6 +166,10 @@
     return g ? g.id : null;
   }
   function fromLegacy(values, previous = empty()) {
+    // Version 20: Konto je Budgetposten, Kredit, Kind (Kindergeld) und Altersvorsorgedepot. In den Legacy-Werten steht
+    // der Kontoname (wie bei Daueraufträgen); aufgelöst wird am Ende, wenn die Konten feststehen. Unbekannte Namen entfallen.
+    const accountRefs = [];
+    const wantAccount = (obj, name) => { if (typeof name === 'string' && name.trim()) accountRefs.push([obj, name]); };
     const doc = empty();
     const config = parse(values, 'fieldConfig', { fields: [] });
     const fields = copy(config.fields || []);
@@ -254,6 +258,7 @@
       if(own(value,'assetId'))loan.linkedAssetId=value.assetId;
       if(value.firstDue)loan.firstPaymentMonth=value.firstDue;
       if(own(value,'extras'))loan.extraPayments=copy(value.extras);
+      wantAccount(loan, value.account);
       doc.loans.push(loan);
     }
     const bd = parse(values, 'budgetData', null);
@@ -282,6 +287,7 @@
         // Version 17: Arbeitszeit zum Gehalt (Vollzeit 100, Teilzeit x %); gilt als heutige Arbeitszeit der Person
         const wp = number(row.workPct);
         if (wp !== undefined && item.personId && !item.retirementIncome) item.workPercent = wp;
+        wantAccount(item, row.account);
         doc.budget.items.push(item);
       }
       const orderId = idsFor('order-', previous.budget ? previous.budget.standingOrders : []);
@@ -342,6 +348,7 @@
       if (Array.isArray(r.kidsOpen) && r.kidsOpen.length) d.unresolvedChildBirthYears = r.kidsOpen.map(y => number(y));
       // Version 11: the depot's value can come from an asset position (with quotes) in the overview.
       if (r.pos && doc.positions.some(p => p.id === r.pos && p.category !== 'liab')) d.positionId = r.pos;
+      wantAccount(d, r.account);
       return d;
     });
     // Version 14: Kinder als Personen. Kindergeld und Kinderzulage werden aus ihnen abgeleitet; Zeilen ohne Geburtsjahr
@@ -353,6 +360,7 @@
       const bm = number(r.bm); if (Number.isInteger(bm) && bm >= 1 && bm <= 12) c.birthMonth = bm;
       if (number(r.until) === 25) c.childBenefitUntilAge = 25;
       if (r.parent && r.parent !== primary.id && personIds.includes(r.parent)) c.allowanceParentId = r.parent;
+      wantAccount(c, r.account);
       return c;
     }).filter(Boolean);
     if (children.length) { doc.retirement.children = children; doc.retirement.pensionDepots.forEach(d => delete d.childBirthYears); }
@@ -395,11 +403,14 @@
     // Version 12: language of the app (German by default).
     if (values.appLang === 'en' || values.appLang === 'de') doc.preferences.language = values.appLang;
     for (const key of Object.keys(values)) if (key.startsWith('ui-open-')) doc.preferences.expandedSections[key.slice(8)] = values[key] === '1';
+    for (const [obj, name] of accountRefs) { const a = doc.accounts.find(x => x.name === name); if (a) obj.accountId = a.id; }
     validate(doc);
     return doc;
   }
   function toLegacy(doc) {
     const values = record();
+    const accountName = id => { const a = doc.accounts.find(x => x.id === id); return a ? a.name : undefined; };
+    const withAccount = o => own(o, 'accountId') && accountName(o.accountId) ? { account: accountName(o.accountId) } : {};
     const put = (k, v) => { values[k] = JSON.stringify(v); };
     const groupName = id => doc.groups.find(g => g.id === id).name;
     const fields = doc.positions.filter(p => !p.archived).map(p => {
@@ -427,7 +438,7 @@
       bd.accounts = Object.fromEntries(doc.accounts.map(a => [a.name, a.iban]));
       const endpoint = v => v.type === 'account' ? doc.accounts.find(a => a.id === v.accountId).name : v.name;
       bd.standingOrders = doc.budget.standingOrders.map(o => ({ id: o.id, from: endpoint(o.from), to: endpoint(o.to), amount: o.amount }));
-      for (const r of doc.budget.items) bd[r.category].push({ id: r.id, name: r.name, subcat: r.subcategory, kind: r.kind, targetGroupId: r.targetGroupId, targetGroup: r.targetGroupId ? groupName(r.targetGroupId) : null, ...(r.loanId ? { loanId: r.loanId } : {}), ...(r.depotId ? { depotId: r.depotId } : {}), ...(r.retirementIncome ? { retirement: true } : {}), ...(r.personId ? { person: r.personId } : {}), ...(own(r, 'workPercent') ? { workPct: r.workPercent } : {}), values: copy(r.monthlyAmounts) });
+      for (const r of doc.budget.items) bd[r.category].push({ id: r.id, name: r.name, subcat: r.subcategory, kind: r.kind, targetGroupId: r.targetGroupId, targetGroup: r.targetGroupId ? groupName(r.targetGroupId) : null, ...(r.loanId ? { loanId: r.loanId } : {}), ...(r.depotId ? { depotId: r.depotId } : {}), ...(r.retirementIncome ? { retirement: true } : {}), ...(r.personId ? { person: r.personId } : {}), ...(own(r, 'workPercent') ? { workPct: r.workPercent } : {}), ...withAccount(r), values: copy(r.monthlyAmounts) });
       bd.oneTime = copy(doc.budget.oneTime || []);
       put('budgetData', bd);
     }
@@ -437,6 +448,7 @@
       if(own(l,'linkedAssetId'))p.assetId=l.linkedAssetId;
       if(own(l,'firstPaymentMonth'))p.firstDue=l.firstPaymentMonth;
       if(own(l,'extraPayments'))p.extras=copy(l.extraPayments);
+      Object.assign(p,withAccount(l));
       lp[l.positionId]=p;
     }
     put('loanParams', lp);
@@ -452,12 +464,12 @@
       ...(own(p, 'civilServicePension') ? { bv: unmapped(p.civilServicePension, CIVIL) } : {}),
       ...unmapped(p.statutoryPension, DRV) })));
     put('lt-children', (doc.retirement.children || []).map(c => ({ id: c.id, name: c.name, by: c.birthYear, ...(c.birthMonth ? { bm: c.birthMonth } : {}),
-      ...(c.childBenefitUntilAge ? { until: c.childBenefitUntilAge } : {}), ...(c.allowanceParentId ? { parent: c.allowanceParentId } : {}) })));
+      ...(c.childBenefitUntilAge ? { until: c.childBenefitUntilAge } : {}), ...(c.allowanceParentId ? { parent: c.allowanceParentId } : {}), ...withAccount(c) })));
     put('lt-av-depots', (doc.retirement.pensionDepots || []).map(d => ({
       id: d.id, name: d.name, person: d.personId === primary.id ? '' : d.personId,
       ...unmapped(d, AV_DEPOT), ...(d.childBirthYears ? { kids: d.childBirthYears.join(', ') } : {}),
       ...(d.unresolvedChildBirthYears ? { kidsOpen: d.unresolvedChildBirthYears.slice() } : {}),
-      ...(d.positionId ? { pos: d.positionId } : {})
+      ...(d.positionId ? { pos: d.positionId } : {}), ...withAccount(d)
     })));
     put('lt-pensions', doc.retirement.incomes.map(p => ({ id: p.id, name: p.name, amount: p.monthlyAmount, from: p.fromAge, ...(p.untilAge !== undefined ? { until: p.untilAge } : {}), ...(p.personId ? { person: p.personId } : {}) })));
     for (const [key, field] of Object.entries(SETTINGS)) if (own(doc.forecast.settings, field)) values[key] = String(doc.forecast.settings[field]);
@@ -503,7 +515,7 @@
     safeKeys(doc);
     object(doc, 'Datei', ['format', 'schemaVersion', 'currency', 'exportedAt', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences'], ['format', 'schemaVersion', 'currency', 'groups', 'positions', 'snapshots', 'accounts', 'budget', 'loans', 'retirement', 'forecast', 'preferences']);
     if (doc.format !== FORMAT) fail('format', 'keine Assets-Sicherung');
-    if (![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
+    if (![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,VERSION].includes(doc.schemaVersion)) fail('schemaVersion', 'nicht unterstützte Version ' + doc.schemaVersion);
     if (doc.currency !== 'EUR') fail('currency', 'nur EUR wird unterstützt');
     if (own(doc, 'exportedAt') && (typeof doc.exportedAt !== 'string' || !Number.isFinite(Date.parse(doc.exportedAt)))) fail('exportedAt', 'ungültiges Datum');
     const groups = unique(doc.groups, 'groups');
@@ -581,7 +593,7 @@
         }
       }
       for (const b of doc.budget.items) {
-        object(b, 'Budgetposten', ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts', 'loanId', 'depotId', 'retirementIncome', 'personId', ...(doc.schemaVersion >= 17 ? ['workPercent'] : [])], ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts']);
+        object(b, 'Budgetposten', ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts', 'loanId', 'depotId', 'retirementIncome', 'personId', ...(doc.schemaVersion >= 17 ? ['workPercent'] : []), ...(doc.schemaVersion >= 20 ? ['accountId'] : [])], ['id', 'name', 'category', 'subcategory', 'kind', 'targetGroupId', 'monthlyAmounts']);
         if (own(b, 'workPercent')) {
           num(b.workPercent, 'Arbeitszeit', 0);
           if (!(b.workPercent > 0 && b.workPercent <= 100)) fail('Budgetposten.Arbeitszeit', 'mehr als 0 und höchstens 100 % erwartet');
@@ -596,6 +608,7 @@
           ref(b.depotId, 'Budgetposten.Altersvorsorgedepot', new Set((doc.retirement && doc.retirement.pensionDepots || []).map(d => d.id)));
           if (b.kind !== 'saving') fail('Budgetposten.Altersvorsorgedepot', 'nur für Sparposten');
         }
+        if (own(b, 'accountId')) ref(b.accountId, 'Budgetposten.Konto', accounts);
         if (own(b, 'loanId')) { ref(b.loanId, 'Budgetposten.Kredit', positions); if (doc.positions.find(p => p.id === b.loanId).category !== 'liab') fail('Budgetposten.Kredit', 'keine Verbindlichkeit'); }
         text(b.name, 'Budgetname', true); text(b.subcategory, 'Unterkategorie');
         if (!BUDGET_CATEGORIES.includes(b.category)) fail('Budgetkategorie', 'unbekannt');
@@ -614,7 +627,8 @@
     } else if (doc.accounts.length) fail('budget', 'Konten benötigen einen Budgetbereich');
     unique(doc.loans, 'Kredite', 'positionId');
     for (const l of doc.loans) {
-      object(l, 'Kredit', ['positionId', ...Object.values(LOANS), 'linkedAssetId', 'firstPaymentMonth', 'extraPayments'], ['positionId']); ref(l.positionId, 'Kreditposition', positions);
+      object(l, 'Kredit', ['positionId', ...Object.values(LOANS), 'linkedAssetId', 'firstPaymentMonth', 'extraPayments', ...(doc.schemaVersion >= 20 ? ['accountId'] : [])], ['positionId']); ref(l.positionId, 'Kreditposition', positions);
+      if (own(l, 'accountId')) ref(l.accountId, 'Kredit.Konto', accounts);
       if (doc.positions.find(p => p.id === l.positionId).category !== 'liab') fail('Kredit', 'Position ist keine Verbindlichkeit');
       for (const k of Object.values(LOANS)) if(own(l,k))num(l[k], 'Kredit.' + k, 0);
       if(own(l,'linkedAssetId')&&l.linkedAssetId!==null){
@@ -678,7 +692,8 @@
       unique([doc.retirement.primary, ...doc.retirement.people, ...doc.retirement.children], 'Personen');
       const adults = new Set([doc.retirement.primary.id, ...doc.retirement.people.map(p => p.id)]);
       for (const c of doc.retirement.children) {
-        object(c, 'Kind', ['id', 'name', 'birthYear', 'birthMonth', 'childBenefitUntilAge', 'allowanceParentId'], ['id', 'name', 'birthYear']);
+        object(c, 'Kind', ['id', 'name', 'birthYear', 'birthMonth', 'childBenefitUntilAge', 'allowanceParentId', ...(doc.schemaVersion >= 20 ? ['accountId'] : [])], ['id', 'name', 'birthYear']);
+        if (own(c, 'accountId')) ref(c.accountId, 'Kind.Konto', accounts);
         text(c.name, 'Name des Kindes');
         if (!(Number.isInteger(c.birthYear) && c.birthYear >= 1900 && c.birthYear <= 2200)) fail('Kind.birthYear', 'Geburtsjahr erwartet');
         if (own(c, 'birthMonth') && !(Number.isInteger(c.birthMonth) && c.birthMonth >= 1 && c.birthMonth <= 12)) fail('Kind.birthMonth', '1 bis 12 erwartet');
@@ -691,7 +706,8 @@
       const personIds = new Set([doc.retirement.primary.id, ...doc.retirement.people.map(p => p.id)]);
       for (const d of doc.retirement.pensionDepots) {
         // Kinder-Jahrgänge am Depot gab es bis Version 13; migrate() macht daraus Kinder (Personen)
-        object(d, 'Altersvorsorgedepot', ['id', 'name', 'personId', ...(doc.schemaVersion < 14 ? ['childBirthYears'] : []), ...(doc.schemaVersion >= 16 ? ['unresolvedChildBirthYears'] : []), 'positionId', ...Object.values(AV_DEPOT)], ['id', 'name', 'personId', 'monthlyContribution']);
+        object(d, 'Altersvorsorgedepot', ['id', 'name', 'personId', ...(doc.schemaVersion < 14 ? ['childBirthYears'] : []), ...(doc.schemaVersion >= 16 ? ['unresolvedChildBirthYears'] : []), 'positionId', ...Object.values(AV_DEPOT), ...(doc.schemaVersion >= 20 ? ['accountId'] : [])], ['id', 'name', 'personId', 'monthlyContribution']);
+        if (own(d, 'accountId')) ref(d.accountId, 'Altersvorsorgedepot.Konto', accounts);
         if (own(d, 'unresolvedChildBirthYears')) {
           array(d.unresolvedChildBirthYears, 'Ungeklärte Kinder-Jahrgänge');
           if (!d.unresolvedChildBirthYears.length) fail('Ungeklärte Kinder-Jahrgänge', 'leer – Feld weglassen');

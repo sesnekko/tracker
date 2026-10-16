@@ -154,7 +154,7 @@ test('Weitere Rente: Bezeichnung und Betrag Pflicht, Eintrag behält seine ID', 
 test('Einnahmen & Ausgaben: automatische Posten als Zeilen, die zur Quelle führen; frühere Sprungziele öffnen Sheets', () => {
   const a = ctx(); a.run('requestAnimationFrame=f=>0');
   const auto = a.run('_autoBudgetHTML(_budgetYM())');
-  assert.match(auto, /<div class="ds-list-t">Automatisch · /);
+  assert.match(auto, /^<details class="ds-fold" data-fold="auto" ontoggle="_dsFoldToggle\(this\)"><summary class="ds-list-t ds-list-sum ds-fold-h"><span>Automatisch · /);
   const kinds = [...auto.matchAll(/data-ds-open="([^"]+)" data-id="([^"]*)"/g)].map(m => m[1] + ':' + m[2]);
   assert.ok(kinds.includes('child:c1'), kinds.join());
   assert.ok(kinds.includes('avd:d1') && kinds.includes('avd:d2'), kinds.join());
@@ -173,4 +173,31 @@ test('Sondertilgung im Sheet: drei Spalten, Felder gleich groß', () => {
   assert.match(row, /^<div class="loan-extra-row" data-extra-id="e1" data-extra-loan="k1"><label>Termin<button type="button" class="ds-in ds-date-btn"/);
   assert.match(row, /<label>Betrag €<input class="num-input" type="text" data-extra-amount value="1\.000"/);
   assert.match(row, /<button type="button" class="position-remove edit-only" data-extra-remove aria-label="Sondertilgung entfernen">Entfernen<\/button><\/div>$/);
+});
+
+// 16.10.2026: Unterbereiche von „Einnahmen & Ausgaben“ auf- und zuklappbar, damit der Bereich nicht überladen wirkt
+test('Einnahmen & Ausgaben: Unterbereiche zugeklappt mit Anzahl und Ø, Zustand gespeichert, nach dem Speichern offen', () => {
+  const a = app(html); a.csv(fs.readFileSync(path.join(__dirname, 'demo_export.csv'), 'utf8')); a.context.CSS = { escape: String };
+  let list = a.run('_budgetListHTML()');
+  const folds = [...list.matchAll(/<details class="ds-fold" data-fold="([a-z]+)"( open)? ontoggle="_dsFoldToggle\(this\)"><summary class="ds-list-t ds-list-sum ds-fold-h"><span>([^<]+)<\/span><span>([^<]*)<\/span><\/summary>/g)].map(m => [m[1], !!m[2], m[3], m[4]]);
+  assert.deepEqual(folds.map(f => f[0]), ['einkommen', 'fixe', 'variable', 'sparen', 'accounts', 'orders']);
+  assert.ok(folds.every(f => !f[1]), 'Standard: alle zu');
+  assert.match(folds[1][3], /^\d+ · Ø [\d.]+ € \/ Monat$/, 'Kopf: Anzahl und Ø');
+  assert.match(list, /<\/details><button type="button" class="ds-add" data-ds-open="add-budget">\+ Einnahme oder Ausgabe<\/button>/, 'Hinzufügen bleibt sichtbar');
+  // Auf- und Zuklappen wird gespeichert (im Dokument), unverändert schreibt nichts
+  a.run("globalThis.__f={dataset:{fold:'fixe'},open:true};_dsFoldToggle(__f)");
+  assert.equal(a.run("_uiOpen('bud-fixe')"), true);
+  assert.equal(a.json('appStorage.document()').preferences.expandedSections['bud-fixe'], true);
+  assert.match(a.run('_budgetListHTML()'), /data-fold="fixe" open/);
+  const rev = a.run('appStorage.revision()'); a.run('_dsFoldToggle(__f)'); assert.equal(a.run('appStorage.revision()'), rev);
+  // Neuer Sparposten: „Sparen“ ist danach offen
+  a.run("selectedMonth='2026-10';openBudgetSheet()");
+  for (const [k, v] of Object.entries({ 'b-mode': 'recurring', 'b-name': 'Bausparen', 'b-type': 'saving', 'b-amount': '100', 'b-rhythm': 'month' })) a.el(k).value = v;
+  a.el('b-customOn').getAttribute = () => 'false';
+  a.run('_submitSheet()');
+  assert.equal(a.run('_sheetOpen'), false, a.el('dsError').textContent);
+  assert.match(a.run('_budgetListHTML()'), /data-fold="sparen" open/);
+  // Prüfung offen: Daueraufträge offen
+  a.run('_flowCheckOpen=true');
+  assert.match(a.run('_moneyFlowHTML(loadBudgetData())'), /data-fold="orders" open/);
 });

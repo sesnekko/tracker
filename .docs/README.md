@@ -4,9 +4,10 @@ Stand: 14.10.2026, Analyse auf Code-Stand `7504901` (Schema 12); Fehlerbehebung,
 in Commit `1b57aa8` (Schema 15). Danach Review-Runde P34–P38, Anmerkungen aus dem Test, Folge-Review P54, P55, P63 und
 Folge-Review 2 P64, P65 (Commit `b9f80d4`), die Persona-Befunde und die kompaktere Daten- und Prognose-Seite (Commit `50300cc`),
 danach EM-Rente mit Zurechnungszeit und Besitzschutz, das Altersvorsorgedepot Monat für Monat und die EM-Rente mit
-Entgeltpunkten laut Bescheid (15.10.2026): Schema 19, danach der Zeitverlauf je Anlage und das Etappenziel
-auf der Prognose-Seite, Service-Worker-Cache `verm-v143`,
-`data-store.js?v=32`, `i18n-en.js?v=20`. Unabhängige Prüfberichte:
+Entgeltpunkten laut Bescheid (15.10.2026): Schema 19; 16.10.2026 Konten im Geldfluss mit Prüfung der Daueraufträge:
+Schema 20. Danach der Zeitverlauf je Anlage und das Etappenziel
+auf der Prognose-Seite, Service-Worker-Cache `verm-v144`,
+`data-store.js?v=33`, `i18n-en.js?v=21`. Unabhängige Prüfberichte:
 [REVIEW_2026-10.md](REVIEW_2026-10.md), [REVIEW_2026-10_FOLGE.md](REVIEW_2026-10_FOLGE.md),
 [REVIEW_2026-10_FOLGE2.md](REVIEW_2026-10_FOLGE2.md), [REVIEW_2026-10_FOLGE3.md](REVIEW_2026-10_FOLGE3.md).
 Status aller Befunde: [PROBLEME.md](PROBLEME.md), Abschnitt 0.
@@ -141,7 +142,8 @@ die alte Fassung, der zweite die neue.
 
 ### Tests
 
-- Aufruf: `node --test .tests/` – 40 Testdateien, 415 Tests, alle grün (16.10.2026 nach der Sparquote, `budget-savings-rate.test.cjs`;
+- Aufruf: `node --test .tests/` – 41 Testdateien, 434 Tests, alle grün (16.10.2026 nach den Konten im Geldfluss, Schema 20, `budget-accounts.test.cjs`,
+  der Sparquote, `budget-savings-rate.test.cjs`;
   15.10.2026 nach der Abschreibung in der Prognose,
   `forecast-depreciation.test.cjs`, dem Etappenziel,
   `lt-milestone.test.cjs`, dem Zeitverlauf je Anlage auf der Prognose-Seite, `lt-timeline.test.cjs`, der Transparenz der Altersrente

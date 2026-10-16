@@ -40,8 +40,9 @@ test('migration retains every month, value, quantity, budget and forecast result
   assert.deepEqual(a.json('loadData()'), legacyApp.json('loadData()'));
   for (let m = 0; m < 12; m++) {
     /* Sparquote seit 16.10.2026 = Ersparnis (Einnahmen − Ausgaben) ÷ Einnahmen statt Vermögensaufbau ÷ Einnahmen: beide
-       Felder sind abgeleitet und gehören nicht zum Vergleich mit dem Altmodell; alle Beträge bleiben gleich. */
-    const stripMetadata = c => JSON.parse(JSON.stringify(c, (k, v) => ['id', 'targetGroup', 'explicitTarget', 'ersparnis', 'sparquote'].includes(k) ? undefined : v));
+       Felder sind abgeleitet und gehören nicht zum Vergleich mit dem Altmodell; alle Beträge bleiben gleich. Ebenso das
+       Konto je Posten (acct, accts, noAcct; Schema 20), das es im Altmodell nicht gibt. */
+    const stripMetadata = c => JSON.parse(JSON.stringify(c, (k, v) => ['id', 'targetGroup', 'explicitTarget', 'ersparnis', 'sparquote', 'acct', 'accts', 'noAcct'].includes(k) ? undefined : v));
     const cur = a.json(`calcBudgetMonth(loadBudgetData(),${m})`);
     assert.deepEqual(stripMetadata(cur), stripMetadata(legacyApp.json(`calcBudgetMonth(loadBudgetData(),${m})`)));
     assert.ok(Math.abs(cur.ersparnis - (cur.einnahmen - cur.ausgaben)) < 1e-9 && Math.abs(cur.ersparnis - (cur.aufbau + cur.frei)) < 1e-9);
