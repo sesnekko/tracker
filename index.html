@@ -1420,6 +1420,26 @@ select.ds-in{padding-right:28px;text-align:left;background-image:linear-gradient
 .ds-sheet .loan-extra-row label{gap:6px}
 .ds-sheet .loan-extra-row .ds-in,.ds-sheet .loan-extra-row .num-input{width:100%;box-sizing:border-box;height:40px;min-height:40px;padding:8px 11px;font-size:16px;line-height:1.2}
 .ds-sheet .loan-extra-row .position-remove{height:40px;display:flex;align-items:center;margin:0}
+/* Geldfluss prüfen (16.10.2026) */
+.fc-box{margin:6px 0 4px}
+.fc-box .fc-head{margin:4px 2px 8px}
+.fc-switch .ds-l small{white-space:normal}
+.fc-row .ds-l small{white-space:normal;-webkit-hyphens:manual;hyphens:manual}
+.fc-st{flex-shrink:0;font-size:14px;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
+.fc-st.ok{color:var(--green)}
+.fc-st.short,.fc-short{color:var(--red)}
+.fc-st.idle{color:var(--muted)}
+.fc-apply{margin-top:10px}
+.fc-propose{margin-top:8px}
+/* Status je Karte im Geldfluss (passt/bleibt/fehlt) und Hinweis darunter */
+.sankey-node-status{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.25}
+.sankey-node-status.ok{color:var(--green)}
+.sankey-node-status.short{color:var(--red)}
+/* in der Daten-Karte auf Seitenhintergrund, damit die Karten wie auf der Budget-Seite abgesetzt sind */
+.fc-sankey{min-height:0;padding:0 6px;margin:4px 0 10px;background:var(--bg);border-radius:14px}
+.fd-cap{font-size:12px;color:var(--muted);text-align:center;margin:2px 0 6px}
+.fd-link{border:none;background:none;padding:0;font:inherit;color:var(--ink);text-decoration:underline;cursor:pointer}
+.fc-budget{margin:0 0 12px}
 .ds-sheet .loan-plan{margin:12px 4px 0}
 .ds-danger{display:block;width:100%;margin-top:26px;min-height:48px;border:none;border-radius:12px;background:var(--card);color:var(--red);font:inherit;font-size:15px;cursor:pointer}
 .ds-danger:active{opacity:.75}
@@ -1444,6 +1464,16 @@ body.dark .ds-seg button.on{background:var(--bg3)}
 .ds-mode .ds-seg{width:100%}
 .ds-mode .ds-seg button{flex:1;padding:9px 0;font-size:15px}
 .ds-list-sum{display:flex;justify-content:space-between;gap:12px}
+/* Einnahmen & Ausgaben: Unterbereiche aufklappbar (16.10.2026) */
+.ds-fold~.ds-fold{box-shadow:inset 0 .5px 0 var(--sep)}
+.ds-fold>summary{list-style:none;cursor:pointer;-webkit-tap-highlight-color:transparent;justify-content:flex-start;align-items:center;padding:14px 2px}
+.ds-fold>summary::-webkit-details-marker{display:none}
+.ds-fold>summary>span:first-child{font-size:15px;color:var(--ink)}
+.ds-fold>summary>span:last-child{margin-left:auto}
+.ds-fold>summary::after{content:'';flex:0 0 auto;width:7px;height:7px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:rotate(45deg);margin:-4px 2px 0 4px;opacity:.7;transition:transform .2s}
+.ds-fold[open]>summary::after{transform:rotate(-135deg);margin-top:4px}
+.ds-fold-b{padding-bottom:12px}
+.ds-fold-b>.ds-list:first-child{margin-top:0}
 .ds-list-sum span:last-child{font-variant-numeric:tabular-nums}
 #b-customFields[hidden]{display:none}
 .budget-hint{background:var(--card);border-radius:16px;padding:20px 18px;margin:8px 0;text-align:center}
@@ -2766,8 +2796,8 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
 </div>
 <div class="ds-toast" id="dsToast" role="status" aria-live="polite"></div>
 
-<script src="i18n-en.js?v=20"></script>
-<script src="data-store.js?v=32"></script>
+<script src="i18n-en.js?v=21"></script>
+<script src="data-store.js?v=33"></script>
 <script src="loan-model.js?v=2"></script>
 <script src="loan-history.js?v=1"></script>
 <script src="asset-model.js?v=4"></script>
@@ -5955,21 +5985,22 @@ function calcBudgetMonth(bd,monthIdx,includeOnce=false,ymIn){
   const mi=monthIdx;
   let einnahmen=0,fixkosten=0,variable=0,sparplaene=0,tilgung=0;
   const einItems=[],fixItems=[],varItems=[],sparItems=[],tilgItems=[];
-  const item=r=>({id:r.id,label:r.name,val:r.values[mi]||0,subcat:r.subcat||'',targetGroup:r.targetGroup,explicitTarget:Object.prototype.hasOwnProperty.call(r,'targetGroupId')});
+  /* acct = Konto des Postens (Schema 20), für die Prüfung der Daueraufträge (_accountFlows) */
+  const item=r=>({id:r.id,label:r.name,val:r.values[mi]||0,subcat:r.subcat||'',targetGroup:r.targetGroup,explicitTarget:Object.prototype.hasOwnProperty.call(r,'targetGroupId'),acct:r.account||null});
   const share=loanInterestShare();/* null = keine Kreditdaten hinterlegt */
   /* Kreditrate: mit Kreditdaten aufteilen, sonst "Tilgung" ganz als Vermögensaufbau */
   const loanRow=(r,v,fallbackFix)=>{
     const linked=_linkedLoanRow(r,v,autoLoans);
     if(linked){
       if(linked.skip)return true;
-      if(linked.interest>0){fixkosten+=linked.interest;fixItems.push({label:r.name+' – Zinsanteil',val:linked.interest,subcat:r.subcat||''});}
-      if(linked.principal>0){tilgung+=linked.principal;tilgItems.push({id:r.id,label:r.name+' – Tilgungsanteil',val:linked.principal,subcat:r.subcat||'',targetGroup:linked.targetGroup,explicitTarget:true});}
+      if(linked.interest>0){fixkosten+=linked.interest;fixItems.push({label:r.name+' – Zinsanteil',val:linked.interest,subcat:r.subcat||'',acct:r.account||null});}
+      if(linked.principal>0){tilgung+=linked.principal;tilgItems.push({id:r.id,label:r.name+' – Tilgungsanteil',val:linked.principal,subcat:r.subcat||'',targetGroup:linked.targetGroup,explicitTarget:true,acct:r.account||null});}
       return true;
     }
     if(share!=null){
       const zi=v*share;
-      if(zi>0){fixkosten+=zi;fixItems.push({label:r.name+' – Zinsanteil',val:zi,subcat:r.subcat||''});}
-      if(v-zi>0){tilgung+=v-zi;tilgItems.push({id:r.id,label:r.name+' – Tilgungsanteil',val:v-zi,subcat:r.subcat||'',targetGroup:r.targetGroup,explicitTarget:Object.prototype.hasOwnProperty.call(r,'targetGroupId')});}
+      if(zi>0){fixkosten+=zi;fixItems.push({label:r.name+' – Zinsanteil',val:zi,subcat:r.subcat||'',acct:r.account||null});}
+      if(v-zi>0){tilgung+=v-zi;tilgItems.push({id:r.id,label:r.name+' – Tilgungsanteil',val:v-zi,subcat:r.subcat||'',targetGroup:r.targetGroup,explicitTarget:Object.prototype.hasOwnProperty.call(r,'targetGroupId'),acct:r.account||null});}
       return true;
     }
     if(_isTilgung(r)){tilgung+=v;tilgItems.push(item(r));return true;}
@@ -6009,19 +6040,21 @@ function calcBudgetMonth(bd,monthIdx,includeOnce=false,ymIn){
     else{variable+=it.val;varItems.push(it);}
   });
   autoLoans.forEach(l=>{
-    if(l.row.interest>0){fixkosten+=l.row.interest;fixItems.push({id:l.id,label:l.label+' – Zinsanteil',val:l.row.interest,subcat:'Kredite',automatic:true});}
+    if(l.row.interest>0){fixkosten+=l.row.interest;fixItems.push({id:l.id,label:l.label+' – Zinsanteil',val:l.row.interest,subcat:'Kredite',automatic:true,acct:l.account});}
     const value=l.row.principal+l.row.extra;
-    if(value!==0){tilgung+=value;tilgItems.push({id:l.id,label:l.label+' – Tilgung'+(l.row.extra?' inkl. Sondertilgung':''),val:value,subcat:'Kredite',targetGroup:l.targetGroup,targetGroupId:l.targetGroupId,explicitTarget:true,automatic:true});}
+    if(value!==0){tilgung+=value;tilgItems.push({id:l.id,label:l.label+' – Tilgung'+(l.row.extra?' inkl. Sondertilgung':''),val:value,subcat:'Kredite',targetGroup:l.targetGroup,targetGroupId:l.targetGroupId,explicitTarget:true,automatic:true,acct:l.account});}
   });
   autoDepots.forEach(d=>{
     const base={subcat:'Altersvorsorge',automatic:true,depot:true};
-    sparplaene+=d.contrib;sparItems.push({...base,id:'avd-'+d.id,label:d.name+' – Beitrag',val:d.contrib});
+    sparplaene+=d.contrib;sparItems.push({...base,id:'avd-'+d.id,label:d.name+' – Beitrag',val:d.contrib,acct:d.account});
+    /* Die Zulage fließt direkt ins Depot, über kein Konto (noAcct) */
     if(d.subsidy>0){
-      einnahmen+=d.subsidy;einItems.push({...base,id:'avdz-'+d.id,label:'Zulage Ø · '+d.name,val:d.subsidy});
-      sparplaene+=d.subsidy;sparItems.push({...base,id:'avdz-'+d.id,label:d.name+' – Zulage Ø',val:d.subsidy});
+      einnahmen+=d.subsidy;einItems.push({...base,id:'avdz-'+d.id,label:'Zulage Ø · '+d.name,val:d.subsidy,noAcct:true});
+      sparplaene+=d.subsidy;sparItems.push({...base,id:'avdz-'+d.id,label:d.name+' – Zulage Ø',val:d.subsidy,noAcct:true});
     }
   });
-  autoKids.forEach(k=>{einnahmen+=k.val;einItems.push({id:k.id,label:k.label,val:k.val,subcat:'Kinder',automatic:true});});
+  /* Kindergeld je Kind auf sein Konto (accts) */
+  autoKids.forEach(k=>{einnahmen+=k.val;einItems.push({id:k.id,label:k.label,val:k.val,subcat:'Kinder',automatic:true,accts:k.kids.map(c=>({acct:c.account||null,val:CHILD_BENEFIT}))});});
   const ausgaben=fixkosten+variable;
   const aufbau=sparplaene+tilgung;
   const frei=einnahmen-ausgaben-aufbau;
@@ -6124,15 +6157,24 @@ function renderBudgetSankey(c){
   // Load standing orders from budget data
   const bd=loadBudgetData();
   const orders=(bd&&bd.standingOrders)||[];
-  
   const flowHint=_budgetHint('Noch kein Geldfluss','Lege deine Konten und Daueraufträge an. Dann siehst du hier, wie dein Geld jeden Monat von Konto zu Konto fließt.','Konten & Daueraufträge anlegen','ds-moneyflow');
   if(!orders.length){wrap.innerHTML=flowHint;return;}
   
+  const model=_sankeyModel(orders);
+  if(!model){wrap.innerHTML=flowHint;return;}
+  /* „Im Budget anzeigen“ aus „Daueraufträge prüfen“ (16.10.2026): gleicher Geldfluss, auf den Karten zusätzlich passt/bleibt/fehlt */
+  const status=_uiOpen('budgetflow')&&bd?_sankeyStatus(bd):null;
+  renderSankeyDiagram(wrap,model.left,model.right,model.flows,model.maxVal,status);
+  if(status&&status.size)wrap.insertAdjacentHTML('beforeend',`<p class="fd-cap">${L('Ø je Monat über die zwölf Planmonate · ','Avg per month over the twelve plan months · ')}<button type="button" class="fd-link" onclick="_flowCheckOpen=true;_openDataSection('budget','ds-moneyflow')">${L('Daueraufträge prüfen','Check standing orders')}</button></p>`);
+}
+/* Geldfluss aus Daueraufträgen: links die Quellkonten, rechts die Zielkonten; „Kindergeld“ wird dem Ziel zugerechnet.
+   Gemeinsam für die Budget-Seite und „Daueraufträge prüfen“ (dort auch mit vorgeschlagenen Aufträgen). */
+function _sankeyModel(orders){
   // Filter out Kindergeld from source accounts (it flows into target accounts)
   const kindergeldOrders=orders.filter(o=>o.from==='Kindergeld');
   const mainOrders=orders.filter(o=>o.from!=='Kindergeld'&&o.amount>0);
   
-  if(!mainOrders.length){wrap.innerHTML=flowHint;return;}
+  if(!mainOrders.length)return null;
   
   // Calculate Kindergeld amounts per target
   const kindergeldByTarget=new Map();
@@ -6172,7 +6214,18 @@ function renderBudgetSankey(c){
   });
   
   const maxVal=Math.max(...einnahmenNodes.map(n=>n.val));
-  renderSankeyDiagram(wrap,einnahmenNodes,ausgabenNodes,flows,maxVal);
+  return{left:einnahmenNodes,right:ausgabenNodes,flows,maxVal};
+}
+/* Status je Konto für die Karten (passt/bleibt/fehlt); leer, solange keinem Konto Posten zugeordnet sind */
+function _sankeyStatus(bd,ordersOverride){
+  const f=_accountFlows(bd,true,ordersOverride),m=new Map();
+  if(!f.list.some(a=>a.inItems+a.outItems>0.5))return m;
+  f.list.forEach(a=>{
+    if(a.status==='ok')m.set(a.name,{cls:'ok',text:L('passt','balanced')});
+    else if(a.status==='surplus')m.set(a.name,{cls:'',text:L('bleibt +','remains +')+fmt(Math.round(a.net))});
+    else if(a.status==='short')m.set(a.name,{cls:'short',text:L('fehlt ','short ')+fmt(Math.round(-a.net))});
+  });
+  return m;
 }
 
 /* Kartenrückseite im Geldfluss: nur eine echte IBAN wird in Vierergruppen formatiert */
@@ -6180,7 +6233,8 @@ function _ibanBackHTML(label,accounts){
   const iban=Object.prototype.hasOwnProperty.call(accounts,label)?accounts[label]:'';
   return `<div class="sankey-node-back-label">IBAN</div>`+(iban?`<div class="sankey-node-back-iban">${fmtIban(iban)}</div>`:`<div class="sankey-node-back-note">Keine IBAN hinterlegt</div>`);
 }
-	function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal){
+	function renderSankeyDiagram(container,leftNodes,rightNodes,flows,maxVal,status=null,opts={}){
+	  const st=label=>{const x=status&&status.get(label);return x?`<div class="sankey-node-status ${x.cls}">${escHTML(x.text)}</div>`:'';};
 	  const bd=loadBudgetData();
 	  const accounts=(bd&&bd.accounts)||{};
 
@@ -6208,7 +6262,7 @@ function _ibanBackHTML(label,accounts){
 	          <div class="sankey-node-front">
 	            <div class="sankey-node-accent sankey-accent-right"></div>
 	            <div class="sankey-node-label">${escHTML(labelHtml)}</div>
-            <div class="sankey-node-value">${fmt(node.val)}</div>
+            <div class="sankey-node-value">${fmt(node.val)}</div>${st(node.label)}
           </div>
           <div class="sankey-node-back">
             ${back}
@@ -6234,7 +6288,7 @@ function _ibanBackHTML(label,accounts){
 	          <div class="sankey-node-front">
 	            <div class="sankey-node-accent sankey-accent-left"></div>
 	            <div class="sankey-node-label">${escHTML(labelHtml)}</div>
-            <div class="sankey-node-value">${fmt(node.val)}</div>
+            <div class="sankey-node-value">${fmt(node.val)}</div>${st(node.label)}
           </div>
           <div class="sankey-node-back">
             ${back}
@@ -6248,8 +6302,8 @@ function _ibanBackHTML(label,accounts){
   html+='</div>';
   container.innerHTML=html;
   
-  // Add click handlers for flip
-  document.querySelectorAll('.sankey-node-card').forEach(card=>{
+  // Add click handlers for flip (nur die Karten dieses Diagramms)
+  container.querySelectorAll('.sankey-node-card').forEach(card=>{
     card.addEventListener('click',()=>{
       const wasFlipped=card.classList.contains('flipped');
       // Close all other flipped cards
@@ -6267,25 +6321,28 @@ function _ibanBackHTML(label,accounts){
   });
   
   // Render flows as SVG paths
-  setTimeout(()=>{renderSankeyFlows(leftNodes,rightNodes,flows);_fitBudget();},50);
+  setTimeout(()=>{renderSankeyFlows(leftNodes,rightNodes,flows,container);if(!opts.noFit)_fitBudget();},50);
 }
 
 let _sankeyArgs=null,_sankeyRO=null,_sankeyRaf=0;
-function renderSankeyFlows(leftNodes,rightNodes,flows){
-  const svg=document.querySelector('.sankey-flows-svg');
-  const flowsWrap=document.querySelector('.sankey-flows-wrap');
+function renderSankeyFlows(leftNodes,rightNodes,flows,container){
+  /* Container: Budget-Seite (#sankeyWrap) oder „Daueraufträge prüfen“; zwei Diagramme dürfen gleichzeitig existieren */
+  const root=container||document.getElementById('sankeyWrap')||document;
+  const svg=root.querySelector('.sankey-flows-svg');
+  const flowsWrap=root.querySelector('.sankey-flows-wrap');
   if(!svg||!flowsWrap)return;
   /* Bei jeder Größenänderung (Drehen, Fenster, Auf-/Zuklappen) neu zeichnen */
-  _sankeyArgs=[leftNodes,rightNodes,flows];
+  const args=[leftNodes,rightNodes,flows,root];
+  if(!root.dataset||!root.dataset.sankey)_sankeyArgs=args;
   if(window.ResizeObserver){
-    if(_sankeyRO)_sankeyRO.disconnect();
+    if(root._sankeyRO)root._sankeyRO.disconnect();
     let first=true;
-    _sankeyRO=new ResizeObserver(()=>{
+    root._sankeyRO=new ResizeObserver(()=>{
       if(first){first=false;return;}
-      cancelAnimationFrame(_sankeyRaf);
-      _sankeyRaf=requestAnimationFrame(()=>{if(_sankeyArgs&&document.body.contains(flowsWrap))renderSankeyFlows(..._sankeyArgs);});
+      cancelAnimationFrame(root._sankeyRaf);
+      root._sankeyRaf=requestAnimationFrame(()=>{if(document.body.contains(flowsWrap))renderSankeyFlows(...args);});
     });
-    _sankeyRO.observe(flowsWrap);
+    root._sankeyRO.observe(flowsWrap);
   }
   
   const wrapRect=flowsWrap.getBoundingClientRect();
@@ -6313,8 +6370,8 @@ function renderSankeyFlows(leftNodes,rightNodes,flows){
   });
   
   // Get actual DOM positions of nodes
-  const leftCards=document.querySelectorAll('.sankey-left .sankey-node-card');
-  const rightCards=document.querySelectorAll('.sankey-right .sankey-node-card');
+  const leftCards=root.querySelectorAll('.sankey-left .sankey-node-card');
+  const rightCards=root.querySelectorAll('.sankey-right .sankey-node-card');
   
   const leftRects=[];
   leftCards.forEach(card=>{
@@ -6372,7 +6429,7 @@ function renderSankeyFlows(leftNodes,rightNodes,flows){
     
     const path=createFlowPath(x1,y1,x2,y2,flowH_L,flowH_R);
     
-    const gradId=`grad-${fromIdx}-${toIdx}`;
+    const gradId=`grad-${(root.dataset&&root.dataset.sankey)||'b'}-${fromIdx}-${toIdx}`;
     paths+=`<defs><linearGradient id="${gradId}" x1="0%" x2="100%"><stop offset="0%" stop-color="${leftColor}" stop-opacity="0.4"/><stop offset="100%" stop-color="${rightColors[toIdx]}" stop-opacity="0.45"/></linearGradient></defs>`;
     paths+=`<path class="sankey-flow-path" d="${path}" fill="url(#${gradId})" stroke="none" data-amount="${fmt(flow.val)}" data-cx="${(x1+x2)/2}" data-cy="${(y1+y2)/2}"/>`;
   });
@@ -6382,9 +6439,9 @@ function renderSankeyFlows(leftNodes,rightNodes,flows){
   // Click handlers for flow labels
   let activeLabel=null;
   /* Nur einen globalen Klick-Handler halten (vorher kam bei jedem Rendern einer dazu) */
-  if(_sankeyDocClick)document.removeEventListener('click',_sankeyDocClick);
-  _sankeyDocClick=()=>{if(activeLabel){activeLabel.remove();activeLabel=null;}};
-  document.addEventListener('click',_sankeyDocClick);
+  if(root._sankeyDocClick)document.removeEventListener('click',root._sankeyDocClick);
+  root._sankeyDocClick=()=>{if(activeLabel){activeLabel.remove();activeLabel=null;}};
+  document.addEventListener('click',root._sankeyDocClick);
   svg.querySelectorAll('.sankey-flow-path').forEach(path=>{
     path.addEventListener('click',e=>{
       e.stopPropagation();
@@ -6409,7 +6466,6 @@ function renderSankeyFlows(leftNodes,rightNodes,flows){
   });
   
 }
-let _sankeyDocClick=null;
 
 function createFlowPath(x1,y1,x2,y2,h1,h2){
   const cx1=x1+(x2-x1)*0.4;
@@ -7326,6 +7382,9 @@ function _loanFromInputs(fieldId,strict=false){
   });
   const asset=document.querySelector(`select[data-loan-asset="${CSS.escape(fieldId)}"]`);
   if(asset&&asset.value!=='__legacy__')p.assetId=asset.value||null;
+  /* Konto der Rate (Schema 20): Auswahl im Sheet, sonst bisheriger Wert */
+  const acct=document.querySelector(`select[data-loan-account="${CSS.escape(fieldId)}"]`);
+  if(acct){if(acct.value)p.account=acct.value;}else{const old=getLoanParams()[fieldId];if(old&&old.account)p.account=old.account;}
   const wrap=document.getElementById('loanExtras-'+fieldId);
   if(wrap){
     p.extras=[];
@@ -7387,7 +7446,7 @@ function _automaticLoanRows(month){
   return _vf().filter(f=>f.category==='liab'&&LoanModel.configured(params[f.id])).map(f=>{
     const asset=doc.positions.find(p=>p.id===params[f.id].assetId);
     const group=asset&&doc.groups.find(g=>g.id===asset.groupId);
-    return {id:f.id,label:f.label,row:LoanModel.at(params[f.id],month),targetGroup:group?group.name:null,targetGroupId:group?group.id:null};
+    return {id:f.id,label:f.label,row:LoanModel.at(params[f.id],month),targetGroup:group?group.name:null,targetGroupId:group?group.id:null,account:params[f.id].account||null};
   });
 }
 /* Altersvorsorgedepots im Budget: Beitrag als Sparposten, Zulage als Monatsschnitt (Einnahme und Vermögensaufbau).
@@ -7397,7 +7456,7 @@ function _automaticDepotRows(month){
   const s=getLifetimeSettings(),y=+month.slice(0,4);
   return getAvDepots().filter(d=>d.id).map(d=>{
     const z=avdYear(s,d,y);
-    return z&&{id:d.id,name:(d.name||'').trim()||'Altersvorsorgedepot',contrib:z.own/12,subsidy:z.total/12};
+    return z&&{id:d.id,name:(d.name||'').trim()||'Altersvorsorgedepot',contrib:z.own/12,subsidy:z.total/12,account:d.account||null};
   }).filter(Boolean);
 }
 /* Budgetposten, der durch ein Depot ersetzt wird (Verknüpfung „Beitrag für“) */
@@ -7418,10 +7477,20 @@ function _depotBudgetHTML(month){
 function _loanBudgetHTML(month){
   return _automaticLoanRows(month).map(l=>_pvRow('liab',l.id,l.label,L('Zins ','Interest ')+_loanMoney(l.row.interest)+L(' · Tilgung ',' · repayment ')+_loanMoney(l.row.principal)+(l.row.extra?L(' · Sondertilgung ',' · extra ')+_loanMoney(l.row.extra):''),_loanMoney(l.row.totalPayment),L('Rate','payment'))).join('');
 }
+/* Unterbereich in „Einnahmen & Ausgaben“, auf- und zuklappbar (16.10.2026): Kopf mit Titel, Anzahl bzw. Ø-Betrag und Pfeil.
+   Zustand je Unterbereich im Dokument (ui-open-bud-<key>), Standard zu; force öffnet ihn (z. B. während der Prüfung). */
+function _dsFold(key,title,meta,body,force){
+  const open=!!force||_uiOpen('bud-'+key);
+  return `<details class="ds-fold" data-fold="${key}"${open?' open':''} ontoggle="_dsFoldToggle(this)"><summary class="ds-list-t ds-list-sum ds-fold-h"><span>${title}</span><span>${meta}</span></summary><div class="ds-fold-b">${body}</div></details>`;
+}
+function _dsFoldToggle(el){const k='bud-'+el.dataset.fold;if(el.open!==_uiOpen(k))_uiSetOpen(k,el.open);}
+/* Nach dem Speichern den Unterbereich öffnen, in dem der Eintrag steht (in der laufenden Transaktion) */
+function _dsFoldOpen(key){try{appStorage.setItem('ui-open-bud-'+key,'1');}catch(error){}}
 function _autoBudgetHTML(month){
   const rows=_loanBudgetHTML(month)+_depotBudgetHTML(month)+_childBudgetHTML(month);if(!rows)return '';
-  return `<div class="ds-list-t">${L('Automatisch · ','Automatic · ')+fmtMonth(month)}</div><div class="ds-list pv-list">${rows}</div>`
-    +`<p class="ds-help">${L('Berechnet aus Krediten, Altersvorsorgedepots und Kindern und im Budget berücksichtigt. Gleichnamige eigene Posten werden ersetzt; einen eigenen Sparposten für ein Depot verknüpfst du über „Beitrag für“. Die Zulage kommt einmal im Jahr, hier steht der Monatsschnitt.','Calculated from loans, retirement depots and children and included in the budget. Own entries with the same name are replaced; link an own saving entry for a depot via "Contribution for". The subsidy comes once a year; the monthly average is shown here.')}</p>`;
+  const n=(rows.match(/data-ds-open=/g)||[]).length;
+  return _dsFold('auto',L('Automatisch · ','Automatic · ')+fmtMonth(month),String(n),`<div class="ds-list pv-list">${rows}</div>`
+    +`<p class="ds-help">${L('Berechnet aus Krediten, Altersvorsorgedepots und Kindern und im Budget berücksichtigt. Gleichnamige eigene Posten werden ersetzt; einen eigenen Sparposten für ein Depot verknüpfst du über „Beitrag für“. Die Zulage kommt einmal im Jahr, hier steht der Monatsschnitt.','Calculated from loans, retirement depots and children and included in the budget. Own entries with the same name are replaced; link an own saving entry for a depot via "Contribution for". The subsidy comes once a year; the monthly average is shown here.')}</p>`);
 }
 function _loanPlanHTML(p){
   const s=LoanModel.schedule(p),year=selectedMonth.slice(0,4),rows=Array.from({length:12},(_,i)=>LoanModel.at(p,year+'-'+String(i+1).padStart(2,'0')));
@@ -8549,6 +8618,7 @@ function _loanSheetHTML(id,f,p,o){
   return `<div class="ds-group">
     <label class="ds-row" for="loan-name-${id}"><span class="ds-l">Bezeichnung</span><input class="ds-in ds-wide" id="loan-name-${id}" data-loan-name="${escHTML(id)}" type="text" value="${escHTML(f.label||'')}" placeholder="z. B. Immobilienkredit" autocomplete="off"></label>
     <label class="ds-row" for="loan-asset-${id}"><span class="ds-l">Gehört zu</span><select class="ds-in ds-wide" id="loan-asset-${id}" data-loan-asset="${escHTML(id)}">${_loanAssetOptions(p.assetId??'',legacy)}</select></label>
+    ${_accountSelectHTML('loan-account-'+id,'Rate abgebucht von','',p.account||'',` data-loan-account="${escHTML(id)}"`)}
   </div>
   <p class="ds-help">Verknüpft mit einem Vermögenswert (z. B. der Wohnung) zeigt die App dort den Wert abzüglich Kredit.</p>
   <div class="ds-group-t">${o.balanceTitle}</div>
@@ -8659,37 +8729,256 @@ function _budgetListHTML(){
   let html='<div id="ds-budget-items" class="ds-anchor"></div>';
   BUDGET_LIST.forEach(([key,title])=>{
     const rows=[...(bd[key]||[])].sort((a,b)=>_yearSum(b.values)-_yearSum(a.values));if(!rows.length)return;/* der Größe nach absteigend */
-    html+=`<div class="ds-list-t ds-list-sum"><span>${title}</span><span>Ø ${fmt(rows.reduce((s,r)=>s+_yearSum(r.values),0)/12)} / Monat</span></div><div class="ds-list">${rows.map(r=>{
+    html+=_dsFold(key,title,`${rows.length} · Ø ${fmt(rows.reduce((s,r)=>s+_yearSum(r.values),0)/12)} / Monat`,`<div class="ds-list">${rows.map(r=>{
       const rh=_budgetRhythm(r.values),val=rh.rhythm==='custom'?'Ø '+fmt(_yearSum(r.values)/12):fmt(rh.amount);
       const loan=r.loanId&&_fc.fields.find(f=>f.id===r.loanId);
       const loanText=loan?(LoanModel.configured(getLoanParams()[loan.id]||{})?'ersetzt durch Kreditvertrag':'Kredit: '+loan.label):'';
       const depotText=_depotLinked(r)?'ersetzt durch Altersvorsorgedepot':'';
       return _dsItem('budget',key+':'+r.id,r.name,[_rhythmText(rh),r.subcat,loanText,depotText].filter(Boolean).join(' · '),val,!_yearSum(r.values));
-    }).join('')}</div>`;
+    }).join('')}</div>`);
   });
   const once=[...(bd.oneTime||[])].sort((a,b)=>b.month.localeCompare(a.month)),limit=LoanModel.addMonths(selectedMonth,-12);
   if(once.length){
     const item=o=>_dsItem('once',o.id,o.name,fmtMonth(o.month)+' · '+(o.kind==='income'?'Einnahme':o.kind==='saving'?'Sparen':'Ausgabe'),(o.kind==='income'?'+':'')+fmt(o.amount),false);
     const recent=once.filter(o=>o.month>=limit),older=once.filter(o=>o.month<limit);
-    html+=`<div class="ds-list-t">Einmalige Zahlungen</div>`+(recent.length?`<div class="ds-list">${recent.map(item).join('')}</div>`:'')+(older.length?`<details class="ds-zero"><summary>Älter als ein Jahr (${older.length})</summary><div class="ds-list">${older.map(item).join('')}</div></details>`:'');
+    html+=_dsFold('once','Einmalige Zahlungen',String(once.length),(recent.length?`<div class="ds-list">${recent.map(item).join('')}</div>`:'')+(older.length?`<details class="ds-zero"><summary>Älter als ein Jahr (${older.length})</summary><div class="ds-list">${older.map(item).join('')}</div></details>`:''));
   }
   return html+add+_moneyFlowHTML(bd);
+}
+/* ── Konten der Geldflüsse (16.10.2026, Schema 20): Budgetposten, Kredit, Kind (Kindergeld) und Altersvorsorgedepot
+   können einem Konto zugeordnet werden. In den App-Werten steht wie bei Daueraufträgen der Kontoname (account). ── */
+function _accountNames(){return Object.keys((loadBudgetData()||{}).accounts||{});}
+/* Auswahl „Konto“ in einem Sheet; leer = kein Konto. Ohne angelegte Konten entfällt die Zeile (außer es ist schon eins gesetzt) */
+function _accountSelectHTML(id,label,hint,cur,attrs=''){
+  const names=_accountNames();cur=cur||'';
+  if(!names.length&&!cur)return '';
+  const opts=[['',L('Kein Konto','No account')],...names.map(n=>[n,n]),...(cur&&!names.includes(cur)?[[cur,cur]]:[])];
+  return `<label class="ds-row" id="${id}Row"><span class="ds-l" id="${id}Label">${label}${hint?`<small>${hint}</small>`:''}</span><select class="ds-in ds-wide" id="${id}"${attrs}>${opts.map(([v,l])=>`<option value="${escHTML(v)}"${v===cur?' selected':''}>${escHTML(l)}</option>`).join('')}</select></label>`;
+}
+/* Gewähltes Konto aus einem Sheet; null = Auswahl gibt es nicht (dann bleibt der bisherige Wert) */
+function _accountPicked(id){const el=document.getElementById(id);return el&&typeof el.value==='string'?el.value:null;}
+/* Kontoverweise umbenennen (name) oder entfernen (name = null): Budgetposten, Kredite, Kinder, Depots */
+function _renameAccountRefs(bd,old,name){
+  const fix=list=>{let ch=false;(list||[]).forEach(x=>{if(x&&x.account===old){if(name)x.account=name;else delete x.account;ch=true;}});return ch;};
+  BUDGET_LIST.forEach(([k])=>fix(bd[k]));
+  const lp=getLoanParams();if(fix(Object.values(lp)))appStorage.setItem('loanParams',JSON.stringify(lp));
+  const kids=_lsJSON('lt-children',[]);if(fix(kids))appStorage.setItem('lt-children',JSON.stringify(kids));
+  const dep=_lsJSON('lt-av-depots',[]);if(fix(dep))appStorage.setItem('lt-av-depots',JSON.stringify(dep));
 }
 /* Konten und Daueraufträge: Grundlage des Geldflusses auf der Budget-Seite */
 const _ibanSpaced=iban=>String(iban||'').replace(/\s/g,'').replace(/(.{4})/g,'$1 ').trim();
 function _moneyFlowHTML(bd){
   const accounts=Object.entries((bd&&bd.accounts)||{}),orders=(bd&&bd.standingOrders)||[];
-  let h=`<div id="ds-moneyflow" class="ds-anchor"></div><div class="ds-list-t" style="margin-top:14px">Konten</div>`;
-  h+=accounts.length?`<div class="ds-list">${accounts.map(([name,iban])=>_dsItem('account',name,name,iban?_ibanSpaced(iban):'Ohne IBAN','',false)).join('')}</div>`
-    :`<p class="ds-empty" style="margin-top:4px">Z. B. Girokonto oder Haushaltskonto. Sie sind Start und Ziel deiner Daueraufträge.</p>`;
-  h+=`<button type="button" class="ds-add" data-ds-open="add-account">+ Konto hinzufügen</button>`;
+  let h=`<div id="ds-moneyflow" class="ds-anchor"></div>`;
+  h+=_dsFold('accounts','Konten',accounts.length?String(accounts.length):'',(accounts.length?`<div class="ds-list">${accounts.map(([name,iban])=>_dsItem('account',name,name,iban?_ibanSpaced(iban):'Ohne IBAN','',false)).join('')}</div>`
+    :`<p class="ds-empty" style="margin-top:4px">Z. B. Girokonto oder Haushaltskonto. Sie sind Start und Ziel deiner Daueraufträge.</p>`)
+    +`<button type="button" class="ds-add" data-ds-open="add-account">+ Konto hinzufügen</button>`);
   const total=orders.reduce((s,o)=>s+(+o.amount||0),0);
-  h+=`<div class="ds-list-t ds-list-sum"><span>Daueraufträge</span>${orders.length?`<span>${fmt(total)} / Monat</span>`:''}</div>`;
-  h+=orders.length?`<div class="ds-list">${orders.map(o=>_dsItem('order',o.id,'→ '+o.to,'von '+o.from+' · monatlich',fmt(+o.amount||0),!(+o.amount))).join('')}</div>`
-    :`<p class="ds-empty" style="margin-top:4px">Monatliche Überweisungen, z. B. vom Girokonto aufs Haushaltskonto. Daraus entsteht der Geldfluss auf der Budget-Seite.</p>`;
-  return h+`<button type="button" class="ds-add" data-ds-open="add-order">+ Dauerauftrag hinzufügen</button>`;
+  /* Prüfen bzw. ermitteln (16.10.2026) */
+  const any=orders.some(o=>(+o.amount||0)>0);
+  h+=_dsFold('orders','Daueraufträge',orders.length?`${orders.length} · ${fmt(total)} / Monat`:'',(orders.length?`<div class="ds-list">${orders.map(o=>_dsItem('order',o.id,'→ '+o.to,'von '+o.from+' · monatlich',fmt(+o.amount||0),!(+o.amount))).join('')}</div>`
+    :`<p class="ds-empty" style="margin-top:4px">Monatliche Überweisungen, z. B. vom Girokonto aufs Haushaltskonto. Daraus entsteht der Geldfluss auf der Budget-Seite.</p>`)
+    +`<button type="button" class="ds-add" data-ds-open="add-order">+ Dauerauftrag hinzufügen</button>`
+    +`<button type="button" class="ds-add fc-toggle" data-flow-check aria-expanded="${_flowCheckOpen}">${_flowCheckOpen?L('Prüfung ausblenden','Hide check'):any?L('Daueraufträge prüfen','Check standing orders'):L('Daueraufträge ermitteln','Work out standing orders')}</button>`
+    +(_flowCheckOpen?_flowCheckHTML(bd||_emptyBudget()):''),_flowCheckOpen);
+  return h;
+}
+/* ── Geldfluss prüfen (16.10.2026): Ø je Monat über die zwölf Planmonate und je Konto aus den zugeordneten Posten
+   (Einnahmen rein; Ausgaben, Sparpläne, Zinsen und Tilgung raus) und den Daueraufträgen. Einmalige Zahlungen zählen
+   nicht, die Zulage eines Altersvorsorgedepots fließt über kein Konto. Puffer = größter Rückgang innerhalb eines Jahres
+   (rollierend), z. B. durch eine jährliche Versicherung. ── */
+const FLOW_TOL=5;
+/* Schalter (16.10.2026, Standard an): nur feste monatliche Einnahmen zählen – Daueraufträge laufen jeden Monat gleich, also
+   zählt je Einnahme nur der Betrag, der in jedem Planmonat ankommt (kleinster Monatswert). Weihnachtsgeld, Boni oder
+   Einnahmen nur in einzelnen Monaten bleiben außen vor. Gespeichert umgekehrt als ui-open-flowallincome (aus = Standard). */
+function _flowFixedIncome(){return !_uiOpen('flowallincome');}
+function _accountFlows(bd,withOrders=true,ordersOverride=null,fixedIncome=_flowFixedIncome()){
+  const names=Object.keys((bd&&bd.accounts)||{});
+  const acc=Object.fromEntries(names.map(n=>[n,{name:n,inItems:0,outItems:0,inOrders:0,outOrders:0,months:Array(12).fill(0),inLabels:new Set()}]));
+  const orders=(ordersOverride||(bd&&bd.standingOrders)||[]).filter(o=>(+o.amount||0)>0),dupOrders=[];
+  /* Einnahme ohne Konto, die ein Dauerauftrag von außen abbildet (z. B. „Kindergeld → Haushaltskonto“), gilt als erfasst */
+  const external=orders.filter(o=>!acc[o.from]).map(o=>String(o.from).trim().toLowerCase()).filter(Boolean);
+  const none={in:new Map(),out:new Map()};
+  const add=(name,val,dir,m,label)=>{
+    if(!(val>0))return;
+    const a=name?acc[name]:null;
+    if(!a){
+      if(dir==='in'&&external.some(x=>String(label).trim().toLowerCase().startsWith(x)))return;
+      none[dir].set(label,(none[dir].get(label)||0)+val/12);return;
+    }
+    if(dir==='in'){a.inItems+=val/12;a.months[m]+=val;a.inLabels.add(String(label).trim().toLowerCase());}
+    else{a.outItems+=val/12;a.months[m]-=val;}
+  };
+  const months=Array.from({length:12},(_,m)=>calcBudgetMonth(bd,m));
+  /* Einnahmen je Posten (und Konto) über die zwölf Monate sammeln */
+  const incs=new Map();
+  months.forEach((c,m)=>{if(!c)return;c.einItems.forEach(it=>{
+    if(it.noAcct)return;
+    (it.accts||[{acct:it.acct,val:it.val}]).forEach((x,i)=>{
+      const k=(it.id||it.label)+'#'+i+'#'+(x.acct||'');
+      if(!incs.has(k))incs.set(k,{label:it.label,acct:x.acct,vals:Array(12).fill(0)});
+      incs.get(k).vals[m]+=x.val||0;
+    });
+  });});
+  const variable=[];
+  incs.forEach(x=>{
+    const base=fixedIncome?Math.min(...x.vals):0,rest=x.vals.reduce((a,v)=>a+v,0)/12-base;
+    for(let m=0;m<12;m++)add(x.acct,fixedIncome?base:x.vals[m],'in',m,x.label);
+    if(fixedIncome&&rest>0.5)variable.push([x.label,rest]);
+  });
+  months.forEach((c,m)=>{
+    if(!c)return;
+    const each=list=>list.forEach(it=>{
+      if(it.noAcct)return;
+      if(it.accts)it.accts.forEach(x=>add(x.acct,x.val,'out',m,it.label));else add(it.acct,it.val,'out',m,it.label);
+    });
+    each(c.fixItems);each(c.varItems);each(c.sparItems);each(c.tilgItems);
+  });
+  if(withOrders)orders.forEach(o=>{
+    const v=+o.amount,f=acc[o.from],t=acc[o.to];
+    /* Dauerauftrag von außen (z. B. „Kindergeld“), dessen Einnahme schon diesem Konto zugeordnet ist: nicht doppelt zählen */
+    const ext=String(o.from).trim().toLowerCase();
+    if(!f&&t&&ext&&[...t.inLabels].some(l=>l.startsWith(ext))){dupOrders.push(o);return;}
+    if(f){f.outOrders+=v;for(let m=0;m<12;m++)f.months[m]-=v;}
+    if(t){t.inOrders+=v;for(let m=0;m<12;m++)t.months[m]+=v;}
+  });
+  const list=names.map(n=>{
+    const a=acc[n],net=a.inItems+a.inOrders-a.outItems-a.outOrders,moves=a.inItems+a.inOrders+a.outItems+a.outOrders;
+    /* Puffer: größter Rückgang des Kontostands über zwei aufeinanderfolgende Planjahre (Jahreswechsel eingeschlossen) */
+    let run=0,peak=0,buffer=0,bufMonth=-1;
+    for(let k=0;k<24;k++){run+=a.months[k%12];if(run>peak)peak=run;if(peak-run>buffer+1e-9){buffer=peak-run;bufMonth=k%12;}}
+    const status=moves<0.5?'idle':net<-FLOW_TOL?'short':net>FLOW_TOL?'surplus':'ok';
+    return Object.assign(a,{net,moves,status,buffer:status==='short'?0:buffer,bufMonth});
+  });
+  const sum=mp=>[...mp.values()].reduce((x,v)=>x+v,0);
+  return{list,orders:orders.length,dupOrders,fixedIncome,variable:variable.sort((x,y)=>y[1]-x[1]),variableSum:variable.reduce((a,x)=>a+x[1],0),
+    unassigned:{in:[...none.in.entries()],out:[...none.out.entries()],inSum:sum(none.in),outSum:sum(none.out)}};
+}
+/* Daueraufträge vorschlagen (16.10.2026): Eingangskonten (Konten, auf denen aus den eigenen Posten mehr ein- als
+   ausgeht, meist die Gehaltskonten) füllen Konten mit Fehlbetrag. Der nicht eingeplante Überschuss bleibt zu gleichen
+   Teilen auf den Eingangskonten (Wunsch 16.10.2026); ein Eingangskonto mit kleinerem Überschuss behält ihn ganz, die
+   übrigen teilen den Rest gleich. Verteilt wird mit wenigen Aufträgen: das größte Eingangskonto übernimmt zuerst die
+   kleineren Zielkonten, das größte Zielkonto wird geteilt; Teile unter 50 € entstehen nicht (der Rest geht zulasten des
+   gleichen Anteils). Beträge auf 10 € gerundet. Daueraufträge von oder nach außen (Bezeichnung statt Konto, z. B.
+   „Kindergeld“) bleiben und zählen mit. */
+function _suggestOrders(bd){
+  const names=Object.keys((bd&&bd.accounts)||{});
+  if(!names.length)return{reason:'no-accounts',orders:[],keep:[]};
+  const isAcc=new Set(names);
+  const keep=((bd&&bd.standingOrders)||[]).filter(o=>(+o.amount||0)>0&&(!isAcc.has(o.from)||!isAcc.has(o.to)));
+  const f=_accountFlows(bd,true,keep);
+  if(!f.list.some(a=>a.inItems+a.outItems>0.5))return{reason:'no-items',orders:[],flows:f,keep};
+  const src=f.list.filter(a=>a.net>FLOW_TOL).map(a=>({name:a.name,net:a.net}));
+  const def=f.list.filter(a=>a.net<-FLOW_TOL).map(a=>({name:a.name,need:-a.net}));
+  if(!def.length)return{reason:'balanced',orders:[],flows:f,keep};
+  if(!src.length)return{reason:'no-surplus',orders:[],flows:f,keep,missing:def.reduce((x,d)=>x+d.need,0)};
+  /* gleicher Anteil (Wasserstand): wer weniger Überschuss hat als der Anteil, behält alles */
+  let S=Math.max(0,src.reduce((x,s)=>x+s.net,0)-def.reduce((x,d)=>x+d.need,0)),n=src.length;
+  src.slice().sort((x,y)=>x.net-y.net).forEach(s=>{s.keep=Math.min(s.net,S/n);S-=s.keep;n--;});
+  src.forEach(s=>{s.give=s.net-s.keep;});
+  const R=x=>Math.round(Math.round(x)/10)*10,C=x=>Math.ceil(Math.round(x)/10)*10;/* erst auf Euro: Ø hat Rundungsreste */
+  const srcs=src.filter(s=>s.give>0.5).sort((x,y)=>y.give-x.give),tgts=def.slice().sort((x,y)=>x.need-y.need);
+  const orders=[],push=(from,to,amount)=>{const o=orders.find(x=>x.from===from&&x.to===to);if(o)o.amount+=amount;else orders.push({from,to,amount});};
+  let i=0;
+  for(const t of tgts){
+    let need=t.need;
+    while(need>FLOW_TOL&&i<srcs.length){
+      const s=srcs[i];
+      /* ganz decken, wenn es reicht oder nur ein Splitter übrig bliebe; sonst so viel wie der Anteil erlaubt */
+      const a=s.give>=need-0.5||need-s.give<50?Math.min(C(need),Math.floor(s.give+s.keep)):R(s.give);
+      if(a<50&&a<need-0.5){i++;continue;}
+      push(s.name,t.name,a);s.give-=a;need-=a;
+      if(s.give<50)i++;
+    }
+    t.left=Math.max(0,need);
+  }
+  const missing=tgts.reduce((x,t)=>x+t.left,0);
+  const kept=src.map(s=>({name:s.name,keep:Math.round((s.net-orders.filter(o=>o.from===s.name).reduce((x,o)=>x+o.amount,0))*100)/100}));
+  return{reason:missing>FLOW_TOL?'partial':'ok',orders,missing,flows:f,keep,kept};
+}
+/* ── Geldfluss in „Daueraufträge prüfen“ (16.10.2026): derselbe Geldfluss wie auf der Budget-Seite (Karten und Bänder,
+   renderSankeyDiagram), auf jeder Karte zusätzlich passt/bleibt/fehlt; ohne Daueraufträge mit den vorgeschlagenen.
+   Gezeichnet wird nach dem Einfügen in die Seite (Kartenpositionen werden gemessen). ── */
+const _sankeyPending={};
+function _sankeyCheckHTML(bd,orders,ordersOverride){
+  const model=_sankeyModel(orders);if(!model)return '';
+  _sankeyPending.check={model,status:_sankeyStatus(bd,ordersOverride)};
+  setTimeout(_sankeyMount,0);
+  return `<div class="sankey-wrap fc-sankey" data-sankey="check"></div>`;
+}
+function _sankeyMount(){
+  const el=document.querySelector('[data-sankey="check"]'),p=_sankeyPending.check;
+  if(!el||!p||el.querySelector('.sankey-container-html'))return;
+  renderSankeyDiagram(el,p.model.left,p.model.right,p.model.flows,p.model.maxVal,p.status,{noFit:true});
+}
+let _flowCheckOpen=false,_flowPropose=false;
+function _flowCheckHTML(bd){
+  const st=a=>a.status==='ok'?`<span class="fc-st ok">${L('passt','balanced')}</span>`
+    :a.status==='surplus'?`<span class="fc-st">${L('bleibt ','remains ')}+${fmt(Math.round(a.net))}</span>`
+    :a.status==='short'?`<span class="fc-st short">${L('fehlt ','short ')}${fmt(Math.round(-a.net))}</span>`
+    :`<span class="fc-st idle">${L('keine Bewegung','no movement')}</span>`;
+  const sub=a=>{
+    const parts=[];
+    if(a.inItems+a.inOrders>0.5)parts.push(L('rein ','in ')+fmt(Math.round(a.inItems+a.inOrders)));
+    if(a.outItems+a.outOrders>0.5)parts.push(L('raus ','out ')+fmt(Math.round(a.outItems+a.outOrders)));
+    if(a.buffer>FLOW_TOL)parts.push(L('Puffer ','buffer ')+fmt(Math.round(a.buffer))+L(' bis ',' until ')+MONTH_FULL[a.bufMonth]);
+    return parts.join(' · ');
+  };
+  const unassigned=f=>{
+    const u=f.unassigned,n=u.in.length+u.out.length;if(!n)return '';
+    const names=[...u.in,...u.out].sort((x,y)=>y[1]-x[1]).slice(0,4).map(([l])=>escHTML(l)).join(', ');
+    return `<p class="ds-help fc-none">${L('Ohne Konto: ','Without account: ')}${n===1?L('1 Posten','1 item'):n+L(' Posten',' items')}${u.inSum>0.5?L(', rein Ø ',', in avg ')+fmt(Math.round(u.inSum)):''}${u.outSum>0.5?L(', raus Ø ',', out avg ')+fmt(Math.round(u.outSum)):''} (${names}${n>4?' …':''}). ${L('Zuordnen im Eintrag unter Einnahmen & Ausgaben, bei Kreditraten im Kredit, beim Kindergeld beim Kind.','Assign it in the entry under income & expenses, for loan payments in the loan, for child benefit in the child.')}</p>`;
+  };
+  const fixed=_flowFixedIncome();
+  const sw=`<div class="ds-group"><div class="ds-row fc-switch" data-flow-fixed style="cursor:pointer"><span class="ds-l">${L('Nur feste monatliche Einnahmen','Only fixed monthly income')}<small>${fixed?L('Daueraufträge laufen jeden Monat gleich: Weihnachtsgeld, Boni und Einnahmen nur in einzelnen Monaten zählen nicht','Standing orders run the same every month: Christmas pay, bonuses and income in single months do not count'):L('Alle Einnahmen im Durchschnitt über das Jahr','All income averaged over the year')}</small></span><span class="v2-switch" role="switch" tabindex="0" aria-checked="${fixed}" aria-label="${L('Nur feste monatliche Einnahmen','Only fixed monthly income')}"><i></i></span></div></div>`;
+  const varNote=f=>f&&f.fixedIncome&&f.variableSum>0.5?`<p class="ds-help">${L('Nicht berücksichtigt, weil nicht jeden Monat gleich: Ø ','Not counted because not the same every month: avg ')}${fmt(Math.round(f.variableSum))}${L(' im Monat',' per month')} (${f.variable.slice(0,3).map(([l])=>escHTML(l)).join(', ')}${f.variable.length>3?' …':''}).</p>`:'';
+  const rows=list=>`<div class="ds-group fc-list">${list.map(a=>`<div class="ds-row fc-row"><span class="ds-l">${escHTML(a.name)}<small>${sub(a)}</small></span>${st(a)}</div>`).join('')}</div>`;
+  const hasOrders=(bd.standingOrders||[]).some(o=>(+o.amount||0)>0);
+  if(hasOrders&&!_flowPropose){
+    const f=_accountFlows(bd);
+    const short=f.list.filter(a=>a.status==='short').length;
+    const head=short?L(`${short===1?'Ein Konto reicht':short+' Konten reichen'} nicht: Die Daueraufträge decken die Ausgaben dort nicht.`,`${short===1?'One account is':short+' accounts are'} short: the standing orders do not cover the expenses there.`)
+      :L('Alle Konten sind gedeckt. „bleibt“ heißt: Dort sammelt sich Geld an.','All accounts are covered. “remains” means money builds up there.');
+    const dup=f.dupOrders.length?`<p class="ds-help">${f.dupOrders.map(o=>L(`Dauerauftrag „${escHTML(o.from)} → ${escHTML(o.to)}“ nicht mitgezählt: Die Einnahme ist diesem Konto schon zugeordnet.`,`Standing order “${escHTML(o.from)} → ${escHTML(o.to)}” not counted: the income is already assigned to this account.`)).join(' ')}</p>`:'';
+    const onBudget=_uiOpen('budgetflow');
+    const diag=_sankeyCheckHTML(bd,bd.standingOrders||[])+`<button type="button" class="btn btn-ghost v2-wide fc-budget" data-flow-budget aria-pressed="${onBudget}">${onBudget?L('Im Budget angezeigt · entfernen','Shown in budget · remove'):L('Im Budget anzeigen','Show in budget')}</button>`;
+    return `<div class="fc-box">${sw}<p class="ds-help fc-head">${head}</p>${diag}${rows(f.list)}${dup}${varNote(f)}${unassigned(f)}<p class="ds-help">${L('Ø je Monat über die zwölf Planmonate, ohne einmalige Zahlungen.','Average per month over the twelve plan months, without one-time payments.')}</p><button type="button" class="btn btn-ghost v2-wide fc-propose" data-flow-propose>${L('Neue Daueraufträge vorschlagen','Suggest new standing orders')}</button></div>`;
+  }
+  const sg=_suggestOrders(bd);
+  const msg={
+    'no-accounts':L('Lege zuerst deine Konten an und ordne Einnahmen und Ausgaben einem Konto zu.','First add your accounts and assign income and expenses to an account.'),
+    'no-items':L('Ordne Einnahmen und Ausgaben einem Konto zu (im Eintrag unter Einnahmen & Ausgaben, bei Kreditraten im Kredit, beim Kindergeld beim Kind). Dann ermittelt die App die Daueraufträge.','Assign income and expenses to an account (in the entry under income & expenses, for loan payments in the loan, for child benefit in the child). Then the app works out the standing orders.'),
+    'balanced':L('Kein Dauerauftrag nötig: Jedes Konto deckt seine Ausgaben selbst.','No standing order needed: every account covers its own expenses.'),
+    'no-surplus':L('Kein Konto hat einen Überschuss, aus dem Daueraufträge gezahlt werden könnten.','No account has a surplus to pay standing orders from.')
+  }[sg.reason];
+  if(msg)return `<div class="fc-box">${sw}<p class="ds-help fc-head">${msg}</p>${sg.flows&&sg.flows.list.some(a=>a.moves>0.5)?rows(sg.flows.list)+unassigned(sg.flows):''}</div>`;
+  const list=`<div class="ds-group fc-list">${sg.orders.map(o=>`<div class="ds-row fc-row"><span class="ds-l">${escHTML(o.from)} → ${escHTML(o.to)}<small>${L('monatlich','monthly')}</small></span><span class="fc-st">${fmt(o.amount)}</span></div>`).join('')}</div>`;
+  const miss=sg.reason==='partial'?`<p class="ds-help fc-short">${L('Es fehlen trotzdem Ø ','Still short by avg ')}${fmt(Math.round(sg.missing))}${L(' im Monat: Die Ausgaben auf den Konten übersteigen die Überschüsse.',' per month: expenses on the accounts exceed the surpluses.')}</p>`:'';
+  const all=[...sg.keep,...sg.orders],diag=_sankeyCheckHTML(bd,all,all);
+  const kept=sg.kept&&sg.kept.length>1?`<p class="ds-help">${L('Danach bleibt auf den Eingangskonten je Monat: ','Then remains on the income accounts per month: ')}${sg.kept.map(k=>escHTML(k.name)+' ≈ '+fmt(Math.round(k.keep))).join(', ')}.</p>`:'';
+  const head=L('Vorschlag aus den zugeordneten Einnahmen und Ausgaben: Der nicht eingeplante Überschuss bleibt zu gleichen Teilen auf den Eingangskonten, möglichst wenige Daueraufträge, auf 10 € gerundet.','Suggestion from the assigned income and expenses: the unplanned surplus stays on the income accounts in equal shares, as few standing orders as possible, rounded to 10 €.');
+  const back=hasOrders?`<button type="button" class="btn btn-ghost v2-wide fc-propose" data-flow-propose-cancel>${L('Zurück zur Prüfung','Back to the check')}</button>`:'';
+  return `<div class="fc-box">${sw}<p class="ds-help fc-head">${head}</p>${diag}${list}${kept}${miss}${varNote(sg.flows)}${unassigned(sg.flows)}<button type="button" class="btn btn-primary v2-wide fc-apply" data-flow-apply>${hasOrders?L('Übernehmen und ersetzen','Apply and replace'):L('Übernehmen','Apply')}</button>${back}</div>`;
+}
+/* Vorschlag als Daueraufträge anlegen. Gibt es schon Daueraufträge, ersetzt der Vorschlag nach Rückfrage die zwischen
+   den eigenen Konten; Daueraufträge von oder nach außen (z. B. Kindergeld) bleiben. */
+async function _applySuggestedOrders(){
+  const bd=loadBudgetData()||_emptyBudget();
+  const sg=_suggestOrders(bd);if(!sg.orders.length)return false;
+  const isAcc=new Set(Object.keys(bd.accounts||{}));
+  const old=(bd.standingOrders||[]).filter(o=>(+o.amount||0)>0&&isAcc.has(o.from)&&isAcc.has(o.to));
+  if(old.length&&!await _ask({title:L('Daueraufträge ersetzen?','Replace standing orders?'),text:L(`${old.length===1?'Ein Dauerauftrag':old.length+' Daueraufträge'} zwischen deinen Konten ${old.length===1?'wird':'werden'} durch ${sg.orders.length} neue ersetzt. Daueraufträge von oder nach außen (z. B. Kindergeld) bleiben.`,`${old.length} standing order(s) between your accounts will be replaced by ${sg.orders.length} new ones. Standing orders from or to outside (e.g. child benefit) stay.`),ok:L('Ersetzen','Replace')}))return false;
+  const stamp=Date.now().toString(36);
+  bd.standingOrders=[...(bd.standingOrders||[]).filter(o=>!(isAcc.has(o.from)&&isAcc.has(o.to))),...sg.orders.map((o,i)=>({id:'order-'+stamp+i+Math.random().toString(36).slice(2,5),from:o.from,to:o.to,amount:o.amount}))];
+  _storeBudget(bd);_flowCheckOpen=true;_flowPropose=false;_afterDataChange();_toast(old.length?L('Daueraufträge ersetzt','Standing orders replaced'):L('Daueraufträge angelegt','Standing orders added'));
+  return true;
 }
 function _emptyBudget(){return {einkommen:[],fixe:[],variable:[],sparen:[],accounts:{},standingOrders:[],oneTime:[]};}
+/* Anzahl der Einträge (Budgetposten, Kredite, Kinder, Depots), die einem Konto zugeordnet sind */
+function _accountRefCount(bd,name){
+  const n=list=>(list||[]).filter(x=>x&&x.account===name).length;
+  return BUDGET_LIST.reduce((a,[k])=>a+n(bd[k]),0)+n(Object.values(getLoanParams()))+n(_lsJSON('lt-children',[]))+n(_lsJSON('lt-av-depots',[]));
+}
 function _storeBudget(bd){
   appStorage.beginTransaction();
   try{saveBudgetData(bd);appStorage.commitTransaction();}catch(error){appStorage.rollbackTransaction();throw error;}
@@ -8721,7 +9010,8 @@ function _saveAccountSheet(){
     if(!placed)next[name]=iban;
     bd.accounts=next;
     if(old&&old!==name)(bd.standingOrders||[]).forEach(o=>{if(o.from===old)o.from=name;if(o.to===old)o.to=name;});
-    _storeBudget(bd);
+    appStorage.beginTransaction();
+    try{if(old&&old!==name)_renameAccountRefs(bd,old,name);saveBudgetData(bd);_dsFoldOpen('accounts');appStorage.commitTransaction();}catch(error){appStorage.rollbackTransaction();throw error;}
   }catch(error){_sheetFail(error);return false;}
   _afterDataChange();return true;
 }
@@ -8729,9 +9019,12 @@ async function _deleteAccount(){
   const name=_sheetCtx.account&&_sheetCtx.account.name;if(!name)return;
   const bd=loadBudgetData();if(!bd)return;
   const used=(bd.standingOrders||[]).filter(o=>o.from===name||o.to===name).length;
-  if(!await _ask({title:`Konto „${name}“ löschen?`,text:used?`${used===1?'Ein Dauerauftrag nutzt':used+' Daueraufträge nutzen'} dieses Konto. Sie bleiben mit der Bezeichnung „${name}“ erhalten.`:'',ok:'Löschen',danger:true}))return;
+  const refs=_accountRefCount(bd,name);
+  const parts=[used?`${used===1?'Ein Dauerauftrag nutzt':used+' Daueraufträge nutzen'} dieses Konto. Sie bleiben mit der Bezeichnung „${name}“ erhalten.`:'',refs?`${refs===1?'Ein Eintrag ist':refs+' Einträge sind'} diesem Konto zugeordnet und ${refs===1?'ist':'sind'} danach ohne Konto.`:''].filter(Boolean);
+  if(!await _ask({title:`Konto „${name}“ löschen?`,text:parts.join(' '),ok:'Löschen',danger:true}))return;
   delete bd.accounts[name];
-  try{_storeBudget(bd);}catch(error){_sheetFailNow(error);return;}
+  appStorage.beginTransaction();
+  try{_renameAccountRefs(bd,name,null);saveBudgetData(bd);appStorage.commitTransaction();}catch(error){appStorage.rollbackTransaction();_sheetFailNow(error);return;}
   _closeSheet(true);_afterDataChange();_toast('Gelöscht');
 }
 function openOrderSheet(id){
@@ -8759,7 +9052,8 @@ function _saveOrderSheet(){
     const bd=loadBudgetData()||_emptyBudget();bd.standingOrders=bd.standingOrders||[];
     const entry={id:_sheetCtx.order.id||'order-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),from,to,amount};
     const i=bd.standingOrders.findIndex(o=>o.id===entry.id);if(i>=0)bd.standingOrders[i]=entry;else bd.standingOrders.push(entry);
-    _storeBudget(bd);
+    appStorage.beginTransaction();
+    try{saveBudgetData(bd);_dsFoldOpen('orders');appStorage.commitTransaction();}catch(error){appStorage.rollbackTransaction();throw error;}
   }catch(error){_sheetFail(error);return false;}
   _afterDataChange();return true;
 }
@@ -8776,6 +9070,7 @@ function _openDataSection(mod,anchor){
   navigateToPage('import');
   const d=document.querySelector(`#page-import details[data-mod="${mod}"]`);
   if(d&&!d.classList.contains('v2-off'))d.open=true;
+  if(anchor==='ds-moneyflow')document.querySelectorAll('#page-import details.ds-fold[data-fold="accounts"],#page-import details.ds-fold[data-fold="orders"]').forEach(f=>{f.open=true;});
   requestAnimationFrame(()=>{const t=(anchor&&document.getElementById(anchor))||d;if(t)t.scrollIntoView({behavior:'smooth',block:'start'});});
 }
 function _budgetHint(title,text,label,anchor){
@@ -8813,11 +9108,11 @@ function _loanLinkHint(id){
 /* opts: {} neu, {ref:'kategorie:id'} wiederkehrend bearbeiten, {once:id} einmalig bearbeiten, {mode:'once'} neu einmalig */
 function openBudgetSheet(opts={}){
   const bd=loadBudgetData()||{};
-  let mode=opts.mode||'recurring',isNew=true,type='expense',cost='fixe',name='',amount=0,rhythm='month',start=+selectedMonth.slice(5)-1,month=selectedMonth,target=null,subcat='',values=Array(12).fill(0),origKind=null,loanId='',depotId='',retire=false,person='',workPct=null;
+  let account='',mode=opts.mode||'recurring',isNew=true,type='expense',cost='fixe',name='',amount=0,rhythm='month',start=+selectedMonth.slice(5)-1,month=selectedMonth,target=null,subcat='',values=Array(12).fill(0),origKind=null,loanId='',depotId='',retire=false,person='',workPct=null;
   if(opts.ref){
     const [key,rid]=opts.ref.split(':'),r=(bd[key]||[]).find(x=>x.id===rid);if(!r)return;
     isNew=false;mode='recurring';type=key==='einkommen'?'income':key==='sparen'?'saving':'expense';cost=key==='variable'?'variable':'fixe';
-    name=r.name;subcat=r.subcat||'';target=r.targetGroupId??null;origKind=r.kind||null;values=r.values.map(x=>+x||0);loanId=r.loanId||'';depotId=r.depotId||'';retire=!!r.retirement;person=r.person||'';workPct=+r.workPct>0?+r.workPct:null;
+    name=r.name;subcat=r.subcat||'';target=r.targetGroupId??null;origKind=r.kind||null;values=r.values.map(x=>+x||0);loanId=r.loanId||'';depotId=r.depotId||'';retire=!!r.retirement;person=r.person||'';account=r.account||'';workPct=+r.workPct>0?+r.workPct:null;
     const rh=_budgetRhythm(values);rhythm=rh.rhythm;amount=rh.amount;if(rh.rhythm!=='month')start=rh.start;
   }
   if(opts.once){
@@ -8840,6 +9135,7 @@ function openBudgetSheet(opts={}){
     <div class="ds-row"><span class="ds-l">Art</span>${_seg('b-type',[['income','Einnahme'],['expense','Ausgabe'],['saving','Sparen']],type)}</div>
     <div class="ds-row" id="b-costRow"><span class="ds-l">Kosten</span>${_seg('b-cost',[['fixe','Fix'],['variable','Variabel']],cost)}</div>
     <label class="ds-row" id="b-amountRow"><span class="ds-l">Betrag €</span><input class="ds-in ds-money" type="text" inputmode="decimal" id="b-amount" value="${amount?_moneyInput(amount):''}" placeholder="0"></label>
+    ${_accountSelectHTML('b-account',type==='income'?L('Eingang auf','Arrives on'):L('Abbuchung von','Debited from'),'',account)}
     <label class="ds-row" id="b-personRow"><span class="ds-l" data-info="b-person">Person</span><select class="ds-in ds-wide" id="b-person">${[['','Haushalt'],[_ownPersonId(),_meName()],..._personOptions('').slice(1)].map(([v,l])=>`<option value="${escHTML(v)}"${v===person?' selected':''}>${escHTML(l)}</option>`).join('')}</select></label>
     <div class="ds-row" id="b-workRow"><span class="ds-l" data-info="b-work">${L('Arbeitszeit','Working time')}<small>${L('für die Prognose: Gehalt bei Vollzeit oder Teilzeit','for the forecast: salary at full-time or part-time')}</small></span>${_seg('b-work',[['full',L('Vollzeit','Full-time')],['part',L('Teilzeit','Part-time')]],workPct==null?'':workPct>=100?'full':'part')}</div>
     <label class="ds-row" id="b-workPctRow"><span class="ds-l">${L('Teilzeit %','Part-time %')}<small>${L('Anteil einer Vollzeitstelle','share of a full-time position')}</small></span><input class="ds-in" type="text" inputmode="decimal" id="b-workPct" value="${workPct!=null&&workPct<100?_numStr(workPct):''}" placeholder="50"></label>
@@ -8895,7 +9191,10 @@ function _budgetSheetUpdate(){
   const mode=ctx.isNew?v('b-mode'):ctx.mode,type=v('b-type'),rhythm=v('b-rhythm');
   const custom=mode==='recurring'&&_switchOn('b-customOn');
   show('b-recurring',mode==='recurring');show('b-once',mode==='once');show('b-customWrap',mode==='recurring');
-  show('b-costRow',type==='expense');show('b-retRow',type==='income'&&mode==='recurring');show('b-personRow',type==='income'&&mode==='recurring');
+  show('b-costRow',type==='expense');show('b-retRow',type==='income'&&mode==='recurring');
+  /* Konto (Schema 20): nur wiederkehrende Posten; Beschriftung je Art */
+  show('b-accountRow',mode==='recurring');
+  const accLabel=document.getElementById('b-accountLabel');if(accLabel)accLabel.textContent=type==='income'?L('Eingang auf','Arrives on'):L('Abbuchung von','Debited from');show('b-personRow',type==='income'&&mode==='recurring');
   /* Arbeitszeit nur beim Gehalt einer Person (nicht „Auch im Ruhestand“, nicht bei einer EM-Rente) */
   const emInc=type==='income'&&mode==='recurring'&&!!v('b-person')&&!_switchOn('b-retOn')&&_isEmName(v('b-name'));
   const sal=type==='income'&&mode==='recurring'&&!!v('b-person')&&!_switchOn('b-retOn')&&!emInc;
@@ -8958,11 +9257,14 @@ function _saveBudgetSheet(){
         if(v('b-work')==='full')row.workPct=100;
         else{const n=_parseDec(v('b-workPct'));if(!(isFinite(n)&&n>0&&n<100))throw new Error(L('Teilzeit: bitte einen Anteil zwischen 1 und 99 % eingeben.','Part-time: please enter a share between 1 and 99 %.'));row.workPct=n;}
       }
+      /* Konto: Auswahl im Sheet, sonst bisheriger Wert */
+      const acc=_accountPicked('b-account');const accName=acc===null?(old&&old.account)||'':acc;
+      if(accName)row.account=accName;
       bd[category]=bd[category]||[];
       if(pos>=0)bd[category].splice(pos,0,row);else bd[category].push(row);
     }
     appStorage.beginTransaction();
-    try{saveBudgetData(bd);appStorage.commitTransaction();}catch(error){appStorage.rollbackTransaction();throw error;}
+    try{saveBudgetData(bd);_dsFoldOpen(mode==='once'?'once':category);appStorage.commitTransaction();}catch(error){appStorage.rollbackTransaction();throw error;}
   }catch(error){_sheetFail(error);return false;}
   _afterDataChange();return true;
 }
@@ -9002,6 +9304,12 @@ function _dataClick(event){
     else if(kind==='add-asset')openAddAssetSheet();else if(kind==='add-liab')openAddLiabSheet();else if(kind==='month')openMonthSheet();
     return;
   }
+  if(event.target.closest('[data-flow-check]')){_flowCheckOpen=!_flowCheckOpen;_flowPropose=false;haptic('light');_afterDataChange();return;}
+  if(event.target.closest('[data-flow-apply]')){_applySuggestedOrders();return;}
+  if(event.target.closest('[data-flow-propose]')){_flowPropose=true;haptic('light');_afterDataChange();return;}
+  if(event.target.closest('[data-flow-propose-cancel]')){_flowPropose=false;haptic('light');_afterDataChange();return;}
+  if(event.target.closest('[data-flow-fixed]')){_uiSetOpen('flowallincome',_flowFixedIncome());haptic('light');_afterDataChange();if(_uiOpen('budgetflow')&&typeof renderBudgetPage==='function')renderBudgetPage();return;}
+  if(event.target.closest('[data-flow-budget]')){const on=!_uiOpen('budgetflow');_uiSetOpen('budgetflow',on);haptic('light');_afterDataChange();if(typeof renderBudgetPage==='function')renderBudgetPage();_toast(on?L('Auf der Budget-Seite unter „Geldfluss“','On the budget page under “Money flow”'):L('Budget zeigt wieder die Daueraufträge','Budget shows the standing orders again'));return;}
   const removeField=event.target.closest('[data-ds-remove]');
   if(removeField){_removeFromSheet(removeField.dataset.dsRemove);return;}
   const add=event.target.closest('[data-extra-add]'),remove=event.target.closest('[data-extra-remove]');
@@ -9306,6 +9614,7 @@ function _avdClean(r){
   ['balance','start','ret','from','deduct'].forEach(k=>{if(r[k]!==''&&r[k]!=null&&isFinite(+r[k])&&+r[k]>=0)o[k]=+r[k];});
   if(+r.lump>0)o.lump=Math.min(30,+r.lump);
   if(r.pos){o.pos=r.pos;delete o.balance;}
+  if(r.account)o.account=r.account;
   return o;
 }
 function _avdResults(wrap){
@@ -11557,7 +11866,7 @@ function _removePerson(id){
 function openChildSheet(id){
   const c=id?getChildren().find(x=>x.id===id):null;if(id&&!c)return;
   const v=c?{name:c.name||'',by:+c.by||'',bm:+c.bm?String(+c.bm):'',until:+c.until===25?'25':'',parent:c.parent||''}:{name:'',by:'',bm:'',until:'',parent:''};
-  let body=`<div class="ds-group">${_sheetFieldsHTML(CHILD_COLS,v,'hc')}</div>`;
+  let body=`<div class="ds-group">${_sheetFieldsHTML(CHILD_COLS,v,'hc')}${_accountSelectHTML('hc-account',L('Kindergeld auf','Child benefit to'),'',c?c.account:'')}</div>`;
   if(c){const ym=_budgetYM(),on=ym>=_childStart(c)&&ym<=_childEnd(c);body+=`<p class="ds-note">${escHTML(L('Kindergeld ','Child benefit ')+fmt(CHILD_BENEFIT)+L('/Monat von ','/month from ')+fmtMonth(_childStart(c))+L(' bis ',' until ')+fmtMonth(_childEnd(c))+(on?'':L(' – im gewählten Monat keins',' – none in the selected month')))}</p>`;
     body+=`<button type="button" class="ds-danger" data-pv-remove="child">${L('Kind entfernen','Remove child')}</button>`;}
   if(!_openSheet(c?_childName(c):L('Neues Kind','New child'),body,()=>_saveChildSheet(id),c?undefined:L('Hinzufügen','Add'),()=>openChildSheet(id)))return;
@@ -11567,6 +11876,7 @@ function _saveChildSheet(id){
   const r=_sheetFieldValues(CHILD_COLS,'hc',true);
   if(!(+r.by>1900))throw new Error(L('Bitte das Geburtsjahr wählen.','Please choose the year of birth.'));
   const o={name:String(r.name||'').trim(),by:+r.by};if(+r.bm)o.bm=+r.bm;if(+r.until===25)o.until=25;if(r.parent)o.parent=r.parent;
+  const acc=_accountPicked('hc-account'),prev=id?getChildren().find(x=>x.id===id):null,accName=acc===null?(prev&&prev.account)||'':acc;if(accName)o.account=accName;
   _pvWrite(()=>{
     const list=_lsJSON('lt-children',[]);
     appStorage.setItem('lt-children',JSON.stringify(id?list.map(x=>x.id===id?Object.assign({id},o):x):[...list,o]));
@@ -11721,7 +12031,7 @@ function _saveBvSheet(pid){
 function openAvdSheet(id){
   const d=id?getAvDepots().find(x=>x.id===id):null;if(id&&!d)return;
   const v={};AVD_COLS.forEach(c=>{const x=d?d[c.key]:undefined;v[c.key]=c.key==='person'?(d&&d.person)||'':c.key==='name'?(d&&d.name)||'':c.key==='lump'?String(+x>0?Math.min(30,+x):0):x===''||x==null||(+x===0&&['contrib','balance','start','from'].includes(c.key))?'':+x;});
-  let body=`<div class="ds-group">${_sheetFieldsHTML(AVD_COLS,v,'pv')}</div><div class="lt-result pv-res" id="pvRes"></div>`;
+  let body=`<div class="ds-group">${_sheetFieldsHTML(AVD_COLS,v,'pv')}${_accountSelectHTML('pv-account',L('Beitrag abgebucht von','Contribution debited from'),'',d?d.account:'')}</div><div class="lt-result pv-res" id="pvRes"></div>`;
   if(d)body+=`<button type="button" class="ds-danger" data-pv-remove="avd">${L('Depot entfernen','Remove depot')}</button>`;
   if(!_openSheet(d?(d.name||'').trim()||L('Altersvorsorgedepot','Retirement depot'):L('Neues Altersvorsorgedepot','New retirement depot'),body,()=>_saveAvdSheet(id),d?undefined:L('Hinzufügen','Add'),()=>openAvdSheet(id)))return;
   _sheetCtx={pv:{kind:'avd',id}};
@@ -11730,6 +12040,7 @@ function openAvdSheet(id){
 function _avdSheetDraft(id,strict){
   const o=Object.assign({},_sheetFieldValues(AVD_COLS,'pv',strict));if(id)o.id=id;
   const st=id?getAvDepots().find(x=>x.id===id):null;if(st&&st.pos)o.pos=st.pos;if(st&&Array.isArray(st.kidsOpen))o.kidsOpen=st.kidsOpen.slice();
+  const acc=_accountPicked('pv-account'),accName=acc===null?(st&&st.account)||'':acc;if(accName)o.account=accName;
   return o;
 }
 function _avdSheetSync(){

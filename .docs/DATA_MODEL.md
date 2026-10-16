@@ -5,11 +5,11 @@ Browser (`vermoegen-data-v1`). Eine Sicherung exportiert dieses Dokument als ein
 einzige Datei `master_export_YYYY-MM-DD.json` (bis Oktober 2026 `vermoegen_YYYY-MM-DD.json`). Für den Gerätewechsel werden keine
 weiteren Dateien benötigt. Die Datei ist UTF-8 und wird lesbar eingerückt.
 
-## Struktur, Version 19
+## Struktur, Version 20
 
 | Feld | Inhalt |
 | --- | --- |
-| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `19`, `EUR` |
+| `format`, `schemaVersion`, `currency` | `vermoegen-backup`, `20`, `EUR` |
 | `exportedAt` | ISO-Zeitpunkt; nur in exportierten Dateien |
 | `groups` | Stabile Gruppen-IDs, Namen, Standardprofil und Prognoseannahmen |
 | `positions` | Stabile Positions-IDs, Namen, Kategorien, Liquidität, Bewertung, Kursquelle, Einheit und Archivstatus |
@@ -651,6 +651,26 @@ Folgemonat (`nextYM()`, Entscheidung 14.10.2026: bleibt so) und friert ein, wenn
 diesen Monat wechselt. Historische Kurswerte rechnen deshalb mit dem Schlusskurs des Vormonats
 (VERMOEGEN.md, 4.6). Budget und Prognose leiten den Kalendermonat daraus ab (`_budgetYM()`,
 `latestKey`).
+
+## Konten im Geldfluss (Version 20)
+
+Seit 16.10.2026 können Einnahmen und Ausgaben einem Konto zugeordnet werden; die Daten-Seite prüft damit die
+Daueraufträge (BUDGET.md, Abschnitt 5) und ermittelt fehlende.
+
+| Feld (seit Version 20, optional) | Inhalt | Legacy |
+| --- | --- | --- |
+| `budget.items[].accountId` | Konto des Postens: Eingang (Einnahme) bzw. Abbuchung (Ausgabe, Sparen) | `budgetData.<kategorie>[].account` (Kontoname) |
+| `loans[].accountId` | Konto, von dem die Rate abgebucht wird (auch Zins, Tilgung, Sondertilgung) | `loanParams[id].account` |
+| `retirement.children[].accountId` | Konto, auf das das Kindergeld kommt | `lt-children[].account` |
+| `retirement.pensionDepots[].accountId` | Konto, von dem der eigene Beitrag abgebucht wird (die Zulage fließt direkt ins Depot) | `lt-av-depots[].account` |
+
+- Jeder Verweis zeigt auf `accounts[].id` (Prüfung: unbekanntes Konto wird abgelehnt). In den Legacy-Werten steht wie bei
+  Daueraufträgen der **Kontoname**; `fromLegacy` löst ihn am Ende auf, wenn die Konten feststehen. Ein unbekannter Name
+  entfällt, statt einen toten Verweis zu speichern.
+- Umbenennen eines Kontos zieht alle Verweise mit (`_renameAccountRefs`, in einer Transaktion), Löschen entfernt sie nach
+  Rückfrage (die Rückfrage nennt die Zahl der betroffenen Einträge).
+- Migration 19 → 20: keine; ältere Dokumente haben keine Konten-Verweise und bleiben unverändert. Ein Dokument mit
+  Version 20 lehnt eine ältere App ab: Sicherungen erst importieren, wenn alle Geräte aktualisiert sind.
 
 ## Entgeltpunkte laut EM-Bescheid, Untergrenze und Schätzung (Version 19)
 

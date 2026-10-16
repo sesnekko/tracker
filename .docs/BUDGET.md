@@ -178,12 +178,19 @@ Schlagwortliste:
 - Ohne Einnahmen oder ohne Daueraufträge erscheint ein Hinweis mit Sprung zur Daten-Seite.
 - Die Spaltentitel lauten „Einnahmen“ und „Ausgaben“. Die rechte Spalte zeigt aber Zielkonten
   (Haushaltskonto, Lastschriften, Depot), keine Ausgaben.
-- Demo: Daueraufträge 4.300 €, Plan-Einnahmen 5.375 €. Ein Abgleich findet nicht statt (BU4).
+- Demo: Daueraufträge 4.300 €, Plan-Einnahmen 5.375 €. Ein Abgleich mit dem Plan gibt es seit 16.10.2026 auf der
+  Daten-Seite („Daueraufträge prüfen“, Abschnitt 5), wenn Einnahmen und Ausgaben Konten zugeordnet sind (BU4).
 
 ---
 
 ## 5. Erfassung (Daten-Seite, Bereich „Einnahmen & Ausgaben“)
 
+- **Unterbereiche aufklappbar** (seit 16.10.2026, `_dsFold`): Automatisch, Einnahmen, Fixkosten, Variable Ausgaben,
+  Sparen, Einmalige Zahlungen, Konten und Daueraufträge stehen als zugeklappte Zeilen mit Titel, Anzahl bzw.
+  „Anzahl · Ø … / Monat“ und Pfeil; „+ Einnahme oder Ausgabe“ bleibt sichtbar. Der Zustand je Unterbereich steht im
+  Dokument (`ui-open-bud-<key>`, Standard zu). Nach dem Speichern eines Eintrags, Kontos oder Dauerauftrags ist sein
+  Unterbereich offen (`_dsFoldOpen`, in derselben Transaktion); während der Prüfung sind die Daueraufträge offen, der
+  Sprung „Konten & Daueraufträge“ von der Budget-Seite öffnet beide.
 - **Liste** (`_budgetListHTML`):
   - je Kategorie absteigend nach Jahressumme,
   - Rhythmus, Unterkategorie, „ersetzt durch Kreditvertrag/Altersvorsorgedepot“,
@@ -198,8 +205,61 @@ Schlagwortliste:
   - Beruht das Sheet (auch Konto, Dauerauftrag, Löschen nach Rückfrage) auf einem älteren Stand, weil inzwischen in
     einem anderen Fenster gespeichert wurde, wird nichts gespeichert; das Sheet öffnet mit dem aktuellen Stand neu und
     trägt die eigenen Änderungen markiert wieder ein (Review P54, DATA_MODEL.md „Schreibrecht zwischen Fenstern“).
-- **Konten** (`openAccountSheet`): Name und IBAN; Umbenennen zieht die Daueraufträge mit.
+- **Konten** (`openAccountSheet`): Name und IBAN; Umbenennen zieht die Daueraufträge und alle Kontoverweise mit,
+  Löschen entfernt die Verweise nach Rückfrage.
 - **Daueraufträge** (`openOrderSheet`): Von, Nach (Konto oder freie Bezeichnung), Betrag pro Monat.
+- **Konto je Eintrag** (seit 16.10.2026, Schema 20, `_accountSelectHTML`): im Budget-Sheet „Eingang auf“ (Einnahme) bzw.
+  „Abbuchung von“ (Ausgabe, Sparen), nur bei wiederkehrenden Posten; im Kredit-Sheet „Rate abgebucht von“, beim Kind
+  „Kindergeld auf“, beim Altersvorsorgedepot „Beitrag abgebucht von“. Ohne angelegte Konten entfällt die Auswahl.
+- **Daueraufträge prüfen / ermitteln** (Knopf unter den Daueraufträgen, `_flowCheckHTML`):
+  - `_accountFlows(bd)`: je Konto Ø je Monat über die zwölf Planmonate, rein = zugeordnete Einnahmen + eingehende
+    Daueraufträge, raus = zugeordnete Ausgaben, Sparpläne, Zinsen, Tilgung (auch Sondertilgung) + ausgehende Daueraufträge.
+    Einmalige Zahlungen zählen nicht, die Depot-Zulage fließt über kein Konto. Grundlage sind die Posten aus
+    `calcBudgetMonth`, die dafür ihr Konto tragen (`acct`, Kindergeld je Kind `accts`, Zulage `noAcct`).
+  - **Schalter „Nur feste monatliche Einnahmen“** (seit 16.10.2026, Standard an, `_flowFixedIncome`): Daueraufträge
+    laufen jeden Monat gleich, darum zählt je Einnahme nur der Betrag, der in jedem Planmonat ankommt (kleinster
+    Monatswert über die zwölf Monate). Ein Gehalt mit Weihnachtsgeld zählt mit dem normalen Monatsgehalt, ein Bonus nur im
+    März gar nicht. Was dadurch außen vor bleibt, nennt die Prüfung („Nicht berücksichtigt, weil nicht jeden Monat
+    gleich: Ø …“). Gilt für Prüfung, Vorschlag und den Status auf den Karten; Ausgaben zählen weiter im Durchschnitt
+    (Spitzen über den Puffer). Aus: alle Einnahmen im Durchschnitt über das Jahr. Gespeichert umgekehrt als
+    `ui-open-flowallincome` (Dokument, `preferences.expandedSections`), damit ohne Eintrag der Standard gilt.
+  - Status je Konto: „passt“ (±5 €), „bleibt +x“ (Geld sammelt sich an), „fehlt x“ (Daueraufträge decken die Ausgaben
+    nicht), „keine Bewegung“. Puffer = größter Rückgang des Kontostands über zwei aufeinanderfolgende Planjahre, z. B. für
+    eine jährliche Versicherung oder eine Sondertilgung („Puffer 2.201 € bis August“).
+  - Ein Dauerauftrag von außen (Bezeichnung statt Konto, z. B. „Kindergeld“), dessen Einnahme schon diesem Konto
+    zugeordnet ist, zählt nicht doppelt (Hinweis). Ohne Zuordnung gilt eine solche Einnahme als durch den Auftrag erfasst.
+  - „Ohne Konto“ nennt Anzahl, Ø-Beträge und die größten Posten ohne Zuordnung.
+  - **Vorschlag** (`_suggestOrders`): ohne Daueraufträge über „Daueraufträge ermitteln“, mit Daueraufträgen über
+    „Neue Daueraufträge vorschlagen“ (Knopf am Ende der Prüfung; „Zurück zur Prüfung“ führt zurück).
+    - Eingangskonten = Konten, auf denen aus den eigenen Posten mehr ein- als ausgeht (meist die Gehaltskonten); sie
+      füllen die Konten mit Fehlbetrag.
+    - Der nicht eingeplante Überschuss bleibt **zu gleichen Teilen auf den Eingangskonten** (Wunsch 16.10.2026,
+      Wasserstand): Wer weniger Überschuss hat als der gleiche Anteil, behält ihn ganz, die übrigen teilen den Rest.
+    - Wenige Aufträge: Das größte Eingangskonto übernimmt zuerst die kleineren Zielkonten, das größte Zielkonto wird
+      geteilt; Teile unter 50 € entstehen nicht (der Rest geht zulasten des gleichen Anteils). Beträge auf 10 € gerundet,
+      darum „≈ gleich“. Die Vorschau nennt, was danach je Eingangskonto bleibt.
+    - Daueraufträge von oder nach außen (Bezeichnung statt Konto, z. B. „Kindergeld“) zählen im Vorschlag mit und bleiben.
+    - Demo: Max → Haushalt 580 €, Max → Depot 830 €, Max → Lastschriften 1.410 €, Anna → Lastschriften 1.440 €; danach
+      bleiben Max ≈ 380 €, Anna ≈ 360 €.
+    - Gründe ohne Vorschlag: keine Konten, nichts zugeordnet, jedes Konto deckt sich selbst, kein Überschuss; reicht der
+      Überschuss nicht: „Es fehlen trotzdem …“.
+    - Die frühere Regel „das größte Konto deckt zuerst alles“ (ohne gleiche Anteile) ist damit abgelöst.
+  - „Übernehmen“ (`_applySuggestedOrders`): ohne Daueraufträge legt es sie an; mit Daueraufträgen „Übernehmen und
+    ersetzen“ nach Rückfrage – ersetzt werden nur die Aufträge zwischen eigenen Konten, die von oder nach außen bleiben.
+    Danach zeigt der Knopf wieder die Prüfung.
+  - **Geldfluss** (seit 16.10.2026, `_sankeyCheckHTML`) oben in der Prüfung: derselbe Geldfluss wie auf der Budget-Seite
+    (`_sankeyModel` aus den Daueraufträgen, `renderSankeyDiagram`: Quellkonten links, Zielkonten rechts, Kindergeld beim
+    Ziel, Karten mit IBAN-Rückseite, Bänder mit Betrag beim Antippen), beim Vorschlag mit den vorgeschlagenen Aufträgen.
+    Neu auf jeder Karte die Zeile „passt“, „bleibt +x“ oder rot „fehlt x“ (`_sankeyStatus`, nur wenn Posten Konten
+    zugeordnet sind). In der Daten-Karte steht das Diagramm auf Seitenhintergrund, damit die Karten wie auf der
+    Budget-Seite abgesetzt sind. Zeichnen und Größenänderung je Container (`renderSankeyFlows(…, container)`), damit beide
+    Diagramme gleichzeitig bestehen können (vorher suchte die Funktion seitenweit). Ein erster Entwurf als eigenes
+    vierspaltiges Diagramm (Einnahmen → Konten → Ausgabenarten) wurde verworfen: Es sollte genau wie der bisherige
+    Geldfluss aussehen.
+  - **Im Budget anzeigen** (Knopf unter dem Diagramm): Der Geldfluss auf der Budget-Seite (`renderBudgetSankey`) zeigt
+    dann ebenfalls passt/bleibt/fehlt auf den Karten und darunter „Ø je Monat … · Daueraufträge prüfen“ (Sprung zur
+    Prüfung). Gespeichert als `ui-open-budgetflow` (Dokument, `preferences.expandedSections.budgetflow`); „entfernen“
+    stellt den Geldfluss ohne Status wieder her. Ohne zugeordnete Konten bleibt er ohne Status.
 
 ---
 

@@ -163,7 +163,7 @@ test('Migration 18 → 19: getrennte Zurechnungszeit wird zum Gesamtwert, die ta
   const st = new MemoryStorage(); st.setItem(Data.KEY, raw);
   const store = Data.createStore(st);
   const r = store.document().retirement;
-  assert.equal(store.document().schemaVersion, 19);
+  assert.equal(store.document().schemaVersion, Data.VERSION, 'auf die aktuelle Version (mindestens 19) gehoben');
   assert.deepEqual(r.primary.statutoryPension, { disabilityType: 1, disabilityPension: 1033.42, disabilityCreditedPoints: 39.8909, disabilityAccessFactor: 0.892, disabilityTotalPoints: 61.2256 });
   // ohne Zurechnungszeit offen, ob die Punkte sie enthalten: unverändert
   assert.deepEqual(r.people[0].statutoryPension, { points: 30, disabilityType: 2, disabilityPension: 1200 });
@@ -209,7 +209,7 @@ test('Schema 19: Entgeltpunkte laut Bescheid und Zurechnungszeit werden gespeich
   assert.equal(sp.disabilityTotalPoints, 61.2256); assert.equal(sp.disabilityCreditedPoints, 39.8909);
   assert.equal('points' in sp, false);
   const doc = a.json('appStorage.exportBackup()');
-  assert.equal(doc.schemaVersion, 19);
+  assert.ok(doc.schemaVersion >= 19 && doc.schemaVersion === Data.VERSION);
   const b = Data.createStore(new MemoryStorage()); b.importBackup(JSON.parse(JSON.stringify(doc)));
   assert.equal(JSON.parse(b.getItem('lt-drv')).emTotal, 61.2256);
   const v18 = JSON.parse(JSON.stringify(doc)); v18.schemaVersion = 18;
