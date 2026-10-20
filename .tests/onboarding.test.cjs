@@ -7,13 +7,15 @@ const {app,MemoryStorage}=require('./app-harness.cjs');
 const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
 const fixture=JSON.parse(fs.readFileSync(path.join(__dirname,'..','demo_backup.json'),'utf8'));
 function context(){return app(html);}
-test('welcome offers guided setup, existing backup and demo; tour is reachable from Data',()=>{
+test('welcome offers guided setup, the introduction with sample data and existing backup; the introduction is reachable from Data',()=>{
   const a=context();
   const welcome=a.run('guideWelcome()');
   assert.match(welcome,/Geführt einrichten/);
   assert.match(welcome,/Bestehende Daten laden/);
-  assert.match(welcome,/Mit Demo-Daten ausprobieren/);
-  assert.match(html,/onclick="_settingsRun\(\(\)=>startOnboarding\('data'\)\)"/);
+  assert.match(welcome,/App kennenlernen/);
+  assert.doesNotMatch(welcome,/_v2LoadDemo/,'the welcome never replaces data by the demo');
+  assert.match(html,/onclick="_settingsRun\(\(\)=>_introOpenDemo\(true\)\)"/);
+  /* Rundgang mit Beispielkarten: Rückfall ohne Beispieldaten */
   a.run("startOnboarding('welcome')");
   assert.deepEqual(a.json('_guideKeys()'),['wealth','budget','forecast','data','backup']);
   assert.match(a.el('onboardingOverlay').innerHTML,/1 von 5/);

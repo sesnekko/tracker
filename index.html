@@ -2292,6 +2292,41 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
 /* Karten der Altersvorsorge (Ich, Beamtenversorgung): Felder ohne zweiten Kasten in der Karte, sonst wird die
    Beschriftungsspalte so schmal, dass „Rentenpunkte“ getrennt werden muss */
 #page-import .pv-card>.input-grid,#page-import .pv-card .drv-params .input-grid{background:none;padding:0;border-radius:0}
+/* Einführung mit Beispieldaten (wie Wertnest AP11) */
+.ob-learn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.ob-learn small,.wn-tour-final .btn small{display:block;font-size:13px;font-weight:400;opacity:.7}
+.ob-welcome-actions .ob-import{display:block;width:100%;box-sizing:border-box}
+.wn-demo-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--wn-nav,0px) + 12px);z-index:900;display:flex;align-items:center;gap:8px;padding:6px;border-radius:999px;background:color-mix(in srgb,var(--bg2) 92%,transparent);border:.5px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,.25);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);max-width:calc(100vw - 24px);box-sizing:border-box}
+.wn-demo-bar[hidden]{display:none}
+.wn-demo-btn{border:0;background:var(--fill);color:var(--ink);font:inherit;font-size:14px;border-radius:999px;padding:0 14px;min-height:36px;cursor:pointer;white-space:nowrap}
+.wn-demo-tag{display:flex;flex-direction:column;align-items:center;font-size:12.5px;color:var(--ink);line-height:1.2;padding:0 2px;text-align:center;white-space:nowrap}
+.wn-demo-tag small{font-size:11px;color:var(--muted)}
+body.wn-demo [data-demo-off]{opacity:.45;pointer-events:none}
+html.wn-tour-open{overflow:hidden}
+.wn-tour{position:fixed;inset:0;z-index:9000}
+.wn-tour-block{position:fixed;touch-action:none}
+.wn-tour-hole{position:fixed;border-radius:16px;box-shadow:0 0 0 200vmax rgba(0,0,0,.46),inset 0 0 0 1.5px rgba(255,255,255,.7);pointer-events:none;transition:left .35s cubic-bezier(.2,.7,.2,1),top .35s cubic-bezier(.2,.7,.2,1),width .35s cubic-bezier(.2,.7,.2,1),height .35s cubic-bezier(.2,.7,.2,1)}
+body.dark .wn-tour-hole{box-shadow:0 0 0 200vmax rgba(0,0,0,.7),inset 0 0 0 1.5px rgba(255,255,255,.35)}
+.wn-tour-hole.is-empty{box-shadow:0 0 0 200vmax rgba(0,0,0,.46)}
+body.dark .wn-tour-hole.is-empty{box-shadow:0 0 0 200vmax rgba(0,0,0,.7)}
+.wn-tour-card{position:fixed;left:50%;transform:translateX(-50%);width:min(calc(100vw - 32px),440px);display:flex;flex-direction:column;background:var(--bg2);border:.5px solid var(--border);border-radius:22px;box-shadow:0 8px 36px rgba(0,0,0,.25);padding:18px;box-sizing:border-box;color:var(--ink)}
+.wn-tour-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.wn-tour-count{font-size:12.5px;font-weight:500;color:var(--muted)}
+.wn-tour-x{position:relative;width:30px;height:30px;border-radius:50%;border:0;background:var(--fill);color:var(--muted);font-size:18px;line-height:1;cursor:pointer}
+.wn-tour-x::after{content:'';position:absolute;inset:-7px}
+.wn-tour-bar{display:flex;gap:3px;margin-top:10px}
+.wn-tour-bar span{flex:1;height:3px;border-radius:2px;background:var(--fill)}
+.wn-tour-bar span.on{background:var(--ink)}
+.wn-tour-body{flex:1 1 auto;min-height:0;overflow:auto}
+.wn-tour-body h2{font-size:19px;font-weight:500;margin:14px 0 0;color:var(--ink);outline:none}
+.wn-tour-body p{font-size:15px;line-height:1.5;color:var(--muted);margin:6px 0 0}
+.wn-tour-actions{display:flex;align-items:center;gap:10px;margin-top:16px}
+.wn-tour-back{background:none;border:0;color:var(--muted);font:inherit;font-size:15px;min-height:44px;padding:0 8px;cursor:pointer}
+.wn-tour-next{margin-left:auto;border:0;border-radius:999px;background:var(--ink);color:var(--bg);font:inherit;font-size:15px;font-weight:500;min-height:44px;padding:0 24px;cursor:pointer;white-space:nowrap}
+.wn-tour-final{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.wn-tour-final .btn{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.wn-tour-final .ob-skip{margin:0}
+@media (prefers-reduced-motion: reduce){.wn-tour-hole{transition:none}}
 </style>
 
 <!-- Pull to Refresh Indicator -->
@@ -2529,17 +2564,17 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
 <template id="tpl-data">
 <div class="ds-group-t st-t">Sicherung</div>
 <div class="v2-list">
-  <button class="v2-row v2-row-action" onclick="exportBackup()"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><polyline points="7 8 12 3 17 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span><span class="v2-t"><span class="v2-t1">Sicherung exportieren</span><span class="v2-t2" id="backupSub">Eine Datei mit allen Daten und Einstellungen</span></span><span class="v2-chev"></span></button>
-  <label class="v2-row v2-row-action" style="cursor:pointer"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span><span class="v2-t"><span class="v2-t1">Sicherung wiederherstellen</span><span class="v2-t2">JSON-Sicherung oder alte CSV-Datei</span></span><span class="v2-chev"></span><input type="file" accept=".json,.csv,application/json,text/csv" id="csvInput2" style="display:none" onchange="document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
+  <button class="v2-row v2-row-action" data-demo-off onclick="exportBackup()"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><polyline points="7 8 12 3 17 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span><span class="v2-t"><span class="v2-t1">Sicherung exportieren</span><span class="v2-t2" id="backupSub">Eine Datei mit allen Daten und Einstellungen</span></span><span class="v2-chev"></span></button>
+  <label class="v2-row v2-row-action" data-demo-off style="cursor:pointer"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span><span class="v2-t"><span class="v2-t1">Sicherung wiederherstellen</span><span class="v2-t2">JSON-Sicherung oder alte CSV-Datei</span></span><span class="v2-chev"></span><input type="file" accept=".json,.csv,application/json,text/csv" id="csvInput2" style="display:none" onchange="document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
   <button class="v2-row v2-row-action" id="beforeUpdateRow" hidden onclick="_downloadBeforeUpdate()"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><polyline points="7 8 12 3 17 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span><span class="v2-t"><span class="v2-t1">Stand vor dem Update sichern</span><span class="v2-t2" id="beforeUpdateSub">Unveränderte Daten vor der letzten Umstellung</span></span><span class="v2-chev"></span></button>
-  <button class="v2-row ds-row-danger" id="resetBtn" onclick="_settingsRun(resetApp)"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5h9l1-12.5"/></svg></span><span class="v2-t"><span class="v2-t1">Alle Daten löschen</span></span></button>
+  <button class="v2-row ds-row-danger" id="resetBtn" data-demo-off onclick="_settingsRun(resetApp)"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5h9l1-12.5"/></svg></span><span class="v2-t"><span class="v2-t1">Alle Daten löschen</span></span></button>
 </div>
 <p class="ds-help">Deine Daten liegen nur auf diesem Gerät. Eine Sicherung ist eine einzelne Datei, mit der du auf einem anderen Gerät weitermachst.</p>
 </template>
 <template id="tpl-help">
 <div class="v2-list">
-  <button class="v2-row v2-row-action" onclick="_settingsRun(()=>startOnboarding('data'))"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.8 9.6a2.3 2.3 0 1 1 3.2 2.1c-.6.3-1 .8-1 1.5v.3"/><path d="M12 16.6v.1"/></svg></span><span class="v2-t"><span class="v2-t1">App kennenlernen</span><span class="v2-t2">Geführter Einstieg in wenigen Schritten</span></span><span class="v2-chev"></span></button>
-  <button class="v2-row" onclick="_settingsRun(_v2RestoreDemo)"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8 12 4l8 4v8l-8 4-8-4z"/><path d="m4 8 8 4 8-4M12 12v8"/></svg></span><span class="v2-t"><span class="v2-t1">Demo-Daten laden</span><span class="v2-t2">Ersetzt alle Daten durch Beispieldaten</span></span><span class="v2-chev"></span></button>
+  <button class="v2-row v2-row-action" onclick="_settingsRun(()=>_introOpenDemo(true))"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.8 9.6a2.3 2.3 0 1 1 3.2 2.1c-.6.3-1 .8-1 1.5v.3"/><path d="M12 16.6v.1"/></svg></span><span class="v2-t"><span class="v2-t1">App kennenlernen</span><span class="v2-t2">Zwei Minuten mit Beispieldaten</span></span><span class="v2-chev"></span></button>
+  <button class="v2-row" data-demo-off onclick="_settingsRun(_v2RestoreDemo)"><span class="v2-ico ds-sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8 12 4l8 4v8l-8 4-8-4z"/><path d="m4 8 8 4 8-4M12 12v8"/></svg></span><span class="v2-t"><span class="v2-t1">Demo-Daten laden</span><span class="v2-t2">Ersetzt alle Daten durch Beispieldaten</span></span><span class="v2-chev"></span></button>
 </div>
 <div class="st-version">Version 1.1</div>
 </template>
@@ -2867,9 +2902,46 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
    P54: Jede Speicherung beruht auf der Revision, die angezeigt wurde (trackView) oder mit der eine Bearbeitung begann
    (withBase). Ein inzwischen übernommener fremder Stand macht sie ungültig (STALE), statt still überschrieben zu werden. */
 let _extChange=false;
+/* ── Einführung mit Beispieldaten (wie Wertnest AP11) ──
+   Die Demo ist ein eigener Seitenstart dieses Tabs: Beim Öffnen liegen die Web-Demodaten in sessionStorage, dann lädt die
+   Seite neu. Im Demo-Start ersetzt ein Speicher im Arbeitsspeicher localStorage (übernommen werden nur Erscheinungsbild und
+   Sprache), und appStorage arbeitet ohne Web Locks darauf. Jede Speicherung landet damit im Arbeitsspeicher und verschwindet
+   beim Verlassen (Neuladen); die eigenen Daten und das Schreibrecht anderer Fenster bleiben unberührt. Lässt sich
+   localStorage nicht ersetzen, startet die Seite normal ohne Demo. Fortschritt der Einführung: gerätelokal im echten Speicher. */
+const _DEMO_SESSION='wertnest-demo',_DEMO_DOC='wertnest-demo-doc',_DEMO_TOUR='wertnest-demo-tour',_DEMO_FIRST='wertnest-demo-first',_DEMO_AFTER='wertnest-demo-after';
+const _introStore=(()=>{try{return localStorage;}catch(e){return null;}})();
+function _introSession(){try{return typeof sessionStorage!=='undefined'?sessionStorage:null;}catch(e){return null;}}
+class _MemoryStorage{
+  constructor(){this._v=new Map();}
+  get length(){return this._v.size;}
+  key(i){return [...this._v.keys()][i]??null;}
+  getItem(k){return this._v.has(k)?this._v.get(k):null;}
+  setItem(k,v){this._v.set(String(k),String(v));}
+  removeItem(k){this._v.delete(k);}
+  clear(){this._v.clear();}
+}
+const _demo=(()=>{
+  const ss=_introSession();
+  if(!ss||ss.getItem(_DEMO_SESSION)!=='1')return null;
+  try{
+    const backup=JSON.parse(ss.getItem(_DEMO_DOC));
+    const doc=AssetsData.migrate(JSON.parse(JSON.stringify(AssetsData.validate(backup))));
+    doc.schemaVersion=AssetsData.VERSION;delete doc.exportedAt;AssetsData.validate(doc);
+    const mem=new _MemoryStorage();
+    mem.setItem(AssetsData.KEY,JSON.stringify(doc));
+    Object.defineProperty(globalThis,'localStorage',{configurable:true,value:mem});
+    if(localStorage!==mem)throw new Error('localStorage lässt sich nicht ersetzen');
+    const tour=ss.getItem(_DEMO_TOUR)==='1';ss.setItem(_DEMO_TOUR,'0');
+    return {storage:mem,tour,first:ss.getItem(_DEMO_FIRST)==='1'};
+  }catch(error){
+    [_DEMO_SESSION,_DEMO_DOC,_DEMO_TOUR,_DEMO_FIRST].forEach(k=>{try{ss.removeItem(k);}catch(e){}});
+    try{console.warn('Demo nicht gestartet: '+error.message);}catch(e){}
+    return null;
+  }
+})();
 const appStorage=(()=>{
-  const locks=typeof navigator!=='undefined'&&navigator.locks&&typeof navigator.locks.request==='function'?navigator.locks:null;
-  try{return AssetsData.createStore(localStorage,{onConflict:()=>{_extChange=true;},onExternal:()=>{_extChange=true;},locks,requireLocks:true,trackView:true,isBusy:()=>_uiBusy(),onReadOnly:()=>setTimeout(()=>_showReadOnly(true),0)});}
+  const locks=!_demo&&typeof navigator!=='undefined'&&navigator.locks&&typeof navigator.locks.request==='function'?navigator.locks:null;
+  try{return AssetsData.createStore(_demo?_demo.storage:localStorage,{onConflict:()=>{_extChange=true;},onExternal:()=>{_extChange=true;},locks,requireLocks:!_demo,trackView:true,isBusy:()=>_uiBusy(),onReadOnly:()=>setTimeout(()=>_showReadOnly(true),0)});}
   catch(error){
     const panel=document.createElement('div');panel.className='app-content';
     const title=document.createElement('h2');title.textContent='Daten konnten nicht geladen werden';
@@ -7364,7 +7436,7 @@ const BACKUP_KEY='vermoegen-last-backup';
 function _lastBackup(){try{const t=localStorage.getItem(BACKUP_KEY);return t&&isFinite(Date.parse(t))?new Date(t):null;}catch(error){return null;}}
 function _refreshBackupInfo(){
   const t=_lastBackup(),days=t?Math.floor((Date.now()-t.getTime())/864e5):null;
-  const tile=document.getElementById('dataTile');if(tile)tile.classList.toggle('has-badge',(!t||days>30)&&hasOnboardingData(appStorage.document()));
+  const tile=document.getElementById('dataTile');if(tile)tile.classList.toggle('has-badge',!_demo&&(!t||days>30)&&hasOnboardingData(appStorage.document()));
   const bu=document.getElementById('beforeUpdateRow');if(bu){const b=appStorage.backupBeforeUpdate();bu.hidden=!b;const sub=document.getElementById('beforeUpdateSub');if(b&&sub&&b.version)sub.textContent=L('Unveränderte Daten der Version ','Unchanged data of version ')+b.version;}
   const el=document.getElementById('backupSub');if(!el)return;
   el.textContent=!t?'Noch keine Sicherung · empfohlen':'Zuletzt '+(days<1?'heute':days===1?'gestern':'vor '+days+' Tagen');
@@ -8308,6 +8380,7 @@ function _monthDue(){
   return done!==nextYM();
 }
 function _monthNotif(force){
+  if(_demo)return;/* Beispieldaten: keine Erinnerung an den eigenen Monatsstand */
   const due=force||_monthDue();
   const nav=document.querySelector('.nav-btn[data-page="import"]');if(nav)nav.classList.toggle('has-dot',due);
   const side=document.querySelector('.sidebar-item[data-page="import"]');if(side)side.classList.toggle('has-dot',due);
@@ -13947,6 +14020,7 @@ function _showOnboardingNext(){
 /* Einmal je Kredit und Gerät: Hinweis, dass Monate aus dem Tilgungsplan ergänzt und Asset-Werte geschätzt sind */
 const LOAN_NOTIF_KEY='vermoegen-loan-history-seen';
 function _loanHistoryNotif(){
+  if(_demo)return;/* Beispieldaten: keine Mitteilungen */
   const el=document.getElementById('loanHistoryNotif');if(!el)return;
   const params=getLoanParams(),ids=_fc.fields.filter(f=>f.category==='liab'&&LoanModel.configured(params[f.id])).map(f=>f.id);
   let seen=[];try{seen=JSON.parse(localStorage.getItem(LOAN_NOTIF_KEY)||'[]');}catch(error){}
@@ -14105,6 +14179,206 @@ function _welcomeWavesStart(root){
   };
   requestAnimationFrame(frame);
 }
+/* ── Einführung mit Beispieldaten (wie Wertnest AP11): Tour durch die echten Seiten ──
+   Elf Schritte mit Hervorhebung echter Elemente; nur in der Demo (eigener Seitenstart, siehe _demo). Fortschritt gerätelokal
+   im echten Speicher (_introStore), nie im Dokument. × hält an (Fortsetzen über Willkommen, Hilfe oder „Rundgang“); × auf dem
+   Abschluss gilt als abgeschlossen. Im Schritt „Verlauf“ bleibt der Chart bedienbar, sonst fängt die Tour jede Berührung ab. */
+const _INTRO_STEP_KEY='wertnest-intro-step',_INTRO_DONE_KEY='wertnest-intro-completed';
+let _introIdx=null,_introRaf=0,_introFocusBack=null;
+function _introSteps(){return [
+  {page:'home',sel:null,title:L('Das Beispiel: Max und Anna','The example: Max and Anna'),
+    text:L('Eine Familie mit Tochter Lena, Wohnung, Auto und Ersparnissen – alle Zahlen sind erfunden. In zwei Minuten siehst du, wie die App damit rechnet.','A family with daughter Lena, a flat, a car and savings – all numbers are made up. In two minutes you will see how the app works with them.')},
+  {page:'home',sel:['#page-home .hero'],title:L('Was unterm Strich bleibt','What is left in the end'),
+    text:L('Das Nettovermögen ist alles, was die beiden besitzen, abzüglich ihrer Kredite. Es darf auch negativ sein.','Net worth is everything the two own minus their loans. It may also be negative.')},
+  {page:'home',sel:['#page-home .structure-section-mobile','#page-home .kpi-and-assets-wrapper'],scroll:'start',title:L('Besitz und Schulden','Assets and debts'),
+    text:L('Gruppen sammeln Konten, Depots und Immobilien; Kredite werden abgezogen. Liquide heißt schnell verfügbar. Neue Positionen legst du unter „Daten“ an.','Groups collect accounts, portfolios and property; loans are deducted. Liquid means quickly available. You add new positions under “Data”.')},
+  {page:'home',sel:['#page-home .chart-section'],scroll:'start',interactive:true,title:L('Der Verlauf','The history'),
+    text:L('Jeder Punkt ist ein Monatsstand. Fahre oder wische über den Chart, um frühere Monate zu sehen.','Every point is a monthly snapshot. Hover or swipe across the chart to see earlier months.')},
+  {page:'home',sel:['#dateBtn'],scroll:'top',title:L('Einmal im Monat','Once a month'),
+    text:L('Hier wählst du den Monat. Konten und Immobilien trägst du einmal im Monat unter „Daten“ ein. Wertpapiere und Krypto mit Kursquelle bewertet die App per Kurs, Kredite mit Vertrag rechnet sie selbst.','Here you pick the month. You enter accounts and property once a month under “Data”. Securities and crypto with a price source are valued automatically; loans with a contract are calculated by the app.')},
+  {page:'budget',sel:['#page-budget .kpi-grid'],scroll:'top',title:L('Der Monat als Plan','The month as a plan'),
+    text:L('Die Kacheln zeigen, wie viel vom Einkommen übrig bleibt. Ausgaben und Sparraten stehen darunter; die Sparraten fließen in die Prognose.','The tiles show how much of the income is left. Expenses and savings plans follow below; savings flow into the forecast.')},
+  {page:'lifetime',sel:['#page-lifetime .chart-section'],scroll:'start',title:L('Ein Blick nach vorn','A look ahead'),
+    text:L('Die grüne Linie ist der erwartete Weg, die Fläche zeigt gute und schlechte Börsenjahre. Ein Szenario, keine Garantie.','The green line is the expected path, the area shows good and bad market years. A scenario, not a guarantee.')},
+  {page:'lifetime',sel:['#v2-lt-summary'],scroll:'start',title:L('Reicht das Geld?','Will the money last?'),
+    text:L('Die App spielt viele Marktverläufe durch und zählt, wie oft das Geld reicht. „Sicher möglich ab“ zeigt, welches Ruhestandsalter dazu passt.','The app plays through many market paths and counts how often the money lasts. “Safe from” shows the matching retirement age.')},
+  {page:'lifetime',sel:['#lt-more-list'],scroll:'start',title:L('Renten zählen mit','Pensions count too'),
+    text:L('Gesetzliche Rente, Pension, Betriebsrente und private Verträge kommen ab Rentenbeginn als Einkommen dazu.','State pension, civil service pension, company pension and private contracts are added as income from retirement on.')},
+  {page:'import',sel:['#page-import .dp-tiles'],scroll:'center',title:L('Deine Daten bleiben bei dir','Your data stays with you'),
+    text:L('Keine Anmeldung, keine Bankverbindung: Alles liegt auf diesem Gerät. Unter „Sicherung“ exportierst du eine Datei oder lädst einen Stand.','No sign-up, no bank connection: everything stays on this device. Under “Backup” you export a file or load a saved state.')},
+  {page:'import',sel:null,title:L('Jetzt du','Your turn'),
+    text:L('Fang mit dem an, was du gerade weißt – ein Konto reicht. Alles Weitere ergänzt du nach und nach.','Start with what you know right now – one account is enough. Add everything else step by step.')}
+];}
+function _introSaved(){
+  try{const v=_introStore&&_introStore.getItem(_INTRO_STEP_KEY);if(v===null||v===undefined)return null;const n=+v;return Number.isInteger(n)&&n>0&&n<_introSteps().length-1?n:null;}catch(e){return null;}
+}
+function _introSave(i){try{_introStore&&_introStore.setItem(_INTRO_STEP_KEY,String(i));}catch(e){}}
+function _introDone(){try{if(!_introStore)return;_introStore.removeItem(_INTRO_STEP_KEY);_introStore.setItem(_INTRO_DONE_KEY,'1');}catch(e){}}
+function _introSub(){const s=_introSaved();return s===null?L('Zwei Minuten mit Beispieldaten','Two minutes with sample data'):L(`Weiter bei ${s+1} von ${_introSteps().length}`,`Continue at ${s+1} of ${_introSteps().length}`);}
+
+/* Demo öffnen (neuer Seitenstart mit den Web-Demodaten); in der Demo nur die Tour. Ohne sessionStorage oder Demodaten:
+   der bisherige Rundgang mit Beispielkarten. */
+async function _introOpenDemo(withTour=true,fromStart=false){
+  if(_demo){if(withTour)_introStart(!fromStart);return;}
+  const ss=_introSession();
+  if(!ss){startOnboarding('data');return;}
+  try{
+    const doc=await _loadDemoBackup();
+    const cur=appStorage.document().preferences||{};
+    doc.preferences=doc.preferences||{};
+    if(cur.theme!==undefined)doc.preferences.theme=cur.theme;
+    if(cur.language!==undefined)doc.preferences.language=cur.language;
+    doc.preferences.onboardingCompleted=true;
+    ss.setItem(_DEMO_DOC,JSON.stringify(doc));
+    ss.setItem(_DEMO_TOUR,withTour?'1':'0');
+    ss.setItem(_DEMO_FIRST,hasOnboardingData(appStorage.document())?'0':'1');
+    if(fromStart)_introSave(0);
+    ss.setItem(_DEMO_SESSION,'1');
+    location.reload();
+  }catch(error){
+    [_DEMO_SESSION,_DEMO_DOC,_DEMO_TOUR,_DEMO_FIRST].forEach(k=>{try{ss.removeItem(k);}catch(e){}});
+    startOnboarding('data');
+  }
+}
+function _introLeaveDemo(after){
+  const ss=_introSession();
+  if(_introIdx!==null)_introClose();
+  if(ss){[_DEMO_SESSION,_DEMO_DOC,_DEMO_TOUR,_DEMO_FIRST].forEach(k=>{try{ss.removeItem(k);}catch(e){}});if(after)ss.setItem(_DEMO_AFTER,after);}
+  location.reload();
+}
+/* Nach dem Start: in der Demo Leiste und ggf. Tour; nach „Geführt einrichten“ aus der Demo die Einrichtung. */
+function _introBoot(){
+  if(_demo){_introBar();if(_demo.tour)_introStart(true);return;}
+  const ss=_introSession(),after=ss&&ss.getItem(_DEMO_AFTER);
+  if(!after)return;
+  ss.removeItem(_DEMO_AFTER);
+  if(after==='setup'&&!hasOnboardingData(appStorage.document()))startSetup();
+}
+function _introNavOffset(){
+  const nav=document.querySelector('.bottom-nav');const r=nav&&nav.getClientRects().length?nav.getBoundingClientRect():null;
+  document.documentElement.style.setProperty('--wn-nav',(r&&r.height?Math.round(r.height):0)+'px');
+}
+function _introBar(){
+  if(document.getElementById('wnDemoBar'))return;
+  const bar=document.createElement('div');bar.id='wnDemoBar';bar.className='wn-demo-bar';
+  bar.setAttribute('role','region');bar.setAttribute('aria-label',L('Beispieldaten, nichts wird gespeichert','Sample data, nothing is saved'));
+  bar.innerHTML=`<button class="wn-demo-btn" type="button" onclick="_introLeaveDemo()">‹ ${_demo&&_demo.first?L('Zurück','Back'):L('Eigene Daten','My data')}</button>`+
+    `<span class="wn-demo-tag" aria-hidden="true">${L('Beispieldaten','Sample data')}<small>${L('nichts wird gespeichert','nothing is saved')}</small></span>`+
+    `<button class="wn-demo-btn" type="button" onclick="_introStart(false)">✦ ${L('Rundgang','Tour')}</button>`;
+  document.body.appendChild(bar);document.body.classList.add('wn-demo');
+  _introNavOffset();window.addEventListener('resize',_introNavOffset);
+}
+function _introStart(resume){
+  if(!_demo)return;
+  const saved=_introSaved();
+  _introIdx=resume&&saved!==null?saved:0;_introSave(_introIdx);
+  _introRender();
+}
+function _introClose(){
+  if(_introIdx===null)return;
+  if(_introIdx===_introSteps().length-1)_introDone();
+  _introIdx=null;cancelAnimationFrame(_introRaf);
+  const root=document.getElementById('wnTour');if(root)root.remove();
+  document.documentElement.classList.remove('wn-tour-open');
+  window.removeEventListener('resize',_introQueue);window.removeEventListener('scroll',_introQueue,true);document.removeEventListener('keydown',_introKey,true);
+  const bar=document.getElementById('wnDemoBar');if(bar)bar.hidden=false;
+  if(_introFocusBack&&_introFocusBack.isConnected)_introFocusBack.focus();
+}
+function _introGo(delta){
+  const n=_introIdx+delta;if(_introIdx===null||n<0||n>=_introSteps().length)return;
+  _introIdx=n;_introSave(n);haptic('light');_introRender();
+}
+function _introFinish(action){
+  _introDone();_introIdx=_introSteps().length-2;/* kein erneutes Abschließen in _introClose */
+  _introClose();
+  if(action)_introLeaveDemo(action==='leave'?undefined:action);
+}
+function _introKey(e){
+  if(_introIdx===null)return;
+  const card=document.querySelector('#wnTour .wn-tour-card');
+  if(e.key==='Escape'){e.preventDefault();_introClose();return;}
+  if(e.key==='Tab'&&card){
+    const f=[...card.querySelectorAll('button,[tabindex="0"]')].filter(el=>!el.disabled&&el.getClientRects().length);
+    if(!f.length)return;const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&(document.activeElement===first||!card.contains(document.activeElement))){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+}
+function _introQueue(){cancelAnimationFrame(_introRaf);_introRaf=requestAnimationFrame(_introPlace);}
+function _introTarget(step){
+  if(!step.sel)return null;
+  for(const s of step.sel){const el=document.querySelector(s);if(el&&el.getClientRects().length){const r=el.getBoundingClientRect();if(r.width>0&&r.height>0)return el;}}
+  return null;
+}
+function _introReduce(){return !!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);}
+function _introCard(i){
+  const steps=_introSteps(),step=steps[i],last=i===steps.length-1,first=_demo&&_demo.first;
+  const bar=steps.map((_,k)=>`<span class="${k<=i?'on':''}"></span>`).join('');
+  const actions=last
+    ?`<div class="wn-tour-final">${first
+        ?`<button class="btn btn-primary" type="button" onclick="_introFinish('setup')">${L('Geführt einrichten','Guided setup')}<small>${L('Ein Konto reicht für den Anfang','One account is enough to start')}</small></button>`+
+         `<button class="btn btn-ghost" type="button" onclick="_introFinish('import')">${L('Bestehende Daten laden','Load existing data')}</button>`
+        :`<button class="btn btn-primary" type="button" onclick="_introFinish('leave')">${L('Zurück zu meinen Daten','Back to my data')}</button>`}
+       <button class="ob-skip" type="button" onclick="_introFinish()">${L('Weiter umsehen','Keep exploring')}</button></div>`
+    :`<div class="wn-tour-actions">${i>0?`<button class="wn-tour-back" type="button" onclick="_introGo(-1)">${L('Zurück','Back')}</button>`:''}<button class="wn-tour-next" type="button" onclick="_introGo(1)">${L('Weiter','Next')}</button></div>`;
+  return `<div class="wn-tour-head"><span class="wn-tour-count" aria-label="${L(`Schritt ${i+1} von ${steps.length}`,`Step ${i+1} of ${steps.length}`)}">${L(`${i+1} von ${steps.length}`,`${i+1} of ${steps.length}`)}</span>`+
+    `<button class="wn-tour-x" type="button" onclick="_introClose()" aria-label="${L('Einführung schließen','Close introduction')}">×</button></div>`+
+    `<div class="wn-tour-bar" aria-hidden="true">${bar}</div>`+
+    `<div class="wn-tour-body"><h2 id="wnTourTitle" tabindex="-1">${step.title}</h2><p>${step.text}</p></div>${actions}`;
+}
+async function _introRender(){
+  const i=_introIdx;if(i===null)return;
+  const step=_introSteps()[i];
+  let root=document.getElementById('wnTour');
+  if(!root){
+    _introFocusBack=document.activeElement;
+    root=document.createElement('div');root.id='wnTour';root.className='wn-tour';
+    root.innerHTML='<div class="wn-tour-block"></div><div class="wn-tour-block"></div><div class="wn-tour-block"></div><div class="wn-tour-block"></div>'+
+      '<div class="wn-tour-hole" aria-hidden="true"></div><div class="wn-tour-card" role="dialog" aria-modal="true" aria-labelledby="wnTourTitle"></div>';
+    document.body.appendChild(root);document.documentElement.classList.add('wn-tour-open');
+    window.addEventListener('resize',_introQueue);window.addEventListener('scroll',_introQueue,true);document.addEventListener('keydown',_introKey,true);
+    const bar=document.getElementById('wnDemoBar');if(bar)bar.hidden=true;
+  }
+  const card=root.querySelector('.wn-tour-card');card.innerHTML=_introCard(i);
+  const title=card.querySelector('h2');if(title)title.focus({preventScroll:true});
+  if(!document.getElementById('page-'+step.page)?.classList.contains('active'))navigateToPage(step.page);
+  _introPlace();
+  /* Ziel abwarten (die Prognose rechnet erst), dann ins Bild holen und neu platzieren */
+  let el=null;
+  for(let t=0;t<30&&_introIdx===i;t++){el=_introTarget(step);if(el||!step.sel)break;await new Promise(r=>setTimeout(r,100));}
+  if(_introIdx!==i)return;
+  if(el){
+    const r=el.getBoundingClientRect(),vh=window.innerHeight;
+    const y=step.scroll==='top'?0:step.scroll==='center'?r.top+window.scrollY-(vh-r.height)/2:r.top+window.scrollY-72;
+    window.scrollTo({top:Math.max(0,Math.round(y)),behavior:_introReduce()?'auto':'smooth'});
+    await new Promise(r=>setTimeout(r,_introReduce()?30:380));
+  }
+  if(_introIdx===i)_introPlace();
+}
+function _introPlace(){
+  const root=document.getElementById('wnTour');if(!root||_introIdx===null)return;
+  const step=_introSteps()[_introIdx],el=_introTarget(step);
+  const vw=window.innerWidth,vh=window.innerHeight,pad=8;
+  const probe=document.createElement('div');probe.style.cssText='position:fixed;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);visibility:hidden';document.body.appendChild(probe);
+  const cs=getComputedStyle(probe),top=(parseFloat(cs.paddingTop)||0)+12,bottom=(parseFloat(cs.paddingBottom)||0)+12;probe.remove();
+  const hole=root.querySelector('.wn-tour-hole'),blocks=[...root.querySelectorAll('.wn-tour-block')],card=root.querySelector('.wn-tour-card');
+  const r=el?el.getBoundingClientRect():null;
+  const h=r?{l:Math.max(4,r.left-pad),t:r.top-pad,w:Math.min(vw-8,r.width+2*pad),hh:r.height+2*pad}:{l:vw/2,t:vh/2,w:0,hh:0};
+  Object.assign(hole.style,{left:h.l+'px',top:h.t+'px',width:h.w+'px',height:h.hh+'px',opacity:r?'1':'1'});
+  hole.classList.toggle('is-empty',!r);
+  const set=(b,x,y,w,hh)=>Object.assign(b.style,{left:x+'px',top:y+'px',width:Math.max(0,w)+'px',height:Math.max(0,hh)+'px'});
+  if(r&&step.interactive){
+    set(blocks[0],0,0,vw,h.t);set(blocks[1],0,h.t+h.hh,vw,vh-h.t-h.hh);set(blocks[2],0,h.t,h.l,h.hh);set(blocks[3],h.l+h.w,h.t,vw-h.l-h.w,h.hh);
+  }else{set(blocks[0],0,0,vw,vh);blocks.slice(1).forEach(b=>set(b,0,0,0,0));}
+  /* Karte: darunter, darüber, sonst unten über dem Element (höchstens 60 % hoch, der Text scrollt) */
+  card.style.maxHeight='none';card.style.top='';card.style.bottom='';
+  const ch=card.offsetHeight;
+  if(!r){card.style.maxHeight=(vh-top-bottom)+'px';card.style.top=Math.max(top,(vh-Math.min(ch,vh-top-bottom))/2)+'px';return;}
+  const below=vh-(h.t+h.hh)-12-bottom,above=h.t-12-top;
+  if(below>=ch)card.style.top=(h.t+h.hh+12)+'px';
+  else if(above>=ch)card.style.top=(h.t-12-ch)+'px';
+  else{card.style.maxHeight=Math.min(vh-top-bottom,Math.max(vh*0.6,260))+'px';card.style.bottom=bottom+'px';}
+}
 /* Startbildschirm: großes Logo in den Wellen des Icons, drei Vorteile, Aktionen unten.
    Auf dem iPad als zentrierte Gruppe. */
 function guideWelcome(){
@@ -14124,8 +14398,8 @@ function guideWelcome(){
     </ul>
     <div class="ob-welcome-actions">
       <button class="btn btn-primary" onclick="startSetup()">Geführt einrichten</button>
-      <label class="btn btn-ghost ob-import" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">Bestehende Daten laden<input type="file" accept=".json,.csv,application/json,text/csv" style="display:none" onchange="hideOnboarding();document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
-      <button class="ob-skip" onclick="_v2LoadDemo()">Mit Demo-Daten ausprobieren</button>
+      <button class="btn btn-ghost ob-learn" type="button" onclick="_introOpenDemo(true)">${L('App kennenlernen','Get to know the app')}<small>${_introSub()}</small></button>
+      <label class="ob-skip ob-import" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">Bestehende Daten laden<input type="file" accept=".json,.csv,application/json,text/csv" style="display:none" onchange="hideOnboarding();document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
     </div>
   </div>`;
 }
@@ -15131,6 +15405,7 @@ function _nextSteps(){
   return out.filter(t=>!hidden.has(t.id)).slice(0,3);
 }
 function _nextStepsHTML(){
+  if(_demo)return '<div id="nextSteps" hidden></div>';/* Beispieldaten: keine Vorschläge für die eigenen Daten */
   const tips=_nextSteps();if(!tips.length)return '<div id="nextSteps"></div>';
   return `<div id="nextSteps" class="ns-card"><div class="ns-head"><b>Nach und nach ergänzen</b><span>Kein Muss – wann immer du magst.</span></div>${tips.map((t,i)=>`<div class="ns-item${i?' ns-short':''}"><button type="button" class="ns-main" onclick="_nsRun('${escHTML(t.id)}')"${i?` title="${escHTML(t.text)}"`:''}><span class="ns-t">${escHTML(t.title)}</span>${i?'':`<span class="ns-s">${escHTML(t.text)}</span>`}</button><button type="button" class="ns-x" onclick="_nsDismiss('${escHTML(t.id)}')" aria-label="Vorschlag ausblenden">×</button></div>`).join('')}</div>`;
 }
@@ -15406,6 +15681,7 @@ function initApp(){
     if(!hasOnboardingData(onboardingData)&&!onboardingData.preferences.onboardingCompleted){
       showOnboarding();
     }
+    _introBoot();
     document.addEventListener('keydown',e=>{
       const overlay=document.getElementById('onboardingOverlay');
       if(overlay.style.display!=='block')return;
