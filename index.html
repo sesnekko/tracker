@@ -904,6 +904,9 @@ body{font-size:15px;line-height:1.45}
 .app-header{padding:6px 0 0}
 /* Installierte iPhone-App: Kopfzeile unterhalb des Unschärfe-Verlaufs, den iOS unter die Statusleiste legt */
 @media (display-mode: standalone) and (max-width:767px){body{padding-top:calc(env(safe-area-inset-top) + 18px)}}
+/* Haupt-KPI und alles darunter rücken auf dem iPhone wieder um 26px nach oben; die Kopfzeile (Monat, Kursstatus, Hell/Dunkel)
+   bleibt unterhalb des Verlaufs. Mehr Platz für die Liste darunter. */
+@media (display-mode: standalone) and (max-width:767px){.hero{margin-top:-26px}}
 .date-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:34px;min-width:34px;padding:0 13px 0 9px;border-radius:17px;background:var(--fill);color:var(--ink);font-size:14px;font-weight:500;white-space:nowrap}
 .date-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .date-btn.is-current{width:34px;padding:0}
