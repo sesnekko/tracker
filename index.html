@@ -1391,6 +1391,9 @@ body.ds-lock{overflow:hidden}
 .ds-group-t+.ds-group{margin-top:0}
 .ds-group[hidden]{display:none}
 .ds-row{display:flex;align-items:center;gap:12px;min-height:50px;padding:6px 14px}
+/* 21.10.2026 (Gerätetest iPhone): Verlauf mit Stückzahl und Euro je Monat */
+.ds-hist-pair{display:flex;gap:8px;flex:0 0 auto}
+.ds-hist-pair .ds-in{width:104px}
 .ds-row+.ds-row,.ds-row+.ds-sub,.ds-sub+.ds-row{box-shadow:inset 0 .5px 0 var(--sep)}
 .ds-row[hidden]{display:none}
 .ds-l{flex:1;min-width:0;color:var(--ink);font-size:15px;line-height:1.3}
@@ -1904,6 +1907,12 @@ body.onboarding-open{overflow:hidden}
    Im Dunkelmodus ist der Himmel ein warmes Mittelgrau: Kontrast zum dunklen A ohne Lichtschein. */
 .ob-welcome{background:linear-gradient(to bottom,#fbfaf7,#f3f1ec 30%)}
 body.dark .ob-welcome{background:linear-gradient(to bottom,#6b675f,#58544e 30%)}
+/* 21.10.2026 (Gerätetest iPhone): Wellen nur als Band in der Mitte hinter den Vorteilen, ohne hellen Himmel, mit weichen
+   Rändern; wie in der iOS-App. Die Regeln oben für .ob-welcome-waves gelten weiter für Farben und Linien. */
+.ob-welcome,body.dark .ob-welcome{background:var(--bg)}
+.ob-welcome-mid{position:relative;isolation:isolate;display:flow-root}
+.ob-welcome .ob-welcome-mid .ob-welcome-waves{inset:auto;left:50%;width:100vw;max-width:none;transform:translateX(-50%);top:-25%;height:160%;
+  -webkit-mask-image:linear-gradient(transparent,#000 20%,#000 80%,transparent);mask-image:linear-gradient(transparent,#000 20%,#000 80%,transparent)}
 .ob-welcome-waves{position:absolute;inset:0;z-index:-1;pointer-events:none;max-width:none;margin:0}
 .ob-welcome-waves svg{display:block;width:100%;height:100%}
 .ob-welcome-waves g:nth-child(1) .wf{fill:#ece9e3}
@@ -2411,19 +2420,7 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
         </div>
       </div>
     </div>
-    <div class="kpi-item" data-kpi="liquid">
-      <div class="kpi-flip-inner">
-        <div class="kpi-face-front">
-          <div class="kpi-label">Liquides Vermögen</div>
-          <div class="kpi-val" id="kpi-liquid">—</div>
-          <div class="kpi-delta" id="kpi-liquid-delta"></div>
-        </div>
-        <div class="kpi-face-back">
-          <div class="kpi-back-label">Liquides Vermögen</div>
-          <div class="kpi-back-text">Frei verfügbar: Cash, ETFs, Aktien, Krypto, Edelmetalle</div>
-        </div>
-      </div>
-    </div>
+    <!-- 21.10.2026 (Gerätetest iPhone): „Illiquides Vermögen“ vor „Liquides Vermögen“, wie in der iOS-App -->
     <div class="kpi-item" data-kpi="illiquid">
       <div class="kpi-flip-inner">
         <div class="kpi-face-front">
@@ -2434,6 +2431,19 @@ label,.ds-l,.ob-l,.lp-cell small,.v2-ap-field>span{-webkit-hyphens:auto;hyphens:
         <div class="kpi-face-back">
           <div class="kpi-back-label">Illiquides Vermögen</div>
           <div class="kpi-back-text">Altersvorsorge, Immobilien und Sachwerte abzüglich Verbindlichkeiten</div>
+        </div>
+      </div>
+    </div>
+    <div class="kpi-item" data-kpi="liquid">
+      <div class="kpi-flip-inner">
+        <div class="kpi-face-front">
+          <div class="kpi-label">Liquides Vermögen</div>
+          <div class="kpi-val" id="kpi-liquid">—</div>
+          <div class="kpi-delta" id="kpi-liquid-delta"></div>
+        </div>
+        <div class="kpi-face-back">
+          <div class="kpi-back-label">Liquides Vermögen</div>
+          <div class="kpi-back-text">Frei verfügbar: Cash, ETFs, Aktien, Krypto, Edelmetalle</div>
         </div>
       </div>
     </div>
@@ -8337,7 +8347,8 @@ function openHistorySheet(id){
   if(_sheetOpen&&!_closeSheet(false,()=>openHistorySheet(id)))return;/* erst schließen: das Schließen räumt den Sheet-Kontext */
   const inst=AssetModel.valuation(f)==='market'?AssetModel.instrument(f):null;
   const months=Object.keys(loadData()).filter(m=>m<nextYM()).sort().reverse();
-  _sheetCtx={hist:{id,key:f.unitId||f.id,inst,unit:_unitName(f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück'),prices:null,months,added:[],calc:{month:'',year:'',mode:'once',plan:''}}};
+  const key=f.unitId||f.id,stored=loadData(),hasQty=!!inst||months.some(m=>+(((stored[m]||{})._units||{})[key])>0);
+  _sheetCtx={hist:{id,key,inst,hasQty,unit:_unitName(f.unitLabel||AssetModel.categories[f.category]?.unit||'Stück'),prices:null,months,added:[],calc:{month:'',year:'',mode:'once',plan:''}}};
   if(!_openSheet('Verlauf · '+f.label,_historySheetBody(),_saveHistorySheet,undefined,()=>openHistorySheet(id)))return;
   _historyPaint();
   if(inst)fetchMonthlyPricesEUR(_historySymbol(inst)).then(p=>{const c=_sheetCtx.hist;if(c&&c.id===id){c.prices=p;_historyPaint();}}).catch(()=>{const c=_sheetCtx.hist;if(c&&c.id===id){c.pricesFailed=true;_historyPaint();}});
@@ -8357,7 +8368,7 @@ function _historySub(input){
 }
 function _historySheetBody(){
   const c=_sheetCtx.hist,data=loadData(),f=_fc.fields.find(x=>x.id===c.id),year=new Date().getFullYear();
-  let h=`<p class="ds-note">${c.inst?'Stückzahl je Monatsstand (Stand zum Monatswechsel). Der Wert ergibt sich aus dem Kurs zu diesem Zeitpunkt.':'Wert je Monatsstand (Stand zum Monatswechsel).'} Den aktuellen Stand änderst du wie gewohnt in der Position.</p>`;
+  let h=`<p class="ds-note">${c.inst?'Stückzahl und Wert je Monatsstand (Stand zum Monatswechsel). Eine geänderte Stückzahl rechnet den Wert mit dem Kurs zu diesem Zeitpunkt; den Wert kannst du selbst anpassen.':c.hasQty?'Stückzahl und Wert je Monatsstand (Stand zum Monatswechsel). Beide sind unabhängig.':'Wert je Monatsstand (Stand zum Monatswechsel).'} Den aktuellen Stand änderst du wie gewohnt in der Position.</p>`;
   if(c.inst)h+=`<button type="button" class="ds-linkrow" data-hist-quotes="${escHTML(c.id)}"><span>Werte aus Kursen übernehmen</span><small>alle Monate mit Stückzahl, mit Rückfrage</small></button>`;
   if(c.inst){
     const opt=(v,l,cur)=>`<option value="${v}"${String(v)===String(cur)?' selected':''}>${l}</option>`;
@@ -8374,9 +8385,12 @@ function _historySheetBody(){
     const e=data[m]||{},q=+((e._units||{})[c.key])||0,v=+((e._details||{})[c.id])||0,added=c.added.find(a=>a.month===m);
     if(m.slice(0,4)!==y){if(y)h+='</div>';y=m.slice(0,4);h+=`<div class="ds-group-t">${y}</div><div class="ds-group">`;}
     const attrs=`data-hm="${m}" data-value="${v}" data-qty="${q}"${e._estimated||added?' data-est="1"':''}${added?' data-new="1"':''}`;
-    const input=c.inst?`<input class="ds-in" type="text" inputmode="decimal" ${attrs} data-orig="${escHTML(_qtyInput(q))}" value="${escHTML(added?_qtyInput(added.quantity):_qtyInput(q))}" placeholder="0" aria-label="${escHTML(fmtMonth(m))}: Stückzahl in ${escHTML(c.unit)}">`
-      :`<input class="ds-in ds-money" type="text" inputmode="decimal" ${attrs} data-orig="${v?escHTML(_moneyInput(v)):''}" value="${v?escHTML(_moneyInput(v)):''}" placeholder="0" aria-label="${escHTML(fmtMonth(m))}: Wert in Euro">`;
-    h+=`<label class="ds-row"><span class="ds-l">${MONTH_FULL[+m.slice(5)-1]}${c.inst?` <span style="color:var(--muted)">(${escHTML(c.unit)})</span>`:''}<small id="hs-${m}"></small></span>${input}</label>`;
+    /* 21.10.2026 (Gerätetest iPhone): Stückzahl und Euro je Monat; eine geänderte Stückzahl füllt den Euro-Wert aus dem Kurs, der
+       Euro-Wert bleibt selbst änderbar. Ohne Kursbewertung erscheint die Stückzahl nur, wenn eine erfasst ist. */
+    const qtyInput=`<input class="ds-in" type="text" inputmode="decimal" ${attrs} data-orig="${escHTML(_qtyInput(q))}" value="${escHTML(added?_qtyInput(added.quantity):_qtyInput(q))}" placeholder="–" aria-label="${escHTML(fmtMonth(m))}: Stückzahl in ${escHTML(c.unit)}">`;
+    const euroInput=(more)=>`<input class="ds-in ds-money" type="text" inputmode="decimal" ${more} data-orig="${v?escHTML(_moneyInput(v)):''}" value="${v?escHTML(_moneyInput(v)):''}" placeholder="0" aria-label="${escHTML(fmtMonth(m))}: Wert in Euro">`;
+    const input=c.hasQty?`<span class="ds-hist-pair">${qtyInput}${euroInput(`data-hv="${m}"`)}</span>`:euroInput(attrs);
+    h+=`<label class="ds-row"><span class="ds-l">${MONTH_FULL[+m.slice(5)-1]}${c.hasQty?` <span style="color:var(--muted)">(${escHTML(c.unit)} · €)</span>`:''}<small id="hs-${m}"></small></span>${input}</label>`;
   });
   return h+'</div>';
 }
@@ -8384,7 +8398,20 @@ function _historyPaint(){
   if(!_sheetCtx.hist)return;
   document.querySelectorAll('#dsBody [data-hm]').forEach(i=>{const s=document.getElementById('hs-'+i.dataset.hm);if(s)s.textContent=_historySub(i);});
 }
-function _historyInput(e){if(_sheetCtx.hist&&e.target.dataset&&e.target.dataset.hm){const s=document.getElementById('hs-'+e.target.dataset.hm);if(s)s.textContent=_historySub(e.target);}}
+function _historyInput(e){
+  const c=_sheetCtx.hist;if(!c||!e.target.dataset||!e.target.dataset.hm)return;
+  const s=document.getElementById('hs-'+e.target.dataset.hm);if(s)s.textContent=_historySub(e.target);
+  _historyFillEuro(e.target);
+}
+/* Neue Stückzahl: Euro-Wert = Stückzahl × Kurs zum Monatswechsel (21.10.2026); ohne Kurs bleibt der Wert stehen. Zurück auf die
+   ursprüngliche Stückzahl: auch der ursprüngliche Euro-Wert. */
+function _historyFillEuro(input){
+  const c=_sheetCtx.hist,eur=c&&c.inst&&document.querySelector('#dsBody [data-hv="'+input.dataset.hm+'"]');if(!eur)return;
+  if(input.value.trim()===input.dataset.orig&&input.dataset.new!=='1'){eur.value=eur.dataset.orig;return;}
+  let q;try{q=_assetNumber(input.value,true);}catch(error){return;}
+  const p=_historyPrice(input.dataset.hm,input);
+  if(q!=null&&q>=0&&p)eur.value=_moneyInput(AssetModel.money(q*p));
+}
 async function _historyCalc(){
   const c=_sheetCtx.hist;if(!c||!c.inst)return;
   const v=id=>(document.getElementById(id)?.value||'').trim();
@@ -8414,6 +8441,8 @@ async function _historyCalc(){
       if(m===cur){if(!(+i.dataset.qty>0))i.value=_qtyInput(qty);return;}
       i.value=_qtyInput(byMonth[m]??(m<since?0:+i.dataset.qty));
     });
+    /* Euro-Felder zu den berechneten Stückzahlen (21.10.2026) */
+    document.querySelectorAll('#dsBody [data-hm]').forEach(_historyFillEuro);
     _sheetDirty=true;_historyPaint();_toast(rows.length+' Monate berechnet');
   }catch(error){
     const btn=document.querySelector('#dsBody [data-hist-calc]');if(btn){btn.disabled=false;btn.textContent='Berechnen';}
@@ -8429,13 +8458,20 @@ function _saveHistorySheet(){
     const first=Object.keys(data).sort()[0],firstEntry=first?data[first]:null;
     document.querySelectorAll('#dsBody [data-hm]').forEach(i=>{
       const m=i.dataset.hm,isNew=i.dataset.new==='1';
-      if(i.value.trim()===i.dataset.orig&&!isNew)return;
+      const eur=document.querySelector('#dsBody [data-hv="'+m+'"]'),qtyChanged=i.value.trim()!==i.dataset.orig,euroChanged=!!eur&&eur.value.trim()!==eur.dataset.orig;
+      if(!qtyChanged&&!euroChanged&&!isNew)return;
       const e=isNew&&firstEntry&&m<first?{_details:{...(firstEntry._details||{})},_units:{...(firstEntry._units||{})}}:_monthEntryForEdit(data,m);
-      if(c.inst){
+      if(c.hasQty){
         let q;try{q=_assetNumber(i.value,true)??0;}catch(error){throw new Error(fmtMonth(m)+': Bitte eine gültige Stückzahl eingeben.');}
-        const p=_historyPrice(m,i);
-        if(q>0&&!p)throw new Error(fmtMonth(m)+': Für diesen Monat ist noch kein Kurs bekannt. Bitte kurz warten, bis die Kurse geladen sind.');
-        e._units[c.key]=q;e._details[c.id]=AssetModel.money(q*(p||0));
+        let value;
+        /* Selbst geänderter (oder aus dem Kurs gefüllter) Euro-Wert gilt; sonst wie bisher Stückzahl × Kurs bzw. der gespeicherte Wert */
+        if(euroChanged)value=_sheetMoney(eur.value,fmtMonth(m))??0;
+        else if(c.inst&&(qtyChanged||isNew)){
+          const p=_historyPrice(m,i);
+          if(q>0&&!p)throw new Error(fmtMonth(m)+': Für diesen Monat ist noch kein Kurs bekannt. Bitte kurz warten, bis die Kurse geladen sind.');
+          value=AssetModel.money(q*(p||0));
+        }else value=+i.dataset.value||0;
+        e._units[c.key]=q;e._details[c.id]=value;
       }else e._details[c.id]=_sheetMoney(i.value,fmtMonth(m))??0;
       if(isNew)e._estimated=true;
       recalcAggregates(e);data[m]=e;changed++;
@@ -14111,17 +14147,19 @@ function guideWelcome(){
   const ico=k=>`<span class="ob-wp-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${V2_ICONS[k]}</svg></span>`;
   const point=(k,title,text)=>`<li>${ico(k)}<span class="ob-wp-t"><b>${title}</b><span>${text}</span></span></li>`;
   return `<div class="ob-screen ob-welcome">
-    <div class="ob-welcome-waves" aria-hidden="true">${LOGO_WAVES}</div>
     <div class="ob-hero">${LOGO_MARK}</div>
     <div class="ob-welcome-top">
       <h1 class="ob-title">Assets</h1>
       <p class="ob-sub">Dein Vermögen, dein Monat, deine Zukunft.</p>
     </div>
-    <ul class="ob-welcome-points">
-      ${point('chart','Alles im Blick','Konten, Depots, Immobilien und Kredite an einem Ort.')}
-      ${point('clock','Eine Minute im Monat','Du änderst nur, was sich bewegt hat.')}
-      ${point('lock','Privat auf diesem Gerät','Kein Konto, keine Bankverbindung, keine Werbung.')}
-    </ul>
+    <div class="ob-welcome-mid">
+      <div class="ob-welcome-waves" aria-hidden="true">${LOGO_WAVES}</div>
+      <ul class="ob-welcome-points">
+        ${point('chart','Alles im Blick','Konten, Depots, Immobilien und Kredite an einem Ort.')}
+        ${point('clock','Eine Minute im Monat','Du änderst nur, was sich bewegt hat.')}
+        ${point('lock','Privat auf diesem Gerät','Kein Konto, keine Bankverbindung, keine Werbung.')}
+      </ul>
+    </div>
     <div class="ob-welcome-actions">
       <button class="btn btn-primary" onclick="startSetup()">Geführt einrichten</button>
       <label class="btn btn-ghost ob-import" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">Bestehende Daten laden<input type="file" accept=".json,.csv,application/json,text/csv" style="display:none" onchange="hideOnboarding();document.getElementById('csvInput').files=this.files;document.getElementById('csvInput').dispatchEvent(new Event('change'))"></label>
